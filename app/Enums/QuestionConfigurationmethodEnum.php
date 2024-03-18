@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Enums;
+use Kongulov\Traits\InteractWithEnum;
+enum QuestionConfigurationmethodEnum: int {
+    use InteractWithEnum;
+
+    case DYNAMIC  = 0;
+    case MANUAL  =  1;
+
+    public function getValues(): array {
+        return match ($this) {
+            self::DYNAMIC => [0, 'Dynamic', 'آلي'],
+            self::MANUAL => [1, 'Manual', 'يدوي'],
+        };
+    }
+
+    public function getEnglishName(): string {
+        return $this->getValues()[1] ?? '';
+    }
+
+    public function getArabicName(): string {
+        return $this->getValues()[2] ?? '';
+    }
+
+    public static function getArabicNames(): array {
+        return array_map(fn($enumValue) => $enumValue->getArabicName(), self::cases());
+    }
+
+    public static function getEnglishNames(): array {
+        return array_map(fn($enumValue) => $enumValue->getEnglishName(), self::cases());
+    }
+
+    public static function getNameByNumber(int $number, string $language = 'ar'): ?string
+    {
+        $roles = self::cases();
+        foreach ($roles as $role) {
+            if ($role->getValues()[0] === $number) {
+                return $language === 'ar' ? $role->getArabicName() : $role->getEnglishName();
+            }
+        }
+        return null;
+    }
+}
