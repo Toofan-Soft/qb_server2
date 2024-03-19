@@ -15,4 +15,5 @@ class EnumReplacement
     $this->newColumnName = $newColumnName;
     $this->enumClass = $enumClass;
   }
+
 }

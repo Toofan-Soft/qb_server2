@@ -65,8 +65,9 @@ Route::prefix('colleges/')->group(function () {
     Route::post('add-college', [CollegeController::class, 'addCollege']);
     Route::put('modify-college', [CollegeController::class, 'modifyCollege']);
     Route::delete('deleteCollege', [CollegeController::class, 'deleteCollege']);
-    Route::get('retrieve-college/{id}', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
+    Route::get('retrieve-college/', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
 });
+Route::get('college', [CollegeController::class, 'retrieveCollege']);
 // departments
 Route::get('departments/retrieve-departments',[DepartmentController::class,'retrieveDepartments']);
 Route::get('departments/retrieve-basic-departments-info',[DepartmentController::class,'retrieveBasicDepartmentsInfo']);

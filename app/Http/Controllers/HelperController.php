@@ -203,4 +203,14 @@ class HelperController extends Controller
 // $array[1] = 'new_element2';
 // output: ['element1', 'new_element2', 'element3']
 
+
+//delete many in laravel :
+// YourModel::where('name', 'John')->where('age', 30)->delete()
+// or
+// $idsToDelete = [1, 2, 3];
+// $deletedCount = YourModel::destroy($idsToDelete);
+// or
+// $idsToDelete = [1, 2, 3]; // An array of IDs to delete
+// ModelName::whereIn('id', $idsToDelete)->delete();
+
 }

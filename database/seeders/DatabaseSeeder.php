@@ -41,10 +41,10 @@ class DatabaseSeeder extends Seeder
         // \App\Models\College::factory(10)->create();
         // \App\Models\Course::factory(10)->create();
         // \App\Models\CoursePart::factory(10)->create();
-//////
-         College::factory()->count(10)->create()->each(function ($college) {
-            $college->departments()->save(Department::factory()->make());
-        });
+// //////
+//          College::factory()->count(10)->create()->each(function ($college) {
+//             $college->departments()->save(Department::factory()->make());
+//         });
 ////
         //  Course::factory()->count(10)->create()->each(function ($course) {
         //     $course->course_parts()->save(CoursePart::factory()->make());
@@ -80,7 +80,7 @@ class DatabaseSeeder extends Seeder
             //     'department_course_part_id' => $departmentCourse->id,
             //     'topic_id' => $topic->id,
             // ]);
-            //});
+            // });
 
 /////////////////////
 

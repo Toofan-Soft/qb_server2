@@ -93,7 +93,7 @@ class AddHelper
             default:
                 self::createGuest($user, $request);
                 return RoleEnum::GUEST->value;
-        }
+    }
     // if ($owner_type === OwnerTypeEnum::STUDENT->value ) {
         //     return  RoleEnum::STUDENT->value;
         // }elseif ($owner_type === OwnerTypeEnum::LECTURER->value) {

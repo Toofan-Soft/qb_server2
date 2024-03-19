@@ -2,28 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Employee;
 use App\Enums\GenderEnum;
-use App\Enums\QualificationEnum;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
+use App\Enums\QualificationEnum;
 use App\Helpers\EnumReplacement;
+use App\Helpers\EnumReplacement1;
+use App\Helpers\ColumnReplacement;
+use App\Helpers\ProcessDataHelper;
 
 class EmployeeController extends Controller
 {
     public function addEmployee(Request $request)
     {
 
-        $userId = 0;
+       $employee =  Employee::create([
+            'arabic_name' =>  $request->arabic_name,
+            'english_name' =>  $request->english_name,
+            'phone' => $request->phone,
+            'image_url' => ImageHelper::uploadImage($request->image),
+            'job_type' => $request->job_type,
+            'qualification' =>  $request->qualification,
+            'specialization' =>  $request->specialization,
+            'gender' =>  $request->gender ?? GenderEnum::MALE->value,
+        ]);
         if ($request->email) {
-            //add user
-            // $userid = addUser();
-            unset($request['email']);
+            //Add User, email,type,emp_id
         }
-        // return AddHelper::addModel($request, Employee::class,  $this->rules($request)); uncomlete
+
 
     }
 
@@ -40,29 +52,32 @@ class EmployeeController extends Controller
 
     public function retrieveEmployees (Request $request)
     {
-        $attributes = ['id', 'arabic_name', 'gender', 'phone', 'email', 'qualification', 'image_url'];
-        $conditionAttribute = ['job_type' => $request->job_type_id];
+        $attributes = ['id', 'arabic_name', 'gender as gender_name', 'phone', 'user_id as email', 'qualification as qualification_name', 'image_url'];
         $enumReplacements = [
-            new EnumReplacement('gender', 'gender_name', GenderEnum::class),
-            new EnumReplacement('qualification', 'qualification_name', QualificationEnum::class),
+            new EnumReplacement1( 'gender_name', GenderEnum::class),
+            new EnumReplacement1( 'qualification_name', QualificationEnum::class),
           //  new EnumReplacement('enum_id_column2_db', 'enum_name_name_2',CourseEnum::class),
           ];
-          return GetHelper::retrieveModelsWithEnum(Employee::class, $attributes, $conditionAttribute, $enumReplacements);
-    }
-    public function retrieveBasicEmployeesInfo ()
-    {
-        $attributes = ['id', 'arabic_name','logo_url'];
-        return GetHelper::retrieveModels(Employee::class, $attributes, null);
-    }
+          $columnReplacements = [
+            new ColumnReplacement('email', 'email', User::class)
+          ];
 
+          $employees =Employee::where('job_type', $request->job_type_id)->get($attributes);
+          $employees =  ProcessDataHelper::enumsConvertIdToName($employees, $enumReplacements);
+          $employees = ProcessDataHelper::columnConvertIdToName($employees, $columnReplacements);
+          return $employees;
+    }
 
     public function retrieveEmployee(Request $request)
     {
-        $attributes = ['arabic_name','english_name', 'gender', 'phone', 'email', 'job_type', 'specialization', 'qualification', 'image_url'];
-        $conditionAttribute = ['id' => $request->id];
-          return GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute);
+        $attributes = ['arabic_name','english_name', 'gender as gender_id', 'phone', 'user_id as email', 'job_type as job_type_id', 'specialization', 'qualification as qualification_id', 'image_url'];
+        $columnReplacements = [
+            new ColumnReplacement('email', 'email', User::class)
+          ];
+        $employee =Employee::find($request->id)->get($attributes);
+        $employee = ProcessDataHelper::columnConvertIdToName($employee, $columnReplacements);
+          //return GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute);
 
-          // rename (gender => gender_id , job_type => job_type_id , qualification =>qualification_id )
     }
 
 

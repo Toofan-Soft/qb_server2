@@ -10,8 +10,6 @@ use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\ModifyHelper;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\CollegeRequest;
-use App\Http\Resources\CollegeResource;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -46,14 +44,15 @@ class CollegeController extends Controller
     }
 
 
-    public function retrieveCollege( $id)
+    public function retrieveCollege(Request $request)
     {
         // $attributes = [ 'arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
         // $conditionAttribute = ['id' => $request->id];
         // return GetHelper::retrieveModels(College::class, $attributes, $conditionAttribute);
 
-        $college = College::find($id);
+        $college = College::findOrFail($request->id, ['id','arabic_name']);// this correct way
 
+        $college = College::with(['departments:id,arabic_name as name,college_id'])->find($request->id); // لازم العمود حق العلاقه يكون ضمن البيانات المحددة
         return response()->json(['data' => $college  ], 200);
     }
 

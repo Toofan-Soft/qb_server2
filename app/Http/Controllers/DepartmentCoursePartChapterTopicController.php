@@ -36,7 +36,7 @@ class DepartmentCoursePartChapterTopicController extends Controller
 
     public function retrieveDepartmentCoursePartChapters(Request $request)
     {
-    ////////////////////with distinct
+   
     $result = DB::table('department_course_parts')
     ->join('department_course_part_topics', 'department_course_parts.id', '=', 'department_course_part_topics.department_course_part_id')
     ->join('topics', 'department_course_part_topics.topic_id', '=', 'topics.id')
