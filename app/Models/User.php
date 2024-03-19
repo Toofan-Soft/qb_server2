@@ -45,18 +45,18 @@ class User extends Authenticatable
         return $this->HasMany(UserRole::class);
     }
 
-    public function students() : HasOne {
+    public function student() : HasOne {
         return $this->HasOne(Student::class);
     }
 
-    public function employees() : HasOne {
+    public function employee() : HasOne {
         return $this->HasOne(Employee::class);
     }
 
     public function practise_exams() : HasMany {
         return $this->HasMany(PracticeExam::class);
     }
-    public function guests() : HasOne {
+    public function guest() : HasOne {
         return $this->HasOne(Guest::class);
     }
 
