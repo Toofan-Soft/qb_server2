@@ -36,9 +36,9 @@ Route::post('forget_password',[ForgetPasswordController::class,'forget_password'
 Route::post('password_reset',[ResetPasswordController::class,'password_reset']);
 
 
-
+Route::post('login',[UserController::class,'login']);
 Route::middleware('auth:api')->group(function () {
-    Route::get('login',[UserController::class,'login']);
+   // Route::get('login',[UserController::class,'login']);
     Route::get('userinfo',[UserController::class,'userInfo']);
     // Route::resource('products',ProductController::class);
     Route::post('email_verification',[EmailVerificationController::class, 'email_verification']);
@@ -64,10 +64,12 @@ Route::prefix('colleges/')->group(function () {
     Route::get('retrieve-basic-colleges-info', [CollegeController::class, 'retrieveBasicCollegesInfo']);
     Route::post('add-college', [CollegeController::class, 'addCollege']);
     Route::put('modify-college', [CollegeController::class, 'modifyCollege']);
-    Route::delete('deleteCollege', [CollegeController::class, 'deleteCollege']);
-    Route::get('retrieve-college/', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
+    Route::delete('delete-college', [CollegeController::class, 'deleteCollege']);
+    Route::get('retrieve-college', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
 });
-Route::get('college', [CollegeController::class, 'retrieveCollege']);
+
+Route::get('retrieve-college', [CollegeController::class, 'retrieveCollege']);
+//  Route::post('retrieve-college', [CollegeController::class, 'retrieveCollege']);
 // departments
 Route::get('departments/retrieve-departments',[DepartmentController::class,'retrieveDepartments']);
 Route::get('departments/retrieve-basic-departments-info',[DepartmentController::class,'retrieveBasicDepartmentsInfo']);
