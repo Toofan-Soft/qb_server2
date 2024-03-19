@@ -29,19 +29,8 @@ class GuestController extends Controller
     {
         return ModifyHelper::modifyModel($request, $guest,  $this->rules($request));
     }
-    public function addUser(Request $request)
-    {
-        $roles = $request->roles_ids;
 
-        if($request->owner_type_id === OwnerTypeEnum::EMPLOYEE->value){
-
-        }elseif ($request->owner_type_id === OwnerTypeEnum::LECTURER->value) {
-
-        }elseif ($request->owner_type_id === OwnerTypeEnum::STUDENT->value) {
-
-        }
-
-    }
+    
 
 
 }
