@@ -10,7 +10,7 @@ class DeleteHelper
     {
         $model->delete();
         return response()->json([
-            'message' => 'Department deleted successfully!',
+            'error_message' => 'college deleted successfully!',
         ], 200);
     }
 }

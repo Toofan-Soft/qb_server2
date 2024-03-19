@@ -35,7 +35,7 @@ class ModifyHelper
             try {
                 $response = self::modify($model, $updatedAttributes);
                 DB::commit();
-                return response()->json(['messag' => 'successful'], 200);
+                return response()->json(['error_message' => 'successful'], 200);
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json(['error_message' => 'Update failed: ' . $e->getMessage()], 500);
