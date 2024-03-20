@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Enums\OwnerTypeEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,12 +18,12 @@ class UserHelper
         // $roles = $roles_ids;
         // add user status by default
 
-        if($request->owner_type_id === OwnerTypeEnum::EMPLOYEE->value){
+        if($owner_type_id === OwnerTypeEnum::EMPLOYEE->value){
 
-        }elseif ($request->owner_type_id === OwnerTypeEnum::LECTURER->value) {
-            
+        }elseif ($owner_type_id === OwnerTypeEnum::LECTURER->value) {
 
-        }elseif ($request->owner_type_id === OwnerTypeEnum::STUDENT->value) {
+
+        }elseif ($owner_type_id === OwnerTypeEnum::STUDENT->value) {
 
         }
 
