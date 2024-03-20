@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ExamStatusEnum;
-use App\Enums\FormConfigurationMethodEnum;
-use App\Enums\RealExamTypeEnum;
-use Illuminate\Http\Request;
-use App\Models\CourseLecturer;
+use App\Models\User;
 use App\Models\RealExam;
+use Illuminate\Http\Request;
+use App\Enums\ExamStatusEnum;
+use App\Models\CourseLecturer;
+use App\Enums\RealExamTypeEnum;
+use App\Enums\FormConfigurationMethodEnum;
 
 class LecturereOnlinExamController extends Controller
 {
@@ -40,7 +41,7 @@ class LecturereOnlinExamController extends Controller
 
         foreach ($request->question_types as $question_type ) {
              $realExam->real_exam_question_types()->create([
-                'question_type' => $question_type->type_id,  ///// ensure 
+                'question_type' => $question_type->type_id,  ///// ensure
                 'questions_count' => $question_type->questions_count,
                 'question_score'  => $question_type->question_score,
             ]);
