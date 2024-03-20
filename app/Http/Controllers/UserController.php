@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-<<<<<<<<< Temporary merge branch 1
+
     public function verifyAccount(Request $request)
     {
 
@@ -50,7 +50,5 @@ class UserController extends Controller
     {
 
     }
-=========
-
->>>>>>>>> Temporary merge branch 2
+ 
 }
