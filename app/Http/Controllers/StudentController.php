@@ -95,11 +95,21 @@ class StudentController extends Controller
 
     public function retrieveStudent(Request $request)
     {
-        $student = Student::with([
-            'academic_id,arabic_name,english_name,gender as gender_id,phone,user_id as email,image_url,birthdate', //**test sigle column */
-            'course_students.department_course.department_course.department:arabic_name as department_name.college:arabic_name as college_name',
-            ])->find($request->id);
+        // $student = Student::with([
+        //     'academic_id,arabic_name,english_name,gender as gender_id,phone,user_id as email,image_url,birthdate', //**test sigle column */
+        //     'course_students.department_course.department:arabic_name as department_name.college:arabic_name as college_name',
+        //     ])->find($request->id);
 
+        $student =  DB::table('students')
+        ->join('course_students', 'students.id', '=', 'course_students.student_id')
+        ->join('department_courses', 'course_students.department_course_id', '=', 'department_course.id')
+        ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+        ->join('colleges', 'departments.college_id', '=', 'colleges.id')
+        ->select('students.academic_id', 'students.arabic_name', 'students.english_name', 'students.gender as gender_id', 'students.user_id as email','students.image_url','students.birthdate',
+           'departments.arabic_name as department_name',
+           'colleges.arabic_name as college_name')
+        ->where('students.id', '=', $request->id)
+        ->get();
         $columnReplacements = [
             new ColumnReplacement('email', 'email', User::class)
           ];

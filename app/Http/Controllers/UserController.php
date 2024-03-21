@@ -24,7 +24,7 @@ class UserController extends Controller
     }
     public function retrieveProfile()
     {
-        $user = 0;
+        $user = auth()->user()->id;
         // get type of current user,
 
         $profile = [];
@@ -50,5 +50,5 @@ class UserController extends Controller
     {
 
     }
- 
+
 }

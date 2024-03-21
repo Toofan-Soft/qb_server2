@@ -42,5 +42,16 @@ enum CoursePartsEnum: int {
         }
         return null;
     }
+
+    public static function getEnum(string $language = 'ar'): array {
+        $roles = self::cases();
+        $result = [];
+        foreach ($roles as $role) {
+            $number = $role->getValues()[0];
+            $name = $language === 'ar' ? $role->getArabicName() : $role->getEnglishName();
+            $result[] = [$number, $name];
+        }
+        return $result;
+    }
 }
 

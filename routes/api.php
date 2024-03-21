@@ -89,8 +89,8 @@ Route::post('courses/create',[CourseController::class,'store']);
 
 
 //test enum
-Route::get('getname', function () {
-    $name = RoleEnum::getNameByNumber(1, 'en');
+Route::get('getenum', function () {
+    $name = RoleEnum::getEnum();
     return response()->json(['name' => $name]);
 });
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

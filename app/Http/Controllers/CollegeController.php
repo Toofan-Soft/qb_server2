@@ -58,22 +58,23 @@ class CollegeController extends Controller
 
     public function retrieveCollege(Request $request)
     {
-        $requestType = $request->method(); // Get the HTTP method from SERVER
+        // $requestType = $request->method(); // Get the HTTP method from SERVER
 
-        $allRequestData = $request->all(); // Get all request data as an array
+        // $allRequestData = $request->all(); // Get all request data as an array
 
-        // Print all data (not recommended for production due to verbosity)
-        Log::debug(json_encode($allRequestData, JSON_PRETTY_PRINT)); // Pretty-printed JSON format
+        // // Print all data (not recommended for production due to verbosity)
+        // Log::debug(json_encode($allRequestData, JSON_PRETTY_PRINT)); // Pretty-printed JSON format
 
-        // Access specific data points
-        $headers = $request->headers->all(); // Get all request headers as an array
-        $body = $request->getContent(); // Get the request body (usually for POST requests)
+        // // Access specific data points
+        // $headers = $request->headers->all(); // Get all request headers as an array
+        // $body = $request->getContent(); // Get the request body (usually for POST requests)
 
-        // Print specific data (more manageable)
-        Log::info("Headers: " . json_encode($headers));
-        Log::debug("Body: " . $body);
-       // $college = College::findOrFail(1);
-        return response()->json(['data' => $request->id  ], 200);
+        // // Print specific data (more manageable)
+        // Log::info("Headers: " . json_encode($headers));
+        // Log::debug("Body: " . $body);
+        $college = College::findOrFail($request->id);
+
+        return response()->json(['data' => $college  ], 200);
         // $college = College::with(['departments:id,arabic_name as name,college_id'])->find($request->id); // لازم العمود حق العلاقه يكون ضمن البيانات المحددة
 
 

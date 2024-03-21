@@ -29,11 +29,7 @@ class GuestController extends Controller
     {
         return ModifyHelper::modifyModel($request, $guest,  $this->rules($request));
     }
-<<<<<<< HEAD
 
-    
-
-=======
     public function addUser(Request $request)
     {
         $roles = $request->roles_ids;
@@ -45,9 +41,9 @@ class GuestController extends Controller
         }elseif ($request->owner_type_id === OwnerTypeEnum::STUDENT->value) {
 
         }
-        
+
     }
->>>>>>> 000e0facc127e35da493a860d6d20014fed4cb4d
+
 
 }
 

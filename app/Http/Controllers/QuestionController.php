@@ -64,7 +64,6 @@ class QuestionController extends Controller
     }
 
 
-
     public function retrieveQuestion(Request $request)
     {
           //

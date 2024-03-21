@@ -2,13 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Helpers\UserHelper;
+use App\Enums\OwnerTypeEnum;
 use Illuminate\Http\Request;
+use App\Enums\UserStatusEnum;
+use App\Helpers\DeleteHelper;
+use App\Helpers\EnumReplacement1;
+use App\Helpers\ProcessDataHelper;
+use Illuminate\Support\Facades\DB;
 
 class UserManagmentController extends Controller
 {
     public function addUser(Request $request)
     {
-        addUser($request->email, $request->owner_type_id, $request->roles_ids);
+       // addUser($request->email, $request->owner_type_id, $request->roles_ids);
     }
 
     public function modifyUserRoles(Request $request)
@@ -38,7 +46,7 @@ class UserManagmentController extends Controller
     {
         return DeleteHelper::deleteModel($user);
     }
-    
+
         public function retrieveUsers(Request $request)
         {
             $users = [];
@@ -72,16 +80,16 @@ class UserManagmentController extends Controller
                 ->get();
             }
             // LECTURER, EMPLOYEE
-            
-            $users = ProcessDataHelper::enumsConvertIdToName($users, new EnumReplacement1( 'status_name', UserStatusEnum::class))
-            
+
+            $users = ProcessDataHelper::enumsConvertIdToName($users, new EnumReplacement1( 'status_name', UserStatusEnum::class));
+
             return $users;
         }
 
         public function retrieveUser(Request $request)
         {
             $userData = User::find($request->id, ['email, status as status_id, owner_type as owner_type_name']);
-            $userRoles = $userData->user_roles()->get(['role_id'])
+            $userRoles = $userData->user_roles()->get(['role_id']);
             $ownerTable = '';
             if($userData->owner_type_name === OwnerTypeEnum::GUEST->value){
                 $ownerTable = 'guest';
@@ -96,7 +104,7 @@ class UserManagmentController extends Controller
 
             $userData = ProcessDataHelper::enumsConvertIdToName($userData, new EnumReplacement1( 'owner_type_name', OwnerTypeEnum::class));
 
-            $user = [] // conncat userData + ownerData + userRoles
+            $user = [] ; // conncat userData + ownerData + userRoles
             return $user;
         }
 
