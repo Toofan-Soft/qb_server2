@@ -11,6 +11,7 @@ use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
 use App\Enums\CoursePartsEnum;
 use App\Helpers\EnumReplacement;
+use App\Helpers\EnumReplacement1;
 
 class CoursePartController extends Controller
 {
@@ -37,10 +38,10 @@ class CoursePartController extends Controller
 
     public function retrieveCourseParts(Request $request) ///////////////////////////******* */
     {
-        $attributes = ['id', 'part_id', 'status','description'];
+        $attributes = ['id', 'part_id as part_name', 'status','description'];
         $conditionAttribute = ['course_id' => $request->course_id];
         $enumReplacements = [
-            new EnumReplacement('part_id', 'part_name', CoursePartsEnum::class),
+            new EnumReplacement1('part_name', CoursePartsEnum::class),
           //  new EnumReplacement('enum_id_column2_db', 'enum_name_name_2',CourseEnum::class),
           ];
 

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 class QuestionHelper
 {
     /**
-     * sumation the score of exams .
+     * summation the score of exams .
      */
     public static function retrieveQuestionsAnswer($questions, $questionTypeId){
 
@@ -27,6 +27,7 @@ class QuestionHelper
         }
         return $questions;
     }
+
     private static function retrieveCombinationChoices($id, $combination_id){
 /// id, content, attachment_url, is_true
         return [];

@@ -72,8 +72,24 @@ class CollegeController extends Controller
         // // Print specific data (more manageable)
         // Log::info("Headers: " . json_encode($headers));
         // Log::debug("Body: " . $body);
-        $college = College::findOrFail($request->id);
+         $college = College::findOrFail($request->id);
+        // $college = $college->departments()->get();
 
+// for test : College::
+    //      $result =  DB::table('course_parts')
+    // ->join('courses', 'course_parts.course_id', '=', 'courses.id')
+    // ->join('department_courses', 'courses.id', '=', 'department_courses.course_id')
+    // ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+    // ->select('course_parts.part_id as part_name',
+    //         'courses.arabic_name as course_name',
+    //          'department_courses.semester as semester_name',
+    //           'departments.arabic_name as department_name'
+    //      )
+    // ->where('course_parts.course_id', '=', $request->id)
+    // ->when($request->status, function ($query) use ($request) {
+    //     $query->where('department_courses.semester', '=', $request->status);
+    // })
+    // ->get();
         return response()->json(['data' => $college  ], 200);
         // $college = College::with(['departments:id,arabic_name as name,college_id'])->find($request->id); // لازم العمود حق العلاقه يكون ضمن البيانات المحددة
 

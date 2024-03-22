@@ -123,7 +123,7 @@ class GetHelper
     }
 
     // public static function retrieveModelsWithEnum($model, $attributes = null , $conditionAttribute = [] , $enumAttributes =[] , $enumClasses =[]) {
-    public static function retrieveModelsWithEnum($model, $attributes = null , $conditionAttribute = [] , $enumReplacements) {
+    public static function retrieveModelsWithEnum($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null) {
         if (empty($conditionAttribute)) {
             if (empty($attributes)) {
                 $rows = $model::all();
@@ -150,15 +150,13 @@ class GetHelper
             // }
 
             foreach ($enumReplacements as $replacement) {
-                $dbColumnName = $replacement->dbColumnName;
-                $newColumnName = $replacement->newColumnName;
+                $columnName = $replacement->columnName;
                 $enumClass = $replacement->enumClass;
 
-                if (isset($row->$dbColumnName)) {
-                  $enumValue = $row->$dbColumnName;
+                if (isset($row->$columnName)) {
+                  $enumValue = $row->$columnName;
                   $enumName = $enumClass::getNameByNumber($enumValue);
-                  $row->{$newColumnName} = $enumName;  // add a new column to row and assign the enum name to it
-                  unset($row->{$dbColumnName}); // Unset the old column
+                  $row->$columnName = $enumName;  //replace the id by the name
                 }
             }
         }

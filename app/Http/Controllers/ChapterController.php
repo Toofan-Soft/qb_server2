@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
 use App\Enums\ChapterStatusEnum;
+use Illuminate\Validation\Rules\Enum;
 
 class ChapterController extends Controller
 {
@@ -67,13 +68,13 @@ class ChapterController extends Controller
 
     public function rules(Request $request): array
     {
+
         $rules = [
-            // 'arabic_title' => 'required|string|max:255',
-            // 'english_title' => 'required|string|max:255',
-            // 'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'levels_count' =>  new Enum(LevelsCountEnum::class),
-            // 'description' => 'nullable|string',
-            // 'college_id' => 'required',
+            'arabic_title' => 'required|string|max:255',
+            'english_title' => 'required|string|max:255',
+            'status' => new Enum (ChapterStatusEnum::class), // Assuming ChapterStatusEnum is an enum class
+            'description' => 'nullable|string',
+            'course_part_id' => 'required|exists:course_parts,id',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

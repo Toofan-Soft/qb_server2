@@ -50,7 +50,7 @@ class StudentOnlinExamController extends Controller
     {
         $studentonlinExam = StudentOnlineExam::find($request->id);
         if(!$studentonlinExam->status === StudentOnlineExamStatusEnum::COMPLETE->value ){
-            $realExam = RealExam::findOrFail($studentonlinExam->onlin_exam_id)->get(['language as language_name' ,
+            $realExam = RealExam::findOrFail($studentonlinExam->onlin_exam_id,['language as language_name' ,
             'datetime', 'duration', 'type as type_name', 'note as special_note']);
             $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
                new EnumReplacement1('language_name', LanguageEnum::class),
@@ -111,7 +111,8 @@ class StudentOnlinExamController extends Controller
 
     public function finishOnlineExam (Request $request){
         $student = Student::where('user_id', auth()->user()->id)->first();
-        $studentonlinExam = StudentOnlineExam::find([$request->id, $student->id]);
+        //get by composite primary keys
+        $studentonlinExam = StudentOnlineExam::where('student_id', $student->id )->where('online_exam_id', $request->id)->firstOrFail();;
         $studentonlinExam->update([
             'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
             'end_datetime' => now(),

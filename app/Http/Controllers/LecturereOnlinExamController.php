@@ -263,6 +263,32 @@ class LecturereOnlinExamController extends Controller
             ->where('real_exams.type', '=', $request->type_id)
             ->get();
         }
+    // we can short the above code by this :
+        // $onlineExams = DB::table('real_exams')
+        // ->join('online_exams', 'real_exams.id', '=', 'online_exams.id')
+        // ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
+        // ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
+        // ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+        // ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+        // ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+        // ->select([
+        //     'courses.arabic_name as course_name',
+        //     'course_parts.part_id as course_part_name',
+        //     'real_exams.id',
+        //     'real_exams.datetime',
+        //     'real_exams.language as language_name',
+        //     'real_exams.type as type_name',
+        //     'online_exams.status as status_name',
+        // ])
+        // ->where('department_course_parts.id', '=', $request->department_course_part_id)
+        // ->when($request->status_id, function ($query) use ($request) {
+        //     $query->where('online_exams.status', '=', $request->status_id);
+        // })
+        // ->when($request->type_id, function ($query) use ($request) {
+        //     $query->where('real_exams.type', '=', $request->type_id);
+        // })
+        // ->get();
+
 
         $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, $enumReplacements);
 
@@ -305,6 +331,14 @@ class LecturereOnlinExamController extends Controller
         array_merge($realExam, $onlinExam, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
         $realExam['questionTypes'] = $questionTypes;
 
+     //we can use this for combine instead of above :
+        // $realExam->onlineExam = $onlinExam;
+        // $realExam->coursePart = $coursePart;
+        // $realExam->departmentCourse = $departmentCourse;
+        // $realExam->department = $department;
+        // $realExam->college = $college;
+        // $realExam->course = $course;
+        // $realExam->questionTypes = $questionTypes;
         return $realExam;
     }
 
