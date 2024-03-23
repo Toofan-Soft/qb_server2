@@ -213,8 +213,8 @@ class DepartmentCourseController extends Controller
     {
         $rules = [
             'course_id' => 'required|exists:courses,id',
-            'level' => new Enum(LevelsEnum::class), // Assuming LevelsEnum holds valid values
-            'semester' => new Enum(SemesterEnum::class), // Assuming SemesterEnum holds valid values
+            'level' => ['required', new Enum(LevelsEnum::class)], // Assuming LevelsEnum holds valid values
+            'semester' => ['required',new Enum(SemesterEnum::class)], // Assuming SemesterEnum holds valid values
             'department_id' => 'required|exists:departments,id',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

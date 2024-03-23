@@ -12,6 +12,7 @@ use App\Helpers\ModifyHelper;
 use App\Helpers\ResponeHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
+use App\Models\DepartmentCourse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -99,7 +100,10 @@ class CollegeController extends Controller
         // Log::info("Headers: " . json_encode($headers));
         // Log::debug("Body: " . $body);
          $college = College::findOrFail($request->id);
-        // $college = $college->departments()->get();
+         $college = $college->departments()->department_courses(); // not work
+
+        //  $departmentCourse = DepartmentCourse::find(1);
+        //  $departmentCourse = $departmentCourse->department->college;  // work
 
 // for test : College::
     //      $result =  DB::table('course_parts')

@@ -460,8 +460,8 @@ class LecturereOnlinExamController extends Controller
         $rules = [
             //'id' => 'required|integer|unique:online_exams,id',
             'proctor_id' => 'required|exists:employees,id|unique:online_exams,proctor_id',
-            'status' => new Enum(ExamStatusEnum::class), // Assuming ExamStateEnum holds valid values
-            'conduct_method' => new Enum(ExamConductMethodEnum::class), // Assuming ExamConductMethodEnum holds valid values
+            'status' => ['required',new Enum(ExamStatusEnum::class)], // Assuming ExamStateEnum holds valid values
+            'conduct_method' => ['required',new Enum(ExamConductMethodEnum::class)], // Assuming ExamConductMethodEnum holds valid values
             'exam_datetime_notification_datetime' => 'required|date',
             'result_notification_datetime' => 'required|date', // You can use your suggested default value using DB::raw and INTERVAL
         ];

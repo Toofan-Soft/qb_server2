@@ -30,6 +30,7 @@ class QuestionChoiceController extends Controller
         $question = Question::findOrFail($request->question_id);
         $question =  $question->question_choices()->create([
             'content' => $request->content,
+            // this answer or status ????????? answer not found in db
             'answer' => ($request->is_true ) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value,
             'attachment' => ImageHelper::uploadImage($request->attachment) ,
         ]);

@@ -91,7 +91,7 @@ class DepartmentController extends Controller
             'arabic_name' => 'required|string|max:255',
             'english_name' => 'required|string|max:255',
             'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'levels_count' =>  new Enum(LevelsCountEnum::class),
+            'levels_count' =>  ['required', new Enum(LevelsCountEnum::class)],
             'description' => 'nullable|string',
             'college_id' => 'required',
         ];

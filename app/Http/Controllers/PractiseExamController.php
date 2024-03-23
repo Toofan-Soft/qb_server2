@@ -20,7 +20,10 @@ use App\Helpers\EnumReplacement1;
 use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
+use App\Enums\ExamConductMethodEnum;
 use App\Models\PracticeExamQuestion;
+use Illuminate\Validation\Rules\Enum;
+use App\Enums\ExamDifficultyLevelEnum;
 
 class PractiseExamController extends Controller
 {
@@ -204,4 +207,28 @@ class PractiseExamController extends Controller
         }
 
     }
+
+
+
+    public function rules(Request $request): array
+    {
+        $rules = [
+            'title' => 'nullable|string',
+            'language_id' => ['required', new Enum(LanguageEnum::class)], // Assuming LanguageEnum holds valid values
+            'duration' => 'required|integer',
+            'difficulty_level_id' => ['required', ExamDifficultyLevelEnum::class], // Assuming ExamDifficultyLevelEnum holds valid values
+            'conduct_method_id' => ['required', ExamConductMethodEnum::class], // Assuming ExamConductMethodEnum holds valid values
+            //'status' => new Enum(ExamStatusEnum::class), // Assuming ExamStatusEnum holds valid values
+            'department_course_part_id' => 'required|exists:department_course_parts,id',
+            //'user_id' => 'required|uuid',
+         ];
+        if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
+            $rules = array_filter($rules, function ($attribute) use ($request) {
+                // Ensure strict type comparison for security
+                return $request->has($attribute);
+            });
+        }
+        return $rules;
+    }
+
 }

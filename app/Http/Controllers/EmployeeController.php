@@ -56,8 +56,8 @@ class EmployeeController extends Controller
     {
         $attributes = ['id', 'arabic_name', 'gender as gender_name', 'phone', 'user_id as email', 'qualification as qualification_name', 'image_url'];
         $enumReplacements = [
-            new EnumReplacement1( 'gender_name', GenderEnum::class),
-            new EnumReplacement1( 'qualification_name', QualificationEnum::class),
+            new EnumReplacement( 'gender_name', GenderEnum::class),
+            new EnumReplacement( 'qualification_name', QualificationEnum::class),
           //  new EnumReplacement('enum_id_column2_db', 'enum_name_name_2',CourseEnum::class),
           ];
           $columnReplacements = [
@@ -90,10 +90,10 @@ class EmployeeController extends Controller
             'english_name' => 'required|string',
             'phone' => 'nullable|string|unique:employees,phone',
             'image_url' => 'nullable|string',
-            'job_type' => new Enum (JobTypeEnum::class), // Assuming JobTypeEnum holds valid values
-            'qualification' => new Enum (QualificationEnum::class), // Assuming QualificationEnum holds valid values
+            'job_type' => ['required',new Enum (JobTypeEnum::class)], // Assuming JobTypeEnum holds valid values
+            'qualification' => ['required',new Enum (QualificationEnum::class)], // Assuming QualificationEnum holds valid values
             'specialization' => 'nullable|string',
-            'gender' => new Enum (GenderEnum::class), // Assuming GenderEnum holds valid values
+            'gender' => ['required',new Enum (GenderEnum::class)], // Assuming GenderEnum holds valid values
            // 'user_id' => 'nullable|uuid|unique:users,id',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

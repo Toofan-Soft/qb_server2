@@ -136,8 +136,8 @@ class CourseStudentController extends Controller
 
             $rules = [
                 //'department_course_id' => 'required|exists:department_courses,id',
-                'student_id' => 'required|exists:students,id',
-                'status' => new Enum(CourseStudentStatusEnum::class), // Assuming CourseStudentStatusEnum holds valid values
+                //'student_id' => 'required|exists:students,id',
+                'status' => ['required',new Enum(CourseStudentStatusEnum::class)], // Assuming CourseStudentStatusEnum holds valid values
                 'academic_year' => 'required|integer',
             ];
 

@@ -18,11 +18,16 @@ class DeleteHelper
 
     public static function deleteModels($model, $modelsIds)
     {
-        $deleteCount =  $model::where('id', $modelsIds)->delete();
-        if($deleteCount == $modelsIds->count()){
-            return ResponseHelper::success();
-        }else {
-            return ResponseHelper::serverError('something went wrong , not deleted');
+        try {
+            $deleted = $model::whereIn('id', $modelsIds)->delete();
+
+            if ($deleted == $modelsIds->count()) {
+                return ResponseHelper::success();
+            } else {
+                return ResponseHelper::serverError('Failed to delete some models.');
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError('An error occurred while deleting models.');
         }
     }
 }

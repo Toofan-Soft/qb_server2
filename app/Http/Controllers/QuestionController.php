@@ -8,6 +8,7 @@ use App\Models\College;
 use App\Models\Question;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Enums\LanguageEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
@@ -16,15 +17,16 @@ use App\Enums\CoursePartsEnum;
 use App\Enums\LevelsCountEnum;
 use App\Enums\ChoiceStatusEnum;
 use App\Enums\QuestionTypeEnum;
+use App\Helpers\QuestionHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
 use App\Enums\QuestionStatusEnum;
 use App\Models\TrueFalseQuestion;
 use App\Enums\TrueFalseAnswerEnum;
-use App\Helpers\QuestionHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Enum;
+use App\Enums\AccessibilityStatusEnum;
 
 class QuestionController extends Controller
 {
@@ -195,15 +197,17 @@ class QuestionController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            'type_id' => 'required|string|max:255',
-            'difficulty_level_id' => 'required|string|max:255',
-            'accessbility_status_id' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'language_id' =>  new Enum(LevelsCountEnum::class),
-            'estimated_answer_time' => 'nullable|string',
-            'content' => 'nullable',
-            'title' => 'nullable',
-            'attachment' => 'nullable',
+            'content' => 'required|string',
+            'attachment' => 'nullable|string',
+            'title' => 'nullable|string',
+            'type_id' => new Enum(QuestionTypeEnum::class), // Assuming QuestionTypeEnum holds valid values
+            'difficulty_level_id' => 'required|float',
+            'status' => new Enum(QuestionStatusEnum::class), // Assuming QuestionStatusEnum holds valid values
+            'accessbility_status_id' => new Enum(AccessibilityStatusEnum::class), // Assuming AccessibilityStatusEnum holds valid values
+            'estimated_answer_time' => 'required|integer',
+            'language_id' => new Enum(LanguageEnum::class),
             'is_true' => 'nullable',
+            //'topic_id' => 'required|exists:topics,id',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

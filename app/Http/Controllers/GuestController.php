@@ -51,7 +51,7 @@ class GuestController extends Controller
             'name' => 'required|string',
             'phone' => 'nullable|string|unique:guests,phone',
             'image_url' => 'nullable|string',
-            'gender' => new Enum(GenderEnum::class), // Assuming GenderEnum holds valid values
+            'gender' => ['required',new Enum(GenderEnum::class)], // Assuming GenderEnum holds valid values
             //'user_id' => 'nullable|uuid|unique:users,id',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

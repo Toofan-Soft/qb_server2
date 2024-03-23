@@ -305,7 +305,7 @@ class PaperExamController extends Controller
     public function rules(Request $request): array
     {
             $rules = [
-                'id' => 'required|integer|unique:paper_exams,id',
+               // 'id' => 'required|integer|unique:paper_exams,id',
                 'Course_lecturer_name' => 'required|string',
             ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

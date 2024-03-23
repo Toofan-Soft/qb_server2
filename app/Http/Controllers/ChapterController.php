@@ -89,7 +89,7 @@ class ChapterController extends Controller
         $rules = [
             'arabic_title' => 'required|string|max:255',
             'english_title' => 'required|string|max:255',
-            'status_id' => new Enum (ChapterStatusEnum::class), // Assuming ChapterStatusEnum is an enum class
+            'status_id' =>['required', new Enum (ChapterStatusEnum::class)], // Assuming ChapterStatusEnum is an enum class
             'description' => 'nullable|string',
             'course_part_id' => 'required|exists:course_parts,id',
         ];

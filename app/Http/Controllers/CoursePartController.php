@@ -76,8 +76,8 @@ class CoursePartController extends Controller
     {
         $rules = [
             //'course_id' => 'required|exists:courses,id',
-            'course_part_id' => new Enum (CoursePartsEnum::class), // Assuming CoursePartsEnum holds valid values
-            'status_id' => new Enum (CourseStatusEnum::class), // Assuming CourseStatusEnum holds valid values
+            'course_part_id' => ['required',new Enum (CoursePartsEnum::class)], // Assuming CoursePartsEnum holds valid values
+            'status_id' =>['required', new Enum (CourseStatusEnum::class)], // Assuming CourseStatusEnum holds valid values
             'description' => 'nullable|string',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

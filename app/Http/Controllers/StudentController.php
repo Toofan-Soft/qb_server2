@@ -121,12 +121,15 @@ class StudentController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
+            'academic_id' => 'required|integer',
+            'arabic_name' => 'required|string',
+            'english_name' => 'required|string',
             'phone' => 'nullable|string|unique:students,phone',
-            'image_url' => 'nullable|string|url',
-            'gender' => new enum(GenderEnum::class), // Assuming GenderEnum holds valid values
+            'image_url' => 'nullable|string',
+            'gender' => ['required', new Enum(GenderEnum::class)],
             'birthdate' => 'nullable|date',
             'user_id' => 'nullable|uuid|unique:users,id',
-        ];
+         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {
                 // Ensure strict type comparison for security

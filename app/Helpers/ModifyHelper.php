@@ -20,7 +20,7 @@ class ModifyHelper
                 return response()->json(['error_message' => $validator->errors()->first()], 400);
             }
             $updatedAttributes = $request->all();
-            foreach ($rules as $fileKey => $rule) {
+            foreach ($rules as $fileKey ) {
                 if ($request->hasFile($fileKey)) {
                     $filePath = ImageHelper::uploadImage($request->file($fileKey));
 
