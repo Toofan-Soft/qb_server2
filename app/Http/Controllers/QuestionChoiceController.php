@@ -31,7 +31,7 @@ class QuestionChoiceController extends Controller
         $question =  $question->question_choices()->create([
             'content' => $request->content,
             // this answer or status ????????? answer not found in db
-            'answer' => ($request->is_true ) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value,
+            'status' => ($request->is_true ) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value,
             'attachment' => ImageHelper::uploadImage($request->attachment) ,
         ]);
 
@@ -48,7 +48,7 @@ class QuestionChoiceController extends Controller
         if ($request->has('is_true')) {
             $choice->update([
                 'content' => $request->content ??  $choice->content,
-                'answer' => ($request->is_true) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value,
+                'status' => ($request->is_true) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value,
                 'attachment' => ImageHelper::updateImage($request->attachment, $choice->attachment),
             ]);
         }else {

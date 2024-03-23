@@ -21,5 +21,8 @@ class ResponseHelper
     public static function success($message = 'successfull',$number = 200){
         return response()->json(['message' => $message], $number);
     }
+    public static function successWithData($data ,$number = 200){
+        return response()->json(['data' => $data], $number);
+    }
 
 }

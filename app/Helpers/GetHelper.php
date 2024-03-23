@@ -21,7 +21,7 @@ class GetHelper
     //     ['created_at', '>', now()->subDays(7)]
     // ];
 
-    
+
     // public static function retrieveModelsWithEnum($model, $attributes = null , $conditionAttribute = [] , $enumAttributes =[] , $enumClasses =[]) {
     public static function retrieveModels($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
         if (empty($conditionAttribute)) {
@@ -52,7 +52,7 @@ class GetHelper
                 $row->image_url = asset($row->image_url);
             }
         }
-          return ResponseHelper::success();
+          return ResponseHelper::successWithData( $rows);
     }
 
     public static function retrieveModels2($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
