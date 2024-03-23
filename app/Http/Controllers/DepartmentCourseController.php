@@ -224,32 +224,8 @@ class DepartmentCourseController extends Controller
             //   return $semesters;
      }
 
-
     public function retrieveDepartmentCourse(Request $request)
     {
-        $departmentCourse =  DB::table('department_courses')
-        ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-        ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-        ->join('colleges', 'departments.college_id', '=', 'colleges.id')
-        ->select(
-            'department_courses.id as department_course_id ',
-            'department_courses.level as level_name',
-            'semester as semester_name',
-            'departments.arabic_name as department_name',
-            'colleges.arabic_name as college_name'
-        )
-        ->where('courses.id', '=', $request->course_id)
-        ->get();
-        $enumReplacements = [
-            new EnumReplacement('level_name', LevelsEnum::class),
-            new EnumReplacement('semester_name', SemesterEnum::class),
-        ];
-
-        $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, $enumReplacements);
-        return ResponseHelper::successWithData($departmentCourse);
-
-
-        // department_id, course_id, level, semester
         $departmentCourse = DepartmentCourse::find($request->id, ['level as level_id', 'semester as semester_id']); //updated successfull
         $course = $departmentCourse->course()->get(['arabic_name as course_name']);
         $department = $departmentCourse->department()->get(['arabic_name as department_name']);
@@ -257,51 +233,18 @@ class DepartmentCourseController extends Controller
         $departmentCourseParts = $departmentCourse->department_course_parts()->get([
             'id', 'course_part_id as name', 'score', 'lecureres_count', 'lecureres_duration', 'notes'
         ]);
+        $departmentCourseParts = ProcessDataHelper::columnConvertIdToName($departmentCourseParts,
+        new ColumnReplacement('name', 'part_id', CoursePart::class)
+    );
+        $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName($departmentCourseParts,
+        new EnumReplacement('name', CoursePartsEnum::class)
+    );
+    array_merge($departmentCourse, $course, $department, $college);
+    $departmentCourse['department_course_parts'] = $departmentCourseParts;
 
-        $departmentCourse['department_name'] = Department::where('id', $departmentCourse->department_id)->get(['arabic_name']);
-        $departmentCourse['college_name'] = College::where('id', $departmentCourse->department_id)->get(['arabic_name']);
-        $departmentCourse['course_name'] = Course::where('id', $departmentCourse->course_id)->get(['arabic_name']);
-        $departmentCourse['level_name'] = LevelsEnum::getNameByNumber($departmentCourse->level);
-        $departmentCourse['semester_name'] = SemesterEnum::getNameByNumber($departmentCourse->semester);
-        $departmentCourse['department_course_parts'] = $this->retrieveDepartmentCourseParts($departmentCourse);
-        unset($departmentCourse['department_id']);
-        unset($departmentCourse['course_id']);
-        unset($departmentCourse['level']);
-        unset($departmentCourse['semester']);
-        unset($departmentCourse['id']); //updated
-        return $departmentCourse;
+    return ResponseHelper::successWithData($departmentCourse);
 
-        //we can optimize this function to this :
-        // $departmentCourse = DepartmentCourse::with([
-        //     'department:id,arabic_name.college:id,arabic_name as college_name', // Eager load with nested relation
-        //     'course:id,arabic_name',
-        //     'level:number,name as level_name',
-        //     'semester:number,name as semester_name',
-        //     'department_course_parts.course_part:id,part_id.coursePartsEnum:number,name as part_name', // Eager load with nested relation for departmentCourseParts
-        //   ])->find($request->id);
-
-        //   return $departmentCourse->only([
-        //     'id', // Add back if needed
-        //     'department_name',
-        //     'college_name',
-        //     'course_name',
-        //     'level_name',
-        //     'semester_name',
-        //     'department_course_parts',
-        //   ]);
     }
-
-
-    private function retrieveDepartmentCourseParts($model){
-        $departmentCourseParts = $model->department_course_parts()->get(['department_course_id']);
-        foreach ($departmentCourseParts as $departmentCoursePart ) {
-            $coursePart = CoursePart::where('id', $departmentCoursePart->course_part_id)->get(['part_id']);
-            $departmentCoursePart['name'] = CoursePartsEnum::getNameByNumber($coursePart->part_id);
-            unset($departmentCoursePart['course_part_id']);
-        }
-        return $departmentCourseParts;
-    }
-
 
     public function rules(Request $request): array
     {

@@ -8,6 +8,8 @@ use App\Helpers\GetHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
+use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 use App\Models\DepartmentCourse;
 use App\Models\DepartmentCoursePart;
 
@@ -15,7 +17,9 @@ class DepartmentCoursePartController extends Controller
 {
     public function addDepartmentCoursePart(Request $request)
     {
-
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
         DepartmentCoursePart::create([
             'department_course_id' => $request->department_course_id,
             'course_part_id' => $request->course_part_id,
@@ -24,20 +28,20 @@ class DepartmentCoursePartController extends Controller
             'lecture_duration' => $request->lecture_duration ?? null,
             'note' => $request->note ?? null,
         ]);
-        //return AddHelper::addModel($request, DepartmentCourse::class,  $this->rules($request), 'department_course_parts', $request->department_course_id);
+        return ResponseHelper::success();
     }
 
-    public function modifyDepartmentCoursePart(Request $request, DepartmentCoursePart $department)
+    public function modifyDepartmentCoursePart(Request $request)
     {
-        return ModifyHelper::modifyModel($request, $department,  $this->rules($request));
+        $departmentCoursePart = DepartmentCoursePart::findOrFial($request->id);
+        return ModifyHelper::modifyModel($request, $departmentCoursePart,  $this->rules($request));
     }
 
-    public function deleteDepartmentCoursePart(DepartmentCoursePart $department)
+    public function deleteDepartmentCoursePart(Request $request)
     {
-       return DeleteHelper::deleteModel($department);
+        $departmentCoursePart = DepartmentCoursePart::findeOrFail($request->id);
+        return DeleteHelper::deleteModel($departmentCoursePart);
     }
-
-
 
     public function rules(Request $request): array
     {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Employee;
 use App\Enums\LevelsEnum;
 use App\Models\CoursePart;
@@ -12,73 +13,60 @@ use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
 use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
+use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
+use App\Enums\QualificationEnum;
+use App\Helpers\EnumReplacement;
+use App\Helpers\ColumnReplacement;
+use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use App\Models\DepartmentCoursePart;
 
 class CourseLecturerController extends Controller
 {
     public function addCourseLecturer(Request $request)
     {
-
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
         CourseLecturer::create([
-            'department_course_part_id' => $request->department_course_id,
-            'lecturer_id' => $request->course_part_id,
+            'department_course_part_id' => $request->department_course_part_id,
+            'lecturer_id' => $request->lecturer_id,
             'academic_year' => now()->format('Y'), ///need to ************
         ]);
 
-       // return AddHelper::addModel($request, DepartmentCourse::class,  $this->rules($request), 'department_course_parts', $request->department_course_id);
+        return ResponseHelper::success();
     }
 
-    public function deleteCourseLecturer(CourseLecturer $department)
+    public function deleteCourseLecturer(Request $request)
     {
-       return DeleteHelper::deleteModel($department);
+        $courseLecturer = CourseLecturer::findeOrFail( $request->id);
+        return DeleteHelper::deleteModel($courseLecturer);
     }
 
     public function retrieveCourceLecturers(Request $request)
     {
-        $courseLecturers = [];
-        if(!$request->academic_year){
-            // $courseLecturers = DepartmentCoursePart::with([
-            //     'departmetn_course.department:arabic_name as department_name.college:arabic_name as college_name', // Eager load with required attributes
-            //     'course_lecturers:id,academic_year.employee:arabic_name as lecturer_name', // Nested eager load
-            //   ])->where('course_part_id', $request->course_part_id);
-
               $courseLecturers = DB::table('department_course_parts')
               ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
               ->join('departments', 'department_courses.department_id', '=', 'departments.id')
               ->join('colleges', 'departments.college_id', '=', 'colleges.id')
               ->join('course_lecturers', 'department_course_parts.id', '=', 'course_lecturers.department_course_part_id')
               ->join('employees', 'course_lecturers.lecturer_id', '=', 'employees.id')
-              ->select('departments.arabic_name as department_name', 'colleges.arabic_name as college_name', 'course_lecturers.id','course_lecturers.academic_year', 'employees.arabic_name as lecturer_name')
+              ->select('departments.arabic_name as department_name', 
+              'colleges.arabic_name as college_name', 
+              'course_lecturers.id as course_lecturer_id', 'employees.arabic_name as lecturer_name')
               ->Where('department_course_parts.course_part_id', '=', $request->course_part_id)
-              ->get();
-        }else{
-        //   $courseLecturers = DepartmentCoursePart::with([
-        //         'department_course.department:arabic_name as department_name.college:arabic_name as college_name', // Eager load with required attributes
-        //         'course_lecturers:id.employee:arabic_name as lecturer_name', // Nested eager load
-        //       ])->where('course_part_id', $request->course_part_id)->where('academic_year', $request->academic_year);
-
-              $courseLecturers = DB::table('department_course_parts')
-              ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-              ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-              ->join('colleges', 'departments.college_id', '=', 'colleges.id')
-              ->join('course_lecturers', 'department_course_parts.id', '=', 'course_lecturers.department_course_part_id')
-              ->join('employees', 'course_lecturers.lecturer_id', '=', 'employees.id')
-              ->select('departments.arabic_name as department_name', 'colleges.arabic_name as college_name', 'course_lecturers.id', 'employees.arabic_name as lecturer_name')
-              ->Where('department_course_parts.course_part_id', '=', $request->course_part_id)
-              ->Where('course_lecturers.academic_year', '=', $request->course_part_id)
-              ->get();
-        }
-        return $courseLecturers;
+              ->Where('course_lecturers.academic_year', '=', $request->academic_year)
+             ->when($request->academic_year, function ($query) use ($request) {
+                  $query->select('course_lecturers.academic_year');
+              })
+            ->get();
+        return ResponseHelper::successWithData($courseLecturers);
     }
 
     public function retrieveLecturerCourses(Request $request)
     {
-            // $lecturerCourses = Employee::with([
-            //     'course_lecturers:id,academic_year.department_course_part.course_part:part_id as course_part_name',
-            //     'course_lecturers.department_course_part.department_course:level as level_name, semester as semester_name.course:arabic_name as course_name',
-            //     'course_lecturers.department_course_part.department_course.department:arabic_name as department_name.college:arabic_name as college_name',
-            //   ])->find($request->employee_id);
 
         $lecturerCourses =  DB::table('employees')
         ->join('course_lecturers', 'employees.id', '=', 'course_lecturers.lecturer_id')
@@ -87,7 +75,7 @@ class CourseLecturerController extends Controller
         ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
         ->join('departments', 'department_courses.department_id', '=', 'departments.id')
         ->join('colleges', 'departments.college_id', '=', 'colleges.id')
-        ->select('course_lecturers.id,','course_lecturers.academic_year',
+        ->select('course_lecturers.id as course_lecturer_id,','course_lecturers.academic_year',
                 'course_parts.part_id as course_part_name',
                 'department_courses.level as level_name', 'department_courses.semester as semester_name',
                 'courses.arabic_name as course_name',
@@ -95,14 +83,16 @@ class CourseLecturerController extends Controller
                 'colleges.arabic_name as college_name',
                 )
         ->where('employees.id', '=', $request->employee_id)
+        // ->where('employees.id', '=', now()->format('Y')) // سؤال محمود والعيال عنها 
         ->get();
-
-              foreach ($lecturerCourses as $lecturerCourse  ) {
-                $lecturerCourse['part_name'] = CoursePartsEnum::getNameByNumber($lecturerCourse['part_name']);
-                $lecturerCourse['semester_name'] = SemesterEnum::getNameByNumber($lecturerCourse['semester_name']);
-                $lecturerCourse['level_name'] = LevelsEnum::getNameByNumber($lecturerCourse['level_name']);
-              }
-        return $lecturerCourses;
+//course_part_name, level_name, semester name
+$enumReplacements = [
+    new EnumReplacement('course_part_name', CoursePartsEnum::class),
+    new EnumReplacement('semester_name', SemesterEnum::class),
+    new EnumReplacement('level_name', LevelsEnum::class),
+  ];
+        $lecturerCourses = ProcessDataHelper::enumsConvertIdToName($lecturerCourses, $enumReplacements);
+        return ResponseHelper::successWithData($lecturerCourses);
     }
 
     public function retrieveCourceLecturer(Request $request)
@@ -123,8 +113,8 @@ class CourseLecturerController extends Controller
     ->join('courses', 'department_courses.course_id', '=', 'courses.id')
     ->join('departments', 'department_courses.department_id', '=', 'departments.id')
     ->join('colleges', 'departments.college_id', '=', 'colleges.id')
-    ->select('table1.column1',
-     'employees.arabic_name as name','employees.phone' , 'employees.email', 'employees.specialization', 'employees.qualification as qualification_name', 'employees.image_url',
+    ->select(
+     'employees.arabic_name as name','employees.phone' , 'employees.user_id as email', 'employees.specialization', 'employees.qualification as qualification_name', 'employees.image_url',
      'course_lecturers.academic_year',
      'department_course_parts.score','department_course_parts.lectures_count','department_course_parts.lecture_duration',
      'course_parts.part_id as course_part_name',
@@ -135,8 +125,21 @@ class CourseLecturerController extends Controller
      )
     ->where('course_lecturers.id', '=', $request->id)
     ->get();
+    
+    $enumReplacements = [
+        new EnumReplacement( 'course_part_name', CoursePartsEnum::class),
+        new EnumReplacement( 'qualification_name', QualificationEnum::class),
+        new EnumReplacement( 'level_name', LevelsEnum::class),
+        new EnumReplacement( 'semester_name', SemesterEnum::class),
+      ];
+      $columnReplacements = [
+        new ColumnReplacement('email', 'email', User::class)
+      ];
+      $courseLecturer = ProcessDataHelper::enumsConvertIdToName($courseLecturer, $enumReplacements);
+      $courseLecturer = ProcessDataHelper::columnConvertIdToName($courseLecturer, $columnReplacements);
 
-        return $courseLecturer;
+      return ResponseHelper::successWithData($courseLecturer);
+
     }
     public function rules(Request $request): array
     {

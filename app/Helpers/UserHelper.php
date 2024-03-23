@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class UserHelper
 {
 
-    public static function addUser( $email, $owner_type_id, $owner_id = null, $passwork, $roles = [] )
+    public static function addUser( $email, $owner_type_id, $owner_id = null, $password = null, $roles = [] )
     {
 
         // $roles = $roles_ids;

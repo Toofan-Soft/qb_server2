@@ -6,6 +6,7 @@ use App\Models\Chapter;
 use App\Helpers\AddHelper;
 use App\Models\CoursePart;
 use Illuminate\Http\Request;
+use App\Helpers\ResponseHelper;
 use App\Enums\ChapterStatusEnum;
 use Illuminate\Support\Facades\DB;
 use App\Models\DepartmentCoursePart;
@@ -15,29 +16,33 @@ class DepartmentCoursePartChapterTopicController extends Controller
 {
     public function addDepartmentCoursePartTopics(Request $request)
     {
-        //return AddHelper::addModel($request, DepartmentCoursePart::class,  $this->rules($request), 'department_course_part_topics', $request->chapter_id);
-
-        $departmenCoursePart = DepartmentCoursePart::find($request->department_course_part_id);
-        $departmenCoursePart->department_course_part_topics()->createMany($request->topics_ids);
-
+        $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
+        if($request->topics_ids->count() > 1){
+            $departmenCoursePart->department_course_part_topics()->createMany($request->topics_ids);
+        }else{
+            $departmenCoursePart->department_course_part_topics()->create($request->topics_ids);
+        }
+        return ResponseHelper::success();
     }
 
     public function deleteDepartmentCoursePartTopics(Request $request)
     {
 
-        foreach ($request->topics_ids as $topic_id) {
-            $departmenCoursePartTopic = DepartmentCoursePartTopic::find([$topic_id, $request->department_course_part_id]);
-            $departmenCoursePartTopic->delete();
+        try {
+            foreach ($request->topics_ids as $topic_id) {
+                DepartmentCoursePartTopic::find([$topic_id, $request->department_course_part_id])->delete();
+            }
+                return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError('An error occurred while deleting models.');
         }
-    //    return DeleteHelper::deleteModel($department);
 
     }
 
 
     public function retrieveDepartmentCoursePartChapters(Request $request)
     {
-   
-    $result = DB::table('department_course_parts')
+    $chapters = DB::table('department_course_parts')
     ->join('department_course_part_topics', 'department_course_parts.id', '=', 'department_course_part_topics.department_course_part_id')
     ->join('topics', 'department_course_part_topics.topic_id', '=', 'topics.id')
     ->join('chapters', 'topics.chapter_id', '=', 'chapters.id')
@@ -46,45 +51,49 @@ class DepartmentCoursePartChapterTopicController extends Controller
     ->where('chapters.status', '=', ChapterStatusEnum::AVAILABLE->value)
     ->distinct()
     ->get();
-    return $result;
+
+    return ResponseHelper::successWithData($chapters);
     }
 
     public function retrieveDepartmentCoursePartChapterTopics(Request $request)
     {
-    $result = DB::table('department_course_parts')
+    $topics = DB::table('department_course_parts')
     ->join('department_course_part_topics', 'department_course_parts.id', '=', 'department_course_part_topics.department_course_part_id')
     ->join('topics', 'department_course_part_topics.topic_id', '=', 'topics.id')
     ->select('topics.id', 'topics.arabic_title', 'topics.english_title')
     ->where('department_course_parts.id', '=', $request->department_course_part_id)
     ->where('topics.chapter_id', '=', $request->chapter_id)
     ->get();
-
+    return ResponseHelper::successWithData($topics);
     }
 
 
     public function retrieveAvailableDepartmentCoursePartChapters(Request $request)
     {
-        ////////////////////
-        $departmenCoursePart = DepartmentCoursePart::find($request->department_course_part_id);
-        $coursePart = CoursePart::find($departmenCoursePart->course_part_id);
+        //////////////////// 
+        $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
+        $coursePart = CoursePart::findOrFail($departmenCoursePart->course_part_id);
         $coursePartChapters = $coursePart->chapters()->where('status', ChapterStatusEnum::AVAILABLE->value)->get(['id', 'arabic_title', 'english_title']);
+
         foreach ($coursePartChapters as $coursePartChapter) {
             $coursePartChapter['topics_count'] = $coursePartChapter->topics()->count();
         }
+        // coursePartChapters : [id, arabic_title, english_title, topics_count]
 
         $departmenCoursePartChapters = DB::table('department_course_parts')
         ->join('department_course_part_topics', 'department_course_parts.id', '=', 'department_course_part_topics.department_course_part_id')
         ->join('topics', 'department_course_part_topics.topic_id', '=', 'topics.id')
         ->join('chapters', 'topics.chapter_id', '=', 'chapters.id')
         ->select('chapters.id', DB::raw('count(chapters.id) as count'))
-        ->where('department_course_parts.id', $departmenCoursePart->course_part_id)
+        ->where('department_course_parts.id', $departmenCoursePart->id)
         ->where('chapters.status', ChapterStatusEnum::AVAILABLE->value)
         ->groupBy('chapters.id')
         ->get();
+        // departmenCoursePartChapters : [id, count]
 
         foreach ($coursePartChapters as $coursePartChapter) {
         $isNon = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->count() === 0;
-        $isFull = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first()->count === $coursePartChapter->topics_count;
+        $isFull = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->count() === $coursePartChapter->topics_count;
         $isHalf = !$isNon && !$isFull;
 
         $coursePartChapter['selection_status'] = [
@@ -94,7 +103,7 @@ class DepartmentCoursePartChapterTopicController extends Controller
         ];
     }
 
-    return $coursePartChapters;
+    return ResponseHelper::successWithData($coursePartChapters);
     }
 
     public function retrieveAvailableDepartmentCoursePartTopics(Request $request)
@@ -113,34 +122,27 @@ class DepartmentCoursePartChapterTopicController extends Controller
     ->get();
 
     foreach ($chapterTopics as $chapterTopic) {
-        if(in_array($chapterTopic->id, $departmenCoursePartChapterTopics['id'])){
-
-            $chapterTopic['is_selected'] = true;
-        }else{
-            $chapterTopic['is_selected'] = false;
-
-        }
+        $chapterTopic['is_selected'] = ($departmenCoursePartChapterTopics->where('id', '=', $chapterTopic->id))? true : false;
     }
-    return $chapterTopics;
-
+    return ResponseHelper::successWithData($chapterTopics);
     }
 
-    public function rules(Request $request): array
-    {
-        $rules = [
-            // 'arabic_name' => 'required|string|max:255',
-            // 'english_name' => 'required|string|max:255',
-            // 'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'levels_count' =>  new Enum(LevelsCountEnum::class),
-            // 'description' => 'nullable|string',
-            // 'college_id' => 'required',
-        ];
-        if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
-            $rules = array_filter($rules, function ($attribute) use ($request) {
-                // Ensure strict type comparison for security
-                return $request->has($attribute);
-            });
-        }
-        return $rules;
-    }
+    // public function rules(Request $request): array
+    // {
+    //     $rules = [
+    //         // 'arabic_name' => 'required|string|max:255',
+    //         // 'english_name' => 'required|string|max:255',
+    //         // 'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
+    //         // 'levels_count' =>  new Enum(LevelsCountEnum::class),
+    //         // 'description' => 'nullable|string',
+    //         // 'college_id' => 'required',
+    //     ];
+    //     if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
+    //         $rules = array_filter($rules, function ($attribute) use ($request) {
+    //             // Ensure strict type comparison for security
+    //             return $request->has($attribute);
+    //         });
+    //     }
+    //     return $rules;
+    // }
 }

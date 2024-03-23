@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Helpers\DeleteHelper;
 use App\Models\CourseStudent;
+use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
 use App\Models\DepartmentCourse;
 use App\Helpers\EnumReplacement1;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
 
@@ -16,53 +20,75 @@ class CourseStudentController extends Controller
 {
     public function addCourseStudent(Request $request)
     {
-
-        $departmenCourse = DepartmentCourse::find($request->department_course_id);
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
+        $departmenCourse = DepartmentCourse::findOrFail($request->department_course_id);
         foreach ($request->students_ids as $student_id ) {
             $departmenCourse->course_students()->create([
                 'student_id' => $student_id,
-                'status' => CourseStudentStatusEnum::ACTIVE->value,
+                'status' => CourseStudentStatusEnum::ACTIVE->value,// make it as default in megretion
                 'academic_year' => now()->format('Y'), ///need to ************
             ]);
         }
-       // return AddHelper::addModel($request, DepartmentCourse::class,  $this->rules($request), 'department_course_parts', $request->department_course_id);
+        return ResponseHelper::success();
     }
 
     public function modifyCourseStudent(Request $request)
     {
-        $courseStudent = CourseStudent::find([$request->department_course_id, $request->student_id]);
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
+        $courseStudent = CourseStudent::where('department_course_id','=',$request->department_course_id)
+        ->where('student_id', '=', $request->student_id)->first();
         $courseStudent->update([
             'academic_year' => $request->academic_year,
         ]);
+        return ResponseHelper::success();
     }
 
     public function passCourseStudent(Request $request)
     {
-        $courseStudent = CourseStudent::find([$request->department_course_id, $request->student_id]);
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
+        $courseStudent = CourseStudent::where('department_course_id','=',$request->department_course_id)
+        ->where('student_id', '=', $request->student_id)->first();
         $courseStudent->update([
             'status' => CourseStudentStatusEnum::PASSED->value ,
         ]);
+        return ResponseHelper::success();
     }
 
     public function suspendCourseStudent(Request $request)
     {
-        $courseStudent = CourseStudent::find([$request->department_course_id, $request->student_id]);
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
+        $courseStudent = CourseStudent::where('department_course_id','=',$request->department_course_id)
+        ->where('student_id', '=', $request->student_id)->first();
         if($courseStudent->status ===  CourseStudentStatusEnum::ACTIVE->value ){
             $courseStudent->update([
                 'status' => CourseStudentStatusEnum::SUSPENDED->value ,
             ]);
-        }else {
-            return response()->json(['error_message'=> 'student status not active '] ,400);
+            return ResponseHelper::success();
+
+        }else{
+            return ResponseHelper::clientError('student status not active');
         }
     }
 
     public function deleteCourseStudent(Request $request)
     {
-        $courseStudent = CourseStudent::find([$request->department_course_id, $request->student_id]);//
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
+        $courseStudent = CourseStudent::where('department_course_id','=',$request->department_course_id)
+        ->where('student_id', '=', $request->student_id)->first();
         if($courseStudent->status ===  CourseStudentStatusEnum::ACTIVE->value ){
-            $courseStudent->delete();
-        }else {
-            return response()->json(['error_message'=> 'student status not active '] ,400);
+        return DeleteHelper::deleteModel($courseStudent);
+        }else{
+            return ResponseHelper::clientError('student status not active');
         }
     }
 
@@ -82,6 +108,7 @@ class CourseStudentController extends Controller
         // test if the where work
         return $courseStudents;
     }
+
 
 
     public function retrieveUnlinkCourceStudents(Request $request)
@@ -137,7 +164,7 @@ class CourseStudentController extends Controller
             $rules = [
                 //'department_course_id' => 'required|exists:department_courses,id',
                 //'student_id' => 'required|exists:students,id',
-                'status' => ['required',new Enum(CourseStudentStatusEnum::class)], // Assuming CourseStudentStatusEnum holds valid values
+                'status' => ['nullable',new Enum(CourseStudentStatusEnum::class)], // Assuming CourseStudentStatusEnum holds valid values
                 'academic_year' => 'required|integer',
             ];
 
