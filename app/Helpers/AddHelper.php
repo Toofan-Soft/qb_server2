@@ -20,11 +20,14 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class AddHelper
 {
     public static $filePath = null;
+
+
+
     public static function addModel(Request $request, $model, $rules, $relationShip = null, $related_id = null )
     {
            $validator = Validator::make($request->all(), $rules);
            if ($validator->fails()) {
-               return response()->json(['errors' => $validator->errors()->first()], 400);
+               return response()->json(['error_message' => $validator->errors()->first()], 400);
            }
            $updatedAttributes = $request->all();
            foreach (['image_url', 'logo_url', 'attachment'] as $fileKey) {
@@ -33,7 +36,6 @@ class AddHelper
                    $updatedAttributes[$fileKey] = $filePath; // Update attribute with file path
                }
            }
-
            if ($request->has($related_id)) {
                // Create model with relationship
                try {
@@ -59,7 +61,7 @@ class AddHelper
         if ($validator->fails()) {
             return response()->json(['error_message' => $validator->errors()->first()], 400);
         }
-        foreach (['image_url', 'logo_url'] as $fileKey) {
+        foreach (['image', 'logo'] as $fileKey) {
             if ($request->hasFile($fileKey)) {
                 self::$filePath = ImageHelper::uploadImage($request->file($fileKey));
             }

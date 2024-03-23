@@ -49,7 +49,7 @@ class Question extends Model
     public function question_choices_combinations() : HasMany {
         return $this->HasMany(QuestionChoiceCombination::class);
     }
-    public function true_false_questions() : HasOne {
+    public function true_false_question() : HasOne {
         return $this->HasOne(TrueFalseQuestion::class);
     }
     public function question_usages() : HasOne {

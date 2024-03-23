@@ -9,6 +9,7 @@ use App\Models\DepartmentCourse;
 use App\Helpers\EnumReplacement1;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
 
 class CourseStudentController extends Controller
@@ -107,7 +108,7 @@ class CourseStudentController extends Controller
 
 
         // compare or تقاطع بين الناتجين
-        
+
     // $department = DepartmentCourse::find($request->department_course_id)->get(['department_id']);
     // $studentQuery = DB::table('departments')
     //     ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
@@ -132,14 +133,14 @@ class CourseStudentController extends Controller
 
     public function rules(Request $request): array
     {
-        $rules = [
-            // 'arabic_name' => 'required|string|max:255',
-            // 'english_name' => 'required|string|max:255',
-            // 'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'levels_count' =>  new Enum(LevelsCountEnum::class),
-            // 'description' => 'nullable|string',
-            // 'college_id' => 'required',
-        ];
+
+            $rules = [
+                //'department_course_id' => 'required|exists:department_courses,id',
+                'student_id' => 'required|exists:students,id',
+                'status' => new Enum(CourseStudentStatusEnum::class), // Assuming CourseStudentStatusEnum holds valid values
+                'academic_year' => 'required|integer',
+            ];
+
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {
                 // Ensure strict type comparison for security

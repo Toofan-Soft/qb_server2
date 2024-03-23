@@ -2,36 +2,92 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\ChoiceStatusEnum;
 use App\Models\Topic;
+use App\Models\Choice;
+use App\Models\College;
 use App\Models\Question;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
 use App\Enums\CoursePartsEnum;
+use App\Enums\LevelsCountEnum;
+use App\Enums\ChoiceStatusEnum;
 use App\Enums\QuestionTypeEnum;
+use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
 use App\Enums\QuestionStatusEnum;
-use App\Enums\TrueFalseAnswerEnum;
-use App\Models\Choice;
 use App\Models\TrueFalseQuestion;
+use App\Enums\TrueFalseAnswerEnum;
+use App\Helpers\QuestionHelper;
+use App\Http\Controllers\Controller;
+use Illuminate\Validation\Rules\Enum;
 
 class QuestionController extends Controller
 {
     public function addQuestion(Request $request)
     {
-        return AddHelper::addModel($request, Topic::class,  $this->rules($request), 'questions', $request->topic_id);
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
+        $topic = Topic::findOrFail($request->topic_id);
+       $question =  $topic->questions()->create([
+            'type' => $request->type_id,
+            'difficulty_level' => $request->difficulty_level_id,
+            'accessbility_status' => $request->accessbility_status_id,
+            'language' => $request->language_id,
+            'estimated_answer_time' => $request->estimated_answer_time,
+            'content' => $request->content,
+            'title' => $request->title ?? null,
+            'attachment' => ImageHelper::uploadImage($request->attachment) ,
+        ]);
+
+        if($question->type === QuestionTypeEnum::TRUE_FALSE->value){
+            $question->true_false_question()->create([
+                'answer' => ($request->is_true ) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
+            ]);
+        }
+       return ResponseHelper::success();
     }
 
     public function modifyQuestion(Request $request, Question $question)
     {
-        return ModifyHelper::modifyModel($request, $question,  $this->rules($request));
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
+        $question = Question::findOrFail($request->id);
+        $question->update([
+            'difficulty_level' => $request->difficulty_level_id ?? $question->difficulty_level,
+            'accessbility_status' => $request->accessbility_status_id ?? $question->accessbility_status,
+            'language' => $request->language_id ?? $question->language,
+            'estimated_answer_time' => $request->estimated_answer_time ?? $question->estimated_answer_time,
+            'content' => $request->content ?? $question->content,
+            'title' => $request->title ?? $question->title,
+            'attachment' => ImageHelper::updateImage($request->attachment, $question->attachment) ,
+        ]);
+
+        if($question->type === QuestionTypeEnum::TRUE_FALSE->value){
+            if($request->has('is_true')){
+                $question->true_false_question()->update([
+                    'answer' => ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
+                ]);
+            }
+        }
+       return ResponseHelper::success();
     }
 
-    public function deleteQuestion(Question $question)
+    public function deleteQuestion(Request $request)
     {
+       $question = Question::findeOrFail( $request->id);
+       if($question->type === TrueFalseAnswerEnum::TRUE->value ){
+       return DeleteHelper::deleteModel($question->true_false_question());
+       }else {
+        $choices = $question->choices()->get(['id']);
+         return DeleteHelper::deleteModels(Choice::class, $choices);
+       }
        return DeleteHelper::deleteModel($question);
     }
 
@@ -43,52 +99,55 @@ class QuestionController extends Controller
         ];
         $enumReplacements  =[];
         if ($request->status_id && !$request->type_id) {
-            array_push($attributes, 'type');
+            array_push($attributes, 'type as type_name');
             $conditionAttribute['status'] =  $request->status_id ;
-            array_push($enumReplacements,  new EnumReplacement('status', 'status_name', QuestionStatusEnum::class));
+            array_push($enumReplacements,  new EnumReplacement('status_name', QuestionStatusEnum::class));
         }
         if (!$request->status_id && $request->type_id) {
-            array_push($attributes, 'status');
+            array_push($attributes, 'status_name ');
             $conditionAttribute['type'] =  $request->type_id ;
-            array_push($enumReplacements,  new EnumReplacement('type', 'type_name', QuestionTypeEnum::class));
+            array_push($enumReplacements,  new EnumReplacement('type_name', QuestionTypeEnum::class));
         }
         if (!$request->status_id && !$request->type_id) {
-            array_push($attributes, 'status');
-            array_push($attributes, 'type');
-            array_push($enumReplacements,  new EnumReplacement('status', 'status_name', QuestionStatusEnum::class));
-            array_push($enumReplacements,  new EnumReplacement('type', 'type_name', QuestionTypeEnum::class));
+            array_push($attributes, 'status status_name');
+            array_push($attributes, 'type type_name');
+            array_push($enumReplacements,  new EnumReplacement('status_name', QuestionStatusEnum::class));
+            array_push($enumReplacements,  new EnumReplacement('type_name', QuestionTypeEnum::class));
         }
 
-        // not completed
-        return GetHelper::retrieveModelsWithEnum(Question::class, $attributes, $conditionAttribute, $enumReplacements );
+
+        return GetHelper::retrieveModels3(Question::class, $attributes, $conditionAttribute, $enumReplacements );
     }
 
 
     public function retrieveQuestion(Request $request)
     {
           //
-       // $attributes = [ 'difficulty_level', 'status', 'accessibility_status', 'language', 'estimated_answer_time', 'content', 'attachment', 'title', 'answer'];
-        $question = Question::findOrFail($request->id);
+        $attributes = [ 'type', 'difficulty_level as difficulty_level_id', 'status',
+                       'accessibility_status as accessibility_status_id',
+                       'language as language_id', 'estimated_answer_time', 'content',
+                       'attachment as attachment_url', 'title'];
+        $question = Question::findOrFail($request->id, $attributes);
+
         if($question->type === QuestionTypeEnum::TRUE_FALSE->value){
-            $trueFalseQuestion = TrueFalseQuestion::Where('question_id', $request->id)->get(['answer']);
+            $trueFalseQuestion = $question->true_false_question()->get(['answer']);
             if($trueFalseQuestion->answer === TrueFalseAnswerEnum::TRUE->value){
                 $question['is_true'] = true;
             }else {
                 $question['is_true'] = false;
             }
+
         }else {
-            $choices = $question->choices()->get( ['id', 'content', 'attachment', 'status']);
+            $choices = $question->choices()->get( ['id', 'content', 'attachment as attachment_url', 'status as is_true']);
             foreach ($choices as $choice) {
-                if($choices->status === ChoiceStatusEnum::CORRECT_ANSWER->value){
+                if($choice->is_true === ChoiceStatusEnum::CORRECT_ANSWER->value){
                     $choices['is_true'] = true;
                 }else {
                     $choices['is_true'] = false;
                 }
             }
-            unset($choices['status']);
             $question['choices'] = $choices;
         }
-        unset($question['id']);
         unset($question['type']);
         $status=[];
         if ($question->status === QuestionStatusEnum::NEW->value) {
@@ -116,33 +175,35 @@ class QuestionController extends Controller
         $question['status'] = $status;
         return $question;
 
-        // $conditionAttribute = ['id' => $request->id];
-        // return GetHelper::retrieveModels(Question::class, $attributes, $conditionAttribute);
     }
 
 
-    public function submitQuestionReviewRequest(Question $question)
+    public function submitQuestionReviewRequest(Request $request)
     {
-        return ModifyHelper::modifyAttribute($question, 'status', QuestionStatusEnum::REQUESTED->value);
+        return QuestionHelper::modifyQuestionStatus($request->id, QuestionStatusEnum::REQUESTED->value);
     }
-    public function acceptQuestion (Question $question)
+    public function acceptQuestion(Request $request)
     {
-        return ModifyHelper::modifyAttribute($question, 'status', QuestionStatusEnum::ACCEPTED->value);
+        return QuestionHelper::modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
     }
-    public function rejectQuestion (Question $question)
+    public function rejectQuestion(Request $request)
     {
-        return ModifyHelper::modifyAttribute($question, 'status', QuestionStatusEnum::REJECTED->value);
+        return QuestionHelper::modifyQuestionStatus($request->id, QuestionStatusEnum::REJECTED->value);
     }
+
 
     public function rules(Request $request): array
     {
         $rules = [
-            // 'arabic_title' => 'required|string|max:255',
-            // 'english_title' => 'required|string|max:255',
-            // 'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'levels_count' =>  new Enum(LevelsCountEnum::class),
-            // 'description' => 'nullable|string',
-            // 'college_id' => 'required',
+            'type_id' => 'required|string|max:255',
+            'difficulty_level_id' => 'required|string|max:255',
+            'accessbility_status_id' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'language_id' =>  new Enum(LevelsCountEnum::class),
+            'estimated_answer_time' => 'nullable|string',
+            'content' => 'nullable',
+            'title' => 'nullable',
+            'attachment' => 'nullable',
+            'is_true' => 'nullable',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('arabic_title') ;
             $table->string('english_title');
-            $table->enum('status', ChapterStatusEnum::values());
+            $table->enum('status', ChapterStatusEnum::values())->default(ChapterStatusEnum::AVAILABLE->value);
             $table->string('description')->nullable();
             // $table->timestamps();
             $table->unsignedBigInteger('course_part_id');

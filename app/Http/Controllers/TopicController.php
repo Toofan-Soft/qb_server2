@@ -22,8 +22,9 @@ class TopicController extends Controller
         return ModifyHelper::modifyModel($request, $topic,  $this->rules($request));
     }
 
-    public function deleteTopic(Topic $topic)
+    public function deleteTopic(Request $request)
     {
+        $topic = Topic::findeOrFail( $request->id);
        return DeleteHelper::deleteModel($topic);
     }
 
@@ -66,12 +67,9 @@ class TopicController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            // 'arabic_title' => 'required|string|max:255',
-            // 'english_title' => 'required|string|max:255',
-            // 'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'levels_count' =>  new Enum(LevelsCountEnum::class),
-            // 'description' => 'nullable|string',
-            // 'college_id' => 'required',
+            'arabic_title' => 'required|string|max:255',
+            'english_title' => 'required|string|max:255',
+            'description' => 'nullable|string',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

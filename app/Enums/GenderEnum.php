@@ -9,8 +9,8 @@ enum GenderEnum: int {
 
     public function getValues(): array {
         return match ($this) {
-            self::MALE => [0, 'Male', 'غير متاح'],
-            self::FEMALE => [1, 'Female', 'متاح'],
+            self::MALE => [0, 'Male', 'ذكر '],
+            self::FEMALE => [1, 'Female', 'انثى'],
         };
     }
 

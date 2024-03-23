@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Employee;
 use App\Enums\GenderEnum;
+use App\Enums\JobTypeEnum;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Helpers\ImageHelper;
@@ -16,6 +17,7 @@ use App\Helpers\EnumReplacement;
 use App\Helpers\EnumReplacement1;
 use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
+use Illuminate\Validation\Rules\Enum;
 
 class EmployeeController extends Controller
 {
@@ -84,16 +86,15 @@ class EmployeeController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            // 'arabic_name' => 'required|string|max:255',
-            // 'english_name' => 'required|string|max:255',
-            // 'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust max size as needed
-            // 'description' => 'nullable|string',
-            // 'phone' => 'nullable|string|unique:colleges,phone',
-            // 'email' => 'nullable|email|unique:colleges,email',
-            // 'facebook' => 'nullable|string|max:255',
-            // 'twitter' => 'nullable|string|max:255',
-            // 'youtube' => 'nullable|string|max:255',
-            // 'telegram' => 'nullable|string|max:255',
+            'arabic_name' => 'required|string',
+            'english_name' => 'required|string',
+            'phone' => 'nullable|string|unique:employees,phone',
+            'image_url' => 'nullable|string',
+            'job_type' => new Enum (JobTypeEnum::class), // Assuming JobTypeEnum holds valid values
+            'qualification' => new Enum (QualificationEnum::class), // Assuming QualificationEnum holds valid values
+            'specialization' => 'nullable|string',
+            'gender' => new Enum (GenderEnum::class), // Assuming GenderEnum holds valid values
+           // 'user_id' => 'nullable|uuid|unique:users,id',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

@@ -9,7 +9,12 @@ use App\Models\CoursePart;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
+use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 use App\Enums\ChapterStatusEnum;
+use App\Helpers\EnumReplacement;
+use App\Helpers\EnumReplacement1;
+use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Enum;
 
 class ChapterController extends Controller
@@ -19,22 +24,35 @@ class ChapterController extends Controller
         return AddHelper::addModel($request, CoursePart::class,  $this->rules($request), 'chapters', $request->course_part_id);
     }
 
-    public function modifyChapter(Request $request, Chapter $chapter)
+    public function modifyChapter(Request $request)
     {
-        return ModifyHelper::modifyModel($request, $chapter,  $this->rules($request));
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
+        $chapter = Chapter::findOrFail($request->id);
+        $chapter->update([
+            'arabic_title' => $request->arabic_title ?? $chapter->arabic_title,
+            'english_title' =>$request->english_title ?? $chapter->english_title,
+            'status' => $request->status_id ?? $chapter->status,
+            'description' => $request->description ??  $chapter->description,
+        ]);
+       return ResponseHelper::success();
     }
 
-    public function deleteChapter(Chapter $chapter)
+    public function deleteChapter(Request $request)
     {
+        $chapter = Chapter::findeOrFail( $request->id);
        return DeleteHelper::deleteModel($chapter);
     }
 
     public function retrieveChapters(Request $request)
     {
-        $attributes = ['id', 'arabic_title', 'english_title', 'status', 'description'];
+        $attributes = ['id', 'arabic_title', 'english_title', 'status as status_name', 'description'];
         $conditionAttribute = ['course_part_id'=> $request->course_part_id];
-        $enumAttributes = ['status'  => 'status_name'];
-        return GetHelper::retrieveModelsWithEnum(Chapter::class, $attributes, $conditionAttribute, $enumAttributes, ChapterStatusEnum::class );
+        $enumReplacements = [
+            new EnumReplacement('status_name', ChapterStatusEnum::class),
+          ];
+        return GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute, $enumReplacements );
 
     }
 
@@ -46,13 +64,13 @@ class ChapterController extends Controller
             'course_part_id' => $request->course_part_id,
             'status' => ChapterStatusEnum::AVAILABLE->value,
         ];
-        return GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute);
+        return GetHelper::retrieveModels2(Chapter::class, $attributes, $conditionAttribute);
     }
 
 
     public function retrieveChapter(Request $request)
     {
-        $attributes = ['arabic_title', 'english_title', 'status', 'description'];
+        $attributes = ['arabic_title', 'english_title', 'status as status_id', 'description'];
         $conditionAttribute = ['id' => $request->id];
         return GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute);
 
@@ -68,11 +86,10 @@ class ChapterController extends Controller
 
     public function rules(Request $request): array
     {
-
         $rules = [
             'arabic_title' => 'required|string|max:255',
             'english_title' => 'required|string|max:255',
-            'status' => new Enum (ChapterStatusEnum::class), // Assuming ChapterStatusEnum is an enum class
+            'status_id' => new Enum (ChapterStatusEnum::class), // Assuming ChapterStatusEnum is an enum class
             'description' => 'nullable|string',
             'course_part_id' => 'required|exists:course_parts,id',
         ];

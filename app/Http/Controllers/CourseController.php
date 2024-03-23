@@ -30,8 +30,9 @@ class CourseController extends Controller
     }
 
 
-    public function deleteCourse (Course $course)
+    public function deleteCourse (Request $request)
     {
+        $course = Course::findeOrFail( $request->id);
         return DeleteHelper::deleteModel($course);
     }
 

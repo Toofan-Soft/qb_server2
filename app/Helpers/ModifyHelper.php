@@ -11,10 +11,9 @@ use Illuminate\Support\Facades\Validator;
 class ModifyHelper
 {
 
-    public static function modifyModel(Request $request, $model, $rules )
+    public static function modifyModel(Request $request, $model, $rules, $deletedAttributes = [] )
     {
 
-        if ($request->id) {
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
@@ -33,35 +32,33 @@ class ModifyHelper
             }
             DB::beginTransaction();
             try {
-                $response = self::modify($model, $updatedAttributes);
+                $response = self::modify($model, $updatedAttributes, $deletedAttributes);
                 DB::commit();
                 return response()->json(['error_message' => 'successful'], 200);
             } catch (\Exception $e) {
                 DB::rollBack();
                 return response()->json(['error_message' => 'Update failed: ' . $e->getMessage()], 500);
             }
-        }
-
-        return response()->json(['error_message' => 'Model ID is required'], 400);
     }
 
 
-    public static function modify( $model ,$attributes, $deletedAttributes=['id'])
+    private static function modify( $model ,$attributes, $deletedAttributes=[])
     {
         $dataToUpdate = array_diff_key($attributes, array_flip($deletedAttributes)); // Extract attributes to update (excluding deletedAttributes)
-        $modelInstance = $model::findOrFail($attributes['id']);
-        $modelInstance->update($dataToUpdate);
+        $model->update($dataToUpdate);
         return [
-            'message' =>'Successfully updated attributes: ' . implode(', ', array_keys($dataToUpdate)),
-            'data' => $modelInstance->fresh(), // Refresh data after update
+            'message' =>'Successfully updated attributes: ',
+            'data' => $model->fresh(), // Refresh data after update
         ];
     }
 
-    public static function modifyAttribute($model ,$attributeName , $attributeValue){
 
-        $model::update([
-            $attributeName => $attributeValue
-        ]);
-        response()->json(['messag' => 'successful updated attribute'], 200);
-    }
+
+    // public static function modifyAttribute($model ,$attributeName , $attributeValue){
+
+    //     $model::update([
+    //         $attributeName => $attributeValue
+    //     ]);
+    //     response()->json(['messag' => 'successful updated attribute'], 200);
+    // }
 }

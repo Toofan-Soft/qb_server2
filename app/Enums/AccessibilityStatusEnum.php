@@ -4,13 +4,13 @@ namespace App\Enums;
 use Kongulov\Traits\InteractWithEnum;
 enum AccessibilityStatusEnum: int {
     use InteractWithEnum;
-    case PRACTICEEXAM  = 0;
+    case PRACTICE_EXAM  = 0;
     case REALEXAM  = 1;
     case PRACTICE_REALEXAM  = 2;
 
     public function getValues(): array {
         return match ($this) {
-            self::PRACTICEEXAM => [0, 'Practiceexam', 'اختبار تجريبي'],
+            self::PRACTICE_EXAM => [0, 'Practice_exam', 'اختبار تجريبي'],
             self::REALEXAM => [1, 'Realexam', 'اختبار فعلي'],
             self::PRACTICE_REALEXAM => [2, 'Practice_realexam', 'اختبار فعلي وتجريبي'],
         };

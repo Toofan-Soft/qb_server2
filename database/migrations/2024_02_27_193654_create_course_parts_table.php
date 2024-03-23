@@ -18,8 +18,8 @@ return new class extends Migration
             $table->id();
 
             $table->unsignedBigInteger('course_id'); // Foreign key
-            $table->enum('part_id', CoursePartsEnum::values()); // Part of the primary key
-            $table->enum('status', CourseStatusEnum::values());
+            $table->enum('part_id', CoursePartsEnum::values());  
+            $table->enum('status', CourseStatusEnum::values())->default(CourseStatusEnum::AVAILABLE->value);;
             $table->string('description')->nullable();
 
             $table->foreign('course_id')

@@ -121,16 +121,11 @@ class StudentController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            // 'arabic_name' => 'required|string|max:255',
-            // 'english_name' => 'required|string|max:255',
-            // 'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust max size as needed
-            // 'description' => 'nullable|string',
-            // 'phone' => 'nullable|string|unique:colleges,phone',
-            // 'email' => 'nullable|email|unique:colleges,email',
-            // 'facebook' => 'nullable|string|max:255',
-            // 'twitter' => 'nullable|string|max:255',
-            // 'youtube' => 'nullable|string|max:255',
-            // 'telegram' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|unique:students,phone',
+            'image_url' => 'nullable|string|url',
+            'gender' => new enum(GenderEnum::class), // Assuming GenderEnum holds valid values
+            'birthdate' => 'nullable|date',
+            'user_id' => 'nullable|uuid|unique:users,id',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

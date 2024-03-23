@@ -153,4 +153,6 @@ class CourseLecturerController extends Controller
         }
         return $rules;
     }
+
+    
 }

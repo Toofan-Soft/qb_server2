@@ -10,6 +10,7 @@ use App\Models\PaperExam;
 use App\Enums\ExamTypeEnum;
 use App\Enums\LanguageEnum;
 use App\Enums\SemesterEnum;
+use App\Helpers\ExamHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Enums\CoursePartsEnum;
@@ -17,12 +18,12 @@ use App\Models\CourseLecturer;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\OnlinExamHelper;
-use App\Helpers\EnumReplacement1;
+use App\Helpers\EnumReplacement;
 use App\Helpers\ProcessDataHelper;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Enums\ExamDifficultyLevelEnum;
 use App\Enums\FormConfigurationMethodEnum;
-use App\Helpers\ExamHelper;
 
 class PaperExamController extends Controller
 {
@@ -95,7 +96,7 @@ class PaperExamController extends Controller
 
     public function retrievePaperExams(Request $request) ////**** يتم اضافة شرط ان يتم ارجاع الاختبارات التي تنتمي الى المستخدم الحالي
     {
-    // يجب الاخذ بالاعتبار انه سيتم التعامل مع اختبارات تنتمي الي اعوام سابقة 
+    // يجب الاخذ بالاعتبار انه سيتم التعامل مع اختبارات تنتمي الي اعوام سابقة
 
     $employee = Employee::where('user_id', '=', auth()->user()->id);
         $paperExams = [];
@@ -131,7 +132,7 @@ class PaperExamController extends Controller
         }
 
         $paperExams = ProcessDataHelper::enumsConvertIdToName($paperExams, $enumReplacements);
-        return ExamHelper::getRealExamsScore($paperExams); 
+        return ExamHelper::getRealExamsScore($paperExams);
     }
 
     public function retrievePaperExamsAndroid(Request $request)
@@ -228,19 +229,19 @@ class PaperExamController extends Controller
 
         return $paperExams;
     }
-    
+
     public function retrievePaperExam(Request $request)
     {
         $realExam = RealExam::findOrFail($request->id)->get([
             'language as language_name', 'difficulty_level as defficulty_level_name' ,
-            'forms_count','form_configuration_method as form_configuration_method_name', 
+            'forms_count','form_configuration_method as form_configuration_method_name',
             'form_name_method as form_name_method_id' ,
             'datetime', 'duration', 'type as type_id', 'note as special_note'
         ]);
          $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
-            new EnumReplacement1('language_name', LanguageEnum::class),
-            new EnumReplacement1('defficulty_level_name', ExamDifficultyLevelEnum::class),
-            new EnumReplacement1('form_configuration_method_name', FormConfigurationMethodEnum::class),
+            new EnumReplacement('language_name', LanguageEnum::class),
+            new EnumReplacement('defficulty_level_name', ExamDifficultyLevelEnum::class),
+            new EnumReplacement('form_configuration_method_name', FormConfigurationMethodEnum::class),
          ]);
 
         $paperExam = $realExam->paper_exam()->get(['course_lecturer_name as lecturer_name']);
@@ -249,24 +250,24 @@ class PaperExamController extends Controller
 
         $coursePart = $departmentCoursePart->course_part(['part_id as course_part_name']);
         $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
-            new EnumReplacement1('course_part_name', CoursePartsEnum::class)
+            new EnumReplacement('course_part_name', CoursePartsEnum::class)
          ]);
 
         $departmentCourse = $departmentCoursePart->department_course()->get(['level as level_name', 'semester as semester_name']);
         $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
-            new EnumReplacement1('level_name', LevelsEnum::class),
-            new EnumReplacement1('semester_name', SemesterEnum::class)
+            new EnumReplacement('level_name', LevelsEnum::class),
+            new EnumReplacement('semester_name', SemesterEnum::class)
          ]);
 
         $department = $departmentCourse->department()->get(['arabic_name as department_name']);
-        
+
         $college = $department->college()->get(['arabic_name as college_name']);
-        
+
         $course = $departmentCourse->course()->get(['arabic_name as course_name']);
-        
+
         $questionTypes = $realExam->real_exam_question_types()->get(['question_type as type_name','questions_count','question_score']);
         $questionTypes = ProcessDataHelper::enumsConvertIdToName($questionTypes, [
-            new EnumReplacement1('type_name', QuestionTypeEnum::class)
+            new EnumReplacement('type_name', QuestionTypeEnum::class)
          ]);
 
         array_merge($realExam, $paperExam, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
@@ -298,4 +299,23 @@ class PaperExamController extends Controller
     {
         // id, with mirror?, with answered mirror?
     }
+
+
+
+    public function rules(Request $request): array
+    {
+            $rules = [
+                'id' => 'required|integer|unique:paper_exams,id',
+                'Course_lecturer_name' => 'required|string',
+            ];
+        if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
+            $rules = array_filter($rules, function ($attribute) use ($request) {
+                // Ensure strict type comparison for security
+                return $request->has($attribute);
+            });
+        }
+        return $rules;
+    }
+
+
 }

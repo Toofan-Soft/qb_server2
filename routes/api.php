@@ -40,44 +40,47 @@ Route::post('login',[UserController::class,'login']);
 Route::middleware('auth:api')->group(function () {
    // Route::get('login',[UserController::class,'login']);
     Route::get('userinfo',[UserController::class,'userInfo']);
-    // Route::resource('products',ProductController::class);
     Route::post('email_verification',[EmailVerificationController::class, 'email_verification']);
     Route::get('email_verification',[EmailVerificationController::class, 'sendEmailVerification']);
     Route::put('update',[UserController::class, 'update']);
-
 });
 
 //univercity
-Route::post('university/configure-university-data', [UniversityController::class, 'configureUniversityData']);
-Route::put('/university/modify-university-data', [UniversityController::class, 'modifyUniversityData']);
-Route::get('/university/retrieve-university-info', [UniversityController::class, 'retrieveUniversityInfo']);
-Route::get('/university/retrieve-basic-university-info', [UniversityController::class, 'retrieveBasicUniversityInfo']);
+Route::prefix('university/')->group(function () {
+    Route::post('configure-university-data', [UniversityController::class, 'configureUniversityData']);
+    Route::put('modify-university-data', [UniversityController::class, 'modifyUniversityData']);
+    Route::get('retrieve-university-info', [UniversityController::class, 'retrieveUniversityInfo']);
+    Route::get('retrieve-basic-university-info', [UniversityController::class, 'retrieveBasicUniversityInfo']);
+});
 
 //students
-Route::post('/student/create',[StudentController::class,'create']);
-Route::get('student/{id}/studentinfo',[StudentController::class,'studentInfo']);
-Route::get('students',[StudentController::class,'index']);
+Route::prefix('students/')->group(function () {
+    Route::post('add-mployee', [StudentController::class, 'addEmployee']);
+    Route::put('modify-student', [StudentController::class, 'modifyStudent']);
+    Route::delete('delete-studente', [StudentController::class, 'deleteStudent']);
+    Route::get('retrieve-students', [StudentController::class, 'retrieveStudents']);
+    Route::get('retrieve-student', [StudentController::class, 'retrieveStudent']);
+});
 
 // Colleges
 Route::prefix('colleges/')->group(function () {
+    Route::post('add-college', [CollegeController::class, 'addCollege']);
     Route::get('retrieve-colleges', [CollegeController::class, 'retrieveColleges']);
     Route::get('retrieve-basic-colleges-info', [CollegeController::class, 'retrieveBasicCollegesInfo']);
-    Route::post('add-college', [CollegeController::class, 'addCollege']);
     Route::put('modify-college', [CollegeController::class, 'modifyCollege']);
     Route::delete('delete-college', [CollegeController::class, 'deleteCollege']);
     Route::get('retrieve-college', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
 });
 
-Route::get('retrieve-college', [CollegeController::class, 'retrieveCollege']);
-//  Route::post('retrieve-college', [CollegeController::class, 'retrieveCollege']);
 // departments
-Route::get('departments/retrieve-departments',[DepartmentController::class,'retrieveDepartments']);
-Route::get('departments/retrieve-basic-departments-info',[DepartmentController::class,'retrieveBasicDepartmentsInfo']);
-Route::post('departments/add-department',[DepartmentController::class,'addDepartment']);
-Route::put('departments/modify-department',[DepartmentController::class,'modifyDepartment']);
-Route::delete('departments/delete-department',[DepartmentController::class,'deleteDepartment']);
-Route::get('/departments/retrieve-department', [DepartmentController::class, 'retrieveDepartment']); //http://127.0.0.1:8000/api/colleges/1
-
+Route::prefix('departments/')->group(function () {
+    Route::get('retrieve-departments', [DepartmentController::class, 'retrieveDepartments']);
+    Route::get('retrieve-basic-departments-info', [DepartmentController::class, 'retrieveBasicDepartmentsInfo']);
+    Route::post('add-department', [DepartmentController::class, 'addDepartment']);
+    Route::put('modify-department', [DepartmentController::class, 'modifyDepartment']);
+    Route::delete('delete-department', [DepartmentController::class, 'deleteDepartment']);
+    Route::get('retrieve-department', [DepartmentController::class, 'retrieveDepartment']); //http://127.0.0.1:8000/api/colleges/1
+});
 
 //courses
 Route::put('courses/update',[CourseController::class,'update']);

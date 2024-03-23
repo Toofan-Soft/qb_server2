@@ -23,6 +23,21 @@ class ImageHelper
         return null;
     }
 
+    public static function updateImage(UploadedFile $file, $folder = 'images')
+    {
+        if (!Storage::exists($folder)) {
+            Storage::makeDirectory($folder);
+        }
+
+        // Generate a unique filename for the image
+        if ($file->isValid()) {
+            $imageName = time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->move(public_path($folder), $imageName);
+            return $folder . '/' . $imageName;
+        }
+        return null;
+    }
+
     // public static function checkImage(Request $request)
     // {
     //     $updatedAttributes=[];

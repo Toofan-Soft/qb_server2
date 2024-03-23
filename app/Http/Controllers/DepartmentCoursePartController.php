@@ -42,12 +42,12 @@ class DepartmentCoursePartController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            // 'arabic_name' => 'required|string|max:255',
-            // 'english_name' => 'required|string|max:255',
-            // 'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'levels_count' =>  new Enum(LevelsCountEnum::class),
-            // 'description' => 'nullable|string',
-            // 'college_id' => 'required',
+            'department_course_id' => 'required|exists:department_courses,id',
+            'course_part_id' => 'required|exists:course_parts,id',
+            'note' => 'nullable|string',
+            'score' => 'nullable|integer',
+            'lectures_count' => 'nullable|integer',
+            'lecture_duration' => 'nullable|integer',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

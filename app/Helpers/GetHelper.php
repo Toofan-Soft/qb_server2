@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Helpers\ResponseHelper;
 use PhpParser\Node\Stmt\Foreach_;
 
 class GetHelper
@@ -94,36 +95,36 @@ class GetHelper
     //     }
     // }
 
-    public static function retrieveModels($model, $attributes = null , $conditionAttribute = [] )
-    {
-        if (empty($conditionAttribute)) {
-            if (empty($attributes)) {
-                $rows = $model::all();
-            }else {
-                $rows = $model::all($attributes);
-            }
-        } else {
-            if (empty($attributes)) {
-                $rows =$model::where($conditionAttribute[0], $conditionAttribute[1])->get() ;
-            }else {
-               $rows = $model::where($conditionAttribute[0], $conditionAttribute[1])->get( $attributes);
-            }
-        }
-        foreach ($rows as $row) {
-            if (isset($row->logo_url)) {
-                $row->logo_url = asset($row->logo_url);
-            } elseif (isset($row->image_url)) {
-                $row->image_url = asset($row->image_url);
-            }
-        }
+    // public static function retrieveModels($model, $attributes = null , $conditionAttribute = [] )
+    // {
+    //     if (empty($conditionAttribute)) {
+    //         if (empty($attributes)) {
+    //             $rows = $model::all();
+    //         }else {
+    //             $rows = $model::all($attributes);
+    //         }
+    //     } else {
+    //         if (empty($attributes)) {
+    //             $rows =$model::where($conditionAttribute[0],  $conditionAttribute[1],  $conditionAttribute[2])->get();
+    //         }else {
+    //            $rows = $model::where($conditionAttribute[0], $conditionAttribute[1], $conditionAttribute[2] )->get( $attributes);
+    //         }
+    //     }
+    //     foreach ($rows as $row) {
+    //         if (isset($row->logo_url)) {
+    //             $row->logo_url = asset($row->logo_url);
+    //         } elseif (isset($row->image_url)) {
+    //             $row->image_url = asset($row->image_url);
+    //         }
+    //     }
 
-        return response()->json([
-            'message' => 'Departments retrieved successfully!', 'data' => $rows,
-        ], 200);
-    }
+    //     return response()->json([
+    //         'message' => 'Departments retrieved successfully!', 'data' => $rows,
+    //     ], 200);
+    // }
 
     // public static function retrieveModelsWithEnum($model, $attributes = null , $conditionAttribute = [] , $enumAttributes =[] , $enumClasses =[]) {
-    public static function retrieveModelsWithEnum($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null) {
+    public static function retrieveModels($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
         if (empty($conditionAttribute)) {
             if (empty($attributes)) {
                 $rows = $model::all();
@@ -132,10 +133,18 @@ class GetHelper
             }
         } else {
             if (empty($attributes)) {
-                $rows =$model::where($conditionAttribute[0], $conditionAttribute[1])->get() ;
+                $rows =$model::where($conditionAttribute[0],  $conditionAttribute[1])->get();
             }else {
                $rows = $model::where($conditionAttribute[0], $conditionAttribute[1])->get( $attributes);
             }
+        }
+
+        if($enumReplacements){
+            $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
+        }
+
+        if($columnReplacements){
+            $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
         }
         foreach ($rows as $row) {
             if (isset($row->logo_url)) {
@@ -143,27 +152,78 @@ class GetHelper
             } elseif (isset($row->image_url)) {
                 $row->image_url = asset($row->image_url);
             }
+        }
+          return ResponseHelper::success();
+    }
 
-            // foreach($enumAttributes as $enumAttribute => $value){
-            //    $row[$enumAttribute] = $enumClasses
-            //   $part_name = $enum->
-            // }
-
-            foreach ($enumReplacements as $replacement) {
-                $columnName = $replacement->columnName;
-                $enumClass = $replacement->enumClass;
-
-                if (isset($row->$columnName)) {
-                  $enumValue = $row->$columnName;
-                  $enumName = $enumClass::getNameByNumber($enumValue);
-                  $row->$columnName = $enumName;  //replace the id by the name
-                }
+    public static function retrieveModels2($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
+        if (empty($conditionAttribute)) {
+            if (empty($attributes)) {
+                $rows = $model::all();
+            }else {
+                $rows = $model::all($attributes);
+            }
+        } else {
+            if (empty($attributes)) {
+                $rows = $model::where($conditionAttribute[0][0],  $conditionAttribute[0][1])
+                ->where($conditionAttribute[1][0], $conditionAttribute[1][1] )->get();
+            }else {
+               $rows = $model::where($conditionAttribute[0][0],  $conditionAttribute[0][1])
+               ->where($conditionAttribute[1][0], $conditionAttribute[1][1] )->get( $attributes);
             }
         }
 
-        return response()->json([
-            'message' => 'Departments retrieved successfully!', 'data' => $rows,
-        ], 200);
-    }
+        if($enumReplacements){
+            $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
+        }
 
+        if($columnReplacements){
+            $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
+        }
+        foreach ($rows as $row) {
+            if (isset($row->logo_url)) {
+                $row->logo_url = asset($row->logo_url);
+            } elseif (isset($row->image_url)) {
+                $row->image_url = asset($row->image_url);
+            }
+        }
+          return ResponseHelper::success();
+    }
+    public static function retrieveModels3($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
+        if (empty($conditionAttribute)) {
+            if (empty($attributes)) {
+                $rows = $model::all();
+            }else {
+                $rows = $model::all($attributes);
+            }
+        } else {
+            if (empty($attributes)) {
+                $rows = $model::where($conditionAttribute[0][0],  $conditionAttribute[0][1])
+                ->where($conditionAttribute[1][0], $conditionAttribute[1][1] )
+                ->where($conditionAttribute[2][0], $conditionAttribute[2][1] )
+                ->get();
+            }else {
+               $rows = $model::where($conditionAttribute[0][0],  $conditionAttribute[0][1])
+               ->where($conditionAttribute[1][0], $conditionAttribute[1][1] )
+               ->where($conditionAttribute[2][0], $conditionAttribute[2][1] )
+               ->get( $attributes);
+            }
+        }
+
+        if($enumReplacements){
+            $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
+        }
+
+        if($columnReplacements){
+            $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
+        }
+        foreach ($rows as $row) {
+            if (isset($row->logo_url)) {
+                $row->logo_url = asset($row->logo_url);
+            } elseif (isset($row->image_url)) {
+                $row->image_url = asset($row->image_url);
+            }
+        }
+          return ResponseHelper::success();
+    }
 }

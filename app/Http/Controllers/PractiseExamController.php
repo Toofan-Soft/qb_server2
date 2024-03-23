@@ -19,6 +19,7 @@ use App\Helpers\OnlinExamHelper;
 use App\Helpers\EnumReplacement1;
 use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
+use Illuminate\Support\Facades\DB;
 use App\Models\PracticeExamQuestion;
 
 class PractiseExamController extends Controller
@@ -64,7 +65,7 @@ class PractiseExamController extends Controller
         return DeleteHelper::deleteModel($paperExam);
     }
 
-    public function retrievePractiseExams(Request $request) 
+    public function retrievePractiseExams(Request $request)
     {
         $user = User::findOrFail(auth()->user()->id)->first();
         $practiseExams =[];
@@ -72,7 +73,7 @@ class PractiseExamController extends Controller
         if($request->status_id){
 
             if($request->status_id === ExamStatusEnum::COMPLETE->value){
-    
+
                 $practiseExams = ExamHelper::retrieveCompletePractiseExams($user->id, $request->department_course_part_id);
             }elseif($request->status_id === ExamStatusEnum::SUSPENDED->value){
                 $practiseExams = ExamHelper::retrieveSuspendedPractiseExams($user->id, $request->department_course_part_id);
@@ -95,11 +96,10 @@ class PractiseExamController extends Controller
     }
 
     public function retrievePractiseExamsQuestions(Request $request)
-    {        
+    {
         $practiseExamQuestions = [];
 
         foreach ($practiseExamQuestions as $practiseExamQuestion) {
-
             $questions = DB::table('practise_exams')
             ->join('practise_exam_questions', 'practise_exams.id', '=', 'practise_exam_questions.practise_exam_id')
             ->join('questions', 'practise_exam_questions.question_id', '=', 'questions.id')
@@ -132,7 +132,7 @@ class PractiseExamController extends Controller
     {
         $practiseExam = PracticeExam::findOrFail($request->id, [
             // 'datetime'
-            'title', 'duration', 'language as language_name', 
+            'title', 'duration', 'language as language_name',
            'conduct_method as is_mandatory_question_sequence' , 'status as is_complete'
         ]);
          $practiseExam = ProcessDataHelper::enumsConvertIdToName($practiseExam, [
@@ -153,11 +153,11 @@ class PractiseExamController extends Controller
          ]);
 
         $department = $departmentCourse->department()->get(['arabic_name as department_name']);
-        
+
         $college = $department->college()->get(['arabic_name as college_name']);
-        
+
         $course = $departmentCourse->course()->get(['arabic_name as course_name']);
-        
+
 
         array_merge($practiseExam, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
 
@@ -179,7 +179,7 @@ class PractiseExamController extends Controller
             'answer' => $answerId,
             'answer_duration' => $request->answer_duration ?? null,
         ]);
-    
+
         return response()->json(['message' => 'succesful'], 200);
     }
 

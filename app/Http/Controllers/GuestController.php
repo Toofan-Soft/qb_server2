@@ -8,6 +8,7 @@ use App\Enums\OwnerTypeEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\ModifyHelper;
+use Illuminate\Validation\Rules\Enum;
 
 class GuestController extends Controller
 {
@@ -43,6 +44,26 @@ class GuestController extends Controller
         }
 
     }
+
+    public function rules(Request $request): array
+    {
+        $rules = [
+            'name' => 'required|string',
+            'phone' => 'nullable|string|unique:guests,phone',
+            'image_url' => 'nullable|string',
+            'gender' => new Enum(GenderEnum::class), // Assuming GenderEnum holds valid values
+            //'user_id' => 'nullable|uuid|unique:users,id',
+        ];
+        if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
+            $rules = array_filter($rules, function ($attribute) use ($request) {
+                // Ensure strict type comparison for security
+                return $request->has($attribute);
+            });
+        }
+        return $rules;
+    }
+
+
 
 
 }

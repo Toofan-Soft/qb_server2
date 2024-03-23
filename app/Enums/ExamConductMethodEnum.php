@@ -11,8 +11,8 @@ enum ExamConductMethodEnum: int {
 
     public function getValues(): array {
         return match ($this) {
-            self::MANDATORY => [0, 'Mandatory', 'تسلسل اسئلة اجباري'],
-            self::OPTIONAL => [1, 'Optional', 'تسلسل اسئلة اختياري'],
+            self::MANDATORY => [0, 'Mandatory question sequence', 'تسلسل اسئلة اجباري'],
+            self::OPTIONAL => [1, 'Optional question sequence', 'تسلسل اسئلة اختياري'],
         };
     }
 

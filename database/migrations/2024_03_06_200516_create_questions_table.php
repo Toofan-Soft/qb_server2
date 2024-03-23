@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->enum('type ',QuestionTypeEnum::values());
             $table->float('difficulty_level') ;
-            $table->enum('status',QuestionStatusEnum::values());
+            $table->enum('status',QuestionStatusEnum::values())->default(QuestionStatusEnum::NEW->value);
             $table->enum('accessability_status',AccessibilityStatusEnum::values());
             $table->bigInteger('estimated_answer_time');
             $table->enum('language',LanguageEnum::values()); // default ??

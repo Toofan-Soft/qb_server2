@@ -15,13 +15,14 @@ use App\Enums\CoursePartsEnum;
 use App\Helpers\EnumReplacement1;
 use App\Models\StudentOnlineExam;
 use App\Helpers\ProcessDataHelper;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Enums\CourseStudentStatusEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
 
 class ProctorOnlinExamController extends Controller
 {
-    public function retrieveOnlineExams(Request $request) 
+    public function retrieveOnlineExams(Request $request)
     {
         $proctor = Employee::where('user_id', auth()->user()->id)->first();
         $onlineExams =  DB::table('online_exams')
@@ -48,7 +49,7 @@ return $onlineExams;
     public function retrieveOnlineExam(Request $request)
     {
         $realExam = OnlineExam::findOrFail($request->id)->real_exam()->get([
-            'datetime', 'duration', 
+            'datetime', 'duration',
             'type as type_name', 'note as special_note'
         ]);
         $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
@@ -88,7 +89,7 @@ return $onlineExams;
         ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
         ->join('students', 'course_students.student_id', '=', 'students.id')
         ->select(
-         'students.id', 'students.academic_id', 'students.arabic_name as name', 
+         'students.id', 'students.academic_id', 'students.arabic_name as name',
          'students.gender as gender_name', 'students.image_url'
          )
         ->where('online_exams.id', '=', $request->exam_id)
@@ -113,8 +114,8 @@ return $onlineExams;
         $onlineExam = OnlineExam::findOrFail($request->exam_id);
         $onlineExamStudents = $onlineExam->student_online_exams()->get([
             'student_id', 'start_datetime', 'end_datetime', 'status as status_name'
-        ]);// to array 
-        
+        ]);// to array
+
         foreach ($onlineExamStudents as $onlineExamStudent) {
             $onlineExamStudent['answered_questions_count'] = ExamHelper::getStudentAnsweredQuestionsCount($request->exam_id, $onlineExamStudent->student_id);
             if($onlineExamStudent->status === StudentOnlineExamStatusEnum::ACTIVE->value){
@@ -167,7 +168,7 @@ return $onlineExams;
      // return message: faild
     }
     }
-    
+
     public function finishStudentOnlineExam(Request $request)
     {
         $studentOnlineExam =  StudentOnlineExam
@@ -182,5 +183,5 @@ return $onlineExams;
          // return message: faild
         }
     }
-    
+
 }

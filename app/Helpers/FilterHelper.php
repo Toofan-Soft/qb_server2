@@ -7,9 +7,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
 
 class FilterHelper{
-
     public static function getfilterData($model, $attributes, $conditionAttribute){
-        $data = null; 
+        $data = null;
         if (empty($conditionAttribute)) {
 
             $data = $model::all($attributes);

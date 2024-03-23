@@ -20,10 +20,8 @@ return new class extends Migration
             $table->enum('level', LevelsEnum::values() );
             $table->enum('semester',SemesterEnum::values());
             $table->unsignedBigInteger('department_id');
-            // $table->timestamps();
-         // Define composite foreign key constraint
             $table->foreign('course_id')
-            ->references('id') // Reference both primary key columns
+            ->references('id')  
             ->on('courses')
             ->onDelete('cascade');
 

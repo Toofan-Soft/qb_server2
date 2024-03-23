@@ -9,8 +9,8 @@ enum TrueFalseAnswerEnum: int {
 
     public function getValues(): array {
         return match ($this) {
-            self::FALSE => [0, 'False', '  صح'],
-            self::TRUE => [1, 'True', 'خطأ'],
+            self::FALSE => [0, 'False', '  خطا'],
+            self::TRUE => [1, 'True', 'صح'],
         };
     }
 

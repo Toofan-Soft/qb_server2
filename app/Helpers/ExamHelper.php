@@ -50,7 +50,7 @@ class ExamHelper
         return [];
     }
     public static function getStudentAnsweredQuestionsCount($onlineExamId, $studentId){
-// 
+//
         return 0;
     }
 
@@ -168,7 +168,6 @@ class ExamHelper
         $queationsTypes = $form->real_exam()->real_exam_question_types()->get(['question_type as type_name']);
 
         foreach ($queationsTypes as $type) {
-
             $questions = DB::table('forms')
             ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
             ->join('questions', 'form_questions.question_id', '=', 'questions.id')
@@ -193,7 +192,7 @@ class ExamHelper
         return $formQuestions;
     }
 
-    //////////////////// special for practise exam 
+    //////////////////// special for practise exam
     private static function retrievePractiseExamsResult($practiseExams){
 
         // حساب المعدل والتقدير لكل اختبار
@@ -214,7 +213,7 @@ class ExamHelper
                  'courses.arabic_name as course_name ',
                  'course_parts.part_id as course_part_name ',
                  'practise_exams.id','practise_exams.title'
-                 // practise_exams.datetime, 
+                 // practise_exams.datetime,
                  )
                 ->where('practise_exams.department_course_part_id', '=', $departmentCoursePartId)
                 ->where('practise_exams.id', '=', $userId)
@@ -236,7 +235,7 @@ class ExamHelper
                  'courses.arabic_name as course_name ',
                  'course_parts.part_id as course_part_name ',
                  'practise_exams.id','practise_exams.title'
-                 // practise_exams.datetime, 
+                 // practise_exams.datetime,
                  )
                 ->where('practise_exams.department_course_part_id', '=', $departmentCoursePartId)
                 ->where('practise_exams.id', '=', $userId)
@@ -246,7 +245,7 @@ class ExamHelper
             $practiseExams = self::retrievePractiseExamsResult($practiseExams);
         return $practiseExams;
     }
-    
+
     public static function retrievePractiseExams($userId, $departmentCoursePartId){
 
         $practiseExams =  DB::table('practise_exams')
@@ -258,14 +257,14 @@ class ExamHelper
                  'courses.arabic_name as course_name ',
                  'course_parts.part_id as course_part_name ',
                  'practise_exams.id','practise_exams.title', 'practise_exams.status as status_name'
-                 // practise_exams.datetime, 
+                 // practise_exams.datetime,
                  )
                 ->where('practise_exams.department_course_part_id', '=', $departmentCoursePartId)
                 ->where('practise_exams.id', '=', $userId)
             ->get();
             $practiseExams = ProcessDataHelper::enumsConvertIdToName($practiseExams ,[
-                new EnumReplacement1('course_part_name', CoursePartsEnum::class), 
-                new EnumReplacement1('status_name', ExamStatusEnum::class), 
+                new EnumReplacement1('course_part_name', CoursePartsEnum::class),
+                new EnumReplacement1('status_name', ExamStatusEnum::class),
 
                 ] );
             $practiseExams = self::retrievePractiseExamsResult($practiseExams);

@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\CoursePartsEnum;
 use App\Models\Course;
 use App\Models\College;
 use App\Enums\LevelsEnum;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Models\CoursePart;
 use App\Models\Department;
 use App\Enums\SemesterEnum;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
-use App\Models\CoursePart;
+use App\Enums\CoursePartsEnum;
 use App\Models\DepartmentCourse;
+use Illuminate\Validation\Rules\Enum;
 
 class DepartmentCourseController extends Controller
 {
@@ -142,7 +143,7 @@ class DepartmentCourseController extends Controller
             //   ->where('department_id', $request->department_id)
             //   ->where('level', $request->level_id)
             //   ->get();
-        
+
             //   $semesters = $departmentCourses->groupBy('semester_name')->map(function ($semesterCourses) {
             //     return [
             //       'id' => $semesterCourses->first()->semester_name, // Get semester_name from first course
@@ -211,12 +212,10 @@ class DepartmentCourseController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            // 'arabic_name' => 'required|string|max:255',
-            // 'english_name' => 'required|string|max:255',
-            // 'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'levels_count' =>  new Enum(LevelsCountEnum::class),
-            // 'description' => 'nullable|string',
-            // 'college_id' => 'required',
+            'course_id' => 'required|exists:courses,id',
+            'level' => new Enum(LevelsEnum::class), // Assuming LevelsEnum holds valid values
+            'semester' => new Enum(SemesterEnum::class), // Assuming SemesterEnum holds valid values
+            'department_id' => 'required|exists:departments,id',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

@@ -8,10 +8,23 @@ use App\Enums\QuestionTypeEnum;
 use App\Models\TrueFalseQuestion;
 use Illuminate\Http\UploadedFile;
 use App\Enums\TrueFalseAnswerEnum;
+use App\Models\Question;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Storage;
 
 class QuestionHelper
 {
+    /**
+     * summation the score of exams .
+     */
+    public static function modifyQuestionStatus($question_id ,$status_id ){
+        $question = Question::findOrFail($question_id);
+        $question::update([
+            'status' => $status_id
+        ]);
+        return ResponseHelper::success();
+    }
+
     /**
      * summation the score of exams .
      */

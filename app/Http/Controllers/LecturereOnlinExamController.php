@@ -18,15 +18,17 @@ use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
+use App\Helpers\QuestionHelper;
 use App\Helpers\EnumReplacement;
 use App\Helpers\OnlinExamHelper;
 use App\Enums\QuestionStatusEnum;
 use App\Helpers\EnumReplacement1;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
+use App\Enums\ExamConductMethodEnum;
+use Illuminate\Validation\Rules\Enum;
 use App\Enums\ExamDifficultyLevelEnum;
 use App\Enums\FormConfigurationMethodEnum;
-use App\Helpers\QuestionHelper;
 
 class LecturereOnlinExamController extends Controller
 {
@@ -449,4 +451,27 @@ class LecturereOnlinExamController extends Controller
         }
         return response()->json(['message' => 'succesful'], 200);
     }
+
+
+
+
+    public function rules(Request $request): array
+    {
+        $rules = [
+            //'id' => 'required|integer|unique:online_exams,id',
+            'proctor_id' => 'required|exists:employees,id|unique:online_exams,proctor_id',
+            'status' => new Enum(ExamStatusEnum::class), // Assuming ExamStateEnum holds valid values
+            'conduct_method' => new Enum(ExamConductMethodEnum::class), // Assuming ExamConductMethodEnum holds valid values
+            'exam_datetime_notification_datetime' => 'required|date',
+            'result_notification_datetime' => 'required|date', // You can use your suggested default value using DB::raw and INTERVAL
+        ];
+        if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
+            $rules = array_filter($rules, function ($attribute) use ($request) {
+                // Ensure strict type comparison for security
+                return $request->has($attribute);
+            });
+        }
+        return $rules;
+    }
+
 }

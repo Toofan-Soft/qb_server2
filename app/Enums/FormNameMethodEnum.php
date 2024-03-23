@@ -2,16 +2,19 @@
 
 namespace App\Enums;
 use Kongulov\Traits\InteractWithEnum;
-enum QuestionConfigurationmethodEnum: int {
+enum FormNameMethodEnum: int {
     use InteractWithEnum;
 
-    case DYNAMIC  = 0;
-    case MANUAL  =  1;
+    case DECIMAL_NUMBERING   = 0;
+    case ROMAN_NUMBERING   =  1;
+    case ALPHANUMERIC_NUMBERING   =  2;
+
 
     public function getValues(): array {
         return match ($this) {
-            self::DYNAMIC => [0, 'Dynamic', 'آلي'],
-            self::MANUAL => [1, 'Manual', 'يدوي'],
+            self::DECIMAL_NUMBERING => [0, 'Decimal numbering', ' ترقيم عشري'],
+            self::ROMAN_NUMBERING => [1, 'Roman numbering', ' ترقيم روماني'],
+            self::ALPHANUMERIC_NUMBERING => [2, 'Alphanumeric numbering', ' ترقيم أبجدي'],
         };
     }
 
@@ -41,6 +44,7 @@ enum QuestionConfigurationmethodEnum: int {
         }
         return null;
     }
+
     public static function getEnum(string $language = 'ar'): array {
         $roles = self::cases();
         $result = [];

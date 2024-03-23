@@ -9,6 +9,9 @@ use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
+use App\Helpers\ResponeHelper;
+use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -19,39 +22,62 @@ class CollegeController extends Controller
 
     public function addCollege(Request $request)
     {
-      return AddHelper::addModel($request, College::class,  $this->rules($request));
+
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
+        College::create([
+            'arabic_name' => $request->arabic_name,
+            'english_name' => $request->english_name,
+            'phone' => $request->phone ?? null,
+            'email' => $request->email ?? null,
+            'description' => $request->description?? null,
+            'facebook' => $request->facebook ?? null,
+            'youtube' => $request->youtube?? null,
+            'x_platform' => $request->x_platform ?? null,
+            'telegram' => $request->telegram ?? null,
+            'logo_url' => ImageHelper::uploadImage($request->logo)
+        ]);
+       return ResponseHelper::success();
     }
 
-    public function modifyCollege (Request $request, College $college)
+    public function modifyCollege (Request $request)
     {
-        return ModifyHelper::modifyModel($request, $college,  $this->rules($request));
+        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError($failed);
+        }
+
+        $college = College::findOrFail($request->id);
+        $college->update([
+            'arabic_name' => $request->arabic_name ?? $college->arabic_name ,
+            'english_name' => $request->english_name ?? $college->english_name,
+            'phone' => $request->phone ??  $college->phone,
+            'email' => $request->email ?? $college->email,
+            'description' => $request->description?? $college->description,
+            'youtube' => $request->youtube?? $college->youtube,
+            'facebook' => $request->facebook ?? $college->facebook,
+            'x_platform' => $request->x_platform ?? $college->x_platform,
+            'telegram' => $request->telegram ?? $college->telegram,
+            'logo_url' => ImageHelper::updateImage($request->logo, $college->logo_url)
+        ]);
+       return ResponseHelper::success();
     }
 
 
     public function deleteCollege (Request $request)
     {
-        $deleteCount = College::where('id', $request->id)->delete();
-        if($deleteCount){
-            return response()->json([
-                'error_message' => 'college deleted successfully!',
-            ], 200);
-        }else {
-            return response()->json([
-                'error_message' => 'college not deleted!',
-            ], 200);
-        }
-
-        //return DeleteHelper::deleteModel($college);
+        $college = College::findeOrFail( $request->id);
+        return DeleteHelper::deleteModel($college);
     }
 
     public function retrieveColleges ()
     {
         $attributes = ['id', 'arabic_name', 'english_name', 'phone', 'email', 'logo_url'];
-        return GetHelper::retrieveModels(College::class, $attributes, null);
+        return GetHelper::retrieveModels(College::class, $attributes);
     }
     public function retrieveBasicCollegesInfo ()
     {
-        $attributes = ['id', 'arabic_name','logo_url'];
+        $attributes = ['id', 'arabic_name as name','logo_url'];
         return GetHelper::retrieveModels(College::class, $attributes, null);
     }
 
