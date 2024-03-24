@@ -4,54 +4,61 @@ namespace App\Http\Controllers;
 
 use App\Models\Guest;
 use App\Enums\GenderEnum;
+use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\ModifyHelper;
+use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 use Illuminate\Validation\Rules\Enum;
 
 class GuestController extends Controller
 {
-    public function addEmployee(Request $request)
+    public function addGuest(Request $request)
     {
-
+        if ($failed = ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError($failed);
+        }
         $guest =  Guest::create([
             'name' => $request->name,
-            'phone' => $request->phone,
-            'gender' =>  $request->gender ?? GenderEnum::MALE->value,
+            'phone' => $request->phone ?? null,
+            'gender' =>  $request->gender_id,
             'image_url' => ImageHelper::uploadImage($request->image),
         ]);
-        if ($request->email) {
-            //Add User, email,type,emp_id , password
-        }
+        if(! UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->pssword)) {
+            return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الزائر');
+
+        return ResponseHelper::success();
+       }
     }
-
-    public function modifyGuest (Request $request, Guest $guest)
+    public function modifyGuest (Request $request)
     {
-        return ModifyHelper::modifyModel($request, $guest,  $this->rules($request));
-    }
 
-    public function addUser(Request $request)
-    {
-        $roles = $request->roles_ids;
-
-        if($request->owner_type_id === OwnerTypeEnum::EMPLOYEE->value){
-
-        }elseif ($request->owner_type_id === OwnerTypeEnum::LECTURER->value) {
-
-        }elseif ($request->owner_type_id === OwnerTypeEnum::STUDENT->value) {
-
+        if ($failed = ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError($failed);
         }
 
+        $guest = Guest::findOrFail(auth()->user()->id);
+        $guest->update([
+            'name' => $request->name ??  $guest->name ,
+            'phone' => $request->phone ?? $guest->phone ,
+            'gender' =>  $request->gender_id ??  $guest->gender ,
+            'image_url' => ImageHelper::updateImage($request->image,  $guest->image_url )
+        ]);
+        return ResponseHelper::success();
     }
+
 
     public function rules(Request $request): array
     {
         $rules = [
             'name' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8',
             'phone' => 'nullable|string|unique:guests,phone',
-            'image_url' => 'nullable|string',
-            'gender' => ['required',new Enum(GenderEnum::class)], // Assuming GenderEnum holds valid values
+            'image' => 'nullable|string',
+            'gender_id' => ['required',new Enum(GenderEnum::class)], // Assuming GenderEnum holds valid values
             //'user_id' => 'nullable|uuid|unique:users,id',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

@@ -42,6 +42,7 @@ class UserController extends Controller
 
     }
 
+    // reset password by email
     public function requestAccountReovery(Request $request)
     {
 

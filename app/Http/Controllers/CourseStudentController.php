@@ -94,26 +94,33 @@ class CourseStudentController extends Controller
 
     public function retrieveCourceStudents(Request $request)
     {
-        $courseStudents = [];
-        if(!$request->status_id){
-            $courseStudents = DepartmentCourse::with([
-                'course_students:status as status_name.student:id,academic_id,image_url,arabic_name as name', // Eager load with required attributes
-              ])->where('academic_year', $request->academic_year)->where('id', $request->department_course_id);
-              $courseStudents = ProcessDataHelper::enumsConvertIdToName($courseStudents, [new EnumReplacement1('status_name', CourseStudentStatusEnum::class)]);
-        }else{
-            $courseStudents = DepartmentCourse::with([
-                'course_students.student:id,academic_id,image_url,arabic_name as name', // Eager load with required attributes
-              ])->where('academic_year', $request->academic_year)->where('id', $request->department_course_id)->where('status', $request->status_id);
-        }
-        // test if the where work
-        return $courseStudents;
+        $courseStudents = DB::table('department_courses')
+              ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
+              ->join('students', 'course_students.student_id', '=', 'students.id')
+              ->select('course_students.id as department_name',
+              'students.id','students.academic_id','students.image_url','students.arabic_name as name')
+              ->Where('department_courses.id ', '=', $request->department_course_id)
+              ->Where('course_students.academic_year ', '=', $request->academic_year)
+             ->when($request->status_id === null, function ($query) {
+                 return  $query->selectRaw('course_students.status as status_name');
+              })
+              ->when($request->status_id, function ($query) use ($request) {
+               return  $query ->Where('course_students.status', '=', $request->status_id);
+            })
+            ->get();
+
+            if($courseStudents->has(['status_name'])){
+                $courseStudents = ProcessDataHelper::enumsConvertIdToName($courseStudents, [new EnumReplacement('status_name', CourseStudentStatusEnum::class)]);
+            }
+
+           return ResponseHelper::successWithData($courseStudents);
     }
 
 
 
     public function retrieveUnlinkCourceStudents(Request $request)
     {
-        $department = DepartmentCourse::find($request->department_course_id)->get(['department_id']);
+        $department = DepartmentCourse::findOrFail($request->department_course_id,['department_id']);
         $departmentStudents = [];
         $departmentCourseStudents = [];
         $departmentStudents = DB::table('departments')
@@ -121,21 +128,22 @@ class CourseStudentController extends Controller
         ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
         ->join('students', 'course_students.student_id', '=', 'students.id')
         ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'students.image_url')
-        ->where('department.id', '=', $department->department_id)
+        ->where('departments.id', '=', $department->department_id)
         ->distinct()
         ->get();
 
         $departmentCourseStudents = DB::table('department_courses')
         ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
-        ->join('students', 'course_students.student_id', '=', 'students.id')
-        ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'students.image_url')
+        ->select('course_students.student_id')
         ->where('department_courses.id', '=', $request->department_course_id)
         ->distinct()
         ->get();
+    $unlinkCourseStudents = $departmentStudents->whereNotIn('id', $departmentCourseStudents->pluck('student_id'));
+
+    return ResponseHelper::successWithData($unlinkCourseStudents);
 
 
         // compare or تقاطع بين الناتجين
-
     // $department = DepartmentCourse::find($request->department_course_id)->get(['department_id']);
     // $studentQuery = DB::table('departments')
     //     ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
@@ -143,7 +151,7 @@ class CourseStudentController extends Controller
     //     ->join('students', 'course_students.student_id', '=', 'students.id')
     //     ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'students.image_url');
 
-    // $allDepartmentStudents = $studentQuery->where('department.id', '=', $department->department_id)->get();
+    // $allDepartmentStudents = $studentQuery->where('departments.id', '=', $department->department_id)->get();
     // $linkedCourseStudents = DB::table('department_courses')
     //     ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
     //     ->where('department_courses.id', '=', $request->department_course_id)
@@ -154,13 +162,20 @@ class CourseStudentController extends Controller
 
 
 
+    // OR
+     // Union the queries:
+    //  $unionQuery = $departmentStudents->union($departmentCourseStudents);
+     // Get the results:
+    //  $allStudents = $unionQuery->distinct()->get();
+
+    // OR
+    // $unionStudents = Collection::make($departmentStudents)->union($departmentCourseStudents)->all();
     }
 
 
 
     public function rules(Request $request): array
     {
-
             $rules = [
                 //'department_course_id' => 'required|exists:department_courses,id',
                 //'student_id' => 'required|exists:students,id',

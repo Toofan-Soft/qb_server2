@@ -12,13 +12,14 @@ use Illuminate\Support\Facades\Validator;
 class UserHelper
 {
 
-    public static function addUser( $email, $owner_type_id, $owner_id = null, $password = null, $roles = [] )
+    public static function addUser( $email, $ownerTypeId, $ownerId , $password = null, $roles = [] )
     {
 
         // $roles = $roles_ids;
         // add user status by default
 
         if($owner_type_id === OwnerTypeEnum::EMPLOYEE->value){
+
 
         }elseif ($owner_type_id === OwnerTypeEnum::LECTURER->value) {
 
@@ -27,6 +28,9 @@ class UserHelper
 
         }
 
+
+        return true;
+
     }
     public static function addUserRoles( $user, $roles = [] )
     {
@@ -34,14 +38,18 @@ class UserHelper
 
     }
 
-    // public static function addUserRole( $user, $role_id )
-    // {
-
-
-    // }
     public static function deleteUserRoles( $user,  $roles = [] )
     {
 
+    }
+
+  public static function retrieveOwnerRoles( $ownerTypeId )
+    {
+        $userRoles = [
+            'id' => 0,
+            'is_mandatory' => true
+        ];
+        return $userRoles;
     }
 
     public static function retrieveGuestProfile( $user )

@@ -21,10 +21,38 @@ use Illuminate\Support\Facades\DB;
 use App\Enums\ExamConductMethodEnum;
 use Illuminate\Support\Facades\Storage;
 use App\Enums\FormConfigurationMethodEnum;
+use App\Enums\RealExamTypeEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
+use App\Models\RealExamQuestionType;
 
 class ExamHelper
 {
+
+
+
+    public static function deleteRealExam($realExamId ){
+
+        $realExam = RealExam::findOrFail($realExamId);
+        try {
+            $realExam->real_exam_question_types()->delete();
+            $readExamForms = $realExam->forms();
+            foreach ($readExamForms as $readExamForm) {
+                $readExamForm->form_questions()->delete();
+            }
+            $realExam->forms()->delete();
+            if($realExam->exam_type === RealExamTypeEnum::PAPER->value){
+
+                $realExam->paper_exam()->delete();
+            }else{
+                $realExam->online_exam()->delete();
+            }
+            $realExam->delete();
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError('An error occurred while deleting models.');
+        }
+
+    }
     /**
      * sumation the score of exams .
      */
@@ -270,5 +298,7 @@ class ExamHelper
             $practiseExams = self::retrievePractiseExamsResult($practiseExams);
         return $practiseExams;
     }
+
+
 
 }

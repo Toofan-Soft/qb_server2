@@ -52,7 +52,9 @@ class StudentController extends Controller
         $this->addStudentCoures($student->id, $request->department_id, $request->level_id);
 
         if ($request->email) {
-            UserHelper::addUser($request->email, OwnerTypeEnum::STUDENT->value, $student->id);
+            if( !UserHelper::addUser($request->email, OwnerTypeEnum::STUDENT->value, $student->id)) {
+                return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الطالب');
+              }
         }
         return ResponseHelper::success();
     }
@@ -79,7 +81,7 @@ class StudentController extends Controller
             if ($request->level_id <= $studnetDepartmentAndLevel['level_id']) {
                 return ResponseHelper::clientError('لا يمكنك تغيير مستوى الطالب الي مستوى ادنى من المستوى الحالي');
             } else {
-                // aupdate status of courses for last level 
+                // aupdate status of courses for last level
                 $currentCourseStudents = DB::table('students')
                     ->join('course_students', 'students.id', '=', 'course_students.student_id')
                     ->join('department_courses', 'course_students.department_course_id', '=', 'department_courses.id')
@@ -96,7 +98,7 @@ class StudentController extends Controller
                 // add new level courses
                 $this->addStudentCoures($student->id,$studnetDepartmentAndLevel['department_id'], $request->level_id);
             }
-        }        
+        }
         return ResponseHelper::success();
     }
 
@@ -125,7 +127,7 @@ class StudentController extends Controller
         $students =  ProcessDataHelper::enumsConvertIdToName($students, $enumReplacements);
         return ResponseHelper::successWithData($students);
 
-       
+
     }
 
     public function retrieveStudent(Request $request)
@@ -134,7 +136,7 @@ class StudentController extends Controller
         //     'academic_id,arabic_name,english_name,gender as gender_id,phone,user_id as email,image_url,birthdate', //**test sigle column */
         //     'course_students.department_course.department:arabic_name as department_name.college:arabic_name as college_name',
         //     ])->find($request->id);
-// { college name, department name, level id 
+// { college name, department name, level id
 
         $student =  DB::table('students')
             ->join('course_students', 'students.id', '=', 'course_students.student_id')
@@ -160,7 +162,7 @@ class StudentController extends Controller
         ];
         $student = ProcessDataHelper::columnConvertIdToName($student, $columnReplacements);
         $student['level_id'] = $this->getStudentDepartmentAndLevel($request->id)['level_id'];
-        
+
         return ResponseHelper::successWithData($student);
 
     }
@@ -182,7 +184,7 @@ class StudentController extends Controller
     private function getStudentDepartmentAndLevel($studnetId)
     {
         // يجب التركيز ان قد يكون الطالب معاه مواد باكثر من مستوى
-        // ترتيب المستويات وارجاع اعلى مستوى تكون مقرراته نشطة 
+        // ترتيب المستويات وارجاع اعلى مستوى تكون مقرراته نشطة
         $studnetDepartmentAndLevel = [];
         return $studnetDepartmentAndLevel;
     }

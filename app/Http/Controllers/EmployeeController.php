@@ -51,7 +51,9 @@ class EmployeeController extends Controller
                 $ownerTypeId = OwnerTypeEnum::EMPLOYEE->value;
             }
 
-            UserHelper::addUser($request->email, $ownerTypeId, $employee->id);
+           if(!UserHelper::addUser($request->email, $ownerTypeId, $employee->id)) {
+             return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
+           }
         }
 
         return ResponseHelper::success();

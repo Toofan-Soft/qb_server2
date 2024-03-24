@@ -53,14 +53,16 @@ class CourseLecturerController extends Controller
               ->join('colleges', 'departments.college_id', '=', 'colleges.id')
               ->join('course_lecturers', 'department_course_parts.id', '=', 'course_lecturers.department_course_part_id')
               ->join('employees', 'course_lecturers.lecturer_id', '=', 'employees.id')
-              ->select('departments.arabic_name as department_name', 
-              'colleges.arabic_name as college_name', 
+              ->select('departments.arabic_name as department_name',
+              'colleges.arabic_name as college_name',
               'course_lecturers.id as course_lecturer_id', 'employees.arabic_name as lecturer_name')
               ->Where('department_course_parts.course_part_id', '=', $request->course_part_id)
-              ->Where('course_lecturers.academic_year', '=', $request->academic_year)
-             ->when($request->academic_year, function ($query) use ($request) {
-                  $query->select('course_lecturers.academic_year');
+             ->when($request->academic_year === null, function ($query) {
+                 return  $query->selectRaw('course_lecturers.academic_year');
               })
+              ->when($request->academic_year, function ($query) use ($request) {
+               return  $query ->Where('course_lecturers.academic_year', '=', $request->academic_year);
+            })
             ->get();
         return ResponseHelper::successWithData($courseLecturers);
     }
@@ -83,7 +85,7 @@ class CourseLecturerController extends Controller
                 'colleges.arabic_name as college_name',
                 )
         ->where('employees.id', '=', $request->employee_id)
-        // ->where('employees.id', '=', now()->format('Y')) // سؤال محمود والعيال عنها 
+        // ->where('employees.id', '=', now()->format('Y')) // سؤال محمود والعيال عنها
         ->get();
 //course_part_name, level_name, semester name
 $enumReplacements = [
@@ -125,7 +127,7 @@ $enumReplacements = [
      )
     ->where('course_lecturers.id', '=', $request->id)
     ->get();
-    
+
     $enumReplacements = [
         new EnumReplacement( 'course_part_name', CoursePartsEnum::class),
         new EnumReplacement( 'qualification_name', QualificationEnum::class),
@@ -157,5 +159,5 @@ $enumReplacements = [
         return $rules;
     }
 
-    
+
 }

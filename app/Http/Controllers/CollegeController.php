@@ -99,28 +99,41 @@ class CollegeController extends Controller
         // // Print specific data (more manageable)
         // Log::info("Headers: " . json_encode($headers));
         // Log::debug("Body: " . $body);
-         $college = College::findOrFail($request->id);
-         $college = $college->departments()->department_courses(); // not work
+        //  $college = $college->departments()->where('id', 1)->get('arabic_name'); //work
+
+        // $college = College::findOrFail($request->id);
+        // $department = $college->departments()->get();
+
 
         //  $departmentCourse = DepartmentCourse::find(1);
         //  $departmentCourse = $departmentCourse->department->college;  // work
 
 // for test : College::
-    //      $result =  DB::table('course_parts')
+
+    // $result = DB::table('course_parts')
     // ->join('courses', 'course_parts.course_id', '=', 'courses.id')
     // ->join('department_courses', 'courses.id', '=', 'department_courses.course_id')
     // ->join('departments', 'department_courses.department_id', '=', 'departments.id')
     // ->select('course_parts.part_id as part_name',
-    //         'courses.arabic_name as course_name',
-    //          'department_courses.semester as semester_name',
-    //           'departments.arabic_name as department_name'
-    //      )
-    // ->where('course_parts.course_id', '=', $request->id)
-    // ->when($request->status, function ($query) use ($request) {
-    //     $query->where('department_courses.semester', '=', $request->status);
+    //     'courses.arabic_name as course_name')
+    // ->when($request->status, function ($query) use ($request){
+    //     return $query->where('course_parts.status', '=', $request->status);
     // })
+    // ->when($request->status === null , function ($query) {
+    //     return $query->selectRaw('department_courses.semester as semester_name'); // follow when
+    // })
+    // ->where('course_parts.course_id', '=', $request->id)
     // ->get();
-        return response()->json(['data' => $college  ], 200);
+
+
+    // // this for merge
+    $college = College::findOrFail($request->id);
+    $department = $college->departments()->get();
+    // $college = array_merge($college->toArray(),  $department->toArray());
+
+
+
+        return response()->json(['data' => $department  ], 200);
         // $college = College::with(['departments:id,arabic_name as name,college_id'])->find($request->id); // لازم العمود حق العلاقه يكون ضمن البيانات المحددة
 
 
