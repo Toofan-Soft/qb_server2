@@ -11,12 +11,17 @@ use App\Models\OnlineExam;
 use App\Enums\ExamTypeEnum;
 use App\Enums\LanguageEnum;
 use App\Enums\SemesterEnum;
+use App\Helpers\ExamHelper;
 use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
 use App\Models\StudentAnswer;
 use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Helpers\QuestionHelper;
+<<<<<<< HEAD
+=======
+use App\Helpers\ResponseHelper;
+>>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
 use App\Helpers\EnumReplacement;
 use App\Helpers\OnlinExamHelper;
 use App\Helpers\EnumReplacement1;
@@ -34,22 +39,32 @@ use App\Enums\StudentOnlineExamStatusEnum;
 
 class StudentOnlinExamController extends Controller
 {
+<<<<<<< HEAD
     public function retrieveOnlineExams(Request $request)
+=======
+    public function retrieveOnlineExams(Request $request) 
+>>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
     {
         $student = Student::where('user_id', auth()->user()->id)->first();
         $onlineExams =[];
         if($request->status_id === OnlineExamTakingStatusEnum::COMPLETE->value){
+<<<<<<< HEAD
             $onlineExams = OnlinExamHelper::retrieveCompleteStudentOnlineExams($student);
+=======
+
+            $onlineExams = ExamHelper::retrieveCompleteStudentOnlineExams($student);
+>>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
         }else{
-            $onlineExams = OnlinExamHelper::retrieveIncompleteStudentOnlineExams($student);
+            $onlineExams = ExamHelper::retrieveIncompleteStudentOnlineExams($student);
         }
-        return $onlineExams;
+        return ResponseHelper::successWithData($onlineExams);
     }
 
 
     public function retrieveOnlineExam(Request $request)
     {
-        $studentonlinExam = StudentOnlineExam::find($request->id);
+        // تستخدم هذه الدالة لارجاع الاختبارات الغير مكتملة فقط
+        $studentonlinExam = StudentOnlineExam::findOrFail($request->id);
         if(!$studentonlinExam->status === StudentOnlineExamStatusEnum::COMPLETE->value ){
             $realExam = RealExam::findOrFail($studentonlinExam->onlin_exam_id,['language as language_name' ,
             'datetime', 'duration', 'type as type_name', 'note as special_note']);
@@ -57,9 +72,10 @@ class StudentOnlinExamController extends Controller
                new EnumReplacement('language_name', LanguageEnum::class),
                new EnumReplacement('type_name', ExamTypeEnum::class),
             ]);
+
             // $realExam['general_note'] = getGeneralNotes();        //// need add   general_note from json file
 
-            $realExam = OnlinExamHelper::getExamsScore($realExam);
+            $realExam = ExamHelper::getRealExamsScore($realExam);
            $onlineExam = $realExam->online_exam()->get(['conduct_method as is_mandatory_question_sequense']);
            $onlineExam->is_mandatory_question_sequense = ($onlineExam->is_mandatory_question_sequense === ExamConductMethodEnum::MANDATORY->value) ? true : false;
             $courselecturer = $realExam->lecturer_course();
@@ -78,6 +94,7 @@ class StudentOnlinExamController extends Controller
            $college = $department->college()->get(['arabic_name as college_name']);
            $course = $departmentCourse->course()->get(['arabic_name as course_name']);
 
+<<<<<<< HEAD
            array_merge($realExam->toArray(),
             $onlineExam->toArray(),
             $lecturer->toArray(),
@@ -86,14 +103,19 @@ class StudentOnlinExamController extends Controller
               $department->toArray(),
               $college->toArray(),
               $course->toArray()); // merge all with realExam
+=======
+           array_merge($realExam, $onlineExam, $lecturer, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
+           
+>>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
         }
-        return $realExam;
+        return ResponseHelper::successWithData($realExam);
+
     }
 
     public function retrieveOnlineExamQuestions(Request $request)
     {
         $realExam = RealExam::findOrFail($request->id);
-        $form = OnlinExamHelper::getStudentForm($realExam);
+        $form = ExamHelper::getStudentForm($realExam);
         $formQuestions = [];
         $queationsTypes = $form->real_exam()->real_exam_question_types()->get(['question_type as type_name']);
 
@@ -114,7 +136,8 @@ class StudentOnlinExamController extends Controller
             $questions = QuestionHelper::retrieveStudentExamQuestions($questions, $type->type_name);
             $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
         }
-        return $formQuestions;
+        return ResponseHelper::successWithData($formQuestions);
+
     }
 
     public function finishOnlineExam (Request $request){
@@ -125,7 +148,7 @@ class StudentOnlinExamController extends Controller
             'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
             'end_datetime' => now(),
         ]);
-        return response()->json(['message' => 'succesful'], 200);
+        return ResponseHelper::success();
     }
 
 
@@ -148,7 +171,7 @@ class StudentOnlinExamController extends Controller
             'answer_duration' => $request->answer_duration ?? null,
         ]);
 
-        return response()->json(['message' => 'succesful'], 200);
+        return ResponseHelper::success();
     }
 
 

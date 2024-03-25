@@ -9,6 +9,7 @@ use App\Models\TrueFalseQuestion;
 use Illuminate\Http\UploadedFile;
 use App\Enums\TrueFalseAnswerEnum;
 use App\Models\Question;
+use App\Models\QuestionChoiceCombination;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Storage;
 
@@ -41,8 +42,12 @@ class QuestionHelper
         return $questions;
     }
 
-    private static function retrieveCombinationChoices($id, $combination_id){
+    private static function retrieveCombinationChoices($questionId, $combinationId){
 /// id, content, attachment_url, is_true
+    $combinationChoices = QuestionChoiceCombination::where('question_id', '=', $questionId)
+    ->where('combination_id', '=', $combinationId)->get(['combination_choices']);
+    // convert combinationChoices from string to list, ','
+    
         return [];
     }
 
@@ -55,8 +60,12 @@ class QuestionHelper
         }
         return $questions;
     }
+<<<<<<< HEAD
 
     private static function retrieveStudentExamCombinationChoices($id, $combination_id){
+=======
+    private static function retrieveStudentExamCombinationChoices($questionId, $combinationId){
+>>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
 /// id, content, attachment_url
         return [];
     }
