@@ -32,7 +32,7 @@ class QuestionHelper
 
         foreach ($questions as $question) {
             if($questionTypeId === QuestionTypeEnum::TRUE_FALSE->value){
-                $answer = TrueFalseQuestion::find($question->id, ['answer as is_true']);
+                $answer = TrueFalseQuestion::findOrFail($question->id, ['answer as is_true']);
                 $question['is_true'] = ($answer === TrueFalseAnswerEnum::TRUE->value)? true: false;
             }elseif ($questionTypeId === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
                 $question['choices'] = self::retrieveCombinationChoices($question->id, $question->combination_id);
@@ -55,6 +55,7 @@ class QuestionHelper
         }
         return $questions;
     }
+
     private static function retrieveStudentExamCombinationChoices($id, $combination_id){
 /// id, content, attachment_url
         return [];

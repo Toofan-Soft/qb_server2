@@ -170,10 +170,10 @@ class LecturereOnlinExamController extends Controller
         $onlineExams = [];
 
         $enumReplacements  =[
-            new EnumReplacement1('type_name', ExamTypeEnum::class),
-            new EnumReplacement1('status_name', ExamStatusEnum::class),
-            new EnumReplacement1('course_part_name', CoursePartsEnum::class),
-            new EnumReplacement1('language_name', LanguageEnum::class),
+            new EnumReplacement('type_name', ExamTypeEnum::class),
+            new EnumReplacement('status_name', ExamStatusEnum::class),
+            new EnumReplacement('course_part_name', CoursePartsEnum::class),
+            new EnumReplacement('language_name', LanguageEnum::class),
         ];
         if ($request->status_id && $request->type_id) {
             $onlineExams =  DB::table('real_exams')
@@ -189,7 +189,6 @@ class LecturereOnlinExamController extends Controller
              'course_parts.part_id as course_part_name ',
              'real_exams.id','real_exams.datetime','real_exams.language as language_name','real_exams.type as type_name',
              'online_exams.status as status_name',
-
              )
             ->where('department_course_parts.id', '=', $request->department_course_part_id)
             ->where('real_exams.type', '=', $request->type_id)
@@ -254,31 +253,6 @@ class LecturereOnlinExamController extends Controller
             ->where('real_exams.type', '=', $request->type_id)
             ->get();
         }
-    // we can short the above code by this :
-        // $onlineExams = DB::table('real_exams')
-        // ->join('online_exams', 'real_exams.id', '=', 'online_exams.id')
-        // ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
-        // ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
-        // ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-        // ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-        // ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-        // ->select([
-        //     'courses.arabic_name as course_name',
-        //     'course_parts.part_id as course_part_name',
-        //     'real_exams.id',
-        //     'real_exams.datetime',
-        //     'real_exams.language as language_name',
-        //     'real_exams.type as type_name',
-        //     'online_exams.status as status_name',
-        // ])
-        // ->where('department_course_parts.id', '=', $request->department_course_part_id)
-        // ->when($request->status_id, function ($query) use ($request) {
-        //     $query->where('online_exams.status', '=', $request->status_id);
-        // })
-        // ->when($request->type_id, function ($query) use ($request) {
-        //     $query->where('real_exams.type', '=', $request->type_id);
-        // })
-        // ->get();
 
 
         $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, $enumReplacements);
@@ -289,53 +263,43 @@ class LecturereOnlinExamController extends Controller
 
     public function retrieveOnlineExam(Request $request)
     {
-        $realExam = RealExam::findOrFail($request->id)->get(['language as language_name', 'difficulty_level as defficulty_level_name' ,
+        $realExam = RealExam::findOrFail($request->id,['language as language_name', 'difficulty_level as defficulty_level_name' ,
         'forms_count','form_configuration_method as form_configuration_method_name', 'form_name_method as form_name_method_id' ,
          'datetime', 'duration', 'type as type_id', 'note as special_note']);
          $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
-            new EnumReplacement1('language_name', LanguageEnum::class),
-            new EnumReplacement1('defficulty_level_name', ExamDifficultyLevelEnum::class),
-            new EnumReplacement1('form_configuration_method_name', FormConfigurationMethodEnum::class),
+            new EnumReplacement('language_name', LanguageEnum::class),
+            new EnumReplacement('defficulty_level_name', ExamDifficultyLevelEnum::class),
+            new EnumReplacement('form_configuration_method_name', FormConfigurationMethodEnum::class),
          ]);
         $onlinExam = $realExam->online_exam()->get(['conduct_method as conduct_method_id','status as status_name','proctor_id','exam_datetime_notification_datetime as datetime_notification_datetime','result_notification_datetime']);
         $onlinExam = ProcessDataHelper::enumsConvertIdToName($onlinExam, [
-            new EnumReplacement1('status_name', ExamStatusEnum::class),
+            new EnumReplacement('status_name', ExamStatusEnum::class),
          ]);
         $departmentCoursePart = $realExam->lecturer_course()->department_course_part();
         $coursePart = $departmentCoursePart->course_part(['part_id as course_part_name']);
         $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
-            new EnumReplacement1('course_part_name', CoursePartsEnum::class),
+            new EnumReplacement('course_part_name', CoursePartsEnum::class),
          ]);
         $departmentCourse = $departmentCoursePart->department_course()->get(['level as level_name', 'semester as semester_name']);
         $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
-            new EnumReplacement1('level_name', LevelsEnum::class),
-            new EnumReplacement1('semester_name', SemesterEnum::class),
+            new EnumReplacement('level_name', LevelsEnum::class),
+            new EnumReplacement('semester_name', SemesterEnum::class),
          ]);
         $department = $departmentCourse->department()->get(['arabic_name as department_name']);
         $college = $department->college()->get(['arabic_name as college_name']);
         $course = $departmentCourse->course()->get(['arabic_name as course_name']);
         $questionTypes = $realExam->real_exam_question_types()->get(['question_type as type_name','questions_count','question_score']);
         $questionTypes = ProcessDataHelper::enumsConvertIdToName($questionTypes, [
-            new EnumReplacement1('type_name', QuestionTypeEnum::class),
+            new EnumReplacement('type_name', QuestionTypeEnum::class),
          ]);
 
         array_merge($realExam, $onlinExam, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
         $realExam['questionTypes'] = $questionTypes;
-
-     //we can use this for combine instead of above :
-        // $realExam->onlineExam = $onlinExam;
-        // $realExam->coursePart = $coursePart;
-        // $realExam->departmentCourse = $departmentCourse;
-        // $realExam->department = $department;
-        // $realExam->college = $college;
-        // $realExam->course = $course;
-        // $realExam->questionTypes = $questionTypes;
         return $realExam;
     }
 
     public function retrieveOnlineExamChapters(Request $request)
     {
-
         $result = DB::table('real_exams')
         ->join('forms', 'real_exams.id', '=', 'forms.real_exam_id')
         ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')

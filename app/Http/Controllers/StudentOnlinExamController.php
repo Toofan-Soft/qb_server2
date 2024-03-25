@@ -17,6 +17,7 @@ use App\Models\StudentAnswer;
 use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Helpers\QuestionHelper;
+use App\Helpers\EnumReplacement;
 use App\Helpers\OnlinExamHelper;
 use App\Helpers\EnumReplacement1;
 use App\Models\StudentOnlineExam;
@@ -33,12 +34,11 @@ use App\Enums\StudentOnlineExamStatusEnum;
 
 class StudentOnlinExamController extends Controller
 {
-    public function retrieveOnlineExams(Request $request) ////**** يتم اضافة شرط ان يتم ارجاع الاختبارات التي تنتمي الى المستخدم الحالي
+    public function retrieveOnlineExams(Request $request)
     {
         $student = Student::where('user_id', auth()->user()->id)->first();
         $onlineExams =[];
         if($request->status_id === OnlineExamTakingStatusEnum::COMPLETE->value){
-
             $onlineExams = OnlinExamHelper::retrieveCompleteStudentOnlineExams($student);
         }else{
             $onlineExams = OnlinExamHelper::retrieveIncompleteStudentOnlineExams($student);
@@ -54,31 +54,38 @@ class StudentOnlinExamController extends Controller
             $realExam = RealExam::findOrFail($studentonlinExam->onlin_exam_id,['language as language_name' ,
             'datetime', 'duration', 'type as type_name', 'note as special_note']);
             $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
-               new EnumReplacement1('language_name', LanguageEnum::class),
-               new EnumReplacement1('type_name', ExamTypeEnum::class),
+               new EnumReplacement('language_name', LanguageEnum::class),
+               new EnumReplacement('type_name', ExamTypeEnum::class),
             ]);
             // $realExam['general_note'] = getGeneralNotes();        //// need add   general_note from json file
 
             $realExam = OnlinExamHelper::getExamsScore($realExam);
            $onlineExam = $realExam->online_exam()->get(['conduct_method as is_mandatory_question_sequense']);
-           $onlineExam = ($onlineExam->is_mandatory_question_sequense === ExamConductMethodEnum::MANDATORY->value) ? true : false;
+           $onlineExam->is_mandatory_question_sequense = ($onlineExam->is_mandatory_question_sequense === ExamConductMethodEnum::MANDATORY->value) ? true : false;
             $courselecturer = $realExam->lecturer_course();
             $lecturer = $courselecturer->employee()->get(['arabic_name as lecturer_name']);
            $departmentCoursePart = $courselecturer->department_course_part();
            $coursePart = $departmentCoursePart->course_part(['part_id as course_part_name']);
            $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
-               new EnumReplacement1('course_part_name', CoursePartsEnum::class),
+               new EnumReplacement('course_part_name', CoursePartsEnum::class),
             ]);
            $departmentCourse = $departmentCoursePart->department_course()->get(['level as level_name', 'semester as semester_name']);
            $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
-               new EnumReplacement1('level_name', LevelsEnum::class),
-               new EnumReplacement1('semester_name', SemesterEnum::class),
+               new EnumReplacement('level_name', LevelsEnum::class),
+               new EnumReplacement('semester_name', SemesterEnum::class),
             ]);
            $department = $departmentCourse->department()->get(['arabic_name as department_name']);
            $college = $department->college()->get(['arabic_name as college_name']);
            $course = $departmentCourse->course()->get(['arabic_name as course_name']);
 
-           array_merge($realExam, $onlineExam, $lecturer, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
+           array_merge($realExam->toArray(),
+            $onlineExam->toArray(),
+            $lecturer->toArray(),
+             $coursePart->toArray(),
+             $departmentCourse->toArray(),
+              $department->toArray(),
+              $college->toArray(),
+              $course->toArray()); // merge all with realExam
         }
         return $realExam;
     }
@@ -112,8 +119,8 @@ class StudentOnlinExamController extends Controller
 
     public function finishOnlineExam (Request $request){
         $student = Student::where('user_id', auth()->user()->id)->first();
-        //get by composite primary keys
-        $studentonlinExam = StudentOnlineExam::where('student_id', $student->id )->where('online_exam_id', $request->id)->firstOrFail();;
+      
+        $studentonlinExam = StudentOnlineExam::where('student_id', $student->id )->where('online_exam_id', $request->id)->firstOrFail();
         $studentonlinExam->update([
             'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
             'end_datetime' => now(),
