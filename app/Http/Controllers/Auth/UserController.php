@@ -160,7 +160,8 @@ class UserController extends Controller
     public function userInfo()
     {
         $user =  auth()->user();
-        return response()->json(['user' => $user], 200);
+
+        return response()->json(['data' => $user], 200);
     }
 
 

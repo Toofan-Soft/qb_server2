@@ -16,11 +16,11 @@ class EmailVerificationController extends Controller
     }
 
 
-    public function sendEmailVerification(Request $request){
-        $request->user()->notify(new EmaiVerificationNotification());
-        $success['success'] = true;
-        return response()->json($success,200);
-    }
+    // public function sendEmailVerification(Request $request){
+    //     $request->user()->notify(new EmaiVerificationNotification());
+    //     $success['success'] = true;
+    //     return response()->json($success,200);
+    // }
 
 
     public function email_verification(EmailVerificationRequest $request){

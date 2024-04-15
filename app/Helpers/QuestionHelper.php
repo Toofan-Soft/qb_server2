@@ -8,6 +8,7 @@ use App\Enums\QuestionTypeEnum;
 use App\Models\TrueFalseQuestion;
 use Illuminate\Http\UploadedFile;
 use App\Enums\TrueFalseAnswerEnum;
+use App\Models\Choice;
 use App\Models\Question;
 use App\Models\QuestionChoiceCombination;
 use GuzzleHttp\Psr7\Response;
@@ -45,10 +46,20 @@ class QuestionHelper
     private static function retrieveCombinationChoices($questionId, $combinationId){
 /// id, content, attachment_url, is_true
     $combinationChoices = QuestionChoiceCombination::where('question_id', '=', $questionId)
-    ->where('combination_id', '=', $combinationId)->get(['combination_choices']);
+                          ->where('combination_id', '=', $combinationId)
+                          ->get(['combination_choices']);
+
     // convert combinationChoices from string to list, ','
-    
-        return [];
+    $combinationChoicesAsList = explode(',', $combinationChoices->combination_choices);
+    $choices = [];
+    foreach ($combinationChoicesAsList as $choiceId) {
+        $choice = Choice::find($choiceId, ['id', 'content', 'attachment_url', 'status as is_true']);
+        if ($choice) {
+            // $choice->is_true =
+            $choices = $choice;
+        }
+    }
+        return  $choices;
     }
 
     public static function retrieveStudentExamQuestions($questions, $questionTypeId){
@@ -60,13 +71,23 @@ class QuestionHelper
         }
         return $questions;
     }
-<<<<<<< HEAD
 
-    private static function retrieveStudentExamCombinationChoices($id, $combination_id){
-=======
+
+
     private static function retrieveStudentExamCombinationChoices($questionId, $combinationId){
->>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
-/// id, content, attachment_url
-        return [];
+    /// id, content, attachment_url
+    $combinationChoices = QuestionChoiceCombination::where('question_id', '=', $questionId)
+                          ->where('combination_id', '=', $combinationId)
+                          ->get(['combination_choices']);
+    // convert combinationChoices from string to list, ','
+    $combinationChoicesAsList = explode(',', $combinationChoices->combination_choices);
+    $choices = [];
+    foreach ($combinationChoicesAsList as $choiceId) {
+        $choice = Choice::find($choiceId, ['id', 'content', 'attachment_url']);
+        if ($choice) {
+            $choices = $choice;
+        }
+    }
+        return  $choices;
     }
 }

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use League\CommonMark\Node\Query\OrExpr;
 
 class CollegeController extends Controller
 {
@@ -127,13 +128,23 @@ class CollegeController extends Controller
 
 
     // // this for merge
-    $college = College::findOrFail($request->id);
-    $department = $college->departments()->get();
-    // $college = array_merge($college->toArray(),  $department->toArray());
+    // $college = array_merge($college->toArray(),  $departments->toArray());
+    $college = College::find($request->id);
+    // $departments = $college->departments()->get();
+
+     $college = ImageHelper::addCompleteDomainToMediaUrls($college);
+    // foreach ($departments as $department) {
+    //     if ($department->logo_url  ){
+    //         $department->logo_url = asset(  $department->logo_url);
+    //         // Or
+    //         // $department->attachment = asset(  $department->attachment);
+    //         // or
+    //         // $department->logo_url = asset(  $department->logo_url);
+    //     }
+    // }
 
 
-
-        return response()->json(['data' => $department  ], 200);
+        return response()->json(['data' => $college  ], 200);
         // $college = College::with(['departments:id,arabic_name as name,college_id'])->find($request->id); // لازم العمود حق العلاقه يكون ضمن البيانات المحددة
 
 

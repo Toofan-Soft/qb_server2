@@ -90,7 +90,7 @@ class ExamHelper
     }
 
     public static function retrieveCompleteStudentOnlineExams(Student $student){
-<<<<<<< HEAD
+
 
         $onlineExams =  DB::table('student_online_exams')
                 ->join('online_exams', 'student_online_exams.online_exam_id', '=', 'online_exams.id')
@@ -133,66 +133,18 @@ class ExamHelper
         $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams ,[new EnumReplacement('course_part_name', CoursePartsEnum::class)] );
 
         return $onlineExams;
-=======
-        $onlineExams =  DB::table('student_online_exams')
-                ->join('online_exams', 'student_online_exams.online_exam_id', '=', 'online_exams.id')
-                ->join('real_exams', 'online_exams.id', '=', 'real_exams.id')
-                ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
-                ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
-                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-                ->select(
-                 'courses.arabic_name as course_name ',
-                 'course_parts.part_id as course_part_name ',
-                 'real_exams.id','real_exams.datetime',
-                 )
-                ->where('student_online_exams.student_id', '=', $student->id)
-                ->where('student_online_exams.status', '=', StudentOnlineExamStatusEnum::COMPLETE->value)
-            ->get();
-            $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams ,[new EnumReplacement('course_part_name', CoursePartsEnum::class)] );
-            $onlineExams = self::retrieveStudentOnlineExamsResult($onlineExams);
-        return $onlineExams;
-    }
-    public static function retrieveIncompleteStudentOnlineExams(Student $student){
-        $onlineExams =  DB::table('student_online_exams')
-                ->join('online_exams', 'student_online_exams.online_exam_id', '=', 'online_exams.id')
-                ->join('real_exams', 'online_exams.id', '=', 'real_exams.id')
-                ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
-                ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
-                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-                ->select(
-                 'courses.arabic_name as course_name ',
-                 'course_parts.part_id as course_part_name ',
-                 'real_exams.id','real_exams.datetime',
-                 )
-                ->where('student_online_exams.student_id', '=', $student->id)
-                ->where('student_online_exams.status','!=', StudentOnlineExamStatusEnum::COMPLETE->value)
-            ->get();
-        $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams ,[new EnumReplacement('course_part_name', CoursePartsEnum::class)] );
 
-        return $onlineExams;
+
     }
+
 
     private static function retrieveStudentOnlineExamsResult($onlineExams){
 
         // حساب المعدل والتقدير لكل اختبار
         return $onlineExams;
 
->>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
-    }
-
-
-    public static function getStudentForm($realExam){
-        // يتم عمل دالة تختار لي رقم النموذج المناسب لطالب
-        $formId = 0;
-        $form = Form::findOrFail($formId);
-        return $form;
 
     }
-
 
     public static function retrieveRealExamChapters($realExamId)
     {
@@ -305,7 +257,7 @@ class ExamHelper
                 ->where('practise_exams.id', '=', $userId)
                 ->where('practise_exams.status', '=', ExamStatusEnum::COMPLETE->value)
             ->get();
-            $practiseExams = ProcessDataHelper::enumsConvertIdToName($practiseExams ,[new EnumReplacement1('course_part_name', CoursePartsEnum::class)] );
+            $practiseExams = ProcessDataHelper::enumsConvertIdToName($practiseExams ,[new EnumReplacement('course_part_name', CoursePartsEnum::class)] );
             $practiseExams = self::retrievePractiseExamsResult($practiseExams);
         return $practiseExams;
     }
@@ -327,7 +279,7 @@ class ExamHelper
                 ->where('practise_exams.id', '=', $userId)
                 ->where('practise_exams.status', '=', ExamStatusEnum::SUSPENDED->value)
             ->get();
-            $practiseExams = ProcessDataHelper::enumsConvertIdToName($practiseExams ,[new EnumReplacement1('course_part_name', CoursePartsEnum::class)] );
+            $practiseExams = ProcessDataHelper::enumsConvertIdToName($practiseExams ,[new EnumReplacement('course_part_name', CoursePartsEnum::class)] );
             $practiseExams = self::retrievePractiseExamsResult($practiseExams);
         return $practiseExams;
     }

@@ -18,10 +18,7 @@ use App\Models\StudentAnswer;
 use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Helpers\QuestionHelper;
-<<<<<<< HEAD
-=======
 use App\Helpers\ResponseHelper;
->>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
 use App\Helpers\EnumReplacement;
 use App\Helpers\OnlinExamHelper;
 use App\Helpers\EnumReplacement1;
@@ -39,21 +36,19 @@ use App\Enums\StudentOnlineExamStatusEnum;
 
 class StudentOnlinExamController extends Controller
 {
-<<<<<<< HEAD
+
+
+
     public function retrieveOnlineExams(Request $request)
-=======
-    public function retrieveOnlineExams(Request $request) 
->>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
     {
         $student = Student::where('user_id', auth()->user()->id)->first();
         $onlineExams =[];
         if($request->status_id === OnlineExamTakingStatusEnum::COMPLETE->value){
-<<<<<<< HEAD
+
             $onlineExams = OnlinExamHelper::retrieveCompleteStudentOnlineExams($student);
-=======
 
             $onlineExams = ExamHelper::retrieveCompleteStudentOnlineExams($student);
->>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
+
         }else{
             $onlineExams = ExamHelper::retrieveIncompleteStudentOnlineExams($student);
         }
@@ -94,7 +89,7 @@ class StudentOnlinExamController extends Controller
            $college = $department->college()->get(['arabic_name as college_name']);
            $course = $departmentCourse->course()->get(['arabic_name as course_name']);
 
-<<<<<<< HEAD
+
            array_merge($realExam->toArray(),
             $onlineExam->toArray(),
             $lecturer->toArray(),
@@ -103,10 +98,10 @@ class StudentOnlinExamController extends Controller
               $department->toArray(),
               $college->toArray(),
               $course->toArray()); // merge all with realExam
-=======
+
            array_merge($realExam, $onlineExam, $lecturer, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
-           
->>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
+
+
         }
         return ResponseHelper::successWithData($realExam);
 
@@ -142,7 +137,7 @@ class StudentOnlinExamController extends Controller
 
     public function finishOnlineExam (Request $request){
         $student = Student::where('user_id', auth()->user()->id)->first();
-      
+
         $studentonlinExam = StudentOnlineExam::where('student_id', $student->id )->where('online_exam_id', $request->id)->firstOrFail();
         $studentonlinExam->update([
             'status' => StudentOnlineExamStatusEnum::COMPLETE->value,

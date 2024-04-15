@@ -37,9 +37,10 @@ Route::post('password_reset',[ResetPasswordController::class,'password_reset']);
 
 
 Route::post('login',[UserController::class,'login']);
+
 Route::middleware('auth:api')->group(function () {
-   // Route::get('login',[UserController::class,'login']);
     Route::get('userinfo',[UserController::class,'userInfo']);
+    // Route::get('login',[UserController::class,'login']);
     Route::post('email_verification',[EmailVerificationController::class, 'email_verification']);
     Route::get('email_verification',[EmailVerificationController::class, 'sendEmailVerification']);
     Route::put('update',[UserController::class, 'update']);
@@ -64,12 +65,12 @@ Route::prefix('students/')->group(function () {
 
 // Colleges
 Route::prefix('colleges/')->group(function () {
-    Route::post('add-college', [CollegeController::class, 'addCollege']);
-    Route::get('retrieve-colleges', [CollegeController::class, 'retrieveColleges']);
-    Route::get('retrieve-basic-colleges-info', [CollegeController::class, 'retrieveBasicCollegesInfo']);
-    Route::put('modify-college', [CollegeController::class, 'modifyCollege']);
-    Route::delete('delete-college', [CollegeController::class, 'deleteCollege']);
-    Route::get('retrieve-college', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
+    Route::post('add', [CollegeController::class, 'addCollege']);
+    Route::get('retrieve-list', [CollegeController::class, 'retrieveColleges']);
+    Route::get('retrieve-list-basic-info', [CollegeController::class, 'retrieveBasicCollegesInfo']);
+    Route::put('modify', [CollegeController::class, 'modifyCollege']);
+    Route::delete('delete', [CollegeController::class, 'deleteCollege']);
+    Route::get('retrieve', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
 });
 
 // departments

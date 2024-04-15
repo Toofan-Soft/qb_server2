@@ -26,7 +26,7 @@ class GuestController extends Controller
             'gender' =>  $request->gender_id,
             'image_url' => ImageHelper::uploadImage($request->image),
         ]);
-        if(! UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->pssword)) {
+        if(! UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password)) {
             return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الزائر');
 
         return ResponseHelper::success();

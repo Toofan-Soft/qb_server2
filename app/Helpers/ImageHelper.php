@@ -43,15 +43,25 @@ class ImageHelper
         return null;
     }
 
-    // public static function checkImage(Request $request)
-    // {
-    //     $updatedAttributes=[];
-    //     foreach (['image_url', 'logo_url'] as $fileKey) {
-    //         if ($request->hasFile($fileKey)) {
-    //             $filePath = ImageHelper::uploadImage($request->file($fileKey));
-    //             $updatedAttributes[$fileKey] = $filePath; // Update attribute with file path
-    //         }
-    //     }
-    //     return null;
-    // }
+    public static function addCompleteDomainToMediaUrls($data, $imageFields = ['image_url', 'attachment', 'logo_url'])
+    {  
+        if (is_array($data)) {
+            foreach ($data as $item) {
+                foreach ($imageFields as $field) {
+                    if (isset($item->$field)) {
+                        $item->$field = asset($item->$field);
+                    }
+                }
+            }
+        } else {
+            foreach ($imageFields as $field) {
+                if (isset($data->$field)) {
+                    $data->$field =asset($data->$field);
+                }
+            }
+        }
+
+        return $data;
+        
+    }
 }

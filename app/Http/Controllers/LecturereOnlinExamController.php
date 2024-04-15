@@ -125,7 +125,6 @@ class LecturereOnlinExamController extends Controller
     public function retrieveOnlineExams(Request $request) ////**** يتم اضافة شرط ان يتم ارجاع الاختبارات التي تنتمي الى المستخدم الحالي
     {
 
-
           $enumReplacements  =[];
 
             $onlineExams =  DB::table('real_exams')
@@ -188,75 +187,9 @@ class LecturereOnlinExamController extends Controller
              'real_exams.id','real_exams.datetime','real_exams.language as language_name','real_exams.type as type_name',
              'online_exams.status as status_name',
              )
-<<<<<<< HEAD
-            ->where('department_course_parts.id', '=', $request->department_course_part_id)
-            ->where('real_exams.type', '=', $request->type_id)
-            ->where('online_exams.status', '=', $request->stsatus_id)
-            ->get();
-        }
-        elseif (!$request->status_id && !$request->type_id) {
-            $onlineExams =  DB::table('real_exams')
-            ->join('online_exams', 'real_exams.id', '=', 'online_exams.id')
-            ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
-            ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
-            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-
-            ->select(
-             'courses.arabic_name as course_name ',
-             'course_parts.part_id as course_part_name ',
-             'real_exams.id','real_exams.datetime','real_exams.language as language_name','real_exams.type as type_name',
-             'online_exams.status as status_name',
-
-             )
-            ->where('department_course_parts.id', '=', $request->department_course_part_id)
-            ->get();
-        }
-        elseif($request->status_id && !$request->type_id)  {
-            $onlineExams =  DB::table('real_exams')
-            ->join('online_exams', 'real_exams.id', '=', 'online_exams.id')
-            ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
-            ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
-            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-
-            ->select(
-             'courses.arabic_name as course_name ',
-             'course_parts.part_id as course_part_name ',
-             'real_exams.id','real_exams.datetime','real_exams.language as language_name','real_exams.type as type_name',
-             'online_exams.status as status_name',
-
-             )
-                ->where('department_course_parts.id', '=', $request->department_course_part_id)
-                ->where('online_exams.status', '=', $request->stsatus_id)
-                ->get();
-            }else{
-                $onlineExams =  DB::table('real_exams')
-                ->join('online_exams', 'real_exams.id', '=', 'online_exams.id')
-                ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
-                ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
-                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-
-                ->select(
-                 'courses.arabic_name as course_name ',
-                 'course_parts.part_id as course_part_name ',
-                 'real_exams.id','real_exams.datetime','real_exams.language as language_name','real_exams.type as type_name',
-                 'online_exams.status as status_name',
-
-                 )
-                ->where('department_course_parts.id', '=', $request->department_course_part_id)
-            ->where('real_exams.type', '=', $request->type_id)
-            ->get();
-        }
-
-=======
              ->when($request->department_course_part_id , function ($query) use ($request){
                 return $query->where('department_course_parts.id', '=', $request->department_course_part_id);
-             })        
+             })
          ->when($request->status_id , function ($query) use ($request){
             return $query->where('online_exams.status', '=', $request->stsatus_id);
          })
@@ -264,7 +197,6 @@ class LecturereOnlinExamController extends Controller
             return $query->where('real_exams.type', '=', $request->type_id);
          })
         ->get();
->>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
 
         $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, $enumReplacements);
 
@@ -273,11 +205,8 @@ class LecturereOnlinExamController extends Controller
 
     public function retrieveOnlineExam(Request $request)
     {
-<<<<<<< HEAD
-        $realExam = RealExam::findOrFail($request->id,['language as language_name', 'difficulty_level as defficulty_level_name' ,
-=======
+
         $realExam = RealExam::findOrFail($request->id, ['language as language_name', 'difficulty_level as defficulty_level_name' ,
->>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
         'forms_count','form_configuration_method as form_configuration_method_name', 'form_name_method as form_name_method_id' ,
          'datetime', 'duration', 'type as type_id', 'note as special_note']);
          $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
@@ -309,42 +238,17 @@ class LecturereOnlinExamController extends Controller
 
         array_merge($realExam, $onlinExam, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
         $realExam['questionTypes'] = $questionTypes;
-<<<<<<< HEAD
-        return $realExam;
-=======
 
-     //we can use this for combine instead of above :
-        // $realExam->onlineExam = $onlinExam;
-        // $realExam->coursePart = $coursePart;
-        // $realExam->departmentCourse = $departmentCourse;
-        // $realExam->department = $department;
-        // $realExam->college = $college;
-        // $realExam->course = $course;
-        // $realExam->questionTypes = $questionTypes;
-        return ResponseHelper::successWithData($realExam);
->>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
+        return $realExam;
+
+
     }
 
     public function retrieveOnlineExamChapters(Request $request)
     {
-<<<<<<< HEAD
-        $result = DB::table('real_exams')
-        ->join('forms', 'real_exams.id', '=', 'forms.real_exam_id')
-        ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
-        ->join('questions', 'form_questions.question_id', '=', 'questions.id')
-        ->join('topics', 'questions.topic_id', '=', 'topics.id')
-        ->join('chapters', 'topics.chapter_id', '=', 'chapters.id')
-        ->select('chapters.id', 'chapters.arabic_title as title')
-        ->where('real_exams.id', '=', $request->exam_id)
-        ->distinct()
-        ->get();
-
-        return $result;
-=======
         $onlineExamChapters = ExamHelper::retrieveRealExamChapters($request->exam_id);
         return ResponseHelper::successWithData($onlineExamChapters);
 
->>>>>>> 2ad27b63cd9af515b7861e24ba20ce737efb5b25
     }
 
     public function retrieveOnlineExamChapterTopics(Request $request)
