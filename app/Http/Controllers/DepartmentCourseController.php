@@ -226,7 +226,11 @@ class DepartmentCourseController extends Controller
 
     public function retrieveDepartmentCourse(Request $request)
     {
-        $departmentCourse = DepartmentCourse::findOrFail($request->id, ['level as level_id', 'semester as semester_id']); //updated successfull
+        $departmentCourse = DepartmentCourse::findOrFail($request->id, ['level as level_name', 'semester as semester_name']); //updated successfull
+        $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse,[
+        new EnumReplacement('level_name', LevelsEnum::class), 
+        new EnumReplacement('semester_name', SemesterEnum::class)
+    ]);
         $course = $departmentCourse->course()->get(['arabic_name as course_name']);
         $department = $departmentCourse->department()->get(['arabic_name as department_name']);
         $college = $department->college()->get(['arabic_name as college_name']);
@@ -239,9 +243,17 @@ class DepartmentCourseController extends Controller
         $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName($departmentCourseParts,
         new EnumReplacement('name', CoursePartsEnum::class)
     );
+
     array_merge($departmentCourse->toArray(), $course->toArray(), $department->toArray(), $college->toArray());
     $departmentCourse['department_course_parts'] = $departmentCourseParts;
 
+    return ResponseHelper::successWithData($departmentCourse);
+    }
+
+
+    public function retrieveEditableDepartmentCourse(Request $request)
+    {
+        $departmentCourse = DepartmentCourse::findOrFail($request->id, ['level as level_id', 'semester as semester_id']); //updated successfull
     return ResponseHelper::successWithData($departmentCourse);
     }
 

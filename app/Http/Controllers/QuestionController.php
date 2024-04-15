@@ -27,6 +27,8 @@ use App\Enums\TrueFalseAnswerEnum;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
+use App\Enums\ExamDifficultyLevelEnum;
+use App\Helpers\ProcessDataHelper;
 
 class QuestionController extends Controller
 {
@@ -117,7 +119,6 @@ class QuestionController extends Controller
             array_push($enumReplacements,  new EnumReplacement('type_name', QuestionTypeEnum::class));
         }
 
-
         return GetHelper::retrieveModels3(Question::class, $attributes, $conditionAttribute, $enumReplacements );
     }
 
@@ -125,9 +126,9 @@ class QuestionController extends Controller
     public function retrieveQuestion(Request $request)
     {
           //
-        $attributes = [ 'type', 'difficulty_level as difficulty_level_id', 'status',
-                       'accessibility_status as accessibility_status_id',
-                       'language as language_id', 'estimated_answer_time', 'content',
+        $attributes = [ 'type', 'difficulty_level as difficulty_level_name', 'status',
+                       'accessibility_status as accessibility_status_name',
+                       'language as language_name', 'estimated_answer_time', 'content',
                        'attachment as attachment_url', 'title'];
         $question = Question::findOrFail($request->id, $attributes);
 
@@ -143,9 +144,9 @@ class QuestionController extends Controller
             $choices = $question->choices()->get( ['id', 'content', 'attachment as attachment_url', 'status as is_true']);
             foreach ($choices as $choice) {
                 if($choice->is_true === ChoiceStatusEnum::CORRECT_ANSWER->value){
-                    $choices['is_true'] = true;
+                    $choice['is_true'] = true;
                 }else {
-                    $choices['is_true'] = false;
+                    $choice['is_true'] = false;
                 }
             }
             $question['choices'] = $choices;
@@ -175,10 +176,37 @@ class QuestionController extends Controller
           ];
         }
         $question['status'] = $status;
-        return $question;
+        $enumReplacements = [
+            new EnumReplacement('difficulty_level_name', ExamDifficultyLevelEnum::class),
+            new EnumReplacement('accessibility_status_name', AccessibilityStatusEnum::class),
+            new EnumReplacement('language_name', LanguageEnum::class),
+        ];
+        $question = ProcessDataHelper::enumsConvertIdToName($question, $enumReplacements);
+        return ResponseHelper::successWithData($question);
 
     }
 
+    public function retrieveEditableQuestion(Request $request)
+    {
+          // 
+        $attributes = [ 'type', 'difficulty_level as difficulty_level_id',
+                       'accessibility_status as accessibility_status_id',
+                       'language as language_id', 'estimated_answer_time', 'content',
+                       'attachment as attachment_url', 'title'];
+        $question = Question::findOrFail($request->id, $attributes);
+
+        if($question->type === QuestionTypeEnum::TRUE_FALSE->value){
+            $trueFalseQuestion = $question->true_false_question()->get(['answer']);
+            if($trueFalseQuestion->answer === TrueFalseAnswerEnum::TRUE->value){
+                $question['is_true'] = true;
+            }else {
+                $question['is_true'] = false;
+            }
+
+        }
+        unset($question['type']);
+        return ResponseHelper::successWithData($question);
+    }
 
     public function submitQuestionReviewRequest(Request $request)
     {

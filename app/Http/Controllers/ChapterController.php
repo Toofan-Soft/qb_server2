@@ -70,11 +70,23 @@ class ChapterController extends Controller
 
     public function retrieveChapter(Request $request)
     {
+        $attributes = ['arabic_title', 'english_title', 'status as status_name', 'description'];
+        $conditionAttribute = ['id' => $request->id];
+        $enumReplacements = [
+            new EnumReplacement('status_name', ChapterStatusEnum::class),
+        ];
+        return GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute, $enumReplacements);
+
+    }
+
+    public function retrieveEditableChapter(Request $request)
+    {
         $attributes = ['arabic_title', 'english_title', 'status as status_id', 'description'];
         $conditionAttribute = ['id' => $request->id];
         return GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute);
 
     }
+
     public function retrieveChapterDescription(Request $request)
     {
         $attributes = ['description'];

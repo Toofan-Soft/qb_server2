@@ -42,7 +42,13 @@ class CourseController extends Controller
         return GetHelper::retrieveModels(Course::class, $attributes, null);
     }
 
-
+    public function retrieveEditableCourse(Request $request)
+    {
+        $attributes = ['arabic_name', 'english_name'];
+        $conditionAttribute = ['id', $request->id];
+        return GetHelper::retrieveModels(Course::class, $attributes, $conditionAttribute);
+    }
+    
     public function rules(Request $request): array
     {
         $rules = [

@@ -66,6 +66,17 @@ class QuestionChoiceController extends Controller
         return DeleteHelper::deleteModel($choice);
     }
 
+    public function retrieveEditableQuestionChoice(Request $request)
+    {
+        $attributes = ['content', 'attachment as attachment_url', 'status as is_true'];
+        $choice = Choice::findOrFail($request->id, $attributes);
+        if($choice->is_true === ChoiceStatusEnum::CORRECT_ANSWER->value){
+            $choice['is_true'] = true;
+        }else {
+            $choice['is_true'] = false;
+        }
+        return ResponseHelper::successWithData($choice);
+    }
 
     //****// rule ( name of status   convert into is_true in rule  )
 

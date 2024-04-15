@@ -64,12 +64,20 @@ class CoursePartController extends Controller
 
     public function retrieveCourseParts(Request $request)
     {
-        $attributes = ['id', 'part_id as part_name', 'status as status_id','description'];
+        $attributes = ['id', 'part_id as name', 'status as status_name','description'];
         $conditionAttribute = ['course_id' => $request->course_id];
         $enumReplacements = [
-            new EnumReplacement('part_name', CoursePartsEnum::class),
-          ];
+            new EnumReplacement('name', CoursePartsEnum::class),
+            new EnumReplacement('status_name', CourseStatusEnum::class),
+        ];
           return GetHelper::retrieveModels(CoursePart::class, $attributes, $conditionAttribute, $enumReplacements);
+    }
+
+    public function retrieveEditableCoursePart(Request $request)
+    {
+        $attributes = ['status as status_id', 'description'];
+        $conditionAttribute = ['id', $request->id];
+        return GetHelper::retrieveModels(CoursePart::class, $attributes, $conditionAttribute);
     }
 
     public function rules(Request $request): array

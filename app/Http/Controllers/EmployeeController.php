@@ -104,11 +104,24 @@ class EmployeeController extends Controller
 
     public function retrieveEmployee(Request $request)
     {
-        $attributes = ['arabic_name','english_name', 'gender as gender_id', 'phone', 'user_id as email', 'job_type as job_type_id', 'specialization', 'qualification as qualification_id', 'image_url'];
+        $attributes = ['arabic_name','english_name', 'gender as gender_name', 'phone', 'user_id as email', 'job_type as job_type_name', 'specialization', 'qualification as qualification_name', 'image_url'];
         $conditionAttribute = ['id' => $request->id];
+        $enumReplacements = [
+            new EnumReplacement( 'gender_name', GenderEnum::class),
+            new EnumReplacement( 'job_type_name', JobTypeEnum::class),
+            new EnumReplacement( 'qualification_name', QualificationEnum::class),
+          ];
         $columnReplacements = [
             new ColumnReplacement('email', 'email', User::class)
           ];
+
+          return GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements);
+    }
+
+    public function retrieveEditableEmployee(Request $request)
+    {
+        $attributes = ['arabic_name','english_name', 'gender as gender_id', 'phone', 'job_type as job_type_id', 'specialization', 'qualification as qualification_id', 'image_url'];
+        $conditionAttribute = ['id' => $request->id];
           return GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute);
     }
 

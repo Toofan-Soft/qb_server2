@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
+use App\Enums\LevelsEnum;
 use App\Models\CourseStudent;
 use  Illuminate\Support\Facades\Validator;
 
@@ -137,7 +138,7 @@ class StudentController extends Controller
         //     'course_students.department_course.department:arabic_name as department_name.college:arabic_name as college_name',
         //     ])->find($request->id);
 // { college name, department name, level id
-
+    
         $student =  DB::table('students')
             ->join('course_students', 'students.id', '=', 'course_students.student_id')
             ->join('department_courses', 'course_students.department_course_id', '=', 'department_course.id')
@@ -147,7 +148,7 @@ class StudentController extends Controller
                 'students.academic_id',
                 'students.arabic_name',
                 'students.english_name',
-                'students.gender as gender_id',
+                'students.gender as gender_name',
                 'students.user_id as email',
                 'students.image_url',
                 'students.birthdate',
@@ -157,16 +158,29 @@ class StudentController extends Controller
             )
             ->where('students.id', '=', $request->id)
             ->get();
+            $enumReplacements = [
+                new EnumReplacement( 'gender_name', GenderEnum::class),
+                new EnumReplacement( 'level_name', LevelsEnum::class),
+              ];
         $columnReplacements = [
             new ColumnReplacement('email', 'email', User::class)
         ];
+        $student['level_name'] = $this->getStudentDepartmentAndLevel($request->id)['level_id'];
+        $student = ProcessDataHelper::enumsConvertIdToName($student, $enumReplacements);
         $student = ProcessDataHelper::columnConvertIdToName($student, $columnReplacements);
-        $student['level_id'] = $this->getStudentDepartmentAndLevel($request->id)['level_id'];
 
         return ResponseHelper::successWithData($student);
 
     }
 
+    public function retrieveEditableStudent(Request $request)
+    {
+    $attributes = ['academic_id', 'arabic_name','english_name', 'gender as gender_id', 'phone', 'birthdate', 'image_url'];
+    $student = Student::findeOrFail( $request->id, $attributes);           
+    $student['level_id'] = $this->getStudentDepartmentAndLevel($request->id)['level_id'];
+
+        return ResponseHelper::successWithData($student);
+    }
 
     private function addStudentCoures($studnetId, $departmentId, $levelId)
     {

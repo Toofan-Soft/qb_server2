@@ -43,6 +43,13 @@ class DepartmentCoursePartController extends Controller
         return DeleteHelper::deleteModel($departmentCoursePart);
     }
 
+    public function retrieveEditableDepartmentCoursePart(Request $request)
+    {
+        $attributes = ['score', 'lecureres_count', 'lecureres_duration', 'notes'];
+        $departmentCourse = DepartmentCourse::findOrFail($request->id, $attributes); 
+        return ResponseHelper::successWithData($departmentCourse);
+    }
+
     public function rules(Request $request): array
     {
         $rules = [

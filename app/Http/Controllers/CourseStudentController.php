@@ -172,7 +172,13 @@ class CourseStudentController extends Controller
     // $unionStudents = Collection::make($departmentStudents)->union($departmentCourseStudents)->all();
     }
 
-
+    public function retrieveEditableCourseStudent(Request $request)
+    {
+    $attributes = ['academic_year'];
+    $courseStudent = CourseStudent::where('department_course_id' , '=', $request->department_course_id)
+    ->where('student_id' , '=', $request->student_id)->get($attributes);     
+        return ResponseHelper::successWithData($courseStudent);
+    }
 
     public function rules(Request $request): array
     {
