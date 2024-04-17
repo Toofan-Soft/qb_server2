@@ -29,16 +29,12 @@ class LoginHelper
         if ($validation->fails()) {
             return response()->json(['error_message' =>  $validation->errors()->first()], 422);
         }
-
-
         // Find user by email (assuming unique email)
         $user = User::where('email', $input['email'])->first();
 
         if (!$user) {
             return response()->json(['error' => 'Invalid credentials'], 401);
         }
-
-        // Generate token without authentication (less secure)
         $token = $user->createToken('quesionbanklaravelapi')->accessToken;
 
         return response()->json(['token' => $token], 200);

@@ -30,6 +30,7 @@ use App\Enums\ExamConductMethodEnum;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\ExamDifficultyLevelEnum;
+use Illuminate\Support\Facades\Storage;
 use App\Enums\OnlineExamTakingStatusEnum;
 use App\Enums\FormConfigurationMethodEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
@@ -68,7 +69,9 @@ class StudentOnlinExamController extends Controller
                new EnumReplacement('type_name', ExamTypeEnum::class),
             ]);
 
-            // $realExam['general_note'] = getGeneralNotes();        //// need add   general_note from json file
+            $jsonData = Storage::disk('local')->get('generalNotes.json');// get notes from json file
+            $general_note = json_decode($jsonData, true);
+            $realExam['general_note'] =  $general_note;        //// Done
 
             $realExam = ExamHelper::getRealExamsScore($realExam);
            $onlineExam = $realExam->online_exam()->get(['conduct_method as is_mandatory_question_sequense']);

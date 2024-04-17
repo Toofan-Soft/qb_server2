@@ -24,6 +24,8 @@ class GetHelper
 
     // public static function retrieveModelsWithEnum($model, $attributes = null , $conditionAttribute = [] , $enumAttributes =[] , $enumClasses =[]) {
     public static function retrieveModels($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
+        $query = $model::query();
+        $rows = null;
         if (empty($conditionAttribute)) {
             if (empty($attributes)) {
                 $rows = $model::all();
@@ -32,9 +34,21 @@ class GetHelper
             }
         } else {
             if (empty($attributes)) {
-                $rows =$model::where($conditionAttribute[0],  $conditionAttribute[1])->get();
+                // $rows =$model::where($conditionAttribute[0],  $conditionAttribute[1])->get();
+                $query = $query->where(function ($query) use ($conditionAttribute) {
+                    foreach ($conditionAttribute as $column => $value) {
+                        $query->where($column, '=', $value);
+                    }
+                });
+                $rows = $query->get();
             }else {
-               $rows = $model::where($conditionAttribute[0], $conditionAttribute[1])->get( $attributes);
+            //    $rows = $model::where($conditionAttribute[0], $conditionAttribute[1])->get( $attributes);
+            $query = $query->where(function ($query) use ($conditionAttribute) {
+                foreach ($conditionAttribute as $column => $value) {
+                    $query->where($column, '=', $value);
+                }
+            });
+            $rows = $query->get($attributes);
             }
         }
 

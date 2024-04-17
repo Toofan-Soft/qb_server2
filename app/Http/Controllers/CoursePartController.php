@@ -76,7 +76,7 @@ class CoursePartController extends Controller
     public function retrieveEditableCoursePart(Request $request)
     {
         $attributes = ['status as status_id', 'description'];
-        $conditionAttribute = ['id', $request->id];
+        $conditionAttribute = ['id' => $request->id];
         return GetHelper::retrieveModels(CoursePart::class, $attributes, $conditionAttribute);
     }
 
