@@ -125,10 +125,11 @@ class UserHelper
 
   public static function retrieveOwnerRoles( $ownerTypeId )
     {
-        $userRoles = [
-            'id' => 0,
-            'is_mandatory' => true
+        $userRole = [
+                'id' => 0,
+                'is_mandatory' => true
         ];
+        $userRoles = [$userRole];
         return $userRoles;
     }
 

@@ -52,7 +52,7 @@ class GuestController extends Controller
     public function retrieveEditableGuestProfile()
     {
         $attributes = ['name', 'gender as gender_id', 'phone', 'image_url'];
-        $guest = Guest::where('user_id', auth()->user()->id)->get($attributes)->first();
+        $guest = Guest::where('user_id', '=', auth()->user()->id)->get($attributes)->first();
         return ResponseHelper::successWithData($guest);
     }
 

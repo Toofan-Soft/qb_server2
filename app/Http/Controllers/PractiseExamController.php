@@ -15,6 +15,8 @@ use App\Enums\ExamStatusEnum;
 use App\Helpers\DeleteHelper;
 use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
+use App\Helpers\ResponseHelper;
+use App\Helpers\EnumReplacement;
 use App\Helpers\OnlinExamHelper;
 use App\Helpers\EnumReplacement1;
 use App\Enums\TrueFalseAnswerEnum;
@@ -139,20 +141,20 @@ class PractiseExamController extends Controller
            'conduct_method as is_mandatory_question_sequence' , 'status as is_complete'
         ]);
          $practiseExam = ProcessDataHelper::enumsConvertIdToName($practiseExam, [
-            new EnumReplacement1('language_name', LanguageEnum::class)
+            new EnumReplacement('language_name', LanguageEnum::class)
          ]);
 
         $departmentCoursePart = $practiseExam->department_course_part();
 
         $coursePart = $departmentCoursePart->course_part(['part_id as course_part_name']);
         $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
-            new EnumReplacement1('course_part_name', CoursePartsEnum::class)
+            new EnumReplacement('course_part_name', CoursePartsEnum::class)
          ]);
 
         $departmentCourse = $departmentCoursePart->department_course()->get(['level as level_name', 'semester as semester_name']);
         $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
-            new EnumReplacement1('level_name', LevelsEnum::class),
-            new EnumReplacement1('semester_name', SemesterEnum::class)
+            new EnumReplacement('level_name', LevelsEnum::class),
+            new EnumReplacement('semester_name', SemesterEnum::class)
          ]);
 
         $department = $departmentCourse->department()->get(['arabic_name as department_name']);
@@ -164,7 +166,14 @@ class PractiseExamController extends Controller
 
         array_merge($practiseExam, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
 
-        return $practiseExam;
+        return ResponseHelper::successWithData($practiseExam);
+    }
+
+    public function retrieveEditablePractiseExam(Request $request)
+    {
+        $practiseExam = PracticeExam::findOrFail($request->id, ['title']);
+        
+        return ResponseHelper::successWithData($practiseExam);
     }
 
     public function savePractiseExamQuestionAnswer (Request $request){

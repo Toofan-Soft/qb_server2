@@ -27,9 +27,9 @@ class UserManagmentController extends Controller
         if ($failed = ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError($failed);
         }
-        if(! UserHelper::addUser($request->email, $request->owner_type_id,  $request->owner_id , null, $request->roles_ids)) {
+        if (!UserHelper::addUser($request->email, $request->owner_type_id,  $request->owner_id, null, $request->roles_ids)) {
             return ResponseHelper::serverError('لم يتم اضافة حساب لهذا المستخدم');
-          }
+        }
 
         return ResponseHelper::success();
     }
@@ -43,9 +43,9 @@ class UserManagmentController extends Controller
         $user = User::findOrFail($request->id);
         $userRoles = $user->user_roles()->get(['role_id']);
         foreach ($request->roles_ids as $role_id) {
-            if(in_array($userRoles['role_id'], $role_id)){
+            if (in_array($userRoles['role_id'], $role_id)) {
                 UserHelper::deleteUserRoles($user->id, [$role_id]);
-            }else{
+            } else {
                 UserHelper::addUserRoles($user->id, [$role_id]);
             }
         }
@@ -55,95 +55,100 @@ class UserManagmentController extends Controller
     public function changeUserStatus(Request $request)
     {
         $user = User::findOrFail($request->id);
-        if($user->status === UserStatusEnum::ACTIVATED->value){
+        if ($user->status === UserStatusEnum::ACTIVATED->value) {
             $user->uodate([
-              'status' =>  UserStatusEnum::INACTIVE->value,
+                'status' =>  UserStatusEnum::INACTIVE->value,
             ]);
-        }else{
+        } else {
             $user->uodate([
                 'status' =>  UserStatusEnum::ACTIVATED->value,
-              ]);
+            ]);
         }
         return ResponseHelper::success();
     }
 
-    public function deleteUser (Request $request)
+    public function deleteUser(Request $request)
     {
-        $user = User::findeOrFail( $request->id);
+        $user = User::findeOrFail($request->id);
         $userRoles = $user->user_roles()->get(['role_id'])->toArray();
         UserHelper::deleteUserRoles($user->id, $userRoles);
         return DeleteHelper::deleteModel($user);
     }
 
-        public function retrieveUsers(Request $request)
-        {
-            $users = [];
-            $ownerTable = '';
-            if($request->owner_type_id === OwnerTypeEnum::GUEST->value){
-                $ownerTable = 'guests';
-            }elseif ($request->owner_type_id === OwnerTypeEnum::STUDENT->value) {
-                $ownerTable = 'students';
-            }else {
-                $ownerTable = 'employees';
-            }
-            $users = DB::table('users')
+    public function retrieveUsers(Request $request)
+    {
+        $users = [];
+        $ownerTable = '';
+        if ($request->owner_type_id === OwnerTypeEnum::GUEST->value) {
+            $ownerTable = 'guests';
+        } elseif ($request->owner_type_id === OwnerTypeEnum::STUDENT->value) {
+            $ownerTable = 'students';
+        } else {
+            $ownerTable = 'employees';
+        }
+        $users = DB::table('users')
             ->join('user_roles', 'users.id', '=', 'user_roles.user_id')
-            ->join($ownerTable, 'users.id', '=', $ownerTable.'.user_id')
-            ->select('users.id', 'users.status as status_name', 'users.email',
-                     $ownerTable.'.name as owner_name', $ownerTable.'.image_url')
+            ->join($ownerTable, 'users.id', '=', $ownerTable . '.user_id')
+            ->select(
+                'users.id',
+                'users.status as status_name',
+                'users.email',
+                $ownerTable . '.name as owner_name',
+                $ownerTable . '.image_url'
+            )
             ->Where('users.owner_type', '=', $request->owner_type_id)
             ->Where('user_roles.role_id', '=', $request->role_id)
             ->get();
-            $users = ProcessDataHelper::enumsConvertIdToName($users, new EnumReplacement( 'status_name', UserStatusEnum::class));
+        $users = ProcessDataHelper::enumsConvertIdToName($users, new EnumReplacement('status_name', UserStatusEnum::class));
 
-            return ResponseHelper::successWithData($users);
+        return ResponseHelper::successWithData($users);
+    }
+
+    public function retrieveUser(Request $request)
+    {
+        $userData = User::findeOrFail($request->id, ['email, status as status_name, owner_type as owner_type_name']);
+
+        $ownerTable = '';
+        if ($userData->owner_type_name === OwnerTypeEnum::GUEST->value) {
+            $ownerTable = 'guests';
+        } elseif ($userData->owner_type_name === OwnerTypeEnum::STUDENT->value) {
+            $ownerTable = 'student';
+        } else {
+            $ownerTable = 'employee';
         }
 
-        public function retrieveUser(Request $request)
-        {
-            $userData = User::findeOrFail($request->id, ['email, status as status_id, owner_type as owner_type_name']);
-            $ownerTable = '';
-            if($userData->owner_type_name === OwnerTypeEnum::GUEST->value){
-                $ownerTable = 'guests';
-            }elseif ($userData->owner_type_name === OwnerTypeEnum::STUDENT->value) {
-                $ownerTable = 'student';
-            }else{
-                $ownerTable = 'employee';
+        $ownerData = $userData->$ownerTable()->get(['arabic_name as name, image_url']);
+
+        $currentUserRoles = $userData->user_roles()->get(['role_id']);
+        $userRoles = UserHelper::retrieveOwnerRoles($userData->owner_type_name);
+        foreach ($userRoles as $userRole) {
+            if (in_array($userRole['id'], $currentUserRoles['role_id'])) {
+                $userRole['is_selected'] = true;
+            } else {
+                $userRole['is_selected'] = false;
             }
-
-            $ownerData = $userData->$ownerTable()->get(['arabic_name as name, image_url']);
-
-            // modify userRoles list like [id, name, is_selected, is_mandatory]
-            $currentUserRoles = $userData->user_roles()->get(['role_id']);
-
-            $userRoles = UserHelper::retrieveOwnerRoles($userData->owner_type_name);
-            $userRoles['role_name'] = $userRoles['id'];
-            $userRoles = ProcessDataHelper::enumsConvertIdToName($userRoles, new EnumReplacement( 'role_name', RoleEnum::class));
-
-            foreach ($userRoles as $userRole) {
-                if(in_array($currentUserRoles['role_id'], $userRole)){
-                    $userRole['is_selected'] = true;
-                }else{
-                    $userRole['is_selected'] = false;
-                }
-            }
-
-            $userData = ProcessDataHelper::enumsConvertIdToName($userData, new EnumReplacement( 'owner_type_name', OwnerTypeEnum::class));
-
-            array_merge($userData, $ownerData) ; // conncat userData + ownerData + userRoles
-            $userData['roles'] = $userRoles;
-            return ResponseHelper::successWithData($userData);
         }
+        
+        $userRoles['name'] = $userRoles['id'];
+        $userRoles = ProcessDataHelper::enumsConvertIdToName($userRoles, new EnumReplacement('role_name', RoleEnum::class));
 
-        public function retrieveOwnerRoles(Request $request)
-        {
-            $userRoles = UserHelper::retrieveOwnerRoles($request->owner_type_id);
-            $userRoles['role_name'] = $userRoles['id'];
-            $userRoles = ProcessDataHelper::enumsConvertIdToName($userRoles, new EnumReplacement( 'role_name', RoleEnum::class));
+        $userData['is_active'] = ($userData->status_name === UserStatusEnum::ACTIVATED->value)? true : false; 
+        $userData = ProcessDataHelper::enumsConvertIdToName($userData, new EnumReplacement('owner_type_name', OwnerTypeEnum::class));
 
-            return ResponseHelper::successWithData($userRoles);
-            // $attributes = ['id, name, is_mandatory'];
-        }
+        array_merge($userData, $ownerData); // conncat userData + ownerData + userRoles
+        $userData['roles'] = $userRoles;
+        return ResponseHelper::successWithData($userData);
+    }
+
+    public function retrieveOwnerRoles(Request $request)
+    {
+        $userRoles = UserHelper::retrieveOwnerRoles($request->owner_type_id);
+        $userRoles['name'] = $userRoles['id'];
+        $userRoles = ProcessDataHelper::enumsConvertIdToName($userRoles, new EnumReplacement('role_name', RoleEnum::class));
+
+        return ResponseHelper::successWithData($userRoles);
+        // $attributes = ['id, name, is_mandatory'];
+    }
 
 
     public function rules(Request $request): array

@@ -35,6 +35,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\ExamDifficultyLevelEnum;
 use App\Enums\FormConfigurationMethodEnum;
+use App\Enums\FormNameMethodEnum;
+use App\Helpers\ColumnReplacement;
 
 class LecturereOnlinExamController extends Controller
 {
@@ -205,19 +207,25 @@ class LecturereOnlinExamController extends Controller
 
     public function retrieveOnlineExam(Request $request)
     {
-
         $realExam = RealExam::findOrFail($request->id, ['language as language_name', 'difficulty_level as defficulty_level_name' ,
-        'forms_count','form_configuration_method as form_configuration_method_name', 'form_name_method as form_name_method_id' ,
-         'datetime', 'duration', 'type as type_id', 'note as special_note']);
+        'forms_count','form_configuration_method as form_configuration_method_name', 'form_name_method as form_name_method_name' ,
+         'datetime', 'duration', 'type as type_name', 'note as special_note']);
          $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
             new EnumReplacement('language_name', LanguageEnum::class),
             new EnumReplacement('defficulty_level_name', ExamDifficultyLevelEnum::class),
             new EnumReplacement('form_configuration_method_name', FormConfigurationMethodEnum::class),
+            new EnumReplacement('form_name_method_name', FormNameMethodEnum::class),
+            new EnumReplacement('type_name', ExamTypeEnum::class),
          ]);
-        $onlinExam = $realExam->online_exam()->get(['conduct_method as conduct_method_id','status as status_name','proctor_id','exam_datetime_notification_datetime as datetime_notification_datetime','result_notification_datetime']);
-        $onlinExam = ProcessDataHelper::enumsConvertIdToName($onlinExam, [
+        $onlineExam = $realExam->online_exam()->get(['conduct_method as conduct_method_name','status as status_name','proctor_id as proctor_name','exam_datetime_notification_datetime as datetime_notification_datetime','result_notification_datetime']);
+        $onlineExam = ProcessDataHelper::enumsConvertIdToName($onlineExam, [
             new EnumReplacement('status_name', ExamStatusEnum::class),
+            new EnumReplacement('conduct_method_name', ExamStatusEnum::class),
          ]);
+         $onlineExam = ProcessDataHelper::columnConvertIdToName($onlineExam, [
+            new ColumnReplacement('proctor_name', 'arabic_name', Employee::class),
+         ]);
+
         $departmentCoursePart = $realExam->lecturer_course()->department_course_part();
         $coursePart = $departmentCoursePart->course_part(['part_id as course_part_name']);
         $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
@@ -236,12 +244,24 @@ class LecturereOnlinExamController extends Controller
             new EnumReplacement('type_name', QuestionTypeEnum::class),
          ]);
 
-        array_merge($realExam, $onlinExam, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
+        array_merge($realExam, $onlineExam, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
         $realExam['questionTypes'] = $questionTypes;
 
-        return $realExam;
+        return ResponseHelper::successWithData($realExam);
+    }
 
+    public function retrieveEditableOnlineExam(Request $request)
+    {
+        $realExam = RealExam::findOrFail($request->id, ['form_name_method as form_name_method_id' ,
+        'datetime', 'type as type_id', 'note as special_note']);
+        
+        $onlinExam = $realExam->online_exam()->get(['conduct_method as conduct_method_id',
+        'exam_datetime_notification_datetime as datetime_notification_datetime',
+        'proctor_id', 'result_notification_datetime']);
 
+        array_merge($realExam, $onlinExam); // merge all with realExam
+        
+        return ResponseHelper::successWithData($realExam);
     }
 
     public function retrieveOnlineExamChapters(Request $request)
