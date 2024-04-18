@@ -24,6 +24,7 @@ class QuestionChoiceController extends Controller
 
     public function addQuestionChoice(Request $request)
     {
+        // اعادة انشاء توزيعات السؤال 
         if($failed = ValidateHelper::validateData($request, $this->rules($request))){
             return  ResponseHelper::clientError($failed);
         }
@@ -40,6 +41,7 @@ class QuestionChoiceController extends Controller
 
     public function modifyQuestionChoice(Request $request)
     {
+                // اعادة انشاء توزيعات السؤال في حالة تغيرت حالة الاجابة 
         if($failed = ValidateHelper::validateData($request, $this->rules($request))){
             return  ResponseHelper::clientError($failed);
         }
@@ -62,6 +64,8 @@ class QuestionChoiceController extends Controller
 
     public function deleteQuestionChoice(Request $request)
     {
+                // اعادة انشاء توزيعات السؤال 
+
         $choice = Choice::findOrFail($request->id);
         return DeleteHelper::deleteModel($choice);
     }

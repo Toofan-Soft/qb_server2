@@ -85,6 +85,9 @@ class QuestionController extends Controller
 
     public function deleteQuestion(Request $request)
     {
+        // اذا كان نوع السؤال اختيارات يتم حذف التوزيعات التابعة له
+        // مهما كان نوع السؤال يتم حذف جدول تاريخ استخدام السؤال
+
        $question = Question::findeOrFail( $request->id);
        if($question->type === TrueFalseAnswerEnum::TRUE->value ){
        return DeleteHelper::deleteModel($question->true_false_question());
@@ -214,6 +217,8 @@ class QuestionController extends Controller
     }
     public function acceptQuestion(Request $request)
     {
+        // يتم انشاء التوزيعات للسؤال اذا كان نوعه اختيارات 
+        // يتم انشاء جدول تاريخ استخدام السؤال 
         return QuestionHelper::modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
     }
     public function rejectQuestion(Request $request)

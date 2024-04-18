@@ -151,6 +151,7 @@ class StudentOnlinExamController extends Controller
 
 
     public function saveOnlineExamQuestionAnswer (Request $request){
+        // يتم تحديث بيانات استخدام السؤال 
         $student = Student::where('user_id', auth()->user()->id)->first();
         $studentAnswer = StudentAnswer::where('student_id',$student->id)->where('form_id', $request->form_id)->where('question_id', $request->question_id);
         $questionType = Question::findOrFail($request->question_id, ['type']);

@@ -6,6 +6,11 @@ namespace App\Helpers;
 class DeleteHelper
 {
 
+    
+  /**
+   * $model object of model 
+   * delete one raw 
+   */
     public static function deleteModel($model)
     {
         $deleteCount = $model->delete();

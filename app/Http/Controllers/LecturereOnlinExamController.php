@@ -121,6 +121,7 @@ class LecturereOnlinExamController extends Controller
 
     public function deleteOnlineExam (Request $request)
     {
+        // يتم حذف كل ما يتعلق بالاختبار وايضا اسئلة الاختبار التي قد تم توليدها 
         return ExamHelper::deleteRealExam($request->id);
     }
 
