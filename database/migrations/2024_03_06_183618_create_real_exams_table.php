@@ -11,6 +11,7 @@ use Illuminate\Database\Schema\Blueprint;
 use App\Enums\FormConfigurationMethodEnum;
 use Illuminate\Database\Migrations\Migration;
 use App\Enums\ExamFormConfigurationMethodEnum;
+use App\Enums\FormNameMethodEnum;
 
 return new class extends Migration
 {
@@ -25,7 +26,7 @@ return new class extends Migration
             $table->enum('difficulty_level', ExamDifficultyLevelEnum::values());
             $table->enum('form_configuration_method', FormConfigurationMethodEnum::values());
             $table->integer('forms_count')->default(1);
-            $table->enum('form_name_method', FormNameEnum::values());
+            $table->enum('form_name_method', FormNameMethodEnum::values());
             $table->timestamp('datetime');
             $table->integer('duration');
             $table->enum('type',RealExamTypeEnum::values());

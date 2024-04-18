@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('arabic_name');
             $table->string('english_name');
             $table->string('logo_url')->nullable();
-            $table->enum('levels_count', LevelsCountEnum::values())->default(LevelsCountEnum::FOUR->value);;
+            $table->enum('levels_count', LevelsCountEnum::values())->default(LevelsCountEnum::FOUR->value);
             $table->text('description')->nullable() ;
             // foreign key
             $table->unsignedBigInteger('college_id');

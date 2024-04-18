@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('phone')->unique()->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('facebook')->nullable() ;
-            $table->string('X_patform')->nullable() ;
+            $table->string('x_platform')->nullable() ;
             $table->string('youtube')->nullable() ;
             $table->string('telegram')->nullable();
 

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
+use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -11,35 +13,31 @@ class UniversityController extends Controller
 {
     public function configureUniversityData(Request $request)
     {
-        $validator = Validator::make($request->all(), $this->rules($request));
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()->first()], 400);
+        if( ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $updatedAttributes = $request->all();
-        foreach (['image_url', 'logo_url'] as $fileKey) {
-            if ($request->hasFile($fileKey)) {
-                $filePath = ImageHelper::uploadImage($request->file($fileKey));
-                $updatedAttributes[$fileKey] = asset($filePath) ;
+
+            if ($request->hasFile('logo')) {
+                $filePath = ImageHelper::uploadImage($request->file('logo'));
+                $updatedAttributes['logo'] = asset($filePath) ;
             }
-        }
         // Convert the data to JSON
         $jsonData = json_encode($updatedAttributes, JSON_UNESCAPED_SLASHES);
         Storage::disk('local')->put('university.json', $jsonData);
-        return response()->json(['message' => 'University data configured successfully'],201);
+
+        return ResponseHelper::success();
     }
 
     public function modifyUniversityData(Request $request)
     {
-        $validator = Validator::make($request->all(), $this->rules($request));
-        if ($validator->fails()) {
-            return response()->json(['error_message' => $validator->errors()->first()], 400);
+        if( ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $updatedAttributes =$request->all();
-        foreach (['image_url', 'logo_url'] as $fileKey) {
-            if ($request->hasFile($fileKey)) {
-                $filePath = ImageHelper::uploadImage($request->file($fileKey));
-                $updatedAttributes[$fileKey] = $filePath;
-            }
+        if ($request->hasFile('logo')) {
+            $filePath = ImageHelper::uploadImage($request->file('logo'));
+            $updatedAttributes['logo'] = asset($filePath) ;
         }
         $jsonData = Storage::disk('local')->get('university.json');
         $universityData = json_decode($jsonData, true);
@@ -50,17 +48,17 @@ class UniversityController extends Controller
         }
         $modifiedJsonData = json_encode($universityData, JSON_UNESCAPED_SLASHES);
         Storage::disk('local')->put('university.json', $modifiedJsonData);
-        return response()->json(['message' => 'University data modified successfully'],200);
+        return ResponseHelper::success();
     }
 
     public function retrieveUniversityInfo()
     {
         $jsonData = Storage::disk('local')->get('university.json');
         $universityData = json_decode($jsonData, true);
-        if (isset($universityData['logo_url'])) {
-            $universityData['logo_url'] = urldecode($universityData['logo_url']);
+        if (isset($universityData['logo'])) {
+            $universityData['logo'] = urldecode($universityData['logo']);
         }
-        return response()->json($universityData);
+        return ResponseHelper::successWithData($universityData);
     }
 
     public function retrieveBasicUniversityInfo()
@@ -70,9 +68,9 @@ class UniversityController extends Controller
         $basicUniversityInfo = [
             'arabic_name' => $universityData['arabic_name'],
             'english_name' => $universityData['english_name'],
-            'logo_url' => urldecode($universityData['logo_url']) ,
+            'logo' => urldecode($universityData['logo']) ,
         ];
-        return response()->json($basicUniversityInfo);
+        return ResponseHelper::successWithData($basicUniversityInfo);
     }
 
     public function rules(Request $request): array

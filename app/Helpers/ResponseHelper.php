@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\Validator;
 class ResponseHelper
 {
 
-    public static function serverError($message ,$number = 500){
-        return response()->json(['error_message' => $message], $number);
+    public static function serverError( $number = 500){
+        return response()->json(null, $number);
     }
-    public static function clientError($message ,$number = 400){
-        return response()->json(['error_message' => $message], $number);
+    public static function clientError($number = 400){
+        return response()->json(null, $number);
     }
-    public static function success($message = 'successfull',$number = 200){
-        return response()->json(['message' => $message], $number);
+    public static function success($number = 200){
+        return response()->json(null, $number);
     }
     public static function successWithData($data ,$number = 200){
         return response()->json(['data' => $data], $number);

@@ -26,8 +26,8 @@ class ChapterController extends Controller
 
     public function modifyChapter(Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if( ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $chapter = Chapter::findOrFail($request->id);
         $chapter->update([
@@ -56,7 +56,6 @@ class ChapterController extends Controller
 
     }
 
-
     public function retrieveAvailableChapters(Request $request)
     {
         $attributes = ['id', 'arabic_title', 'english_title'];
@@ -64,7 +63,7 @@ class ChapterController extends Controller
             'course_part_id' => $request->course_part_id,
             'status' => ChapterStatusEnum::AVAILABLE->value,
         ];
-        return GetHelper::retrieveModels2(Chapter::class, $attributes, $conditionAttribute);
+        return GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute);
     }
 
 
@@ -101,7 +100,7 @@ class ChapterController extends Controller
         $rules = [
             'arabic_title' => 'required|string|max:255',
             'english_title' => 'required|string|max:255',
-            'status_id' =>['required', new Enum (ChapterStatusEnum::class)], // Assuming ChapterStatusEnum is an enum class
+            'status_id' =>[ new Enum (ChapterStatusEnum::class)],
             'description' => 'nullable|string',
             'course_part_id' => 'required|exists:course_parts,id',
         ];

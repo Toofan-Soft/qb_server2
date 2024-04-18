@@ -27,7 +27,7 @@ final class UserRoleFactory extends Factory
     public function definition(): array
     {
         return [
-            'role_id' => fake()->randomElement(['0', '1', '2', '3', '4', '5']),
+            'role_id' => fake()->randomElement(['0', '1', '2', '3', '4', '5', '6', '7']),
             'user_id' => fake()->uuid,
         ];
     }

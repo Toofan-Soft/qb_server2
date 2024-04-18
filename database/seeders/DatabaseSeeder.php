@@ -34,18 +34,18 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        //\App\Models\User::factory(10)->create(['password'=>'123456']);
+        // \App\Models\User::factory(10)->create(['password'=>'12345678']);
         // then go to consol> php artisan db:seed
 
         // \App\Models\Department::factory(10)->create();
         // \App\Models\College::factory(10)->create();
         // \App\Models\Course::factory(10)->create();
         // \App\Models\CoursePart::factory(10)->create();
-// //////
-//          College::factory()->count(10)->create()->each(function ($college) {
-//             $college->departments()->save(Department::factory()->make());
-//         });
-////
+//////
+        //  College::factory()->count(10)->create()->each(function ($college) {
+        //     $college->departments()->save(Department::factory()->make());
+        // });
+//
         //  Course::factory()->count(10)->create()->each(function ($course) {
         //     $course->course_parts()->save(CoursePart::factory()->make());
         // });
@@ -68,6 +68,7 @@ class DatabaseSeeder extends Seeder
         //         'course_part_id' => $coursePart->id, // Assign a random department ID
         //     ]);
 ////////////
+            // $coursePart = CoursePart::inRandomOrder()->first();
             // $chapter = Chapter::factory()->create([
             //     'course_part_id' => $coursePart->id,
             // ]);

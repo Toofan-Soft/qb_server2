@@ -16,12 +16,14 @@ use Illuminate\Http\Request;
 */
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\GuestController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\ChapterController;
+// use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\CollegeController;
 use App\Http\Controllers\StudentController;
-// use App\Http\Controllers\Auth\UserController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\CoursePartController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -73,7 +75,7 @@ Route::prefix('students/')->group(function () {
 Route::prefix('colleges/')->group(function () {
     Route::post('add', [CollegeController::class, 'addCollege']);
     Route::get('retrieve-list', [CollegeController::class, 'retrieveColleges']);
-    Route::get('retrieve-list-basic-info', [CollegeController::class, 'retrieveBasicCollegesInfo']);
+    Route::get('retrieve-basic-info-list', [CollegeController::class, 'retrieveBasicCollegesInfo']);
     Route::put('modify', [CollegeController::class, 'modifyCollege']);
     Route::delete('delete', [CollegeController::class, 'deleteCollege']);
     Route::get('retrieve', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
@@ -81,19 +83,44 @@ Route::prefix('colleges/')->group(function () {
 
 // departments
 Route::prefix('departments/')->group(function () {
-    Route::get('retrieve-departments', [DepartmentController::class, 'retrieveDepartments']);
-    Route::get('retrieve-basic-departments-info', [DepartmentController::class, 'retrieveBasicDepartmentsInfo']);
-    Route::post('add-department', [DepartmentController::class, 'addDepartment']);
-    Route::put('modify-department', [DepartmentController::class, 'modifyDepartment']);
-    Route::delete('delete-department', [DepartmentController::class, 'deleteDepartment']);
-    Route::get('retrieve-department', [DepartmentController::class, 'retrieveDepartment']); //http://127.0.0.1:8000/api/colleges/1
+    Route::get('retrieve-list', [DepartmentController::class, 'retrieveDepartments']);
+    Route::get('retrieve-basic-info-list', [DepartmentController::class, 'retrieveBasicDepartmentsInfo']);
+    Route::post('add', [DepartmentController::class, 'addDepartment']);
+    Route::put('modify', [DepartmentController::class, 'modifyDepartment']);
+    Route::delete('delete', [DepartmentController::class, 'deleteDepartment']);
+    Route::get('retrieve', [DepartmentController::class, 'retrieveDepartment']); //http://127.0.0.1:8000/api/colleges/1
 });
 
 //courses
-Route::put('courses/update',[CourseController::class,'update']);
-Route::post('courses/create',[CourseController::class,'store']);
+Route::prefix('courses/')->group(function () {
+    Route::get('retrieve-list', [CourseController::class, 'retrieveCourses']);
+    Route::post('add', [CourseController::class, 'addCourse']);
+    Route::put('modify', [CourseController::class, 'modifyCourse']);
+    Route::delete('delete', [CourseController::class, 'deleteCourse']);
+    Route::get('retrieve-editable', [CourseController::class, 'retrieveEditableCourse']); //http://127.0.0.1:8000/api/colleges/1
+});
 
 
+//courseParts
+Route::prefix('courseParts/')->group(function () {
+    Route::get('retrieve-list', [CoursePartController::class, 'retrieveCourseParts']);
+    Route::post('add', [CoursePartController::class, 'addCoursePart']);
+    Route::put('modify', [CoursePartController::class, 'modifyCoursePart']);
+    Route::delete('delete', [CoursePartController::class, 'deleteCoursePart']);
+    Route::get('retrieve-editable', [CoursePartController::class, 'retrieveEditableCoursePart']); //http://127.0.0.1:8000/api/colleges/1
+});
+
+//chapters
+Route::prefix('chapters/')->group(function () {
+    Route::get('retrieve-list', [ChapterController::class, 'retrieveChapters']);
+    Route::get('retrieve-available-list', [ChapterController::class, 'retrieveAvailableChapters']);
+    Route::post('add', [ChapterController::class, 'addChapter']);
+    Route::put('modify', [ChapterController::class, 'modifyChapter']);
+    Route::delete('delete', [ChapterController::class, 'deleteChapter']);
+    Route::get('retrieve-editable', [ChapterController::class, 'retrieveEditableChapter']);
+    Route::get('retrieve', [ChapterController::class, 'retrieveChapter']);
+    Route::get('retrieve-description', [ChapterController::class, 'retrieveChapterDescription']);
+});
 
 
 

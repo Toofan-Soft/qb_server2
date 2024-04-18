@@ -34,7 +34,7 @@ final class CollegeFactory extends Factory
             'phone' => fake()->optional()->phoneNumber,
             'email' => fake()->optional()->safeEmail,
             'facebook' => fake()->optional()->word,
-            'X_patform' => fake()->optional()->word,
+            'X_platform' => fake()->optional()->word,
             'youtube' => fake()->optional()->word,
             'telegram' => fake()->optional()->word,
         ];

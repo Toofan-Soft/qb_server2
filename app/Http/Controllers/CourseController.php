@@ -14,18 +14,14 @@ use Illuminate\Support\Facades\Validator;
 class CourseController extends Controller
 {
 
-    // 	add course (arabic name, english name) : {}
-    // 	modify course (id, arabic name?, english name?) : {}
-    // 	delete course (id) : {}
-    // 	retrieve courses () : { [id, arabic name, english name] }
-
     public function addCourse(Request $request)
     {
       return AddHelper::addModel($request, Course::class,  $this->rules($request));
     }
 
-    public function modifyCourse (Request $request, Course $course)
+    public function modifyCourse (Request $request)
     {
+        $course = Course::findOrFail($request->id);
         return ModifyHelper::modifyModel($request, $course,  $this->rules($request));
     }
 
@@ -48,7 +44,7 @@ class CourseController extends Controller
         $conditionAttribute = ['id', $request->id];
         return GetHelper::retrieveModels(Course::class, $attributes, $conditionAttribute);
     }
-    
+
     public function rules(Request $request): array
     {
         $rules = [

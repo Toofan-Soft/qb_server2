@@ -6,10 +6,10 @@ namespace App\Helpers;
 class DeleteHelper
 {
 
-    
+
   /**
-   * $model object of model 
-   * delete one raw 
+   * $model object of model
+   * delete one raw
    */
     public static function deleteModel($model)
     {
@@ -17,7 +17,7 @@ class DeleteHelper
         if($deleteCount){
             return ResponseHelper::success();
         }else {
-            return ResponseHelper::serverError('something went wrong , not deleted');
+            return ResponseHelper::serverError(500);
         }
     }
 
@@ -29,10 +29,10 @@ class DeleteHelper
             if ($deleted == $modelsIds->count()) {
                 return ResponseHelper::success();
             } else {
-                return ResponseHelper::serverError('Failed to delete some models.');
+                return ResponseHelper::serverError();
             }
         } catch (\Exception $e) {
-            return ResponseHelper::serverError('An error occurred while deleting models.');
+            return ResponseHelper::serverError();
         }
     }
 }

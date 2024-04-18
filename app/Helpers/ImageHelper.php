@@ -23,14 +23,14 @@ class ImageHelper
         return null;
     }
 
-    public static function updateImage(UploadedFile $newImage, $oldImagePath ,$folder = 'images')
+    public static function updateImage( $newImage, $oldImagePath ,$folder = 'images')
     {
         if (!Storage::exists($folder)) {
             Storage::makeDirectory($folder);
         }
 
         // Generate a unique filename for the image
-        if ($oldImagePath->isValid()) {
+        if ($newImage !==null) {
             $imageName = time() . '.' . $newImage->getClientOriginalExtension();
             $newImagePathath = $newImage->move(public_path($folder), $imageName);
             if ($newImagePathath) {
@@ -40,7 +40,7 @@ class ImageHelper
              return $folder . '/' . $imageName;
             }
         }
-        return null;
+        return $oldImagePath;
     }
 
     public static function addCompleteDomainToMediaUrls($data, $imageFields = ['image_url', 'attachment', 'logo_url'])

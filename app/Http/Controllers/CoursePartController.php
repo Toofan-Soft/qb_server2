@@ -23,14 +23,10 @@ use Illuminate\Validation\Rules\Enum;
 class CoursePartController extends Controller
 {
 
-     // 	add course parts (course id, [part id, description?])
-    // 	modify course part (course id, part id, status id?, description?) : {}
-    // 	delete course part (course id, part id) : {}
-    // 	retrieve course parts (id) : { [id, name, status id, description?] }
     public function addCoursePart(Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if( ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $course = Course::findOrFail($request->course_id);
         $course->course_parts()->create([
@@ -38,13 +34,12 @@ class CoursePartController extends Controller
             'description' => $request->description ?? null,
         ]);
        return ResponseHelper::success();
-       // return AddHelper::addModel($request, Course::class,  $this->rules($request), 'course_parts', $request->course_id);
     }
 
     public function modifyCoursePart (Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $coursePart = CoursePart::findOrFail($request->id);
         $coursePart->update([
@@ -52,7 +47,6 @@ class CoursePartController extends Controller
             'description' => $request->description ??  $coursePart->description,
         ]);
        return ResponseHelper::success();
-       // return ModifyHelper::modifyModel($request, $coursePart,  $this->rules($request));
     }
 
 
@@ -83,9 +77,9 @@ class CoursePartController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            //'course_id' => 'required|exists:courses,id',
+            'course_id' => 'required|exists:courses,id',
             'course_part_id' => ['required',new Enum (CoursePartsEnum::class)], // Assuming CoursePartsEnum holds valid values
-            'status_id' =>['required', new Enum (CourseStatusEnum::class)], // Assuming CourseStatusEnum holds valid values
+            'status_id' =>[ new Enum (CourseStatusEnum::class)], // Assuming CourseStatusEnum holds valid values
             'description' => 'nullable|string',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

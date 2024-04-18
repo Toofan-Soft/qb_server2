@@ -23,14 +23,14 @@ class DepartmentController extends Controller
 
     public function addDepartment(Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if( ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $college = College::findOrFail($request->college_id);
         $college->departments()->create([
             'arabic_name' => $request->arabic_name,
             'english_name' => $request->english_name,
-            'levels_count' => $request->phone ?? null,
+            'levels_count' => $request->levels_count ,
             'description' => $request->description?? null,
             'logo_url' => ImageHelper::uploadImage($request->logo)
         ]);
@@ -39,16 +39,16 @@ class DepartmentController extends Controller
 
     public function modifyDepartment(Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if( ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
 
         $department = Department::findOrFail($request->id);
         $department->update([
-            'arabic_name' => $request->arabic_name,
-            'english_name' => $request->english_name,
-            'levels_count' => $request->phone ?? null,
-            'description' => $request->description?? null,
+            'arabic_name' => $request->arabic_name ?? $department->arabic_name,
+            'english_name' => $request->english_name ?? $department->english_name,
+            'levels_count' => $request->levels_count ?? $department->levels_count,
+            'description' => $request->description?? $department->description,
             'logo_url' => ImageHelper::updateImage($request->logo, $department->logo_url)
         ]);
        return ResponseHelper::success();
@@ -90,7 +90,7 @@ class DepartmentController extends Controller
         $rules = [
             'arabic_name' => 'required|string|max:255',
             'english_name' => 'required|string|max:255',
-            'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'logo' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
             'levels_count' =>  ['required', new Enum(LevelsCountEnum::class)],
             'description' => 'nullable|string',
             'college_id' => 'required',

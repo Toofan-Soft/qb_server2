@@ -14,11 +14,9 @@ class ModifyHelper
     public static function modifyModel(Request $request, $model, $rules, $deletedAttributes = [] )
     {
 
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return response()->json(['error_message' => $validator->errors()->first()], 400);
-            }
+        if(ValidateHelper::validateData($request,$rules)){
+            return  ResponseHelper::clientError(401);
+        }
             $updatedAttributes = $request->all();
             foreach ($rules as $fileKey ) {
                 if ($request->hasFile($fileKey)) {
@@ -34,10 +32,10 @@ class ModifyHelper
             try {
                 $response = self::modify($model, $updatedAttributes, $deletedAttributes);
                 DB::commit();
-                return response()->json(['error_message' => 'successful'], 200);
+                return  ResponseHelper::success();
             } catch (\Exception $e) {
                 DB::rollBack();
-                return response()->json(['error_message' => 'Update failed: ' . $e->getMessage()], 500);
+                return  ResponseHelper::serverError(500);
             }
     }
 

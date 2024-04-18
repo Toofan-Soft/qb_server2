@@ -34,7 +34,7 @@ class GetHelper
             }
         } else {
             if (empty($attributes)) {
-                // $rows =$model::where($conditionAttribute[0],  $conditionAttribute[1])->get();
+
                 $query = $query->where(function ($query) use ($conditionAttribute) {
                     foreach ($conditionAttribute as $column => $value) {
                         $query->where($column, '=', $value);
@@ -42,12 +42,13 @@ class GetHelper
                 });
                 $rows = $query->get();
             }else {
-            //    $rows = $model::where($conditionAttribute[0], $conditionAttribute[1])->get( $attributes);
+           
             $query = $query->where(function ($query) use ($conditionAttribute) {
                 foreach ($conditionAttribute as $column => $value) {
                     $query->where($column, '=', $value);
                 }
             });
+
             $rows = $query->get($attributes);
             }
         }
@@ -69,74 +70,5 @@ class GetHelper
           return ResponseHelper::successWithData( $rows);
     }
 
-    public static function retrieveModels2($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
-        if (empty($conditionAttribute)) {
-            if (empty($attributes)) {
-                $rows = $model::all();
-            }else {
-                $rows = $model::all($attributes);
-            }
-        } else {
-            if (empty($attributes)) {
-                $rows = $model::where($conditionAttribute[0][0],  $conditionAttribute[0][1])
-                ->where($conditionAttribute[1][0], $conditionAttribute[1][1] )->get();
-            }else {
-               $rows = $model::where($conditionAttribute[0][0],  $conditionAttribute[0][1])
-               ->where($conditionAttribute[1][0], $conditionAttribute[1][1] )->get( $attributes);
-            }
-        }
 
-        if($enumReplacements){
-            $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
-        }
-
-        if($columnReplacements){
-            $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
-        }
-        foreach ($rows as $row) {
-            if (isset($row->logo_url)) {
-                $row->logo_url = asset($row->logo_url);
-            } elseif (isset($row->image_url)) {
-                $row->image_url = asset($row->image_url);
-            }
-        }
-          return ResponseHelper::success();
-    }
-    public static function retrieveModels3($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
-        if (empty($conditionAttribute)) {
-            if (empty($attributes)) {
-                $rows = $model::all();
-            }else {
-                $rows = $model::all($attributes);
-            }
-        } else {
-            if (empty($attributes)) {
-                $rows = $model::where($conditionAttribute[0][0],  $conditionAttribute[0][1])
-                ->where($conditionAttribute[1][0], $conditionAttribute[1][1] )
-                ->where($conditionAttribute[2][0], $conditionAttribute[2][1] )
-                ->get();
-            }else {
-               $rows = $model::where($conditionAttribute[0][0],  $conditionAttribute[0][1])
-               ->where($conditionAttribute[1][0], $conditionAttribute[1][1] )
-               ->where($conditionAttribute[2][0], $conditionAttribute[2][1] )
-               ->get( $attributes);
-            }
-        }
-
-        if($enumReplacements){
-            $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
-        }
-
-        if($columnReplacements){
-            $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
-        }
-        foreach ($rows as $row) {
-            if (isset($row->logo_url)) {
-                $row->logo_url = asset($row->logo_url);
-            } elseif (isset($row->image_url)) {
-                $row->image_url = asset($row->image_url);
-            }
-        }
-          return ResponseHelper::success();
-    }
 }
