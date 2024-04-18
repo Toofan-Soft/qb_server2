@@ -8,14 +8,14 @@ use Illuminate\Http\UploadedFile;
 
 class ImageHelper
 {
-    public static function uploadImage(UploadedFile $file, $folder = 'images')
+    public static function uploadImage( $file, $folder = 'images')
     {
         if (!Storage::exists($folder)) {
             Storage::makeDirectory($folder);
         }
 
         // Generate a unique filename for the image
-        if ($file->isValid()) {
+        if ( $file !== null) {
             $imageName = time() . '.' . $file->getClientOriginalExtension();
             $path = $file->move(public_path($folder), $imageName);
             return $folder . '/' . $imageName;
@@ -44,7 +44,7 @@ class ImageHelper
     }
 
     public static function addCompleteDomainToMediaUrls($data, $imageFields = ['image_url', 'attachment', 'logo_url'])
-    {  
+    {
         if (is_array($data)) {
             foreach ($data as $item) {
                 foreach ($imageFields as $field) {
@@ -62,6 +62,6 @@ class ImageHelper
         }
 
         return $data;
-        
+
     }
 }

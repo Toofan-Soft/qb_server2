@@ -11,10 +11,11 @@ use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Enums\UserStatusEnum;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Notifications\EmaiVerificationNotification;
-use Illuminate\Support\Facades\Auth;
 
 class LoginHelper
 {
@@ -38,13 +39,10 @@ class LoginHelper
         $token = $user->createToken('quesionbanklaravelapi')->accessToken;
 
         return response()->json(['token' => $token], 200);
-        // if (auth()->guard('api')->attempt($input)) {
-        //     $user = auth()->guard('api')->user();
-        //     $token = $user->createToken('quesionbanklaravelapi')->accessToken;
-        //     return response()->json(['token' => $token], 200);
-        // } else {
-        //     return response()->json(['error' => 'Unauthorized'], 401);
-        // }
+
+
+
+
     }
 
 }

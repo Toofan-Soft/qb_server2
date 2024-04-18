@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 use Kongulov\Traits\InteractWithEnum;
-enum SemesterEnum: INT {
+enum SemesterEnum: INT   {
     use InteractWithEnum;
     case FIRST = 1;
     case SECOND = 2;

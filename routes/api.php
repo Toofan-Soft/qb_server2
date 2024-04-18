@@ -16,10 +16,12 @@ use Illuminate\Http\Request;
 */
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GuestController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CollegeController;
 use App\Http\Controllers\StudentController;
-use App\Http\Controllers\Auth\UserController;
+// use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\UniversityController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -27,7 +29,8 @@ use App\Http\Controllers\Auth\ForgetPasswordController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 
 
-Route::post('register',[UserController::class,'register']);
+// Route::post('register',[UserController::class,'register']);
+Route::post('register',[GuestController::class,'addGuest']);
 
 
 // Route::get('index',[UserController::class,'index']);
@@ -37,13 +40,16 @@ Route::post('password_reset',[ResetPasswordController::class,'password_reset']);
 
 
 Route::post('login',[UserController::class,'login']);
+Route::get('logout',[UserController::class,'logout']);
+// Route::put('change-password',[UserController::class,'changePassword']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('userinfo',[UserController::class,'userInfo']);
-    // Route::get('login',[UserController::class,'login']);
     Route::post('email_verification',[EmailVerificationController::class, 'email_verification']);
     Route::get('email_verification',[EmailVerificationController::class, 'sendEmailVerification']);
     Route::put('update',[UserController::class, 'update']);
+    Route::put('change-password',[UserController::class,'changePassword']);
+
 });
 
 //univercity

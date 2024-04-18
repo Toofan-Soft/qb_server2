@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\College;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
@@ -16,8 +17,8 @@ use App\Models\DepartmentCourse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use League\CommonMark\Node\Query\OrExpr;
+use Illuminate\Support\Facades\Validator;
 
 class CollegeController extends Controller
 {
@@ -109,7 +110,7 @@ class CollegeController extends Controller
         //  $departmentCourse = DepartmentCourse::find(1);
         //  $departmentCourse = $departmentCourse->department->college;  // work
 
-// for test : College::
+ 
 
     // $result = DB::table('course_parts')
     // ->join('courses', 'course_parts.course_id', '=', 'courses.id')
@@ -133,22 +134,9 @@ class CollegeController extends Controller
     // $departments = $college->departments()->get();
 
      $college = ImageHelper::addCompleteDomainToMediaUrls($college);
-    // foreach ($departments as $department) {
-    //     if ($department->logo_url  ){
-    //         $department->logo_url = asset(  $department->logo_url);
-    //         // Or
-    //         // $department->attachment = asset(  $department->attachment);
-    //         // or
-    //         // $department->logo_url = asset(  $department->logo_url);
-    //     }
-    // }
 
-
-        return response()->json(['data' => $college  ], 200);
+        return response()->json(['data' => User::all()  ], 200);
         // $college = College::with(['departments:id,arabic_name as name,college_id'])->find($request->id); // لازم العمود حق العلاقه يكون ضمن البيانات المحددة
-
-
-
 
         // $attributes = [ 'arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
         // $conditionAttribute = ['id' => $request->id];

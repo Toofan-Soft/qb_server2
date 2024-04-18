@@ -119,7 +119,7 @@ class AddHelper
         }
     }
     public static function createGuest(User $user, Request $request){
-        $user->guests()->create([
+        $user->guest()->create([
             'name' => $request->name,
             'phone' => $request->phone,
             'image_url' => self::$filePath,
@@ -127,7 +127,7 @@ class AddHelper
         ]);
     }
     public static function createStudent(User $user, Request $request){
-        $user->students()->create([
+        $user->student()->create([
             'academic_id' => $request->academic_id,
             'arabic_name' =>  $request->arabic_name,
             'english_name' =>  $request->english_name,
@@ -138,7 +138,7 @@ class AddHelper
         ]);
     }
     public static function createEmployee(User $user, Request $request){
-        $user->employees()->create([
+        $user->employee()->create([
             'arabic_name' =>  $request->arabic_name,
             'english_name' =>  $request->english_name,
             'phone' => $request->phone,

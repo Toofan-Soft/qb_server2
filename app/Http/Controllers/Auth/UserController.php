@@ -56,6 +56,7 @@ class UserController extends Controller
         }
 
 
+
         // $imagePath = null;
         // $input = $request->all();
         // $validation = Validator::make($input, []);
@@ -102,46 +103,56 @@ class UserController extends Controller
         // //$user->notify(new EmaiVerificationNotification()); // for verification email when register
         // return response()->json(null, 200);
         // //  ->json(['token'=> $token],200);
+
     }
 
+    // public function login(Request $request)
+    // {
+    //     $validator = Validator::make($request->all(), [
+    //         'email' => 'required|email',
+    //         'password' => 'required'
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return response()->json($validator->errors(), 422); // 422 for Unprocessable Entity
+    //     }
+
+    //     // Attempt login using email and password
+    //     if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+    //         // Login successful, return a success response with user data (optional)
+    //         $user = Auth::user();
+    //         return response()->json(['message' => 'Login successful', 'user' => $user], 200); // Replace with desired response format
+    //     } else {
+    //         // Login failed, return an error message
+    //         return response()->json(['message' => 'Invalid email or password'], 401); // 401 for Unauthorized
+    //     }
+    // }
 
     public function login(Request $request)
     {
-        return LoginHelper::userLogin($request, User::class);
-        // $input = $request->all();
-        // $validation = Validator::make($input, [
-        //     'email' => 'required|email',
-        //     'password' => 'required|min:8'
-        // ]);
+        // return LoginHelper::userLogin($request, User::class);
+        $input = $request->only('email', 'password');
+        $validation = Validator::make($input, [
+            'email' => 'required|email',
+            'password' => 'required|min:8'
+        ]);
 
-        // if ($validation->fails()) {
-        //     return response()->json(['error_message' =>  $validation->errors()->first()], 422);
-        // }
+        if ($validation->fails()) {
+            return response()->json(['error_message' =>  $validation->errors()->first()], 422);
+        }
 
-
-        // if (auth()->attempt($input)) {
-        //         $user = Auth::user();
-        //         $token =  auth()->user()->createToken('quesionbanklaravelapi')->accessToken;
-        //         // $user->notify(new LoginNotification()); // for notify user by email
-        //         return response()->json(['token' => $token], 200);
-        //     } else {
-        //             return response()->json(['error' => 'Unauthorised'], 401);
-        //     }
+        if (auth()->attempt($input)) {
+            $user = Auth::user();
+            $token =  auth()->user()->createToken('quesionbanklaravelapi')->accessToken;
+            return response()->json(['token' => $token], 200);
+        } else {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
 
+        ////
 
-                // $email = $request->input('email');
-                // $guest = Guest::where('email', '=', $email)->first();
-                // $user = User::where('id', '=', $guest->user_account_id)->first();
-                // if ($guest && Hash::check($request->input('password'), $user->password)) {
-                //     // Credentials match - successful login
-                //     //    $ujser = Auth::user();
-                //     $token =  $user->createToken('quesionbanklaravelapi')->accessToken;
-                //     return response()->json(['token' => $token], 200);
-                // } else {
-                //     return response()->json(['error' => 'Unauthorised'], 401);
-                // }
-            }
+    }
 
 
     public function update(UserUpdateRequest $request)

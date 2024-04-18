@@ -54,6 +54,7 @@ class EmaiVerificationNotification extends Notification
 
         $otp = $this->otp->generate($notifiable->email,'alpha_numeric', $this->tokenGenerated, 60);
 
+       
         // $user = User::where('email',$notifiable->email)->first();    // update user password to token send
         // if ($user->owner_type !== OwnerTypeEnum::GUEST->value) {      // !! if the admin add guest , the guest canot login by vireficated code
         //     $user->update([

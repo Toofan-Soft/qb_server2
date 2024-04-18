@@ -24,14 +24,12 @@ class GuestController extends Controller
             'name' => $request->name,
             'phone' => $request->phone ?? null,
             'gender' =>  $request->gender_id,
-            'image_url' => ImageHelper::uploadImage($request->image),
+            'image_url' => ImageHelper::uploadImage($request->image) ,
         ]);
-        if(! UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password)) {
-            return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الزائر');
 
-        return ResponseHelper::success();
-       }
-    }
+         $response = UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password);
+         return response()->json(['token' => $response], 200);
+        }
     public function modifyGuest (Request $request)
     {
 

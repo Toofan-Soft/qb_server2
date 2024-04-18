@@ -20,8 +20,6 @@ class ResetPasswordController extends Controller
     if(! $otp2->status){
         return response()->json(['error' => $otp2],401);
     }
-
-
     $user=User::where('email',$request->email)->first();
 
     $user->update(['password' => bcrypt($request->password)]);

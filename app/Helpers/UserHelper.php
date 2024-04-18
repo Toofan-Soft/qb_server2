@@ -98,12 +98,13 @@ class UserHelper
             ]);
             $token = $user->createToken('quesionbanklaravelapi')->accessToken;
             $user->notify(new EmaiVerificationNotification ($generatedToken));
-            return response()->json(['token' => $token], 200);
+            /////////////////
+            // return response()->json(['token' => $token], 200);
+            return   $token ;
+
         }
-
-
-        // return true;
     }
+
     public static function addUserRoles( User $user, $roles = [] )
     {
         if (is_array($roles)) {
@@ -115,7 +116,6 @@ class UserHelper
                 'role_id' => $roles,
             ]);
         }
-
     }
 
     public static function deleteUserRoles( $user,  $roles = [] )
@@ -125,10 +125,14 @@ class UserHelper
 
   public static function retrieveOwnerRoles( $ownerTypeId )
     {
-        $userRole = [
-                'id' => 0,
-                'is_mandatory' => true
-        ];
+        if($ownerTypeId === OwnerTypeEnum::STUDENT->value){
+
+            
+            $userRole = [
+                    'id' => 0,
+                    'is_mandatory' => true
+            ];
+        }
         $userRoles = [$userRole];
         return $userRoles;
     }
@@ -146,7 +150,7 @@ class UserHelper
 
     }
 
-    private function generateAlphanumericToken(int $length = 8): string
+    private static function generateAlphanumericToken(int $length = 8): string
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
         return substr(str_shuffle($characters), 0, $length);

@@ -23,6 +23,7 @@ class EmailVerificationController extends Controller
     // }
 
 
+    
     public function email_verification(EmailVerificationRequest $request){
         $otp2 = $this->otp->validate($request->email, $request->otp);   // when real work  i will change the otp into code or any name
         if(!$otp2->status){
