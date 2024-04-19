@@ -17,8 +17,8 @@ class DepartmentCoursePartController extends Controller
 {
     public function addDepartmentCoursePart(Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         DepartmentCoursePart::create([
             'department_course_id' => $request->department_course_id,
@@ -45,7 +45,7 @@ class DepartmentCoursePartController extends Controller
 
     public function retrieveEditableDepartmentCoursePart(Request $request)
     {
-        $attributes = ['score', 'lecureres_count', 'lecureres_duration', 'notes'];
+        $attributes = ['score', 'lectures_count', 'lecture_duration', 'notes'];
         $departmentCourse = DepartmentCourse::findOrFail($request->id, $attributes); 
         return ResponseHelper::successWithData($departmentCourse);
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Algorithm\QuestionChoices;
 use App\Enums\ChoiceStatusEnum;
 use App\Models\Choice;
 use App\Models\Quesion;
@@ -24,9 +25,8 @@ class QuestionChoiceController extends Controller
 
     public function addQuestionChoice(Request $request)
     {
-        // اعادة انشاء توزيعات السؤال 
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $question = Question::findOrFail($request->question_id);
         $question =  $question->question_choices()->create([
@@ -36,14 +36,15 @@ class QuestionChoiceController extends Controller
             'attachment' => ImageHelper::uploadImage($request->attachment) ,
         ]);
 
+        QuestionChoices::regenerateQuestionChoicesCombination($question->id);
+
        return ResponseHelper::success();
     }
 
     public function modifyQuestionChoice(Request $request)
     {
-                // اعادة انشاء توزيعات السؤال في حالة تغيرت حالة الاجابة 
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
 
         $choice = Choice::findOrFail($request->id);
@@ -53,6 +54,7 @@ class QuestionChoiceController extends Controller
                 'status' => ($request->is_true) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value,
                 'attachment' => ImageHelper::updateImage($request->attachment, $choice->attachment),
             ]);
+            QuestionChoices::regenerateQuestionChoicesCombination($choice->question_id);
         }else {
             $choice->update([
                 'content' => $request->content ??  $choice->content,
@@ -64,10 +66,11 @@ class QuestionChoiceController extends Controller
 
     public function deleteQuestionChoice(Request $request)
     {
-                // اعادة انشاء توزيعات السؤال 
-
         $choice = Choice::findOrFail($request->id);
-        return DeleteHelper::deleteModel($choice);
+        $questionId = $choice->question_id;
+        $choice->delete();
+        QuestionChoices::regenerateQuestionChoicesCombination($questionId);
+        return ResponseHelper::success();
     }
 
     public function retrieveEditableQuestionChoice(Request $request)
@@ -82,14 +85,21 @@ class QuestionChoiceController extends Controller
         return ResponseHelper::successWithData($choice);
     }
 
-    //****// rule ( name of status   convert into is_true in rule  )
-
-
-    // public function retrieveQuestionChoices(Request $request)
-    // {
-    //     $attributes = ['id', 'content', 'attachment', 'status'];
-    //     $conditionAttribute = ['id' => $request->id];
-    //     return GetHelper::retrieveModels(Choice::class, $attributes, $conditionAttribute);
-    // }
+    public function rules(Request $request): array
+    {
+        $rules = [
+            'question_id' => 'required|exists:topics,id',
+            'content' => 'required|string',
+            'attachment' => 'nullable|string',
+            'is_true' => 'required',
+        ];
+        if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
+            $rules = array_filter($rules, function ($attribute) use ($request) {
+                // Ensure strict type comparison for security
+                return $request->has($attribute);
+            });
+        }
+        return $rules;
+    }
 
 }

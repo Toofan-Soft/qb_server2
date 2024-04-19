@@ -1,7 +1,7 @@
 <?php
 namespace App\Algorithm;
 
-class QuestionChoicesCombination{
+class QuestionChoices{
 
     // public static function generate($questionId)
     public static function generateQuestionChoicesCombination($questionId){
