@@ -31,6 +31,7 @@ use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
 use App\Helpers\ProcessDataHelper;
 use App\Models\QuestionChoiceCombination;
+use PhpParser\Node\Expr\Cast\String_;
 
 class QuestionController extends Controller
 {
@@ -103,7 +104,7 @@ class QuestionController extends Controller
 
         //    if($question->type === TrueFalseAnswerEnum::TRUE->value ){
         //    return DeleteHelper::deleteModel($question->true_false_question());
-        //    }else {        
+        //    }else {
         //     $choices = $question->choices()->get(['id']);
         //      return DeleteHelper::deleteModels(Choice::class, $choices);
         //    }
@@ -129,8 +130,8 @@ class QuestionController extends Controller
             array_push($enumReplacements,  new EnumReplacement('status_name', QuestionStatusEnum::class));
         }
         if (!$request->status_id && !$request->type_id) {
-            array_push($attributes, 'status status_name');
-            array_push($attributes, 'type type_name');
+            array_push($attributes, 'status as status_name');
+            array_push($attributes, 'type as type_name');
             array_push($enumReplacements,  new EnumReplacement('status_name', QuestionStatusEnum::class));
             array_push($enumReplacements,  new EnumReplacement('type_name', QuestionTypeEnum::class));
         }
@@ -144,7 +145,7 @@ class QuestionController extends Controller
         //
         $attributes = [
             'type', 'difficulty_level as difficulty_level_name', 'status',
-            'accessibility_status as accessibility_status_name',
+            'accessability_status as accessibility_status_name',
             'language as language_name', 'estimated_answer_time', 'content',
             'attachment as attachment_url', 'title'
         ];
@@ -170,17 +171,18 @@ class QuestionController extends Controller
         }
         unset($question['type']);
         $status = [];
-        if ($question->status === QuestionStatusEnum::NEW->value) {
+
+        if ( (int)$question->status === QuestionStatusEnum::NEW->value) {
             $status  = [
                 'is_accept' => null,
                 'is_request' => false,
             ];
-        } elseif ($question->status === QuestionStatusEnum::REQUESTED->value) {
+        } elseif ((int)$question->status ===  QuestionStatusEnum::REQUESTED->value) {
             $status  = [
                 'is_accept' => null,
                 'is_request' => true,
             ];
-        } elseif ($question->status === QuestionStatusEnum::ACCEPTED->value) {
+        } elseif ((int)$question->status === QuestionStatusEnum::ACCEPTED->value) {
             $status  = [
                 'is_accept' => true,
                 'is_request' => true,
@@ -231,7 +233,7 @@ class QuestionController extends Controller
     public function acceptQuestion(Request $request)
     {
         QuestionHelper::modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
-        
+
         $question = Question::findOrFail($request->id);
         $question->question_usages()->create();
 

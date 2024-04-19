@@ -3,10 +3,8 @@
 use App\Models\Topic;
 use App\Enums\Example;
 use App\Enums\RoleEnum;
-<<<<<<< HEAD
 use App\Traits\EnumTraits;
-=======
->>>>>>> 77c14583732e26ea158ec75565b11a8f00c9274c
+
 
 /*
 |--------------------------------------------------------------------------
@@ -19,18 +17,13 @@ use App\Traits\EnumTraits;
 |
 */
 
-<<<<<<< HEAD
 use App\Enums\SemesterEnum;
-=======
->>>>>>> 77c14583732e26ea158ec75565b11a8f00c9274c
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GuestController;
-<<<<<<< HEAD
-=======
 use App\Http\Controllers\TopicController;
->>>>>>> 77c14583732e26ea158ec75565b11a8f00c9274c
 // use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ChapterController;
@@ -98,13 +91,10 @@ Route::prefix('department/')->group(function () {
     Route::post('add', [DepartmentController::class, 'addDepartment']);
     Route::put('modify', [DepartmentController::class, 'modifyDepartment']);
     Route::delete('delete', [DepartmentController::class, 'deleteDepartment']);
-<<<<<<< HEAD
     Route::get('retrieve', [DepartmentController::class, 'retrieveDepartment']);
-=======
     Route::get('retrieve', [DepartmentController::class, 'retrieveDepartment']); //http://127.0.0.1:8000/api/colleges/1
     Route::get('retrieve-list', [DepartmentController::class, 'retrieveDepartments']);
     Route::get('retrieve-basic-info-list', [DepartmentController::class, 'retrieveBasicDepartmentsInfo']);
->>>>>>> 77c14583732e26ea158ec75565b11a8f00c9274c
 });
 
 //course
@@ -112,12 +102,9 @@ Route::prefix('course/')->group(function () {
     Route::post('add', [CourseController::class, 'addCourse']);
     Route::put('modify', [CourseController::class, 'modifyCourse']);
     Route::delete('delete', [CourseController::class, 'deleteCourse']);
-<<<<<<< HEAD
     Route::get('retrieve-editable', [CourseController::class, 'retrieveEditableCourse']);
-=======
     Route::get('retrieve-editable', [CourseController::class, 'retrieveEditableCourse']); //http://127.0.0.1:8000/api/colleges/1
     Route::get('retrieve-list', [CourseController::class, 'retrieveCourses']);
->>>>>>> 77c14583732e26ea158ec75565b11a8f00c9274c
 });
 
 
@@ -126,12 +113,10 @@ Route::prefix('course-part/')->group(function () {
     Route::post('add', [CoursePartController::class, 'addCoursePart']);
     Route::put('modify', [CoursePartController::class, 'modifyCoursePart']);
     Route::delete('delete', [CoursePartController::class, 'deleteCoursePart']);
-<<<<<<< HEAD
-    Route::get('retrieve-editable', [CoursePartController::class, 'retrieveEditableCoursePart']); 
-=======
+    Route::get('retrieve-editable', [CoursePartController::class, 'retrieveEditableCoursePart']);
     Route::get('retrieve-editable', [CoursePartController::class, 'retrieveEditableCoursePart']); //http://127.0.0.1:8000/api/colleges/1
     Route::get('retrieve-list', [CoursePartController::class, 'retrieveCourseParts']);
->>>>>>> 77c14583732e26ea158ec75565b11a8f00c9274c
+
 });
 
 //chapter
@@ -301,7 +286,7 @@ Route::prefix('user/')->group(function () {
     Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
     Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
     Route::get('retrieve-profile', [UserController::class, 'retrieveProfile']);
-    
+
 });
 
 

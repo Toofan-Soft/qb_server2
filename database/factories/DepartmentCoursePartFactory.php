@@ -30,7 +30,7 @@ final class DepartmentCoursePartFactory extends Factory
             'department_course_id' => fake()->randomNumber(),
             'course_part_id' => fake()->randomNumber(),
             'note' => fake()->optional()->sentence,
-            'score ' => fake()->optional()->randomNumber(),
+            'score' => fake()->optional()->randomNumber(),
             'lectures_count' => fake()->optional()->randomNumber(),
             'lecture_duration' => fake()->optional()->randomNumber(),
         ];

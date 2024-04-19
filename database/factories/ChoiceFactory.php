@@ -30,7 +30,7 @@ final class ChoiceFactory extends Factory
             'question_id' => fake()->randomNumber(),
             'content' => fake()->optional()->text,
             'attachment' => fake()->optional()->word,
-            'status ' => fake()->randomElement(['0', '1']),
+            'status' => fake()->randomElement(['0', '1']),
         ];
     }
 }

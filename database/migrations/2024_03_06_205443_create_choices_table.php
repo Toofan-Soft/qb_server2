@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('question_id');
             $table->text('content')->nullable();
             $table->string('attachment')->nullable();
-            $table->enum('status ', ChoiceStatusEnum::values());
+            $table->enum('status', ChoiceStatusEnum::values());
 
             $table->foreign('question_id')
             ->references('id')

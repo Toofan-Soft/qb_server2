@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('content');
             $table->string('attachment')->nullable();
             $table->string('title')->nullable();
-            $table->enum('type ',QuestionTypeEnum::values());
+            $table->enum('type',QuestionTypeEnum::values());
             $table->float('difficulty_level') ;
             $table->enum('status',QuestionStatusEnum::values())->default(QuestionStatusEnum::NEW->value);
             $table->enum('accessability_status',AccessibilityStatusEnum::values());

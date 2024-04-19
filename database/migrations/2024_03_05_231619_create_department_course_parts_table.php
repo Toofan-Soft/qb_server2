@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('department_course_id');
             $table->unsignedBigInteger('course_part_id');
             $table->text('note')->nullable();
-            $table->integer('score ')->nullable();
+            $table->integer('score')->nullable();
             $table->integer('lectures_count')->nullable();
             $table->bigInteger('lecture_duration')->nullable();
 

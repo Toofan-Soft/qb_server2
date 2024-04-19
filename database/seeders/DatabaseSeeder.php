@@ -51,7 +51,7 @@ class DatabaseSeeder extends Seeder
         // \App\Models\College::factory(10)->create();
         // \App\Models\Course::factory(10)->create();
         // \App\Models\CoursePart::factory(10)->create();
-        // //////
+        // // //////
         //  College::factory()->count(10)->create()->each(function ($college) {
         //     $college->departments()->save(Department::factory()->make());
         // });
@@ -220,47 +220,49 @@ class DatabaseSeeder extends Seeder
 
         // });
 
-        User::factory()->count(10)->create([
-            'password' => '12345678',
-        ])->each(function ($user) {
-            $departmentCoursepart = DepartmentCoursePart::inRandomOrder()->first();
+////////////////////////////
 
-            $userRole = UserRole::factory()->create([
-                'user_id' => $user->id,
-            ]);
+     //   User::factory()->count(10)->create([
+    //         'password' => '12345678',
+    //     ])->each(function ($user) {
+    //         $departmentCoursepart = DepartmentCoursePart::inRandomOrder()->first();
 
-            $employee = Employee::factory()->create([
-                'user_id' => $user->id,
-            ]);
+    //         $userRole = UserRole::factory()->create([
+    //             'user_id' => $user->id,
+    //         ]);
 
-            $courseLecturer = CourseLecturer::factory()->create([
-                'lecturer_id' => $employee->id,
-                'department_course_part_id' => $departmentCoursepart->id, ///
-            ]);
+    //         $employee = Employee::factory()->create([
+    //             'user_id' => $user->id,
+    //         ]);
 
-            $realExam = RealExam::factory()->create([
-                'course_lecturer_id' => $courseLecturer->id,
-            ]);
+    //         $courseLecturer = CourseLecturer::factory()->create([
+    //             'lecturer_id' => $employee->id,
+    //             'department_course_part_id' => $departmentCoursepart->id, ///
+    //         ]);
 
-            $onlineExam = OnlineExam::factory()->create([
-                'id' => $realExam->id,
-                'proctor_id' => $employee->id
-            ]);
+    //         $realExam = RealExam::factory()->create([
+    //             'course_lecturer_id' => $courseLecturer->id,
+    //         ]);
 
-            $paperExam = PaperExam::factory()->create([
-                'id' => $realExam->id,
-            ]);
-            $practiseExam = PracticeExam::factory()->create([
-                'department_course_part_id' => $departmentCoursepart->id, ///
-                'user_id' => $user->id,
-            ]);
+    //         $onlineExam = OnlineExam::factory()->create([
+    //             'id' => $realExam->id,
+    //             'proctor_id' => $employee->id
+    //         ]);
 
-            $guest = Guest::factory()->create([
-                'user_id' => $user->id,
-            ]);
-            $student = Student::factory()->create([
-                'user_id' => $user->id,
-            ]);
-        });
-    }
+    //         $paperExam = PaperExam::factory()->create([
+    //             'id' => $realExam->id,
+    //         ]);
+    //         $practiseExam = PracticeExam::factory()->create([
+    //             'department_course_part_id' => $departmentCoursepart->id, ///
+    //             'user_id' => $user->id,
+    //         ]);
+
+    //         $guest = Guest::factory()->create([
+    //             'user_id' => $user->id,
+    //         ]);
+    //         $student = Student::factory()->create([
+    //             'user_id' => $user->id,
+    //         ]);
+    //     });
+     }
 }

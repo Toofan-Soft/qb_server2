@@ -32,8 +32,8 @@ final class EmployeeFactory extends Factory
             'phone' => fake()->optional()->phoneNumber,
             'image_url' => fake()->optional()->word,
             'job_type' => fake()->randomElement(['0', '1', '2']),
-            'qualification ' => fake()->randomElement(['0', '1', '2', '3', '4', '5']),
-            'specialization ' => fake()->optional()->word,
+            'qualification' => fake()->randomElement(['0', '1', '2', '3', '4', '5']),
+            'specialization' => fake()->optional()->word,
             'gender' => fake()->randomElement(['0', '1']),
             'user_id' => fake()->optional()->uuid,
         ];

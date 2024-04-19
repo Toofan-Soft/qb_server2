@@ -30,7 +30,7 @@ final class QuestionFactory extends Factory
             'content' => fake()->text,
             'attachment' => fake()->optional()->word,
             'title' => fake()->optional()->title,
-            'type ' => fake()->randomElement(['0', '1']),
+            'type' => fake()->randomElement(['0', '1']),
             'difficulty_level' => fake()->randomFloat(),
             'status' => fake()->randomElement(['0', '1', '2', '3']),
             'accessability_status' => fake()->randomElement(['0', '1', '2']),

@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('phone')->unique()->nullable();
             $table->string('image_url')->nullable();
             $table->enum('job_type', JobTypeEnum::values());
-            $table->enum('qualification ', QualificationEnum::values());
-            $table->string('specialization ')->nullable();
+            $table->enum('qualification', QualificationEnum::values());
+            $table->string('specialization')->nullable();
             $table->enum('gender', GenderEnum::values());
             $table->uuid('user_id')->unique()->nullable();
 
