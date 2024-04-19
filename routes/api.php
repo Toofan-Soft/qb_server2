@@ -2,7 +2,7 @@
 
 use App\Enums\Example;
 use App\Enums\RoleEnum;
-use Illuminate\Http\Request;
+use App\Traits\EnumTraits;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,12 +15,14 @@ use Illuminate\Http\Request;
 |
 */
 
+use App\Enums\SemesterEnum;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GuestController;
+// use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ChapterController;
-// use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\CollegeController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\CoursePartController;
@@ -88,7 +90,7 @@ Route::prefix('departments/')->group(function () {
     Route::post('add', [DepartmentController::class, 'addDepartment']);
     Route::put('modify', [DepartmentController::class, 'modifyDepartment']);
     Route::delete('delete', [DepartmentController::class, 'deleteDepartment']);
-    Route::get('retrieve', [DepartmentController::class, 'retrieveDepartment']); //http://127.0.0.1:8000/api/colleges/1
+    Route::get('retrieve', [DepartmentController::class, 'retrieveDepartment']);
 });
 
 //courses
@@ -97,7 +99,7 @@ Route::prefix('courses/')->group(function () {
     Route::post('add', [CourseController::class, 'addCourse']);
     Route::put('modify', [CourseController::class, 'modifyCourse']);
     Route::delete('delete', [CourseController::class, 'deleteCourse']);
-    Route::get('retrieve-editable', [CourseController::class, 'retrieveEditableCourse']); //http://127.0.0.1:8000/api/colleges/1
+    Route::get('retrieve-editable', [CourseController::class, 'retrieveEditableCourse']);
 });
 
 
@@ -107,7 +109,7 @@ Route::prefix('courseParts/')->group(function () {
     Route::post('add', [CoursePartController::class, 'addCoursePart']);
     Route::put('modify', [CoursePartController::class, 'modifyCoursePart']);
     Route::delete('delete', [CoursePartController::class, 'deleteCoursePart']);
-    Route::get('retrieve-editable', [CoursePartController::class, 'retrieveEditableCoursePart']); //http://127.0.0.1:8000/api/colleges/1
+    Route::get('retrieve-editable', [CoursePartController::class, 'retrieveEditableCoursePart']); 
 });
 
 //chapters
@@ -125,10 +127,16 @@ Route::prefix('chapters/')->group(function () {
 
 
 
+
+
 //test enum
 Route::get('getenum', function () {
-    $name = RoleEnum::values();
-    return response()->json(['name' => $name]);
+    $englishNames = EnumTraits::getEnglishNames(SemesterEnum::class);
+    $arabicNames = EnumTraits::getArabicNames(SemesterEnum::class);
+    $nameByNumber = EnumTraits::getNameByNumber(1,  SemesterEnum::class, 'en');
+    $enumArray = EnumTraits::getEnum( SemesterEnum::class, 'en');
+
+    return response()->json(['names' => $enumArray]);
 });
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();

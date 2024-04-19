@@ -1,9 +1,12 @@
 <?php
 
 namespace App\Enums;
+use App\Traits\EnumTraits;
 use Kongulov\Traits\InteractWithEnum;
 enum SemesterEnum: INT   {
     use InteractWithEnum;
+    // use EnumTraits;
+
     case FIRST = 1;
     case SECOND = 2;
 

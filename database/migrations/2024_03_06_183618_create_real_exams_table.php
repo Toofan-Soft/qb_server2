@@ -32,11 +32,11 @@ return new class extends Migration
             $table->enum('type',RealExamTypeEnum::values());
             $table->enum('exam_type', ExamTypeEnum::values()); /////need to add  // mid , month, final
             $table->text('note')->nullable();
-            $table->unsignedBigInteger('department_course_part_id');
+            $table->unsignedBigInteger('course_lecturer_id');
 
-            $table->foreign('department_course_part_id')
+            $table->foreign('course_lecturer_id')
             ->references('id')
-            ->on('department_course_parts')
+            ->on('course_lecturers')
             ->onDelete('cascade');
 
         });

@@ -30,7 +30,7 @@ final class CourseLecturerFactory extends Factory
             'academic_year' => fake()->randomNumber(),
             'department_course_part_id' => fake()->randomNumber(),
             'lecturer_id' => fake()->randomNumber(),
-            'department_course_parts_id' => \App\Models\DepartmentCoursePart::factory(),
+            // 'department_course_parts_id' => \App\Models\DepartmentCoursePart::factory(),
         ];
     }
 }

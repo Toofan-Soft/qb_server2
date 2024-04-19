@@ -42,7 +42,7 @@ class GetHelper
                 });
                 $rows = $query->get();
             }else {
-           
+
             $query = $query->where(function ($query) use ($conditionAttribute) {
                 foreach ($conditionAttribute as $column => $value) {
                     $query->where($column, '=', $value);
@@ -67,8 +67,7 @@ class GetHelper
                 $row->image_url = asset($row->image_url);
             }
         }
-          return ResponseHelper::successWithData( $rows);
+          return ResponseHelper::successWithData($rows);
     }
-
 
 }

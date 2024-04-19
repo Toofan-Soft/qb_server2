@@ -6,6 +6,7 @@ use App\Enums\ExamTypeEnum;
 use App\Enums\FormNameEnum;
 use App\Enums\LanguageEnum;
 use App\Enums\RealExamTypeEnum;
+use App\Enums\FormNameMethodEnum;
 use App\Enums\ExamDifficultyLevelEnum;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\FormConfigurationMethodEnum;
@@ -29,7 +30,7 @@ class RealExam extends Model
         'type',
         'exam_type',
         'note',
-        'department_course_part_id',
+        'course_lecturer_id',
         'language',
     ];
 
@@ -38,7 +39,7 @@ class RealExam extends Model
         'language' => LanguageEnum::class,
         'difficulty_level' => ExamDifficultyLevelEnum::class,
         'form_configuration_method' => FormConfigurationMethodEnum::class,
-        'form_name_method' => FormNameEnum::class,
+        'form_name_method' => FormNameMethodEnum::class,
         'type' => RealExamTypeEnum::class,
         'exam_type' => ExamTypeEnum::class,
         'exam_date' => 'datetime',

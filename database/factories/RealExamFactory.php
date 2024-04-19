@@ -37,7 +37,7 @@ final class RealExamFactory extends Factory
             'type' => fake()->randomElement(['0', '1']),
             'exam_type' => fake()->randomElement(['0', '1', '2']),
             'note' => fake()->optional()->sentence,
-            'department_course_part_id' => fake()->randomNumber(),
+            'course_lecturer_id' => fake()->randomNumber(),
         ];
     }
 }
