@@ -28,18 +28,18 @@ class EmployeeController extends Controller
     public function addEmployee(Request $request)
     {
 
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
        $employee =  Employee::create([
             'arabic_name' =>  $request->arabic_name,
             'english_name' =>  $request->english_name,
-            'phone' => $request->phone?? null,
-            'image_url' => ImageHelper::uploadImage($request->image),
+            'gender' =>  $request->gender_id,
             'job_type' => $request->job_type_id,
             'qualification' =>  $request->qualification_id,
             'specialization' =>  $request->specialization?? null,
-            'gender' =>  $request->gender_id,
+            'phone' => $request->phone?? null,
+            'image_url' => ImageHelper::uploadImage($request->image),
         ]);
 
         if ($request->email) {
@@ -51,19 +51,19 @@ class EmployeeController extends Controller
                 $ownerTypeId = OwnerTypeEnum::EMPLOYEE->value;
             }
 
-           if(!UserHelper::addUser($request->email, $ownerTypeId, $employee->id)) {
-             return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
-           }
+           if(UserHelper::addUser($request->email, $ownerTypeId, $employee->id)) {
+               return ResponseHelper::success();
+            }
+        }else{
+            return ResponseHelper::success();
         }
-
-        return ResponseHelper::success();
-
+        return ResponseHelper::serverError();
     }
 
     public function modifyEmployee (Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $employee = Employee::findOrFail($request->id);
 
@@ -128,6 +128,7 @@ class EmployeeController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
+            'email' => 'nullable|email|unique:users,email',
             'arabic_name' => 'required|string',
             'english_name' => 'required|string',
             'phone' => 'nullable|string|unique:employees,phone',

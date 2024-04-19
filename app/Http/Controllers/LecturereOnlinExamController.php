@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Algorithm\Exam;
 use App\Models\Form;
 use App\Models\User;
 use App\Models\Topic;
@@ -43,13 +44,13 @@ class LecturereOnlinExamController extends Controller
     public function addOnlineExam(Request $request)
     {
 
-        if ($failed = ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError($failed);
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return ResponseHelper::clientError(401);
         }
         $user = User::findOrFail(auth()->user()->id);
         $courseLecturer = CourseLecturer::where('department_course_part_id', $request->department_course_part_id)
-        ->where('lecturer_id',$user->employee()->id )
-        ->where('academic_year', now()->format('Y'));
+            ->where('lecturer_id', $user->employee()->id)
+            ->where('academic_year', now()->format('Y'));
         $realExam = $courseLecturer->real_exams()->create([
             'type' => $request->type_id,
             'datetime' => $request->datetime,
@@ -63,7 +64,7 @@ class LecturereOnlinExamController extends Controller
             'exam_type' => RealExamTypeEnum::ONLINE->value,
         ]);
 
-         $realExam->online_exam()->create([
+        $realExam->online_exam()->create([
             'conduct_method' => $request->conduct_method_id,
             'exam_datetime_notification_datetime' => $request->datetime_notification_datetime,
             'result_notification_datetime'  => $request->result_notification_datetime,
@@ -71,47 +72,42 @@ class LecturereOnlinExamController extends Controller
             'status' => ExamStatusEnum::ACTIVE->value,
         ]);
 
-        foreach ($request->question_types as $question_type ) {
-             $realExam->real_exam_question_types()->create([
+        foreach ($request->question_types as $question_type) {
+            $realExam->real_exam_question_types()->create([
                 'question_type' => $question_type->type_id,  ///// ensure
                 'questions_count' => $question_type->questions_count,
                 'question_score'  => $question_type->question_score,
             ]);
         }
 
-        if($request->form_configuration_method === FormConfigurationMethodEnum::SIMILAR_FORMS->value){
+        if ($request->form_configuration_method === FormConfigurationMethodEnum::SIMILAR_FORMS->value) {
             $realExam->forms()->create();
-        }else {
-            foreach ($request->forms_count as $form ) {
+        } else {
+            foreach ($request->forms_count as $form) {
                 $realExam->forms()->create();
             }
         }
-
-
+        Exam::generateOnlineExam($realExam->id);
         //////////add Topics of exam
-        //تجهيز البيانات التي تحتاجها الخوارزمية  لتوليد الاسئلة , مثل رقم السؤال ودرجة الصعوبه و عدد النماذج وو
-        //algorithm will return data as this :  $formQuestions = has questions from model python [question_id, form_id, cobination_id];
-        // then i will add $formQuestions list to form_questions table in db
-        return ResponseHelper::successWithData( $realExam->id);
-
-       // return AddHelper::addModel($request, Topic::class,  $this->rules($request), 'questions', $request->topic_id);
+       
+        return ResponseHelper::successWithData($realExam->id);
     }
 
-    public function modifyRealExam (Request $request)
+    public function modifyRealExam(Request $request)
     {
 
         $realExam = RealExam::findOrFail($request->id);
         $realExam->update([
-            'type' => $request->type_id ?? $realExam->type ,
-            'datetime' => $request->datetime ?? $realExam->datetime ,
+            'type' => $request->type_id ?? $realExam->type,
+            'datetime' => $request->datetime ?? $realExam->datetime,
             'note' => $request->special_note ?? $realExam->note,
             'form_name_method' => $request->form_name_method ?? $realExam->form_name_method,
         ]);
 
         $onlinExam = $realExam->online_exam();
         $onlinExam->update([
-            'conduct_method' =>  $request->conduct_method_id ??  $onlinExam->conduct_method ,
-            'exam_datetime_notification_datetime' => $request->datetime_notification_datetime ?? $onlinExam->exam_datetime_notification_datetime ,
+            'conduct_method' =>  $request->conduct_method_id ??  $onlinExam->conduct_method,
+            'exam_datetime_notification_datetime' => $request->datetime_notification_datetime ?? $onlinExam->exam_datetime_notification_datetime,
             'result_notification_datetime'  => $request->result_notification_datetime ?? $onlinExam->result_notification_datetime,
             'proctor_id' => $request->proctor_id ?? $onlinExam->proctor_id,
         ]);
@@ -119,7 +115,7 @@ class LecturereOnlinExamController extends Controller
         return ResponseHelper::success();
     }
 
-    public function deleteOnlineExam (Request $request)
+    public function deleteOnlineExam(Request $request)
     {
         // يتم حذف كل ما يتعلق بالاختبار وايضا اسئلة الاختبار التي قد تم توليدها 
         return ExamHelper::deleteRealExam($request->id);
@@ -128,49 +124,50 @@ class LecturereOnlinExamController extends Controller
     public function retrieveOnlineExams(Request $request) ////**** يتم اضافة شرط ان يتم ارجاع الاختبارات التي تنتمي الى المستخدم الحالي
     {
 
-          $enumReplacements  =[];
+        $enumReplacements  = [];
 
-            $onlineExams =  DB::table('real_exams')
+        $onlineExams =  DB::table('real_exams')
             ->join('online_exams', 'real_exams.id', '=', 'online_exams.id')
             ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
             ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
             ->select(
-             'real_exams.id ','real_exams.datetime','real_exams.forms_count',
-             )
-             ->when($request->status_id , function ($query) use ($request){
+                'real_exams.id ',
+                'real_exams.datetime',
+                'real_exams.forms_count',
+            )
+            ->when($request->status_id, function ($query) use ($request) {
                 return $query->where('online_exams.status', '=', $request->stsatus_id);
-             })
-             ->when($request->type_id , function ($query) use ($request){
+            })
+            ->when($request->type_id, function ($query) use ($request) {
                 return $query->where('real_exams.type', '=', $request->type_id);
-             })
-             ->when($request->type_id === null, function ($query) use ($request){
+            })
+            ->when($request->type_id === null, function ($query) use ($request) {
                 return $query->selectRaw('real_exams.type as type_name', '=', $request->type_id);
-             })
-             ->when($request->status_id === null, function ($query) use ($request){
+            })
+            ->when($request->status_id === null, function ($query) use ($request) {
                 return $query->selectRaw('online_exams.status as status_name', '=', $request->status_id);
-             })
+            })
             ->where('department_course_parts.id', '=', $request->department_course_part_id)
             ->get();
 
-        if(!$request->status_id && !$request->type_id) {
+        if (!$request->status_id && !$request->type_id) {
 
             array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
             array_push($enumReplacements,  new EnumReplacement('status_name', ExamStatusEnum::class));
-        }
-        elseif($request->status_id && !$request->type_id)  {
-                array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
-        }else{
+        } elseif ($request->status_id && !$request->type_id) {
+            array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
+        } else {
             array_push($enumReplacements,  new EnumReplacement('status_name', ExamStatusEnum::class));
         }
 
         $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, $enumReplacements);
-        $onlineExams =  OnlinExamHelper::getExamsScore($onlineExams); // sum score of
+        $onlineExams =  ExamHelper::getRealExamsScore($onlineExams); // sum score of
         return ResponseHelper::successWithData($onlineExams);
     }
     public function retrieveOnlineExamsAndroid(Request $request) ////////** this attribute department_course_part_id can be null
     {
 
-        $enumReplacements  =[
+        $enumReplacements  = [
             new EnumReplacement('type_name', ExamTypeEnum::class),
             new EnumReplacement('status_name', ExamStatusEnum::class),
             new EnumReplacement('course_part_name', CoursePartsEnum::class),
@@ -185,21 +182,24 @@ class LecturereOnlinExamController extends Controller
             ->join('courses', 'department_courses.course_id', '=', 'courses.id')
             ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
             ->select(
-             'courses.arabic_name as course_name ',
-             'course_parts.part_id as course_part_name ',
-             'real_exams.id','real_exams.datetime','real_exams.language as language_name','real_exams.type as type_name',
-             'online_exams.status as status_name',
-             )
-             ->when($request->department_course_part_id , function ($query) use ($request){
+                'courses.arabic_name as course_name ',
+                'course_parts.part_id as course_part_name ',
+                'real_exams.id',
+                'real_exams.datetime',
+                'real_exams.language as language_name',
+                'real_exams.type as type_name',
+                'online_exams.status as status_name',
+            )
+            ->when($request->department_course_part_id, function ($query) use ($request) {
                 return $query->where('department_course_parts.id', '=', $request->department_course_part_id);
-             })
-         ->when($request->status_id , function ($query) use ($request){
-            return $query->where('online_exams.status', '=', $request->stsatus_id);
-         })
-         ->when($request->type_id , function ($query) use ($request){
-            return $query->where('real_exams.type', '=', $request->type_id);
-         })
-        ->get();
+            })
+            ->when($request->status_id, function ($query) use ($request) {
+                return $query->where('online_exams.status', '=', $request->stsatus_id);
+            })
+            ->when($request->type_id, function ($query) use ($request) {
+                return $query->where('real_exams.type', '=', $request->type_id);
+            })
+            ->get();
 
         $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, $enumReplacements);
 
@@ -208,44 +208,46 @@ class LecturereOnlinExamController extends Controller
 
     public function retrieveOnlineExam(Request $request)
     {
-        $realExam = RealExam::findOrFail($request->id, ['language as language_name', 'difficulty_level as defficulty_level_name' ,
-        'forms_count','form_configuration_method as form_configuration_method_name', 'form_name_method as form_name_method_name' ,
-         'datetime', 'duration', 'type as type_name', 'note as special_note']);
-         $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
+        $realExam = RealExam::findOrFail($request->id, [
+            'language as language_name', 'difficulty_level as defficulty_level_name',
+            'forms_count', 'form_configuration_method as form_configuration_method_name', 'form_name_method as form_name_method_name',
+            'datetime', 'duration', 'type as type_name', 'note as special_note'
+        ]);
+        $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
             new EnumReplacement('language_name', LanguageEnum::class),
             new EnumReplacement('defficulty_level_name', ExamDifficultyLevelEnum::class),
             new EnumReplacement('form_configuration_method_name', FormConfigurationMethodEnum::class),
             new EnumReplacement('form_name_method_name', FormNameMethodEnum::class),
             new EnumReplacement('type_name', ExamTypeEnum::class),
-         ]);
-        $onlineExam = $realExam->online_exam()->get(['conduct_method as conduct_method_name','status as status_name','proctor_id as proctor_name','exam_datetime_notification_datetime as datetime_notification_datetime','result_notification_datetime']);
+        ]);
+        $onlineExam = $realExam->online_exam()->get(['conduct_method as conduct_method_name', 'status as status_name', 'proctor_id as proctor_name', 'exam_datetime_notification_datetime as datetime_notification_datetime', 'result_notification_datetime']);
         $onlineExam = ProcessDataHelper::enumsConvertIdToName($onlineExam, [
             new EnumReplacement('status_name', ExamStatusEnum::class),
             new EnumReplacement('conduct_method_name', ExamStatusEnum::class),
-         ]);
-         $onlineExam = ProcessDataHelper::columnConvertIdToName($onlineExam, [
+        ]);
+        $onlineExam = ProcessDataHelper::columnConvertIdToName($onlineExam, [
             new ColumnReplacement('proctor_name', 'arabic_name', Employee::class),
-         ]);
+        ]);
 
         $departmentCoursePart = $realExam->lecturer_course()->department_course_part();
         $coursePart = $departmentCoursePart->course_part(['part_id as course_part_name']);
         $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
             new EnumReplacement('course_part_name', CoursePartsEnum::class),
-         ]);
+        ]);
         $departmentCourse = $departmentCoursePart->department_course()->get(['level as level_name', 'semester as semester_name']);
         $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
             new EnumReplacement('level_name', LevelsEnum::class),
             new EnumReplacement('semester_name', SemesterEnum::class),
-         ]);
+        ]);
         $department = $departmentCourse->department()->get(['arabic_name as department_name']);
         $college = $department->college()->get(['arabic_name as college_name']);
         $course = $departmentCourse->course()->get(['arabic_name as course_name']);
-        $questionTypes = $realExam->real_exam_question_types()->get(['question_type as type_name','questions_count','question_score'])->toArray();
+        $questionTypes = $realExam->real_exam_question_types()->get(['question_type as type_name', 'questions_count', 'question_score'])->toArray();
         $questionTypes = ProcessDataHelper::enumsConvertIdToName($questionTypes, [
             new EnumReplacement('type_name', QuestionTypeEnum::class),
-         ]);
+        ]);
 
-        array_merge($realExam, $onlineExam, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
+        array_merge($realExam, $onlineExam, $coursePart, $departmentCourse, $department, $college, $course); // merge all with realExam
         $realExam['questionTypes'] = $questionTypes;
 
         return ResponseHelper::successWithData($realExam);
@@ -253,15 +255,19 @@ class LecturereOnlinExamController extends Controller
 
     public function retrieveEditableOnlineExam(Request $request)
     {
-        $realExam = RealExam::findOrFail($request->id, ['form_name_method as form_name_method_id' ,
-        'datetime', 'type as type_id', 'note as special_note']);
-        
-        $onlinExam = $realExam->online_exam()->get(['conduct_method as conduct_method_id',
-        'exam_datetime_notification_datetime as datetime_notification_datetime',
-        'proctor_id', 'result_notification_datetime']);
+        $realExam = RealExam::findOrFail($request->id, [
+            'form_name_method as form_name_method_id',
+            'datetime', 'type as type_id', 'note as special_note'
+        ]);
+
+        $onlinExam = $realExam->online_exam()->get([
+            'conduct_method as conduct_method_id',
+            'exam_datetime_notification_datetime as datetime_notification_datetime',
+            'proctor_id', 'result_notification_datetime'
+        ]);
 
         array_merge($realExam, $onlinExam); // merge all with realExam
-        
+
         return ResponseHelper::successWithData($realExam);
     }
 
@@ -269,7 +275,6 @@ class LecturereOnlinExamController extends Controller
     {
         $onlineExamChapters = ExamHelper::retrieveRealExamChapters($request->exam_id);
         return ResponseHelper::successWithData($onlineExamChapters);
-
     }
 
     public function retrieveOnlineExamChapterTopics(Request $request)
@@ -290,26 +295,27 @@ class LecturereOnlinExamController extends Controller
     {
         $onlineExamFormQuestions = ExamHelper::retrieveRealExamFormQuestions($request->form_id);
         return ResponseHelper::successWithData($onlineExamFormQuestions);
-
     }
 
-    public function changeOnlineExamStatus(Request $request){
+    public function changeOnlineExamStatus(Request $request)
+    {
         $onlineExam = OnlineExam::findOrFail($request->id);
-        if(!$onlineExam->status === ExamStatusEnum::COMPLETE->value){
+        if (!$onlineExam->status === ExamStatusEnum::COMPLETE->value) {
 
-            if($onlineExam->status === ExamStatusEnum::SUSPENDED->value){
+            if ($onlineExam->status === ExamStatusEnum::SUSPENDED->value) {
 
                 $onlineExam->update([
                     'status' => ExamStatusEnum::ACTIVE->value,
                 ]);
-            }else{
+            } else {
 
                 $onlineExam->update([
                     'status' => ExamStatusEnum::SUSPENDED->value,
                 ]);
             }
-        }else{
-            return ResponseHelper::clientError('this exam is completed, you cant chande its status');
+        } else {
+            return ResponseHelper::clientError(401);
+            // return ResponseHelper::clientError('this exam is completed, you cant chande its status');
         }
         return ResponseHelper::success();
     }
@@ -328,10 +334,17 @@ class LecturereOnlinExamController extends Controller
             'conduct_method_id' => ['required', ExamConductMethodEnum::class],
             'department_course_part_id' => 'required|exists:department_course_parts,id',
             'proctor_id' => 'required|exists:employees,id|unique:online_exams,proctor_id',
-            'status' => ['required',new Enum(ExamStatusEnum::class)],
-            'conduct_method' => ['required',new Enum(ExamConductMethodEnum::class)],
-            'exam_datetime_notification_datetime' => 'required|date',
+            'status' => ['required', new Enum(ExamStatusEnum::class)],
+            'datetime_notification_datetime' => 'required|date',
             'result_notification_datetime' => 'required|date',
+            'question_types' =>'required|array',
+            'type_id' => ['required', new Enum(ExamTypeEnum::class)],
+            'datetime' => 'required|date',
+            'special_note' => 'nullable|string',
+            'forms_count' => 'required|integer',
+            'form_configuration_method' => ['required', new Enum(FormConfigurationMethodEnum::class)],
+            'form_name_method' => ['required', new Enum(FormNameMethodEnum::class)],
+
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {
@@ -341,5 +354,4 @@ class LecturereOnlinExamController extends Controller
         }
         return $rules;
     }
-
 }

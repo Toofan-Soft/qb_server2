@@ -28,13 +28,10 @@ class DepartmentCoursePartChapterTopicController extends Controller
     public function deleteDepartmentCoursePartTopics(Request $request)
     {
         try {
-            // $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
-            // $departmenCoursePart->department_course_part_topics()
-            // ->whereIn('topic_id', $request->topics_ids)->delete();
+            $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
+            $departmenCoursePart->department_course_part_topics()
+            ->whereIn('topic_id', $request->topics_ids)->delete();
 
-            foreach ($request->topics_ids as $topic_id) {
-                DepartmentCoursePartTopic::findOrFail([$topic_id, $request->department_course_part_id])->delete();
-            }
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -71,8 +68,7 @@ class DepartmentCoursePartChapterTopicController extends Controller
 
 
     public function retrieveAvailableDepartmentCoursePartChapters(Request $request)
-    {
-        //////////////////// 
+    { 
         $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
         $coursePart = CoursePart::findOrFail($departmenCoursePart->course_part_id);
         $coursePartChapters = $coursePart->chapters()->where('status', ChapterStatusEnum::AVAILABLE->value)->get(['id', 'arabic_title', 'english_title']);
@@ -110,7 +106,6 @@ class DepartmentCoursePartChapterTopicController extends Controller
 
     public function retrieveAvailableDepartmentCoursePartTopics(Request $request)
     {
-        ////////////////////
         $departmenCoursePart = DepartmentCoursePart::find($request->department_course_part_id);
         $chapter = Chapter::find($request->chapter_id);
         $chapterTopics = $chapter->topics()->get(['id', 'arabic_title', 'english_title']);
@@ -128,23 +123,4 @@ class DepartmentCoursePartChapterTopicController extends Controller
         }
         return ResponseHelper::successWithData($chapterTopics);
     }
-
-    // public function rules(Request $request): array
-    // {
-    //     $rules = [
-    //         // 'arabic_name' => 'required|string|max:255',
-    //         // 'english_name' => 'required|string|max:255',
-    //         // 'logo_url' =>  'image|mimes:jpeg,png,jpg,gif|max:2048',
-    //         // 'levels_count' =>  new Enum(LevelsCountEnum::class),
-    //         // 'description' => 'nullable|string',
-    //         // 'college_id' => 'required',
-    //     ];
-    //     if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
-    //         $rules = array_filter($rules, function ($attribute) use ($request) {
-    //             // Ensure strict type comparison for security
-    //             return $request->has($attribute);
-    //         });
-    //     }
-    //     return $rules;
-    // }
 }

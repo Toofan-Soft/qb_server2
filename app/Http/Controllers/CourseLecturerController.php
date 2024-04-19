@@ -27,8 +27,8 @@ class CourseLecturerController extends Controller
 {
     public function addCourseLecturer(Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         CourseLecturer::create([
             'department_course_part_id' => $request->department_course_part_id,
@@ -41,7 +41,7 @@ class CourseLecturerController extends Controller
 
     public function deleteCourseLecturer(Request $request)
     {
-        $courseLecturer = CourseLecturer::findeOrFail( $request->id);
+        $courseLecturer = CourseLecturer::findOrFail( $request->id);
         return DeleteHelper::deleteModel($courseLecturer);
     }
 
@@ -85,9 +85,8 @@ class CourseLecturerController extends Controller
                 'colleges.arabic_name as college_name',
                 )
         ->where('employees.id', '=', $request->employee_id)
-        // ->where('employees.id', '=', now()->format('Y')) // سؤال محمود والعيال عنها
+        // ->where('course_lecturers.academic_year', '=', now()->format('Y')) // سؤال محمود والعيال عنها
         ->get();
-//course_part_name, level_name, semester name
 $enumReplacements = [
     new EnumReplacement('course_part_name', CoursePartsEnum::class),
     new EnumReplacement('semester_name', SemesterEnum::class),
@@ -146,7 +145,6 @@ $enumReplacements = [
     public function rules(Request $request): array
     {
         $rules = [
-            'academic_year' => 'required|integer|min:2000|max:' . (date('Y') + 5), // Adjust max year as needed
             'department_course_part_id' => 'required|exists:department_course_parts,id',
             'lecturer_id' => 'required|exists:employees,id',
         ];

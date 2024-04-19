@@ -20,14 +20,13 @@ class CourseStudentController extends Controller
 {
     public function addCourseStudents(Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $departmenCourse = DepartmentCourse::findOrFail($request->department_course_id);
         foreach ($request->students_ids as $student_id ) {
             $departmenCourse->course_students()->create([
                 'student_id' => $student_id,
-                'status' => CourseStudentStatusEnum::ACTIVE->value,// make it as default in megretion
                 'academic_year' => now()->format('Y'), ///need to ************
             ]);
         }
@@ -36,8 +35,8 @@ class CourseStudentController extends Controller
 
     public function modifyCourseStudent(Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $courseStudent = CourseStudent::where('department_course_id','=',$request->department_course_id)
         ->where('student_id', '=', $request->student_id)->first();
@@ -49,46 +48,43 @@ class CourseStudentController extends Controller
 
     public function passCourseStudent(Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $courseStudent = CourseStudent::where('department_course_id','=',$request->department_course_id)
         ->where('student_id', '=', $request->student_id)->first();
-        $courseStudent->update([
-            'status' => CourseStudentStatusEnum::PASSED->value ,
-        ]);
+        $this->changeCourseStudentStatus($courseStudent, CourseStudentStatusEnum::PASSED->value);
         return ResponseHelper::success();
     }
 
     public function suspendCourseStudent(Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $courseStudent = CourseStudent::where('department_course_id','=',$request->department_course_id)
         ->where('student_id', '=', $request->student_id)->first();
         if($courseStudent->status ===  CourseStudentStatusEnum::ACTIVE->value ){
-            $courseStudent->update([
-                'status' => CourseStudentStatusEnum::SUSPENDED->value ,
-            ]);
+            $this->changeCourseStudentStatus($courseStudent, CourseStudentStatusEnum::SUSPENDED->value);
             return ResponseHelper::success();
 
         }else{
-            return ResponseHelper::clientError('student status not active');
+            return ResponseHelper::clientError(401);
         }
     }
 
     public function deleteCourseStudent(Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $courseStudent = CourseStudent::where('department_course_id','=',$request->department_course_id)
         ->where('student_id', '=', $request->student_id)->first();
         if($courseStudent->status ===  CourseStudentStatusEnum::ACTIVE->value ){
         return DeleteHelper::deleteModel($courseStudent);
         }else{
-            return ResponseHelper::clientError('student status not active');
+            return ResponseHelper::clientError(401);
+            // لا يمكن حذف مقرر وحالته نشط 
         }
     }
 
@@ -180,14 +176,19 @@ class CourseStudentController extends Controller
         return ResponseHelper::successWithData($courseStudent);
     }
 
+    private function changeCourseStudentStatus($courseStudent, $statusId){
+        $courseStudent->update([
+            'status' => $statusId,
+        ]);
+
+    }
     public function rules(Request $request): array
     {
             $rules = [
-                //'department_course_id' => 'required|exists:department_courses,id',
-                //'student_id' => 'required|exists:students,id',
+                'department_course_id' => 'required|exists:department_courses,id',
+                'student_id' => 'required|exists:students,id',
                 'status' => ['nullable',new Enum(CourseStudentStatusEnum::class)], // Assuming CourseStudentStatusEnum holds valid values
-                'academic_year' => 'required|integer',
-            ];
+                        ];
 
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

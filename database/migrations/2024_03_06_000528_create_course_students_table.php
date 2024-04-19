@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('course_students', function (Blueprint $table) {
             $table->unsignedBigInteger('department_course_id');
             $table->unsignedBigInteger('student_id');
-             $table->enum('status', CourseStudentStatusEnum::values());
+             $table->enum('status', CourseStudentStatusEnum::values())->default(CourseStudentStatusEnum::ACTIVE->value);
 
             $table->integer('academic_year');
 

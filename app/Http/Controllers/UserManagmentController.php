@@ -24,21 +24,21 @@ class UserManagmentController extends Controller
 {
     public function addUser(Request $request)
     {
-        if ($failed = ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError($failed);
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError(401);
         }
-        if (!UserHelper::addUser($request->email, $request->owner_type_id,  $request->owner_id, null, $request->roles_ids)) {
-            return ResponseHelper::serverError('لم يتم اضافة حساب لهذا المستخدم');
+        if (UserHelper::addUser($request->email, $request->owner_type_id,  $request->owner_id, null, $request->roles_ids)) {
+            return ResponseHelper::success();
         }
-
-        return ResponseHelper::success();
+        return ResponseHelper::serverError();
+        // return ResponseHelper::serverError('لم يتم اضافة حساب لهذا المستخدم');
     }
 
     public function modifyUserRoles(Request $request)
     {
 
-        if ($failed = ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError($failed);
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError(401);
         }
         $user = User::findOrFail($request->id);
         $userRoles = $user->user_roles()->get(['role_id']);
@@ -69,9 +69,10 @@ class UserManagmentController extends Controller
 
     public function deleteUser(Request $request)
     {
-        $user = User::findeOrFail($request->id);
-        $userRoles = $user->user_roles()->get(['role_id'])->toArray();
-        UserHelper::deleteUserRoles($user->id, $userRoles);
+        $user = User::findOrFail($request->id);
+        $user->user_roles()->delete();
+        // $userRoles = $user->user_roles()->get(['role_id'])->toArray();
+        // UserHelper::deleteUserRoles($user->id, $userRoles);
         return DeleteHelper::deleteModel($user);
     }
 
@@ -106,7 +107,7 @@ class UserManagmentController extends Controller
 
     public function retrieveUser(Request $request)
     {
-        $userData = User::findeOrFail($request->id, ['email, status as status_name, owner_type as owner_type_name']);
+        $userData = User::findOrFail($request->id, ['email, status as status_name, owner_type as owner_type_name']);
 
         $ownerTable = '';
         if ($userData->owner_type_name === OwnerTypeEnum::GUEST->value) {
@@ -129,9 +130,6 @@ class UserManagmentController extends Controller
             }
         }
         
-        $userRoles['name'] = $userRoles['id'];
-        $userRoles = ProcessDataHelper::enumsConvertIdToName($userRoles, new EnumReplacement('role_name', RoleEnum::class));
-
         $userData['is_active'] = ($userData->status_name === UserStatusEnum::ACTIVATED->value)? true : false; 
         $userData = ProcessDataHelper::enumsConvertIdToName($userData, new EnumReplacement('owner_type_name', OwnerTypeEnum::class));
 
@@ -143,9 +141,6 @@ class UserManagmentController extends Controller
     public function retrieveOwnerRoles(Request $request)
     {
         $userRoles = UserHelper::retrieveOwnerRoles($request->owner_type_id);
-        $userRoles['name'] = $userRoles['id'];
-        $userRoles = ProcessDataHelper::enumsConvertIdToName($userRoles, new EnumReplacement('role_name', RoleEnum::class));
-
         return ResponseHelper::successWithData($userRoles);
         // $attributes = ['id, name, is_mandatory'];
     }

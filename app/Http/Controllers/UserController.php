@@ -25,12 +25,12 @@ class UserController extends Controller
     {
         $otp2 = $this->otp->validate(auth()->user()->email, $request->code);
         if(!$otp2->status){
-            return response()->json(['error_message' => $otp2],401);
+            return ResponseHelper::clientError(401);
         }
-        $user=User::where('email',$request->email)->first();
+        $user = User::where('email',$request->email)->first();
         $user->update(['email_verified_at'=> now()] );
         $success['success'] = true;
-        return response()->json($success,200);
+        return ResponseHelper::success();
     }
 
     public function login(Request $request)
@@ -42,24 +42,25 @@ class UserController extends Controller
         ]);
 
         if ($validation->fails()) {
-            return response()->json(['error_message' =>  $validation->errors()->first()], 422);
-        }
+            return ResponseHelper::clientError(401);        }
 
         if (auth()->attempt($input)) {
             $user = Auth::user();
             $token =  auth()->user()->createToken('quesionbanklaravelapi')->accessToken;
-            return response()->json(['token' => $token], 200);
+            return ResponseHelper::successWithToken($token);  
+              
         } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
+            return ResponseHelper::clientError(401);      
+          }
+    
     }
     public function logout(Request $request)
     {
         Auth::logout();
         if (Auth::check()) {
             // User is still logged in
-            return ResponseHelper::serverError('User not logged out');
+            return ResponseHelper::serverError();
+            // return ResponseHelper::serverError('User not logged out');
         } else {
             // User is logged out
             return ResponseHelper::success();
@@ -88,13 +89,13 @@ class UserController extends Controller
         if (Hash::check($request->old_password, $user->password)) {
             $validator = Validator::make($request->all(), ['new_password' => 'required|min:8']);
             if ($validator->fails()) {
-                return  $validator->errors()->first();
+                return ResponseHelper::clientError(401);
             }
             $user->update([
                 'password' => bcrypt($request->new_password),
             ]);
         }else {
-            return ResponseHelper::clientError('invalid old password');
+            return ResponseHelper::clientError(401);
         }
         return ResponseHelper::success();
     }
@@ -104,7 +105,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), ['email' => 'required|email']);
             if ($validator->fails()) {
-                return  $validator->errors()->first();
+                return ResponseHelper::clientError(401);
             }
         $input= $request->only('email');
         $user = User::where('email',$input)->first();
@@ -113,7 +114,7 @@ class UserController extends Controller
             $success['success'] = true;
             return ResponseHelper::success();
         }else {
-            return ResponseHelper::clientError('email not found ');
+            return ResponseHelper::clientError(401);
         }
 
     }
@@ -121,7 +122,7 @@ class UserController extends Controller
     {
         $otp2 = $this->otp->validate(auth()->user()->email, $request->code);
         if(! $otp2->status){
-            return response()->json(['error' => $otp2],401);
+            return ResponseHelper::clientError(401);
         }
         $user = User::where('email',$request->email)->first();
         $user->update(['password' => bcrypt($request->new_password)]);
