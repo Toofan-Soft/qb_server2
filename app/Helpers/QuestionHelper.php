@@ -24,7 +24,7 @@ class QuestionHelper
         $question::update([
             'status' => $status_id
         ]);
-        return ResponseHelper::success();
+        // return ResponseHelper::success();
     }
 
     /**

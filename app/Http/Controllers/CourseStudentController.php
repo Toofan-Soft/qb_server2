@@ -18,7 +18,7 @@ use App\Enums\CourseStudentStatusEnum;
 
 class CourseStudentController extends Controller
 {
-    public function addCourseStudent(Request $request)
+    public function addCourseStudents(Request $request)
     {
         if($failed = ValidateHelper::validateData($request, $this->rules($request))){
             return  ResponseHelper::clientError($failed);
