@@ -31,19 +31,28 @@ use App\Http\Controllers\CollegeController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\PaperExamController;
 use App\Http\Controllers\CoursePartController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\UniversityController;
+use App\Http\Controllers\PracticeExamController;
+use App\Http\Controllers\PractiseExamController;
 use App\Http\Controllers\CourseStudentController;
+use App\Http\Controllers\UserManagmentController;
 use App\Http\Controllers\CourseLecturerController;
 use App\Http\Controllers\QuestionChoiceController;
 use App\Http\Controllers\DepartmentCourseController;
+use App\Http\Controllers\ProctorOnlinExamController;
+use App\Http\Controllers\StudentOnlinExamController;
+use App\Http\Controllers\LecturerOnlinExamController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
 use App\Http\Controllers\DepartmentCoursePartController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
-use App\Http\Controllers\UserManagmentController;
+use App\Http\Controllers\EnumsController;
+use App\Http\Controllers\FavoriteQuestionController;
+use App\Http\Controllers\FilterController;
 
 // Route::post('register',[UserController::class,'register']);
 Route::post('register',[GuestController::class,'addGuest']);
@@ -290,6 +299,154 @@ Route::prefix('user/')->group(function () {
 });
 
 
+
+//lecturer online exam
+Route::prefix('lecturer-online-exam/')->group(function () {
+    Route::post('add', [LecturerOnlinExamController::class, 'addOnlineExam']);
+    Route::put('modify', [LecturerOnlinExamController::class, 'modifyOnlineExam']);
+    Route::put('change-status', [LecturerOnlinExamController::class, 'changeOnlineExamStatus']);
+    Route::delete('delete', [LecturerOnlinExamController::class, 'deleteOnlineExam']);
+    Route::get('retrieve', [LecturerOnlinExamController::class, 'retrieveOnlineExam']);
+    Route::get('retrieve-editable', [LecturerOnlinExamController::class, 'retrieveEditableOnlineExam']);
+    Route::get('retrieve-list', [LecturerOnlinExamController::class, 'retrieveOnlineExams']);
+    Route::get('retrieve-android-list', [LecturerOnlinExamController::class, 'retrieveOnlineExamsAndroid']);
+    Route::get('retrieve-chapter-list', [LecturerOnlinExamController::class, 'retrieveOnlineExamChapters']);
+    Route::get('retrieve-chapter-topic-list', [LecturerOnlinExamController::class, 'retrieveOnlineExamChapterTopics']);
+    Route::get('retrieve-form-list', [LecturerOnlinExamController::class, 'retrieveOnlineExamForms']);
+    Route::get('retrieve-form-question-list', [LecturerOnlinExamController::class, 'retrieveOnlineExamFormQuestions']);
+});
+
+
+//student online exam
+Route::prefix('student-online-exam/')->group(function () {
+    Route::post('save-question-answer', [StudentOnlinExamController::class, 'saveOnlineExamQuestionAnswer']);
+    Route::put('finish', [StudentOnlinExamController::class, 'finishOnlineExam']);
+    Route::get('retrieve', [StudentOnlinExamController::class, 'retrieveOnlineExam']);
+    Route::get('retrieve-list', [StudentOnlinExamController::class, 'retrieveOnlineExams']);
+    Route::get('retrieve-question-list', [StudentOnlinExamController::class, 'retrieveOnlineExamQuestions']);
+});
+
+
+
+//proctor online exam
+Route::prefix('proctor-online-exam/')->group(function () {
+    Route::post('start-student', [ProctorOnlinExamController::class, 'startStudentOnlineExam']);
+    Route::put('suspend-student', [ProctorOnlinExamController::class, 'suspendStudentOnlineExam']);
+    Route::put('continue-student', [ProctorOnlinExamController::class, 'continueStudentOnlineExam']);
+    Route::put('finish-student', [ProctorOnlinExamController::class, 'finishStudentOnlineExam']);
+    Route::get('retrieve', [ProctorOnlinExamController::class, 'retrieveOnlineExam']);
+    Route::get('retrieve-list', [ProctorOnlinExamController::class, 'retrieveOnlineExams']);
+    Route::get('retrieve-student-list', [ProctorOnlinExamController::class, 'retrieveOnlineExamStudents']);
+    Route::get('refresh-student-list', [ProctorOnlinExamController::class, 'refreshOnlineExamStudents']);
+});
+
+
+
+//paper exam
+Route::prefix('paper-exam/')->group(function () {
+    Route::post('add', [PaperExamController::class, 'addPaperExam']);
+    Route::put('modify', [PaperExamController::class, 'modifyPaperExam']);
+    Route::put('change-status', [PaperExamController::class, 'modifyPaperExam']);
+    Route::delete('delete', [PaperExamController::class, 'deletePaperExam']);
+    Route::get('retrieve', [PaperExamController::class, 'retrievePaperExam']);
+    Route::get('retrieve-editable', [PaperExamController::class, 'retrieveEditablePaperExam']);
+    Route::get('retrieve-list', [PaperExamController::class, 'retrievePaperExams']);
+    Route::get('retrieve-android-list', [PaperExamController::class, 'retrievePaperExamsAndroid']);
+    Route::get('retrieve-chapter-list', [PaperExamController::class, 'retrievePaperExamChapters']);
+    Route::get('retrieve-chapter-topic-list', [PaperExamController::class, 'retrievePaperExamChapterTopics']);
+    Route::get('retrieve-form-list', [PaperExamController::class, 'retrievePaperExamForms']);
+    Route::get('retrieve-form-question-list', [PaperExamController::class, 'retrievePaperExamFormQuestions']);
+    Route::get('export', [PaperExamController::class, 'exportPaperExamToPDF']);
+});
+
+
+
+
+//practice exam
+Route::prefix('practice-exam/')->group(function () {
+    Route::post('add', [PracticeExamController::class, 'addPracticeExam']);
+    Route::put('modify', [PracticeExamController::class, 'modifyPracticeExam']);
+    Route::put('finish', [PracticeExamController::class, 'modifyPracticeExam']);
+    Route::put('save-question-answer', [PracticeExamController::class, 'modifyPracticeExam']);
+    Route::put('suspend', [PracticeExamController::class, 'modifyPracticeExam']);
+    Route::delete('delete', [PracticeExamController::class, 'deletePracticeExam']);
+    Route::get('retrieve', [PracticeExamController::class, 'retrievePracticeExam']);
+    Route::get('retrieve-editable', [PracticeExamController::class, 'retrieveEditablePracticeExam']);
+    Route::get('retrieve-result', [PracticeExamController::class, 'retrieveEditablePracticeExam']);
+    Route::get('retrieve-list', [PracticeExamController::class, 'retrievePracticeExams']);
+    Route::get('retrieve-android-list', [PracticeExamController::class, 'retrievePracticeExams']);
+    Route::get('retrieve-question-list', [PracticeExamController::class, 'retrievePracticeExams']);
+});
+
+
+//favorite question
+Route::prefix('favorite-question/')->group(function () {
+    Route::post('add', [FavoriteQuestionController::class, '']);
+    Route::delete('delete', [FavoriteQuestionController::class, '']);
+    Route::get('retrieve', [FavoriteQuestionController::class, '']);
+    Route::get('check', [FavoriteQuestionController::class, '']);
+    Route::get('retrieve-list', [FavoriteQuestionController::class, '']);
+});
+
+
+
+//enum
+Route::prefix('enum/')->group(function () {
+    Route::get('retrieve-course-status-list', [EnumsController::class, 'retrieveCourseStatus']);
+    Route::get('retrieve-course-part-list', [EnumsController::class, 'retrieveCourseParts']);
+    Route::get('retrieve-language-list', [EnumsController::class, 'retrieveLanguages']);
+    Route::get('retrieve-difficulty-level-list', [EnumsController::class, 'retrieveDifficultyLevels']);
+    Route::get('retrieve-question-type-list', [EnumsController::class, 'retrieveQuestionTypes']);
+    Route::get('retrieve-question-status-list', [EnumsController::class, 'retrieveQuestionStatus']);
+    Route::get('retrieve-acceptance-status-list', [EnumsController::class, 'retrieveAcceptanceStatus']);
+    Route::get('retrieve-accessibility-status-list', [EnumsController::class, 'retrieveAccessibilityStatus']);
+    Route::get('retrieve-semester-list', [EnumsController::class, 'retrieveSemesters']);
+    Route::get('retrieve-job-type-list', [EnumsController::class, 'retrieveJobTypes']);
+    Route::get('retrieve-qualification-list', [EnumsController::class, 'retrieveQualifications']);
+    Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
+    Route::get('retrieve-course-student-status-list', [EnumsController::class, 'retrieveCourseStudentStatus']);
+    Route::get('retrieve-owner-type-list', [EnumsController::class, 'retrieveOwnerTypes']);
+    Route::get('retrieve-user-status-list', [EnumsController::class, 'retrieveUserStatus']);
+    Route::get('retrieve-conduct-method-list', [EnumsController::class, 'retrieveConductMethods']);
+    Route::get('retrieve-exam-type-list', [EnumsController::class, 'retrieveExamTypes']);
+    Route::get('retrieve-form-configuration-method-list', [EnumsController::class, 'retrieveformConfigurationMethods']);
+    Route::get('retrieve-form-name-method-list', [EnumsController::class, 'retrieveformNameMethods']);
+    Route::get('retrieve-online-exam-status-list', [EnumsController::class, 'retrieveOnlineExamStatus']);
+    Route::get('retrieve-student-online-exam-status-list', [EnumsController::class, 'retrieveStudentOnlineExamStatus']);
+    Route::get('retrieve-online-exam-taking-status-list', [EnumsController::class, 'retrieveOnlineExamTakingStatus']);
+});
+
+
+
+//filter
+Route::prefix('filter/')->group(function () {
+    Route::get('retrieve-course-list', [FilterController::class, 'retrieveCourses']);
+    Route::get('retrieve-course-part-list', [FilterController::class, 'retrieveCourseParts']);
+    Route::get('retrieve-chapter-list', [FilterController::class, 'retrieveChapters']);
+    Route::get('retrieve-topic-list', [FilterController::class, 'retrieveTopics']);
+    Route::get('retrieve-college-list', [FilterController::class, 'retrieveColleges']);
+    Route::get('retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
+    Route::get('retrieve-lecturer-current-college-list', [FilterController::class, 'retrieveLecturerCurrentColleges']);
+    Route::get('retrieve-department-list', [FilterController::class, 'retrieveDepartments']);
+    Route::get('retrieve-lecturer-department-list', [FilterController::class, 'retrieveLecturerDepartments']);
+    Route::get('retrieve-lecturer-current-department-list', [FilterController::class, 'retrieveLecturerCurrentDepartments']);
+    Route::get('retrieve-department-level-list', [FilterController::class, 'retrieveDepartmentLevels']);
+    Route::get('retrieve-department-course-list', [FilterController::class, 'retrieveDepartmentCourses']);
+    Route::get('retrieve-department-level-course-list', [FilterController::class, 'retrieveDepartmentLevelCourses']);
+    Route::get('retrieve-department-level-semester-course-list', [FilterController::class, '']);
+    Route::get('retrieve-department-course-part-list', [FilterController::class, 'retrieveDepartmentCourseParts']);
+    Route::get('retrieve-department-lecturer-course-list', [FilterController::class, 'retrieveDepartmentLecturerCourses']);
+    Route::get('retrieve-department-lecturer-current-course-list', [FilterController::class, 'retrieveDepartmentLecturerCurrentCourses']);
+    Route::get('retrieve-department-lecturer-course-part-list', [FilterController::class, 'retrieveDepartmentLecturerCourseParts']);
+    Route::get('retrieve-department-lecturer-current-course-part-list', [FilterController::class, 'retrieveDepartmentLecturerCurrentCourseParts']);
+    Route::get('retrieve-employee-list', [FilterController::class, 'retrieveEmployees']);
+    Route::get('retrieve-lecturer-list', [FilterController::class, 'retrieveLecturers']);
+    Route::get('retrieve-employee-of-job-list', [FilterController::class, 'retrieveEmployeesOfJob']);
+    Route::get('retrieve-academic-year-list', [FilterController::class, 'retrieveAcademicYears']);
+    Route::get('retrieve-owner-list', [FilterController::class, 'retrieveOwners']);
+    Route::get('retrieve-role-list', [FilterController::class, 'retrieveRoles']);
+    Route::get('retrieve-proctor-list', [FilterController::class, 'retrieveProctors']);
+});
 
 
 //test enum

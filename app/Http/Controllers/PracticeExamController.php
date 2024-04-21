@@ -27,7 +27,7 @@ use App\Models\PracticeExamQuestion;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\ExamDifficultyLevelEnum;
 
-class PractiseExamController extends Controller
+class PracticeExamController extends Controller
 {
     public function addPractiseExam(Request $request)
     {

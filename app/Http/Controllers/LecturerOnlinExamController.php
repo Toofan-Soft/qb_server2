@@ -39,7 +39,7 @@ use App\Enums\FormConfigurationMethodEnum;
 use App\Enums\FormNameMethodEnum;
 use App\Helpers\ColumnReplacement;
 
-class LecturereOnlinExamController extends Controller
+class LecturerOnlinExamController extends Controller
 {
     public function addOnlineExam(Request $request)
     {
@@ -93,7 +93,7 @@ class LecturereOnlinExamController extends Controller
         return ResponseHelper::successWithData($realExam->id);
     }
 
-    public function modifyRealExam(Request $request)
+    public function modifyOnlineExam(Request $request)
     {
 
         $realExam = RealExam::findOrFail($request->id);
