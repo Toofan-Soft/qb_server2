@@ -45,7 +45,6 @@ class ChapterController extends Controller
        return DeleteHelper::deleteModel($chapter);
     }
 
-    
     public function retrieveChapters(Request $request)
     {
         $attributes = ['id', 'arabic_title', 'english_title', 'status as status_name', 'description'];

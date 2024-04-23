@@ -242,7 +242,7 @@ class QuestionController extends Controller
         if($question->type === QuestionTypeEnum::MULTIPLE_CHOICE->value){
             QuestionChoices::generateQuestionChoicesCombination($question->id);
         }
- 
+
         return ResponseHelper::success();
     }
     public function rejectQuestion(Request $request)

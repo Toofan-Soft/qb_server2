@@ -21,8 +21,12 @@ class ResponseHelper
     public static function success($number = 200){
         return response()->json(null, $number);
     }
-    public static function successWithData($data ,$number = 200){
+    public static function successWithData($data ,$number = 201){
         return response()->json(['data' => $data], $number);
+    }
+
+    public static function successWithToken($data ,$number = 202){
+        return response()->json(['token' => $data], $number);
     }
 
 }

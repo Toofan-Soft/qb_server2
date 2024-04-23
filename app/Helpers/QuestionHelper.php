@@ -21,8 +21,8 @@ class QuestionHelper
      */
     public static function modifyQuestionStatus($question_id ,$status_id ){
         $question = Question::findOrFail($question_id);
-        $question->update([
-            'status' => $status_id,
+        $question::update([
+            'status' => $status_id
         ]);
         // return ResponseHelper::success();
     }

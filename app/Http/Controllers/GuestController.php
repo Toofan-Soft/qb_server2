@@ -17,24 +17,26 @@ class GuestController extends Controller
 {
     public function addGuest(Request $request)
     {
-        if ($failed = ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError($failed);
+        // يجب ضمان ان عملية اضافة زائر وانشاء حساب له تتم مع بعض
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError(401);
         }
         $guest =  Guest::create([
             'name' => $request->name,
-            'phone' => $request->phone ?? null,
             'gender' =>  $request->gender_id,
+            'phone' => $request->phone ?? null,
             'image_url' => ImageHelper::uploadImage($request->image) ,
         ]);
 
          $response = UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password);
-         return response()->json(['token' => $response], 200);
+         return ResponseHelper::successWithToken($response);
+
         }
     public function modifyGuest (Request $request)
     {
 
-        if ($failed = ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError($failed);
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError(401);
         }
 
         $guest = Guest::findOrFail(auth()->user()->id);
@@ -50,7 +52,7 @@ class GuestController extends Controller
     public function retrieveEditableGuestProfile()
     {
         $attributes = ['name', 'gender as gender_id', 'phone', 'image_url'];
-        $guest = Guest::where('user_id', '=', auth()->user()->id)->get($attributes)->first();
+        $guest = Guest::where('user_id', '=', auth()->user()->id)->get($attributes);
         return ResponseHelper::successWithData($guest);
     }
 

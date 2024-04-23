@@ -12,9 +12,11 @@ use App\Enums\ExamStatusEnum;
 use App\Enums\ExamTypeEnum;
 use App\Enums\FormConfigurationMethodEnum;
 use App\Enums\FormNameEnum;
+use App\Enums\FormNameMethodEnum;
 use App\Enums\GenderEnum;
 use App\Enums\JobTypeEnum;
 use App\Enums\LanguageEnum;
+use App\Enums\OnlineExamTakingStatusEnum;
 use App\Enums\OwnerTypeEnum;
 use App\Enums\QualificationEnum;
 use App\Enums\QuestionStatusEnum;
@@ -23,6 +25,7 @@ use App\Enums\RoleEnum;
 use App\Enums\SemesterEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
 use App\Enums\UserStatusEnum;
+use App\Helpers\ResponseHelper;
 use App\Models\CoursePart;
 use Illuminate\Http\Request;
 
@@ -30,95 +33,115 @@ class EnumsController extends Controller
 {
     public function retrieveCourseStatus  ()
     {
-        return response()->json(['data' => CourseStatusEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(CourseStatusEnum::getEnum());
     }
-
 
     public function retrieveCourseParts  ()
     {
-        return response()->json(['data' => CoursePartsEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(CoursePartsEnum::getEnum());
     }
+
     public function retrieveLanguages   ()
     {
-        return response()->json(['data' => LanguageEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(LanguageEnum::getEnum());
     }
+
     public function retrieveDifficultyLevels   ()
     {
-        return response()->json(['data' => ExamDifficultyLevelEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(ExamDifficultyLevelEnum::getEnum());
+
     }
+
     public function  retrieveQuestionTypes    ()
     {
-        return response()->json(['data' => QuestionTypeEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(QuestionTypeEnum::getEnum());
     }
+
     public function  retrieveAccessibilityStatus    ()
     {
-        return response()->json(['data' => AccessibilityStatusEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(AccessibilityStatusEnum::getEnum());
     }
+
     public function  retrieveQuestionStatus     ()
     {
-        return response()->json(['data' => QuestionStatusEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(QuestionStatusEnum::getEnum());
     }
+
     public function  retrieveAcceptanceStatus     ()
     {
         // enum not found
         //return response()->json(['data' => AcceptanceStatusEnum::getEnum()], 200);
     }
+
     public function  retrieveSemesters    ()
     {
-        return response()->json(['data' => SemesterEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(SemesterEnum::getEnum());
     }
+
     public function  retrieveJobTypes    ()
     {
-        return response()->json(['data' => JobTypeEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(JobTypeEnum::getEnum());
     }
+
     public function  retrieveQualifications     ()
     {
-        return response()->json(['data' => QualificationEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(QualificationEnum::getEnum());
     }
+
     public function  retrieveGenders     ()
     {
-        return response()->json(['data' => GenderEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(GenderEnum::getEnum());
     }
+
     public function  retrieveCourseStudentStatus     ()
     {
-        return response()->json(['data' => CourseStudentStatusEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(CourseStudentStatusEnum::getEnum());
     }
+
     public function  retrieveOwnerTypes    ()
     {
-        return response()->json(['data' => OwnerTypeEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(OwnerTypeEnum::getEnum());
     }
-    public function  retrieveRoles    ()
-    {
-        return response()->json(['data' => RoleEnum::getEnum()], 200);
-    }
+
     public function  retrieveUserStatus     ()
     {
-        return response()->json(['data' => UserStatusEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(UserStatusEnum::getEnum());
     }
+
     public function  retrieveConductMethods     ()
     {
-        return response()->json(['data' => ExamConductMethodEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(ExamConductMethodEnum::getEnum());
     }
+
     public function  retrieveExamTypes    ()
     {
-        return response()->json(['data' => ExamTypeEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(ExamTypeEnum::getEnum());
     }
+
     public function  retrieveformConfigurationMethods    ()
     {
-        return response()->json(['data' => FormConfigurationMethodEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(FormConfigurationMethodEnum::getEnum());
     }
+
     public function  retrieveformNameMethods   ()
     {
-        return response()->json(['data' => FormNameEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(FormNameMethodEnum::getEnum());
     }
+
     public function  retrieveOnlineExamStatus     ()
     {
-        /// ensure from enum
         return response()->json(['data' => ExamStatusEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(ExamStatusEnum::getEnum());
     }
+
     public function  retrieveStudentOnlineExamStatus    ()
     {
-        return response()->json(['data' => StudentOnlineExamStatusEnum::getEnum()], 200);
+        return ResponseHelper::successWithData(StudentOnlineExamStatusEnum::getEnum());
+    }
+
+    public function  retrieveOnlineExamTakingStatus    ()
+    {
+        return ResponseHelper::successWithData(OnlineExamTakingStatusEnum::getEnum());
     }
 
 }

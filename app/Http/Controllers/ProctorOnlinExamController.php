@@ -12,6 +12,7 @@ use App\Helpers\ExamHelper;
 use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
 use App\Enums\CoursePartsEnum;
+use App\Helpers\EnumReplacement;
 use App\Helpers\EnumReplacement1;
 use App\Models\StudentOnlineExam;
 use App\Helpers\ProcessDataHelper;
@@ -40,7 +41,7 @@ class ProctorOnlinExamController extends Controller
         ->where('online_exams.proctor_id', '=', $proctor->id)
         ->where('online_exams.status','=', ExamStatusEnum::ACTIVE->value)
     ->get();
-$onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams ,[new EnumReplacement1('course_part_name', CoursePartsEnum::class)] );
+$onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams ,[new EnumReplacement('course_part_name', CoursePartsEnum::class)] );
 
 return $onlineExams;
 

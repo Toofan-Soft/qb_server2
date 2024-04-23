@@ -49,7 +49,7 @@ class UserHelper
             }
             $token = $user->createToken('quesionbanklaravelapi')->accessToken;
             $user->notify(new EmaiVerificationNotification ($generatedToken));
-            return response()->json(['token' => $token], 200);
+            return true;
 
         }elseif ($ownerTypeId === OwnerTypeEnum::LECTURER->value) {
 
@@ -67,7 +67,7 @@ class UserHelper
             }
             $token = $user->createToken('quesionbanklaravelapi')->accessToken;
             $user->notify(new EmaiVerificationNotification ($generatedToken));
-            return response()->json(['token' => $token], 200);
+            return true;
 
         }elseif ($ownerTypeId === OwnerTypeEnum::STUDENT->value) {
 
@@ -86,7 +86,7 @@ class UserHelper
 
             $token = $user->createToken('quesionbanklaravelapi')->accessToken;
             $user->notify(new EmaiVerificationNotification ($generatedToken));
-            return response()->json(['token' => $token], 200);
+            return true;
         }else{
 
             $guest = Guest::findOrFail($ownerId);
@@ -100,6 +100,7 @@ class UserHelper
             $user->notify(new EmaiVerificationNotification ($generatedToken));
             /////////////////
             // return response()->json(['token' => $token], 200);
+
             return   $token ;
 
         }
@@ -125,9 +126,10 @@ class UserHelper
 
   public static function retrieveOwnerRoles( $ownerTypeId )
     {
+        // usr roles [id, name, is_mandatory]
         if($ownerTypeId === OwnerTypeEnum::STUDENT->value){
 
-            
+
             $userRole = [
                     'id' => 0,
                     'is_mandatory' => true
@@ -135,6 +137,7 @@ class UserHelper
         }
         $userRoles = [$userRole];
         return $userRoles;
+
     }
 
     public static function retrieveGuestProfile( $user )

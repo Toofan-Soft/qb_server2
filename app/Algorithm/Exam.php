@@ -2,17 +2,17 @@
 namespace App\Algorithm;
 
 class Exam{
- 
 
-    public static function generateOnlineExam($duration, $languageId, $difficultyLevelId, 
-    $formsCount, $formConfigurationMethodId, $questionsTypes, $topicsIds
-    ){
+// $duration, $languageId, $difficultyLevelId,
+// $formsCount, $formConfigurationMethodId, $questionsTypes, $topicsIds
+
+    public static function generateOnlineExam($realExamId)
+    {
 
     }
 
-    public static function generatePaperExam($duration, $languageId, $difficultyLevelId, 
-    $formsCount, $formConfigurationMethodId, $questionsTypes, $topicsIds
-    ){
+    public static function generatePaperExam($realExamId)
+    {
 
     }
 
