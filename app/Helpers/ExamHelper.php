@@ -30,7 +30,7 @@ class ExamHelper
 {
 
     /**
-     * delete real (paper, online) exam by id 
+     * delete real (paper, online) exam by id
      */
     public static function deleteRealExam($realExamId)
     {
@@ -57,23 +57,29 @@ class ExamHelper
     }
     /**
      * add total score of each exam.
-     * $realExams: list of real exam 
+     * $realExams: list of real exam
      */
-    public static function getRealExamsScore($readExams)
+    public static function getRealExamsScore($realExams)
     {
 
-        foreach ($readExams as $readExam) {
-            $readExam = RealExam::find($readExam->id);
-            $realExamQuestionTypes = $readExam->real_exam_question_types()->get(['questions_count', ' question_score']);
+        $realExams = json_decode($realExams,true);
+        foreach ($realExams as $realExam ) {
+
+            // $realExam = $realExam->toArray();
+            $temp = RealExam::findOrFail($realExam['id']);
+            $realExamQuestionTypes = $temp->real_exam_question_types()->get(['question_count', 'question_score']);
+
             $score = 0;
             foreach ($realExamQuestionTypes as $realExamQuestionType) {
-                $score += $realExamQuestionType->questions_count * $realExamQuestionType->question_score;
+                $score += $realExamQuestionType->question_count *  $realExamQuestionType->question_score;
             }
-            $readExam['score'] = $score;
+
+            $realExam['score'] = $score;
+            return $realExam;
             $score = 0;
         }
 
-        return $readExams;
+        return $realExams;
     }
 
     public static function getStudentForm($realExam)
@@ -95,7 +101,7 @@ class ExamHelper
     }
     public static function getStudentAnsweredQuestionsCount($onlineExamId, $studentId)
     {
-        
+
         $studentFormId = 0; // يتم عمل دالة لمعرفة رقم النموذج حق الطالب، او جعل هذه الدالة تستقبل رقم النموذج بدل رقم الاختبار
         $questionsCount = StudentAnswer::where('form_id', '=', $studentFormId)
         ->where('student_id', '=', $studentId)->count();

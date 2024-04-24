@@ -18,8 +18,11 @@ class GuestController extends Controller
     public function addGuest(Request $request)
     {
         // يجب ضمان ان عملية اضافة زائر وانشاء حساب له تتم مع بعض
-        if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+        // if (ValidateHelper::validateData($request, $this->rules($request))) {
+        //     return  ResponseHelper::clientError(401);
+        // }
+        if ($x = ValidateHelper::validateData($request, $this->rules($request))) {
+            return ResponseHelper::clientError1($x);
         }
         $guest =  Guest::create([
             'name' => $request->name,

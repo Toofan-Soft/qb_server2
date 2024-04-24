@@ -42,18 +42,20 @@ class UserController extends Controller
         ]);
 
         if ($validation->fails()) {
-            return ResponseHelper::clientError(401);        }
+            return ResponseHelper::clientError(401);
+          }
 
         if (auth()->attempt($input)) {
             $user = Auth::user();
-            $token =  auth()->user()->createToken('quesionbanklaravelapi')->accessToken;
-            return ResponseHelper::successWithToken($token);
+
+            $token =  $user->createToken('quesionbanklaravelapi')->accessToken;
+           return ResponseHelper::successWithToken($token);
 
         } else {
             return ResponseHelper::clientError(401);
           }
-
     }
+
     public function logout(Request $request)
     {
         Auth::logout();

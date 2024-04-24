@@ -18,6 +18,9 @@ class ResponseHelper
     public static function clientError($number = 400){
         return response()->json(null, $number);
     }
+    public static function clientError1($m, $number = 400){
+        return response()->json(['message'=> $m], $number);
+    }
     public static function success($number = 200){
         return response()->json(null, $number);
     }

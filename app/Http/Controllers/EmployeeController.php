@@ -28,8 +28,8 @@ class EmployeeController extends Controller
     public function addEmployee(Request $request)
     {
 
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if( ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
        $employee =  Employee::create([
             'arabic_name' =>  $request->arabic_name,

@@ -75,6 +75,9 @@ Route::middleware('auth:api')->group(function () {
     Route::put('update',[UserController::class, 'update']);
     Route::put('change-password',[UserController::class,'changePassword']);
 
+//lecturer onlineExam
+    Route::post('lecturer-online-exam/add', [LecturerOnlinExamController::class, 'addOnlineExam']);
+
 });
 
 //univercity
@@ -302,7 +305,7 @@ Route::prefix('user/')->group(function () {
 
 //lecturer online exam
 Route::prefix('lecturer-online-exam/')->group(function () {
-    Route::post('add', [LecturerOnlinExamController::class, 'addOnlineExam']);
+    // Route::post('add', [LecturerOnlinExamController::class, 'addOnlineExam']);
     Route::put('modify', [LecturerOnlinExamController::class, 'modifyOnlineExam']);
     Route::put('change-status', [LecturerOnlinExamController::class, 'changeOnlineExamStatus']);
     Route::delete('delete', [LecturerOnlinExamController::class, 'deleteOnlineExam']);
