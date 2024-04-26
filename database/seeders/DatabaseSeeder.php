@@ -52,7 +52,7 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        //User::factory(10)->create(['password'=>'12345678']);
+        // User::factory(10)->create(['password'=>'12345678']);
         // then go to consol> php artisan db:seed
 
         // \App\Models\Department::factory(10)->create();

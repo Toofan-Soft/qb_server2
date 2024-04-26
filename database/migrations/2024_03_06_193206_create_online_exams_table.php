@@ -3,6 +3,7 @@
 use App\Enums\ExamStateEnum;
 use App\Enums\ExamStatusEnum;
 use App\Enums\OnlineExamStateEnum;
+use Illuminate\Support\Facades\DB;
 use App\Enums\ExamConductMethodEnum;
 use App\Enums\ExamProcedureMethodEnum;
 use Illuminate\Support\Facades\Schema;
@@ -22,8 +23,8 @@ return new class extends Migration
             $table->enum('status', ExamStatusEnum::values());              //***  change OnlineExamStateEnum into ExamStateEnum
             $table->enum('conduct_method', ExamConductMethodEnum::values());
             $table->timestamp('exam_datetime_notification_datetime');
-            $table->timestamp('result_notification_datetime');// suggest after 1 hour by $table->timestamp('result_notification_date')->default(DB::raw('CURRENT_TIMESTAMP + INTERVAL 1 HOUR'));
-
+            // $table->timestamp('result_notification_datetime');// suggest after 1 hour by $table->timestamp('result_notification_date')->default(DB::raw('CURRENT_TIMESTAMP + INTERVAL 1 HOUR'));
+            
             $table->foreign('id')
             ->references('id')
             ->on('real_exams')
