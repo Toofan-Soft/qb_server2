@@ -53,7 +53,7 @@ class Question extends Model
     public function true_false_question() : HasOne {
         return $this->HasOne(TrueFalseQuestion::class);
     }
-
+// update the question_usages to question_usage
     public function question_usages() : HasOne {
         return $this->HasOne(QuestionUsage::class);
     }

@@ -59,8 +59,7 @@ namespace App\Algorithm;
   */
 
   /**
-   * viewModel 
-   * AlgorithmView
-   * AlgorithmController
-   * Model
+   * api 
+   *    class for each process 
+   * 
    */
