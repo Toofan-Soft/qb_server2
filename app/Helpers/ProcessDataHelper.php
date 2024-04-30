@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use Traversable;
 use App\Models\Course;
 use App\Enums\GenderEnum;
 use App\Helpers\ImageHelper;
@@ -9,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use stdClass;
 
 class ProcessDataHelper
 {
@@ -18,7 +20,6 @@ class ProcessDataHelper
     //     foreach ($data as $item) {
     //         foreach ($enumReplacements as $enumReplacement) {
     //             if (isset($item[$enumReplacement->columnName]) && is_numeric($item[$enumReplacement->columnName])) {
-    //                 // Proceed with conversion (assuming numeric value)
     //                 $item->{$enumReplacement->columnName} = $enumReplacement->enumClass::getNameByNumber($item->{$enumReplacement->columnName});
     //               }
     //         }
@@ -27,29 +28,49 @@ class ProcessDataHelper
     // }
 
 
-    public static function enumsConvertIdToName($data, $enumReplacements)
+//     public static function enumsConvertIdToName($data, $enumReplacements)
+// {
+//     foreach ($data as $key => $item) {
+//         foreach ($enumReplacements as $enumReplacement) {
+//             if (is_array($item)) {
+//                 // Handle array
+//                 if (isset($item[$enumReplacement->columnName]) && is_numeric($item[$enumReplacement->columnName])) {
+//                     $item[$enumReplacement->columnName] = $enumReplacement->enumClass::getNameByNumber($item[$enumReplacement->columnName]);
+//                 }
+//             } elseif (is_object($item)) {
+//                 // Handle object
+//                 // if (property_exists($item, $enumReplacement->columnName) && is_numeric($item->{$enumReplacement->columnName})) {
+//                 if (isset($item, $enumReplacement->columnName) && is_numeric($item->{$enumReplacement->columnName})) {
+//                     $item->{$enumReplacement->columnName} = $enumReplacement->enumClass::getNameByNumber($item->{$enumReplacement->columnName});
+//                 }
+//             }
+
+//         }
+//         $data[$key] = $item;
+//     }
+
+//     return $data;
+// }
+
+
+//handle single object or array of objects:
+public static function enumsConvertIdToName($data, $enumReplacements)
 {
-    foreach ($data as $key => $item) {
+    // Check if $data is an array or a single object
+    $isArray = is_array($data) || $data instanceof Traversable;
+
+    $dataToProcess = $isArray ? $data : [$data];
+    foreach ($dataToProcess as $item) {
         foreach ($enumReplacements as $enumReplacement) {
-            if (is_array($item)) {
-                // Handle array
-                if (isset($item[$enumReplacement->columnName]) && is_numeric($item[$enumReplacement->columnName])) {
-                    $item[$enumReplacement->columnName] = $enumReplacement->enumClass::getNameByNumber($item[$enumReplacement->columnName]);
-                }
-            } elseif (is_object($item)) {
-                // Handle object
+            // if (isset($item[$enumReplacement->columnName]) && is_numeric($item[$enumReplacement->columnName])) {
                 // if (property_exists($item, $enumReplacement->columnName) && is_numeric($item->{$enumReplacement->columnName})) {
-                if (isset($item, $enumReplacement->columnName) && is_numeric($item->{$enumReplacement->columnName})) {
-                    $item->{$enumReplacement->columnName} = $enumReplacement->enumClass::getNameByNumber($item->{$enumReplacement->columnName});
-                }
-            }
+                $item->{$enumReplacement->columnName} = $enumReplacement->enumClass::getNameByNumber($item->{$enumReplacement->columnName});
+            // }
         }
-        $data[$key] = $item;
     }
-    return $data;
+    // If $data was a single object, return the modified object
+    return $isArray ? $dataToProcess : $dataToProcess[0];
 }
-
-
 
 public static function columnConvertIdToName($data, $columnReplacements)
 {

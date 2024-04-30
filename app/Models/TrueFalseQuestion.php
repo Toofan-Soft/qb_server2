@@ -16,7 +16,7 @@ class TrueFalseQuestion extends Model
 
     public $incrementing = false; // This indicates that the model does not auto-increment its primary key.
 
-    protected $primaryKey = ['question_id']; 
+    protected $primaryKey = ['question_id'];
 
     protected $fillable = [
         'question_id',
@@ -25,7 +25,7 @@ class TrueFalseQuestion extends Model
 
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
-         'answer' =>  TrueFalseAnswerEnum::class,
+        //  'answer' =>  TrueFalseAnswerEnum::class,
 
     ];
 

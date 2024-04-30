@@ -26,7 +26,7 @@ class CourseLecturer extends Model
         return $this->HasMany(RealExam::class);
     }
 
-    public function department_course_parts() : BelongsTo {
+    public function department_course_part() : BelongsTo {
         return $this->belongsTo(DepartmentCoursePart::class);
     }
 }
