@@ -44,7 +44,8 @@ class UserManagmentController extends Controller
         $userRoles = $user->user_roles()->get(['role_id']);
         foreach ($request->roles_ids as $role_id) {
             if (in_array($userRoles['role_id'], $role_id)) {
-                UserHelper::deleteUserRoles($user->id, [$role_id]);
+                $user->user_roles()->where('role_id', '=', $role_id)->delete();
+                
             } else {
                 UserHelper::addUserRoles($user->id, [$role_id]);
             }

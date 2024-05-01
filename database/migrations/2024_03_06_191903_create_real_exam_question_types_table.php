@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('real_exam_question_types', function (Blueprint $table) {
             $table->unsignedBigInteger('real_exam_id');
             $table->enum('question_type', QuestionTypeEnum::values());
-            $table->integer('question_count');
+            $table->integer('questions_count');
             $table->float('question_score');
 
             $table->primary(['real_exam_id', 'question_type']);

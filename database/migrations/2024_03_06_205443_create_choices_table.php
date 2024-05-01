@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('choices', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('question_id');
-            $table->text('content')->nullable();
+            $table->text('content');
             $table->string('attachment')->nullable();
             $table->enum('status', ChoiceStatusEnum::values());
 

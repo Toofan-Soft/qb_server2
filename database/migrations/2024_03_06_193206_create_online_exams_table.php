@@ -19,12 +19,16 @@ return new class extends Migration
     {
         Schema::create('online_exams', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary(); // need Auto
-            $table->unsignedBigInteger('proctor_id');
+            $table->unsignedBigInteger('proctor_id')->nullable();
             $table->enum('status', ExamStatusEnum::values());              //***  change OnlineExamStateEnum into ExamStateEnum
             $table->enum('conduct_method', ExamConductMethodEnum::values());
             $table->timestamp('exam_datetime_notification_datetime');
             $table->timestamp('result_notification_datetime');// suggest after 1 hour by $table->timestamp('result_notification_date')->default(DB::raw('CURRENT_TIMESTAMP + INTERVAL 1 HOUR'));
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 60b13af2688e3346577884998e9a8ffd3d1b2d65
             $table->foreign('id')
             ->references('id')
             ->on('real_exams')

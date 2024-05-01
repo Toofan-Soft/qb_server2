@@ -18,6 +18,7 @@ use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Enums\QuestionStatusEnum;
 use App\Enums\TrueFalseAnswerEnum;
+use App\Helpers\QuestionHelper;
 use Illuminate\Routing\Controller;
 
 class QuestionChoiceController extends Controller
@@ -25,24 +26,24 @@ class QuestionChoiceController extends Controller
 
     public function addQuestionChoice(Request $request)
     {
-        if(ValidateHelper::validateData($request, $this->rules($request))){
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
         $question = Question::findOrFail($request->question_id);
         $question =  $question->choices()->create([
             'content' => $request->content,
-            'status' => ($request->is_true ) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value,
-            'attachment' => ImageHelper::uploadImage($request->attachment) ,
+            'status' => ($request->is_true) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value,
+            'attachment' => ImageHelper::uploadImage($request->attachment),
         ]);
 
-        QuestionChoices::regenerateQuestionChoicesCombination($question->id);
+        self::regenerateQuestionChoicesCombination($question);
 
-       return ResponseHelper::success();
+        return ResponseHelper::success();
     }
 
     public function modifyQuestionChoice(Request $request)
     {
-        if(ValidateHelper::validateData($request, $this->rules($request))){
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
 
@@ -53,8 +54,8 @@ class QuestionChoiceController extends Controller
                 'status' => ($request->is_true) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value,
                 'attachment' => ImageHelper::updateImage($request->attachment, $choice->attachment),
             ]);
-            QuestionChoices::regenerateQuestionChoicesCombination($choice->question_id);
-        }else {
+            self::regenerateQuestionChoicesCombination($choice->question());
+        } else {
             $choice->update([
                 'content' => $request->content ??  $choice->content,
                 'attachment' => ImageHelper::updateImage($request->attachment, $choice->attachment),
@@ -66,9 +67,9 @@ class QuestionChoiceController extends Controller
     public function deleteQuestionChoice(Request $request)
     {
         $choice = Choice::findOrFail($request->id);
-        $questionId = $choice->question_id;
+        $question = $choice->question();
         $choice->delete();
-        QuestionChoices::regenerateQuestionChoicesCombination($questionId);
+        self::regenerateQuestionChoicesCombination($question);
         return ResponseHelper::success();
     }
 
@@ -76,12 +77,19 @@ class QuestionChoiceController extends Controller
     {
         $attributes = ['content', 'attachment as attachment_url', 'status as is_true'];
         $choice = Choice::findOrFail($request->id, $attributes);
-        if($choice->is_true === ChoiceStatusEnum::CORRECT_ANSWER->value){
+        if ($choice->is_true === ChoiceStatusEnum::CORRECT_ANSWER->value) {
             $choice['is_true'] = true;
-        }else {
+        } else {
             $choice['is_true'] = false;
         }
         return ResponseHelper::successWithData($choice);
+    }
+
+    private static function regenerateQuestionChoicesCombination($question)
+    {
+        $question->question_choices_combinations()->delete();
+
+        QuestionHelper::generateQuestionChoicesCombination($question);
     }
 
     public function rules(Request $request): array
@@ -100,5 +108,4 @@ class QuestionChoiceController extends Controller
         }
         return $rules;
     }
-
 }

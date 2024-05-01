@@ -22,15 +22,15 @@ return new class extends Migration
     {
         Schema::create('real_exams', function (Blueprint $table) {
             $table->id();
-            $table->enum('language', LanguageEnum::values())->default(LanguageEnum::ARABIC->value);
+            $table->enum('language', LanguageEnum::values());
             $table->enum('difficulty_level', ExamDifficultyLevelEnum::values());
             $table->enum('form_configuration_method', FormConfigurationMethodEnum::values());
-            $table->integer('forms_count')->default(1);
+            $table->integer('forms_count');
             $table->enum('form_name_method', FormNameMethodEnum::values());
             $table->timestamp('datetime');
             $table->integer('duration');
-            $table->enum('type',RealExamTypeEnum::values());
-            $table->enum('exam_type', ExamTypeEnum::values()); /////need to add  // mid , month, final
+            $table->enum('type', ExamTypeEnum::values());
+            $table->enum('exam_type', RealExamTypeEnum::values()); /////need to add  // mid , month, final
             $table->text('note')->nullable();
             $table->unsignedBigInteger('course_lecturer_id');
 

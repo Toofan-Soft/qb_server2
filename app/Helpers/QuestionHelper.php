@@ -2,28 +2,39 @@
 
 namespace App\Helpers;
 
+use App\Models\Choice;
+use App\Models\Question;
 use App\Models\RealExam;
 use Illuminate\Http\Request;
+use GuzzleHttp\Psr7\Response;
+use App\Enums\ChoiceStatusEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Models\TrueFalseQuestion;
 use Illuminate\Http\UploadedFile;
 use App\Enums\TrueFalseAnswerEnum;
-use App\Models\Choice;
-use App\Models\Question;
-use App\Models\QuestionChoiceCombination;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Storage;
+use App\Models\QuestionChoiceCombination;
+use App\AlgorithmAPI\GenerateQuestionChoicesCombination;
 
 class QuestionHelper
 {
     /**
-     * summation the score of exams .
+     * generate question choices combination by call algorithm api .
      */
-    public static function modifyQuestionStatus($question_id ,$status_id ){
-        $question = Question::findOrFail($question_id);
-        $question::update([
-            'status' => $status_id
-        ]);
+    public static function generateQuestionChoicesCombination(Question $question){
+        $algorithmData = $question->choices()->get(['id', 'status as is_true']);
+        foreach ($algorithmData as $choice) {
+            $choice['is_true'] = ($choice->is_true === ChoiceStatusEnum::CORRECT_ANSWER->value) ? true : false;
+        }
+        $questionChoicesCombination = (new GenerateQuestionChoicesCombination())->execute($algorithmData);
+
+        // add question Choices Combination
+        foreach ($questionChoicesCombination as $choiceCombination) {
+            $question->question_choices_combinations()->create([
+                'combination_choices' => $choiceCombination
+            ]);
+        }
+        
         // return ResponseHelper::success();
     }
 

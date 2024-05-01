@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('colleges', function (Blueprint $table) {
             $table->id();
-            $table->string('arabic_name');
-            $table->string('english_name');
+            $table->string('arabic_name')->unique();
+            $table->string('english_name')->unique();
             $table->string('logo_url')->nullable() ;
             $table->text('description')->nullable() ;
             $table->string('phone')->unique()->nullable();
@@ -24,7 +24,6 @@ return new class extends Migration
             $table->string('youtube')->nullable() ;
             $table->string('telegram')->nullable();
 
-            $table->unique(['arabic_name', 'english_name']);
         });
     }
 

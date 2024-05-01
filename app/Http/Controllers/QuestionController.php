@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Algorithm\QuestionChoices;
+use App\AlgorithmAPI\GenerateQuestionChoicesCombination;
 use App\Models\Topic;
 use App\Models\Choice;
 use App\Models\College;
@@ -167,12 +168,12 @@ class QuestionController extends Controller
                     $choice['is_true'] = false;
                 }
             }
-             $question['choices'] = $choices;
+            $question['choices'] = $choices;
         }
         unset($question['type']);
         $status = [];
 
-        if (  intval($question->status) === QuestionStatusEnum::NEW->value) {
+        if (intval($question->status) === QuestionStatusEnum::NEW->value) {
             $status  = [
                 'is_accept' => null,
                 'is_request' => false,
@@ -182,7 +183,7 @@ class QuestionController extends Controller
                 'is_accept' => null,
                 'is_request' => true,
             ];
-        } elseif (intval($question->status)=== QuestionStatusEnum::ACCEPTED->value) {
+        } elseif (intval($question->status) === QuestionStatusEnum::ACCEPTED->value) {
             $status  = [
                 'is_accept' => true,
                 'is_request' => true,
@@ -229,27 +230,36 @@ class QuestionController extends Controller
 
     public function submitQuestionReviewRequest(Request $request)
     {
-        QuestionHelper::modifyQuestionStatus($request->id, QuestionStatusEnum::REQUESTED->value);
+        self::modifyQuestionStatus($request->id, QuestionStatusEnum::REQUESTED->value);
         return ResponseHelper::success();
     }
     public function acceptQuestion(Request $request)
     {
-        QuestionHelper::modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
+        self::modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
 
         $question = Question::findOrFail($request->id);
-        $question->question_usages()->create(); ////**** */
+        $question->question_usage()->create();
 
-        if($question->type === QuestionTypeEnum::MULTIPLE_CHOICE->value){
-            QuestionChoices::generateQuestionChoicesCombination($question->id);
+        if ($question->type === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
+            QuestionHelper::generateQuestionChoicesCombination($question);
         }
 
         return ResponseHelper::success();
     }
+
     public function rejectQuestion(Request $request)
     {
-        return QuestionHelper::modifyQuestionStatus($request->id, QuestionStatusEnum::REJECTED->value);
+        self::modifyQuestionStatus($request->id, QuestionStatusEnum::REJECTED->value);
         return ResponseHelper::success();
+    }
 
+    private static function modifyQuestionStatus($question_id, $status_id)
+    {
+        $question = Question::findOrFail($question_id);
+        $question::update([
+            'status' => $status_id
+        ]);
+        // return ResponseHelper::success();
     }
 
 

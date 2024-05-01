@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
-            $table->string('arabic_name')->nullable() ;
-            $table->string('english_name')->nullable();
+            $table->string('arabic_name')->unique();
+            $table->string('english_name')->unique();
 
-            $table->unique(['arabic_name', 'english_name']);
         });
     }
 

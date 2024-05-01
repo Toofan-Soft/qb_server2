@@ -35,6 +35,7 @@ class GuestController extends Controller
          return ResponseHelper::successWithToken($response);
 
         }
+        
     public function modifyGuest (Request $request)
     {
 
