@@ -49,7 +49,8 @@ class UserHelper
             }
             $token = $user->createToken('quesionbanklaravelapi')->accessToken;
             $user->notify(new EmaiVerificationNotification ($generatedToken));
-            return true;
+            // return true;
+            return   $token ;
 
         }elseif ($ownerTypeId === OwnerTypeEnum::LECTURER->value) {
 

@@ -84,7 +84,6 @@ class LecturerOnlinExamController extends Controller
         ]);
 
         // foreach ($request->question_types as $question_type) {
-            //how to save this data insid data of json into laravel db
             $realExam->real_exam_question_types()->create([
                 'question_type' => $request->question_types['type_id'],
                 'question_count' => $request->question_types['questions_count'],

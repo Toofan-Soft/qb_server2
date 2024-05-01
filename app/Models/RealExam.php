@@ -41,7 +41,7 @@ class RealExam extends Model
         'form_configuration_method' => FormConfigurationMethodEnum::class,
         'form_name_method' => FormNameMethodEnum::class,
         'type' => RealExamTypeEnum::class,
-        'exam_type' => ExamTypeEnum::class,
+        // 'exam_type' => ExamTypeEnum::class,
         'exam_date' => 'datetime',
     ];
 

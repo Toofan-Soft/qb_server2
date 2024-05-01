@@ -28,8 +28,8 @@ class EmployeeController extends Controller
     public function addEmployee(Request $request)
     {
 
-        if( ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError(401);
+        if($x= ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError1($x);
         }
        $employee =  Employee::create([
             'arabic_name' =>  $request->arabic_name,
@@ -51,9 +51,13 @@ class EmployeeController extends Controller
                 $ownerTypeId = OwnerTypeEnum::EMPLOYEE->value;
             }
 
-           if(!UserHelper::addUser($request->email, $ownerTypeId, $employee->id)) {
-             return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
-           }
+        //    if(!UserHelper::addUser($request->email, $ownerTypeId, $employee->id)) {
+        //      return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
+        //    }
+
+        //!!!!!!!!!!** this two lines only for test , then will delete them
+        $response = UserHelper::addUser($request->email, $ownerTypeId, $employee->id);
+        return ResponseHelper::successWithToken($response);
         }
 
         return ResponseHelper::success();

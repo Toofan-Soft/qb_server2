@@ -12,7 +12,7 @@ class RealExamQuestionType extends Model
     use HasFactory;
     public $timestamps = false;
     public $incrementing = false; // This indicates that the model does not auto-increment its primary key.
-    protected $primaryKey  = ['real_exam_id'];
+    protected $primaryKey  = ['real_exam_id', 'question_type'];
     protected $fillable = [
         'real_exam_id',
         'question_type',

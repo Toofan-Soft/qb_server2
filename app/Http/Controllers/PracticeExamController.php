@@ -36,7 +36,7 @@ class PracticeExamController extends Controller
 {
     public function addPracticeExam(Request $request)
     {
-        if (ValidateHelper::validateData($request, $this->rules($request))) {
+        if ( ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
 
@@ -46,6 +46,7 @@ class PracticeExamController extends Controller
         if ($examQuestions->data) { // modify to use has function
 
             $user = User::findOrFail(auth()->user()->id);
+
             $practiceExam = $user->practise_exams()->create([
                 'department_course_part_id' => $request->department_course_part_id,
                 'title' => $request->title ?? null,
@@ -55,6 +56,7 @@ class PracticeExamController extends Controller
                 'conduct_method' => $request->conduct_method_id,
                 'status' => ExamStatusEnum::ACTIVE->value,
             ]);
+
             // قاعدة البيانات لا توفر امكانية اضافة انواع الاسئلة وعددهم
             // add type_id, questions_count
             // foreach ($request->question_types as $question_type ) {
@@ -89,10 +91,10 @@ class PracticeExamController extends Controller
         ]);
     }
 
-    public function deletePractiseExam(PaperExam $paperExam)
+    public function deletePractiseExam(Request $request)
     {
         // حذف الاختبارات المعلقة فقط
-        return DeleteHelper::deleteModel($paperExam);
+        return DeleteHelper::deleteModel($request->id);
     }
 
     public function retrievePractiseExams(Request $request)
@@ -111,7 +113,7 @@ class PracticeExamController extends Controller
         } else {
             $practiseExams = ExamHelper::retrievePractiseExams($user->id, $request->department_course_part_id);
         }
-        return $practiseExams;
+        return ResponseHelper::successWithData($practiseExams);
     }
 
     public function retrievePractiseExamsAndroid(Request $request)
@@ -129,9 +131,9 @@ class PracticeExamController extends Controller
         $practiseExamQuestions = [];
 
         foreach ($practiseExamQuestions as $practiseExamQuestion) {
-            $questions = DB::table('practise_exams')
-                ->join('practise_exam_questions', 'practise_exams.id', '=', 'practise_exam_questions.practise_exam_id')
-                ->join('questions', 'practise_exam_questions.question_id', '=', 'questions.id')
+            $questions = DB::table('practice_exams')
+                ->join('practise_exam_questions', 'practice_exams.id', '=', 'practice_exam_questions.practice_exam_id')
+                ->join('questions', 'practice_exam_questions.question_id', '=', 'questions.id')
                 ->select(
                     'questions.id ',
                     'questions.type as type_name ',
@@ -139,7 +141,7 @@ class PracticeExamController extends Controller
                     'questions.attachment_url',
                     'form_questions.combination_id',
                 )
-                ->where('practise_exams.id', '=', $request->exam_id)
+                ->where('practice_exams.id', '=', $request->exam_id)
                 ->get();
             // $questions = QuestionHelper::retrieveQuestionsAnswer($questions, $type->type_name);
             // $examQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
@@ -257,7 +259,7 @@ class PracticeExamController extends Controller
             // 'questions_types' => $request->questions_types,
         ];
 
-        $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه 
+        $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
         $accessabilityStatusIds = [
             AccessibilityStatusEnum::PRACTICE_EXAM->value,
             AccessibilityStatusEnum::PRACTICE_REALEXAM->value,
@@ -294,10 +296,10 @@ class PracticeExamController extends Controller
         // يفضل ان يتم عملها مشترك ليتم استخداما في الاختبار الورقي والتجريبي
         // تقوم هذه الدالة باختيار توزيعة الاختيارات للاسئلة من نوع اختيار من متعدد
         /**
-         * steps of function 
+         * steps of function
          *   اختيار الاسئلة التي نوعها اختيار من متعدد
          *   اختيار احد التوزيعات التي يمتلكها السؤال بشكل عشوائي
-         *   يتم اضافة رقم التوزيعة المختارة الي السؤال 
+         *   يتم اضافة رقم التوزيعة المختارة الي السؤال
          */
         return $examQuestions;
     }
@@ -310,8 +312,8 @@ class PracticeExamController extends Controller
             'title' => 'nullable|string',
             'language_id' => ['required', new Enum(LanguageEnum::class)], // Assuming LanguageEnum holds valid values
             'duration' => 'required|integer',
-            'difficulty_level_id' => ['required', ExamDifficultyLevelEnum::class], // Assuming ExamDifficultyLevelEnum holds valid values
-            'conduct_method_id' => ['required', ExamConductMethodEnum::class], // Assuming ExamConductMethodEnum holds valid values
+            'difficulty_level_id' => ['required', new Enum(ExamDifficultyLevelEnum::class)],
+            'conduct_method_id' => ['required', new Enum(ExamConductMethodEnum::class)],
             //'status' => new Enum(ExamStatusEnum::class), // Assuming ExamStatusEnum holds valid values
             'department_course_part_id' => 'required|exists:department_course_parts,id',
             //'user_id' => 'required|uuid',

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('paper_exams', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->string('Course_lecturer_name');
+            $table->string('course_lecturer_name');
 
 
             $table->foreign('id')

@@ -14,13 +14,13 @@ enum LevelsEnum: int {
 
     public function getValues(): array {
         return match ($this) {
-            self::FIRST => [1, 'FIRST', 'الاول'],
-            self::SECOND => [2, 'SECOND', 'الثاني'],
-            self::THIRD => [3, 'THIRD', 'الثالث'],
-            self::FORTH => [4, 'FORTH', 'الرابع '],
-            self::FIFTH => [5, 'FIFTH', ' الخامس'],
-            self::SIXTH => [6, 'SIXTH', ' السادس'],
-            self::SIXTH => [7, 'SIXTH', ' السابع'],
+            self::FIRST => [1, 'First', 'الاول'],
+            self::SECOND => [2, 'Second', 'الثاني'],
+            self::THIRD => [3, 'Third', 'الثالث'],
+            self::FORTH => [4, 'Forth', 'الرابع '],
+            self::FIFTH => [5, 'Fifth', ' الخامس'],
+            self::SIXTH => [6, 'Sixth', ' السادس'],
+            self::SEVENTH => [7, 'Seventh', ' السابع'],
         };
     }
 

@@ -61,6 +61,7 @@ class StudentOnlinExamController extends Controller
         // تستخدم هذه الدالة لارجاع الاختبارات الغير مكتملة فقط
         $studentonlinExam = StudentOnlineExam::where('online_exam_id',$request->id)->first();
         $realExam = [];
+        $mergedData  = [];
         $isComplete = ( intval($studentonlinExam->status) === StudentOnlineExamStatusEnum::COMPLETE->value)? true : false ;
         if(!$isComplete ){
             $realExam = RealExam::find($studentonlinExam->online_exam_id, ['id','language as language_name' ,
@@ -90,38 +91,34 @@ class StudentOnlinExamController extends Controller
                 new EnumReplacement('level_name', LevelsEnum::class),
                 new EnumReplacement('semester_name', SemesterEnum::class),
             ]);
+
+
             $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
             $college = $department->college()->first(['arabic_name as college_name']);
             $course = $departmentCourse->course()->first(['arabic_name as course_name']);
 
+            //*** make unset to : 'department_id', 'course_id', 'college_id', 'course_lecturer_id'
+            $departmentCourse = $departmentCourse->toArray();
+            unset($departmentCourse['department_id']);
+            unset($departmentCourse['course_id']);
 
-        //    array_merge($realExam->toArray(),
-        //     $onlineExam->toArray(),
-        //     $lecturer->toArray(),
-        //      $coursePart->toArray(),
-        //      $departmentCourse->toArray(),
-        //       $department->toArray(),
-        //       $college->toArray(),
-        //       $course->toArray()); // merge all with realExam
+            $department = $department->toArray();
+            unset($department['college_id']);
 
-        //    array_merge($realExam, $onlineExam, $lecturer, $coursePart,$departmentCourse, $department, $college, $course); // merge all with realExam
-        $mergedData = [
-            'student_online_exam' => $studentonlinExam,
-            'real_exam' => $realExam,
-            'is_complete' => $isComplete,
-            'online_exam' => $onlineExam,
-            'course_lecturer' => $courselecturer,
-            'lecturer' => $lecturer,
-            'department_course_part' => $departmentCoursePart,
-            'course_part' => $coursePart,
-            'department_course' => $departmentCourse,
-            'department' => $department,
-            'college' => $college,
-            'course' => $course,
-        ];
+            $realExam = $realExam->toArray();
+            unset($realExam['course_lecturer_id']);
+    }
+        $realExam =
+            $realExam  +
+            $onlineExam ->toArray()+
+            $lecturer->toArray() +
+            $coursePart->toArray() +
+            $departmentCourse  +
+            $department +
+            $college->toArray() +
+            $course->toArray();
 
-        }
-        return ResponseHelper::successWithData($mergedData);
+        return ResponseHelper::successWithData($realExam);
 
     }
 

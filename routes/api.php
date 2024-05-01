@@ -2,6 +2,7 @@
 
 use App\Models\Topic;
 use App\Enums\Example;
+use App\Enums\ExamTypeEnum;
 use App\Enums\RoleEnum;
 use App\Traits\EnumTraits;
 
@@ -78,6 +79,14 @@ Route::middleware('auth:api')->group(function () {
 //lecturer onlineExam
     Route::post('lecturer-online-exam/add', [LecturerOnlinExamController::class, 'addOnlineExam']);
 
+//paper exam
+Route::post('paper-exam/add', [PaperExamController::class, 'addPaperExam']);
+Route::get('paper-exam/retrieve-list', [PaperExamController::class, 'retrievePaperExams']);
+Route::get('paper-exam/retrieve-android-list', [PaperExamController::class, 'retrievePaperExamsAndroid']);
+
+//practice-exam
+Route::post('practice-exam/add', [PracticeExamController::class, 'addPracticeExam']);
+Route::get('practice-exam/retrieve-list', [PracticeExamController::class, 'retrievePractiseExams']);
 });
 
 //univercity
@@ -347,14 +356,14 @@ Route::prefix('proctor-online-exam/')->group(function () {
 
 //paper exam
 Route::prefix('paper-exam/')->group(function () {
-    Route::post('add', [PaperExamController::class, 'addPaperExam']);
+    // Route::post('add', [PaperExamController::class, 'addPaperExam']);
     Route::put('modify', [PaperExamController::class, 'modifyPaperExam']);
     Route::put('change-status', [PaperExamController::class, 'modifyPaperExam']);
     Route::delete('delete', [PaperExamController::class, 'deletePaperExam']);
     Route::get('retrieve', [PaperExamController::class, 'retrievePaperExam']);
     Route::get('retrieve-editable', [PaperExamController::class, 'retrieveEditablePaperExam']);
-    Route::get('retrieve-list', [PaperExamController::class, 'retrievePaperExams']);
-    Route::get('retrieve-android-list', [PaperExamController::class, 'retrievePaperExamsAndroid']);
+    // Route::get('retrieve-list', [PaperExamController::class, 'retrievePaperExams']);
+    // Route::get('retrieve-android-list', [PaperExamController::class, 'retrievePaperExamsAndroid']);
     Route::get('retrieve-chapter-list', [PaperExamController::class, 'retrievePaperExamChapters']);
     Route::get('retrieve-chapter-topic-list', [PaperExamController::class, 'retrievePaperExamChapterTopics']);
     Route::get('retrieve-form-list', [PaperExamController::class, 'retrievePaperExamForms']);
@@ -367,7 +376,7 @@ Route::prefix('paper-exam/')->group(function () {
 
 //practice exam
 Route::prefix('practice-exam/')->group(function () {
-    Route::post('add', [PracticeExamController::class, 'addPracticeExam']);
+    // Route::post('add', [PracticeExamController::class, 'addPracticeExam']);
     Route::put('modify', [PracticeExamController::class, 'modifyPracticeExam']);
     Route::put('finish', [PracticeExamController::class, 'modifyPracticeExam']);
     Route::put('save-question-answer', [PracticeExamController::class, 'modifyPracticeExam']);
@@ -376,7 +385,7 @@ Route::prefix('practice-exam/')->group(function () {
     Route::get('retrieve', [PracticeExamController::class, 'retrievePracticeExam']);
     Route::get('retrieve-editable', [PracticeExamController::class, 'retrieveEditablePracticeExam']);
     Route::get('retrieve-result', [PracticeExamController::class, 'retrieveEditablePracticeExam']);
-    Route::get('retrieve-list', [PracticeExamController::class, 'retrievePracticeExams']);
+    // Route::get('retrieve-list', [PracticeExamController::class, 'retrievePractiseExams']);
     Route::get('retrieve-android-list', [PracticeExamController::class, 'retrievePracticeExams']);
     Route::get('retrieve-question-list', [PracticeExamController::class, 'retrievePracticeExams']);
 });

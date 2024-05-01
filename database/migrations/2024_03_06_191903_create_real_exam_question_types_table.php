@@ -13,11 +13,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('real_exam_question_types', function (Blueprint $table) {
-            $table->unsignedBigInteger('real_exam_id')->primary();
+            $table->unsignedBigInteger('real_exam_id');
             $table->enum('question_type', QuestionTypeEnum::values());
             $table->integer('question_count');
             $table->float('question_score');
 
+            $table->primary(['real_exam_id', 'question_type']);
+            $table->unique(['real_exam_id', 'question_type']);
 
             $table->foreign('real_exam_id')
             ->references('id')

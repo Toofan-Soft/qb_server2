@@ -12,6 +12,7 @@ use App\Helpers\ExamHelper;
 use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
 use App\Enums\CoursePartsEnum;
+use App\Helpers\ResponseHelper;
 use App\Helpers\EnumReplacement;
 use App\Helpers\EnumReplacement1;
 use App\Models\StudentOnlineExam;
@@ -19,8 +20,8 @@ use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Enums\CourseStudentStatusEnum;
+use Illuminate\Support\Facades\Storage;
 use App\Enums\StudentOnlineExamStatusEnum;
-use App\Helpers\ResponseHelper;
 
 class ProctorOnlinExamController extends Controller
 {
@@ -57,8 +58,10 @@ return $onlineExams;
         $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
                new EnumReplacement('type_name', ExamTypeEnum::class)
             ]);
-            // $realExam['general_note'] = getGeneralNotes();        //// need add   general_note from json file
-
+        $jsonData = Storage::disk('local')->get('generalNotes.json'); // get notes from json file
+        $general_note = json_decode($jsonData, true);
+        $realExam['general_note'] =  $general_note;        //// Done
+        
         $realExam = ExamHelper::getRealExamsScore($realExam);
         $courselecturer = $realExam->lecturer_course();
         $lecturer = $courselecturer->employee()->get(['arabic_name as lecturer_name']);
