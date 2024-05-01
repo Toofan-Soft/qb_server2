@@ -44,32 +44,32 @@ class QuestionHelper
     public static function retrieveQuestionsAnswer($questions, $questionTypeId){
 
         foreach ($questions as $question) {
-            if($questionTypeId === QuestionTypeEnum::TRUE_FALSE->value){
-                $answer = TrueFalseQuestion::findOrFail($question->id, ['answer as is_true']);
-                $question['is_true'] = ($answer === TrueFalseAnswerEnum::TRUE->value)? true: false;
-            }elseif ($questionTypeId === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
-                $question['choices'] = self::retrieveCombinationChoices($question->id, $question->combination_id);
+            if(intval($questionTypeId) === QuestionTypeEnum::TRUE_FALSE->value){
+                $answer = TrueFalseQuestion::where('question_id', $question->id )->first(['answer as is_true']);
+                $question->is_true = (intval($answer->is_true) === TrueFalseAnswerEnum::TRUE->value) ? true: false; //add element is_true
+            }elseif (intval($questionTypeId) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
+                $question->choices = self::retrieveCombinationChoices($question->id, $question->combination_id); //add element choices
             }
         }
         return $questions;
     }
 
-    private static function retrieveCombinationChoices($questionId, $combinationId){
-/// id, content, attachment_url, is_true
-    $combinationChoices = QuestionChoiceCombination::where('question_id', '=', $questionId)
-                          ->where('combination_id', '=', $combinationId)
-                          ->get(['combination_choices']);
+    private static function retrieveCombinationChoices($questionId, $combinationId)
+    {
+        /// id, content, attachment_url, is_true
+        $combinationChoices = QuestionChoiceCombination::where('question_id', $questionId)
+            ->where('combination_id', $combinationId)
+            ->first(['combination_choices']);
 
-    // convert combinationChoices from string to list, ','
-    $combinationChoicesAsList = explode(',', $combinationChoices->combination_choices);
-    $choices = [];
-    foreach ($combinationChoicesAsList as $choiceId) {
-        $choice = Choice::find($choiceId, ['id', 'content', 'attachment_url', 'status as is_true']);
-        if ($choice) {
-            // $choice->is_true =
-            $choices = $choice;
+        $combinationChoicesAsList = array_map('intval', str_split($combinationChoices->combination_choices));
+        $choices = [];
+        foreach ($combinationChoicesAsList as $choiceId) {
+            $choice = Choice::find($choiceId, ['id', 'content', 'attachment', 'status as is_true']);
+            if ($choice) {
+                // $choice->is_true =
+                $choices = $choice;
+            }
         }
-    }
         return  $choices;
     }
 

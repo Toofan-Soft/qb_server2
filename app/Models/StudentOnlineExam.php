@@ -24,7 +24,7 @@ class StudentOnlineExam extends Model
     protected $casts = [
         'start_datetime' => 'datetime',
         'end_datetime' => 'datetime',
-        'status' => StudentOnlineExamStatusEnum::class,
+        // 'status' => StudentOnlineExamStatusEnum::class,
     ];
     public function student() : BelongsTo {
         return $this->BelongsTo(Student::class);

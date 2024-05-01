@@ -333,7 +333,7 @@ Route::prefix('student-online-exam/')->group(function () {
 
 //proctor online exam
 Route::prefix('proctor-online-exam/')->group(function () {
-    Route::post('start-student', [ProctorOnlinExamController::class, 'startStudentOnlineExam']);
+    Route::post('start-student', [ProctorOnlinExamController::class, 'startStudentOnlineExam']);//error not found method
     Route::put('suspend-student', [ProctorOnlinExamController::class, 'suspendStudentOnlineExam']);
     Route::put('continue-student', [ProctorOnlinExamController::class, 'continueStudentOnlineExam']);
     Route::put('finish-student', [ProctorOnlinExamController::class, 'finishStudentOnlineExam']);
