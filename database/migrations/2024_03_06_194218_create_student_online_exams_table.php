@@ -19,7 +19,6 @@ return new class extends Migration
             $table->timestamp('end_datetime')->nullable();//
             $table->enum('status', StudentOnlineExamStatusEnum::values());
             $table->primary(['student_id', 'online_exam_id']);
-            $table->unique(['student_id','online_exam_id' ]);
 
             $table->foreign('student_id')
             ->references('id')

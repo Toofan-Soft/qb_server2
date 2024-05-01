@@ -15,17 +15,14 @@ return new class extends Migration
     {
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
-            $table->string('arabic_name');
-            $table->string('english_name');
+            $table->string('arabic_name')->unique();
+            $table->string('english_name')->unique();
             $table->string('logo_url')->nullable();
-            $table->enum('levels_count', LevelsCountEnum::values())->default(LevelsCountEnum::FOUR->value);
+            $table->enum('levels_count', LevelsCountEnum::values());
             $table->text('description')->nullable() ;
             // foreign key
             $table->unsignedBigInteger('college_id');
             $table->foreign('college_id')->references('id')->on('colleges') ->onDelete('cascade');
-
-            //unique
-            $table->unique(['arabic_name', 'english_name']);
         });
     }
 

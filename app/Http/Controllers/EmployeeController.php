@@ -48,7 +48,8 @@ class EmployeeController extends Controller
             }elseif($employee->job_type === JobTypeEnum::LECTURER->value){
                 $ownerTypeId = OwnerTypeEnum::LECTURER->value;
             }else{
-                $ownerTypeId = OwnerTypeEnum::EMPLOYEE->value;
+                $ownerTypeId = -1;
+                // $ownerTypeId = OwnerTypeEnum::EMPLOYEE->value;
             }
 
            if(!UserHelper::addUser($request->email, $ownerTypeId, $employee->id)) {

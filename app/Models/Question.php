@@ -54,7 +54,7 @@ class Question extends Model
         return $this->HasOne(TrueFalseQuestion::class);
     }
 // update the question_usages to question_usage
-    public function question_usages() : HasOne {
+    public function question_usage() : HasOne {
         return $this->HasOne(QuestionUsage::class);
     }
 

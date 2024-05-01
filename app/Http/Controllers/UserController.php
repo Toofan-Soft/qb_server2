@@ -3,15 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Guest;
 use Ichtrojan\Otp\Otp;
+use App\Enums\GenderEnum;
+use App\Enums\JobTypeEnum;
 use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
+use App\Enums\QualificationEnum;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHelper;
+use App\Helpers\EnumReplacement;
+use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Notifications\ResetPasswordNotificationVerification;
+use Symfony\Component\Console\Helper\ProcessHelper;
 
 class UserController extends Controller
 {
@@ -70,18 +77,34 @@ class UserController extends Controller
     }
     public function retrieveProfile()
     {
-        $user = auth()->user()->id;
-        // get type of current user,
+        $user = auth()->user();
 
-        $profile = [];
+        $owner = null;
+        $enumReplacements = [];
+
         if($user->owner_type === OwnerTypeEnum::GUEST->value){
-            $profile = UserHelper::retrieveGuestProfile($user);
+            $attributes = ['name', 'phone', 'gender as gender_name','image_url'];
+            $owner = $user->guest()->get($attributes);
+            array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
+            
         }elseif($user->owner_type === OwnerTypeEnum::STUDENT->value){
-            $profile = UserHelper::retrieveStudentProfile($user);
+            $attributes = ['arabic_name', 'english_name' , 'phone', 'birthdate', 'gender as gender_name','image_url'];
+            $owner = $user->student()->get($attributes);
+            array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
 
         }else{
-            $profile = UserHelper::retrieveEmployeeProfile($user);
+            $attributes = ['arabic_name', 'english_name' , 'phone', 'image_url', 'specialization', 
+            'qualification as qualification_name', 'job_type as job_type_name'
+        ];
+            $owner = $user->employee()->get($attributes);
+            array_push($enumReplacements, new EnumReplacement('qualification_name', QualificationEnum::class));
+            array_push($enumReplacements, new EnumReplacement('job_type_name', JobTypeEnum::class));
         }
+
+        $owner = ProcessDataHelper::enumsConvertIdToName($owner, $enumReplacements);
+        $owner['email'] = $user->email;
+
+        return ResponseHelper::successWithData($owner);
     }
 
 

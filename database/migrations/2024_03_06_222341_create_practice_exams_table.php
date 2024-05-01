@@ -21,7 +21,7 @@ return new class extends Migration
         Schema::create('practice_exams', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable();
-            $table->enum('language', LanguageEnum::values())->default(LanguageEnum::ARABIC->value);
+            $table->enum('language', LanguageEnum::values());
             $table->bigInteger('duration');
             $table->enum('difficulty_level', ExamDifficultyLevelEnum::values());
             $table->enum('conduct_method', ExamConductMethodEnum::values());
