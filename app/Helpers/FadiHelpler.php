@@ -2,12 +2,13 @@
 
 namespace App\Helpers;
 
+use App\Models\Question;
+use App\Models\RealExam;
+use App\Models\QuestionUsage;
+use App\Enums\RealExamTypeEnum;
 use App\Enums\QuestionStatusEnum;
 use Illuminate\Support\Facades\DB;
 use App\Enums\AccessibilityStatusEnum;
-use App\Models\Question;
-use App\Models\QuestionUsage;
-use App\Models\RealExam;
 
 class FadiHelper
 {
@@ -251,5 +252,175 @@ class FadiHelper
             'practice_exam_incorrect_answers_count' => $questionUsage->practice_exam_incorrect_answers_count - 1
         ]);
     }
+
+    /**
+     * delete real (paper, online) exam by id
+     */
+    public static function deleteRealExam($realExamId)
+    {
+          /**
+           * in real exam helper
+           * now existing in exam helper
+           *  used in 
+           * 
+           */
+
+        /**
+         * using: delete paper or online exam
+         * parameters: 
+         *      realExamId: need deleting real exam id
+         * 
+         * return: ResponseHelper 
+         */
+
+         try{
+            $realExam = RealExam::findOrFail($realExamId);
+            $realExam->real_exam_question_types()->delete();
+            $realExamForms = $realExam->forms();
+            foreach ($realExamForms as $realExamForm) {
+                $realExamForm->form_questions()->delete();
+            }
+            $realExam->forms()->delete();
+            if ($realExam->exam_type === RealExamTypeEnum::PAPER->value) {
+
+                $realExam->paper_exam()->delete();
+            } else {
+                $realExam->online_exam()->delete();
+            }
+            $realExam->delete();
+            return ResponseHelper::success();
+         } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+            // return ResponseHelper::serverError('An error occurred while deleting models.');
+        }
+    }
     
+    public static function getRealExamsScore($realExamId)
+    {
+          /**
+           * in real exam helper
+           * now existing in exam helper and online exam helper
+           *  used in 
+           * 
+           */
+
+        /**
+         * using: calculate paper or online exam(s????) score 
+         * parameters: 
+         * 
+         * return: ResponseHelper 
+         */
+    }
+
+    public static function retrieveRealExamChapters($realExamId)
+    {
+          /**
+           * in real exam helper
+           * now existing in exam helper and 
+           *  used in 
+           * 
+           */
+
+        /**
+         * using: calculate paper or online exam(s????) score 
+         * parameters: 
+         *      realExamId : 
+         * 
+         * return: ResponseHelper 
+         */
+    }
+
+    public static function retrieveRealExamChapterTopics($realExamId, $chapterId)
+    {
+          /**
+           * in real exam helper
+           * now existing in exam helper and 
+           *  used in 
+           * 
+           */
+
+        /**
+         * using: calculate paper or online exam(s????) score 
+         * parameters: 
+         *      realExamId : 
+         *      chapterId : 
+         * 
+         * return: ResponseHelper 
+         */
+    }
+
+    public static function retrieveRealExamForms($realExamId)
+    {
+          /**
+           * in real exam helper
+           * now existing in exam helper and 
+           *  used in 
+           * 
+           */
+
+        /**
+         * using: calculate paper or online exam(s????) score 
+         * parameters: 
+         *      realExamId : 
+         * 
+         * return: ResponseHelper 
+         */
+    }
+    public static function checkTrueFalseQuestionAnswer(Question $qeustion, $answer): bool
+    {
+          /**
+           * in  exam helper
+           * now existing in exam helper and 
+           *  used in 
+           * 
+           */
+
+        /**
+         * using: calculate paper or online exam(s????) score 
+         * parameters: 
+         *      realExamId : 
+         * 
+         * return: ResponseHelper 
+         */
+        return true;
+    }
+
+    public static function checkChoicesQuestionAnswer(Question $qeustion, $answer, $combinationId): bool
+    {
+          /**
+           * in  exam helper
+           * now existing in exam helper and 
+           *  used in 
+           * 
+           */
+
+        /**
+         * using: calculate paper or online exam(s????) score 
+         * parameters: 
+         *      realExamId : 
+         * 
+         * return: ResponseHelper 
+         */
+        return true;
+    }
+    public static function getExamResultAppreciation($scoreRate)
+    {
+          /**
+           * in  exam helper
+           * now existing in exam helper and 
+           *  used in 
+           * 
+           */
+
+        /**
+         * using: calculate paper or online exam(s????) score 
+         * parameters: 
+         *      realExamId : 
+         * 
+         * return: ResponseHelper 
+         */
+    }
+
+    
+
 }

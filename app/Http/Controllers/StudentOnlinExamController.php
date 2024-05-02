@@ -47,10 +47,10 @@ class StudentOnlinExamController extends Controller
         $student = Student::where('user_id', auth()->user()->id)->first();
         $onlineExams =[];
         if(intval($request->status_id) === OnlineExamTakingStatusEnum::COMPLETE->value){
-            $onlineExams = ExamHelper::retrieveCompleteStudentOnlineExams($student);
+            $onlineExams = $this->retrieveCompleteStudentOnlineExams($student->id);
 
         }else{
-            $onlineExams = ExamHelper::retrieveIncompleteStudentOnlineExams($student);
+            $onlineExams = $this->retrieveIncompleteStudentOnlineExams($student->id);
         }
         return ResponseHelper::successWithData($onlineExams);
     }
@@ -124,7 +124,7 @@ class StudentOnlinExamController extends Controller
     public function retrieveOnlineExamQuestions(Request $request)
     {
         $realExam = RealExam::findOrFail($request->id);
-        $form = ExamHelper::getStudentForm($realExam);
+        $form = self::selectStudentForm($realExam);
         $formQuestions = [];
         $queationsTypes = $form->real_exam()->real_exam_question_types()->get(['question_type as type_name']);
 
@@ -194,5 +194,125 @@ class StudentOnlinExamController extends Controller
         return ResponseHelper::success();
     }
 
+    private static function selectStudentForm(RealExam $realExam) // need to test
+    {
+        $examForms = $realExam->forms()->get(['id'])->toArray();
+        $selectedStudentForm = array_rand($examForms);
+        return $examForms[$selectedStudentForm];
+    }
+
+    // need to test 
+    private function retrieveCompleteStudentOnlineExams($studentId)
+    {
+        $onlineExams =  DB::table('student_online_exams')
+            ->join('online_exams', 'student_online_exams.online_exam_id', '=', 'online_exams.id')
+            ->join('real_exams', 'online_exams.id', '=', 'real_exams.id')
+            ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
+            ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
+            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+            ->select(
+                'courses.arabic_name as course_name ',
+                'course_parts.part_id as course_part_name ',
+                'real_exams.id',
+                'real_exams.datetime',
+            )
+            ->where('student_online_exams.student_id', '=', $studentId)
+            ->where('student_online_exams.status', '=', StudentOnlineExamStatusEnum::COMPLETE->value)
+            ->get();
+        $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
+        foreach ($onlineExams as $onlineExam) {
+            $studentResult = $this->retrieveStudentOnlineExamsResult($onlineExam->id, 1, $studentId);
+            $onlineExam->score_rate = $studentResult['score_rate'];
+            $onlineExam->appreciation = $studentResult['appreciation'];
+        }
+
+        return $onlineExams;
+    }
+
+    private function retrieveStudentOnlineExamsResult($onlineExamId, $formId, $studentId)
+    {
+        $questionsAnswers =  DB::table('student_answers')
+        ->join('form_questions', 'student_answers.form_id', '=', 'form_questions.form_id')
+        ->join('form_questions', 'student_answers.question_id', '=', 'form_questions.question_id')
+        ->select(
+            'student_answers.answer',
+            'form_questions.question_id',
+            'form_questions.combination_id'
+        )
+        ->where('student_answers.student_id', '=', $studentId)
+        ->where('student_answers.form_id', '=', $formId)
+        ->get();
+
+        $examScores = $this->getRealExamQuestionScore($onlineExamId);
+
+        $StudentScore = 0;
+        foreach ($questionsAnswers as $questionAnswer) {
+            $question = Question::findOrFail($questionAnswer->questoin_id);
+            if(intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value){
+                if(ExamHelper::checkTrueFalseQuestionAnswer($question, $questionAnswer->answer)){
+                    $StudentScore += $examScores[QuestionTypeEnum::TRUE_FALSE->value];   
+                }
+
+            }else{
+                if(ExamHelper::checkChoicesQuestionAnswer($question, $questionAnswer->answer, $questionAnswer->combination_id )){
+                    $StudentScore += $examScores[QuestionTypeEnum::MULTIPLE_CHOICE->value];
+                }
+            }
+        }
+
+        $scoreRate = $StudentScore / $examScores['totalScore'] * 100;
+        $appreciation = ExamHelper::getExamResultAppreciation($scoreRate);
+
+        $studentResult = [
+            'score_rate' => $scoreRate,
+            'appreciation' => $appreciation
+        ];
+
+        return $studentResult;
+    }
+
+    private function getRealExamQuestionScore($onlineExamId){
+        $examScores = [];
+
+        $realExam = RealExam::findOrFail($onlineExamId);
+
+        $realExamQuestionTypes = $realExam->real_exam_question_types()
+        ->get(['question_type', 'question_score', 'questions_count']);
+
+        $totalScore = 0;
+        foreach ($realExamQuestionTypes as $realExamQuestionType) {
+            $examScores[intval($realExamQuestionType->question_type)] = $realExamQuestionType->question_score;
+            $totalScore += $realExamQuestionType->questions_count * $realExamQuestionType->question_score;
+        }
+
+        $examScores['totalScore'] = $totalScore;
+        return $examScores;
+    }
+
+    private static function retrieveIncompleteStudentOnlineExams($studentId)
+    {
+        $onlineExams =  DB::table('student_online_exams')
+            ->join('online_exams', 'student_online_exams.online_exam_id', '=', 'online_exams.id')
+            ->join('real_exams', 'online_exams.id', '=', 'real_exams.id')
+            ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
+            ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
+            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+            ->select(
+                'courses.arabic_name as course_name ',
+                'course_parts.part_id as course_part_name ',
+                'real_exams.id',
+                'real_exams.datetime',
+            )
+            ->where('student_online_exams.student_id', '=', $studentId)
+            ->where('student_online_exams.status', '!=', StudentOnlineExamStatusEnum::COMPLETE->value)
+            ->get();
+        $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
+
+        return $onlineExams;
+    }
 
 }

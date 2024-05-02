@@ -11,6 +11,7 @@ use App\Enums\SemesterEnum;
 use App\Helpers\ExamHelper;
 use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
+use App\Models\StudentAnswer;
 use App\Enums\CoursePartsEnum;
 use App\Helpers\ResponseHelper;
 use App\Helpers\EnumReplacement;
@@ -145,7 +146,7 @@ return $onlineExams;
         ]);// to array
 
         foreach ($onlineExamStudents as $onlineExamStudent) {
-            $onlineExamStudent['answered_questions_count'] = ExamHelper::getStudentAnsweredQuestionsCount($request->exam_id, $onlineExamStudent->student_id);
+            $onlineExamStudent['answered_questions_count'] = $this->getStudentAnsweredQuestionsCount($request->exam_id, $onlineExamStudent->student_id);
 
             if(intval($onlineExamStudent->status_name ) === StudentOnlineExamStatusEnum::ACTIVE->value){
                 $onlineExamStudent['is_started'] = true;
@@ -227,4 +228,14 @@ return $onlineExams;
     }
     }
 
+    // not complete 
+    private function getStudentAnsweredQuestionsCount($formId, $studentId)
+    {
+        
+        $formId = 1; // يتم عمل دالة لمعرفة رقم النموذج حق الطالب، او جعل هذه الدالة تستقبل رقم النموذج 
+        $questionsCount = StudentAnswer::where('form_id', '=', $formId)
+        ->where('student_id', '=', $studentId)->count();
+
+        return $questionsCount;
+    }
 }

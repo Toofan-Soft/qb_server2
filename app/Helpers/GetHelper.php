@@ -23,6 +23,16 @@ class GetHelper
 
 
     // public static function retrieveModelsWithEnum($model, $attributes = null , $conditionAttribute = [] , $enumAttributes =[] , $enumClasses =[]) {
+        /**
+         * using: retrieve data from sent model 
+         * parameters: $
+         *      model : 
+         *      attributes : 
+         *      conditionAttribute : 
+         *      enumReplacements : 
+         *      columnReplacements : 
+         * return: 
+         */
     public static function retrieveModels($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
         $query = $model::query();
         $rows = null;

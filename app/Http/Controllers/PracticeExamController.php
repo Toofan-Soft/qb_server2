@@ -130,7 +130,11 @@ class PracticeExamController extends Controller
                 array_push($enumReplacement, new EnumReplacement('status_name', ExamStatusEnum::class));
             }
         $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, $enumReplacement );
-        $practiceExams = self::retrievePractiseExamsResult($practiceExams);
+        foreach ($practiceExams as $practiceExam) {
+            $examResult = $this->retrievePracticeExamResult($practiceExam->id);
+            $practiceExam->score_rate = $examResult['score_rate'];
+            $practiceExam->appreciation = $examResult['appreciation'];
+        }
 
         return ResponseHelper::successWithData($practiceExams);
     }
@@ -342,7 +346,41 @@ class PracticeExamController extends Controller
          */
         return $examQuestions;
     }
-    
+
+
+    private function retrievePracticeExamResult($practiceExamId)
+    {
+        $practiceExam = PracticeExam::findOrFail($practiceExamId);
+        $examQuestions = $practiceExam->practice_exam_question()
+        ->get(['question_id', 'answer', 'combination_id']);
+
+        $totalScoure = $examQuestions->count();
+
+        $StudentScore = 0;
+        foreach ($examQuestions as $examQuestion) {
+            $question = Question::findOrFail($examQuestion->questoin_id);
+            if(intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value){
+                if(ExamHelper::checkTrueFalseQuestionAnswer($question, $examQuestion->answer)){
+                    $StudentScore ++;
+                }
+
+            }else{
+                if(ExamHelper::checkChoicesQuestionAnswer($question, $examQuestion->answer, $examQuestion->combination_id )){
+                    $StudentScore ++;
+                }
+            }
+        }
+
+        $scoreRate = $StudentScore / $totalScoure * 100;
+        $appreciation = ExamHelper::getExamResultAppreciation($scoreRate);
+
+        $examResult = [
+            'score_rate' => $scoreRate,
+            'appreciation' => $appreciation
+        ];
+        return $examResult;
+    }
+
     public function rules(Request $request): array
     {
         $rules = [

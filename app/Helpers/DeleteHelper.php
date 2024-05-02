@@ -7,17 +7,21 @@ class DeleteHelper
 {
 
 
-  /**
-   * $model object of model
-   * delete one raw
-   */
+    /**
+     * $model object of model
+     * delete one raw
+     */
     public static function deleteModel($model)
     {
-        $deleteCount = $model->delete();
-        if($deleteCount){
-            return ResponseHelper::success();
-        }else {
-            return ResponseHelper::serverError(500);
+        try {
+            $deleteCount = $model->delete();
+            if ($deleteCount) {
+                return ResponseHelper::success();
+            } else {
+                return ResponseHelper::serverError(500);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 

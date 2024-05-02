@@ -11,7 +11,7 @@ class EnumReplacement
     
   /**
    * $columName: name of enum field in current data
-   * $enumClass: class  
+   * $enumClass: class of Enums
    */
     public function __construct(string $columnName,  $enumClass)
     {

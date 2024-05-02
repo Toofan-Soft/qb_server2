@@ -19,7 +19,10 @@ use App\AlgorithmAPI\GenerateQuestionChoicesCombination;
 class QuestionHelper
 {
     /**
-     * generate question choices combination by call algorithm api .
+     * using: generate question choices combination by call algorithm api, and store output of algorithm in database
+     * parameters: 
+     *      question : object from Question model class
+     * return: 
      */
     public static function generateQuestionChoicesCombination(Question $question){
         $algorithmData = $question->choices()->get(['id', 'status as is_true']);
