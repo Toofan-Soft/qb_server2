@@ -30,7 +30,7 @@ class OnlineExam extends Model
         'conduct_method' => ExamConductMethodEnum::class,
         'exam_datetime_notification_datetime' => 'datetime',
         'result_notification_datetime' => 'datetime',
-        'status' => ExamStatusEnum::class,
+        // 'status' => ExamStatusEnum::class,
     ];
 
     public function student_online_exams() : HasMany {

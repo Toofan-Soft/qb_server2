@@ -37,8 +37,8 @@ class PaperExamController extends Controller
 {
     public function addPaperExam(Request $request)
     {
-        if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+        if ($x=ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError1($x);
         }
 
         // $algorithmData = $this->getAlgorithmData($request);
@@ -69,16 +69,16 @@ class PaperExamController extends Controller
 
         $paperExam =  PaperExam::create([
             'id' => $realExam->id,
-            'course_lecturer_name' => $request->lecturer_name ?? $employee->arabic_name,
+            'Course_lecturer_name' => $request->lecturer_name ?? $employee->arabic_name,
         ]);
 
-            // foreach ($request->question_types as $question_type) {
+            foreach ($request->question_types as $question_type) {
                 $realExam->real_exam_question_types()->create([
-                    'question_type' => $request->question_types['type_id'],
-                    'question_count' => $request->question_types['questions_count'],
-                    'question_score' => $request->question_types['question_score'],
+                    'question_type' => $question_type['type_id'],
+                    'question_count' => $question_type['questions_count'],
+                    'question_score' => $question_type['question_score'],
                 ]);
-            // }
+            }
 
             //////////add Topics of exam
 

@@ -48,14 +48,14 @@ class FilterController extends Controller
 
     public function retrieveChapters(Request $request)
     {
-        $attributes = ['id', 'title'];
+        $attributes = ['id', 'arabic_title as title'];
         $conditionAttribute = ['course_part_id'  => $request->course_part_id];
         return GetHelper::retrieveModels(Chapter::class, $attributes,  $conditionAttribute);
     }
 
     public function retrieveTopics(Request $request)
     {
-        $attributes = ['id', 'title'];
+        $attributes = ['id', 'arabic_title as title'];
         $conditionAttribute = ['chapter_id'  => $request->chapter_id];
         return GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
     }

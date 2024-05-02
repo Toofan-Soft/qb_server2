@@ -61,11 +61,11 @@ class StudentOnlinExamController extends Controller
         // تستخدم هذه الدالة لارجاع الاختبارات الغير مكتملة فقط
         $studentonlinExam = StudentOnlineExam::where('online_exam_id',$request->id)->first();
         $realExam = [];
-        $mergedData  = [];
+
         $isComplete = ( intval($studentonlinExam->status) === StudentOnlineExamStatusEnum::COMPLETE->value)? true : false ;
         if(!$isComplete ){
             $realExam = RealExam::find($studentonlinExam->online_exam_id, ['id','language as language_name' ,
-            'datetime', 'duration', 'type as type_name', 'note as special_note' , 'course_lecturer_id']);
+            'datetime', 'duration', 'type as type_name', 'note as special_note' , 'course_lecturer_id' ]);
 
             $enumReplacement = [
                 new EnumReplacement('language_name', LanguageEnum::class),
@@ -91,7 +91,6 @@ class StudentOnlinExamController extends Controller
                 new EnumReplacement('level_name', LevelsEnum::class),
                 new EnumReplacement('semester_name', SemesterEnum::class),
             ]);
-
 
             $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
             $college = $department->college()->first(['arabic_name as college_name']);
@@ -150,16 +149,22 @@ class StudentOnlinExamController extends Controller
 
     }
 
-    public function finishOnlineExam (Request $request){
+    public function finishOnlineExam(Request $request)
+    {
         $student = Student::where('user_id', auth()->user()->id)->first();
-
-        $studentonlinExam = StudentOnlineExam::where('student_id', $student->id )
-                                              ->where('online_exam_id', $request->id)->firstOrFail();
-        $studentonlinExam->update([
-            'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
-            'end_datetime' => now(),
-        ]);
-        return ResponseHelper::success();
+        $studentOnlineExam = StudentOnlineExam::where('student_id', $student->id)
+            ->where('online_exam_id', $request->id)->firstOrFail();
+        if ($studentOnlineExam) {
+            StudentOnlineExam::where('student_id', $student->id)
+                ->where('online_exam_id', $request->id)
+                ->update([
+                    'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
+                    'end_datetime' => now(),
+                ]);
+            return ResponseHelper::success();
+        } else {
+            return abort(404);
+        }
     }
 
 

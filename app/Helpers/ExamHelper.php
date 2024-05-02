@@ -65,42 +65,42 @@ class ExamHelper
      * $realExams: list of real exam
      */
 
-     public static function getRealExamsScore($realExams)
-{
-    // Check if $realExams is an array or a single object
-    $isArray = is_array($realExams) || $realExams instanceof Traversable;
+    public static function getRealExamsScore($realExams)
+    {
+        // Check if $realExams is an array or a single object
+        $isArray = is_array($realExams) || $realExams instanceof Traversable;
 
-    $realExamsToProcess = $isArray ? $realExams : [$realExams];
+        $realExamsToProcess = $isArray ? $realExams : [$realExams];
 
-    $processedRealExams = [];
+        $processedRealExams = [];
 
-    foreach ($realExamsToProcess as $realExam) {
-        if (is_array($realExam)) {
-            if (isset($realExam['id'])) {
-                $temp = RealExam::findOrFail($realExam['id']);
+        foreach ($realExamsToProcess as $realExam) {
+            if (is_array($realExam)) {
+                if (isset($realExam['id'])) {
+                    $temp = RealExam::findOrFail($realExam['id']);
+                    $realExamQuestionTypes = $temp->real_exam_question_types()->get(['question_count', 'question_score']);
+                    $score = 0;
+                    foreach ($realExamQuestionTypes as $realExamQuestionType) {
+                        $score += $realExamQuestionType->question_count * $realExamQuestionType->question_score;
+                    }
+                    $realExam['score'] = $score;
+                    $processedRealExams[] = $realExam;
+                }
+            } else {
+                $temp = RealExam::findOrFail($realExam->id);
                 $realExamQuestionTypes = $temp->real_exam_question_types()->get(['question_count', 'question_score']);
+                // $realExamQuestionTypes = $realExam->real_exam_question_types()->get(['question_count', 'question_score']);
                 $score = 0;
                 foreach ($realExamQuestionTypes as $realExamQuestionType) {
                     $score += $realExamQuestionType->question_count * $realExamQuestionType->question_score;
                 }
-                $realExam['score'] = $score;
+                $realExam->score = $score;
                 $processedRealExams[] = $realExam;
             }
-        } else {
-            $temp = RealExam::findOrFail($realExam->id);
-            $realExamQuestionTypes = $temp->real_exam_question_types()->get(['question_count', 'question_score']);
-            // $realExamQuestionTypes = $realExam->real_exam_question_types()->get(['question_count', 'question_score']);
-            $score = 0;
-            foreach ($realExamQuestionTypes as $realExamQuestionType) {
-                $score += $realExamQuestionType->question_count * $realExamQuestionType->question_score;
-            }
-            $realExam->score = $score;
-            $processedRealExams[] = $realExam;
         }
+        // If $realExams was a single object, return the first item in $processedRealExams
+        return $isArray ? $processedRealExams : $processedRealExams[0];
     }
-    // If $realExams was a single object, return the first item in $processedRealExams
-    return $isArray ? $processedRealExams : $processedRealExams[0];
-}
 
     // public static function getRealExamsScore($realExams) // recieve object has multiple array data
     // {
@@ -307,89 +307,5 @@ class ExamHelper
         return $formQuestions;
     }
 
-    //////////////////// special for practice exam
-    private static function retrievePractiseExamsResult($practiceExams)
-    {
 
-        // حساب المعدل والتقدير لكل اختبار
-        // appreciation, score rate
-        // يجب ان يتم اولا فحص اذا كان الاختبار حالته مكتملة، يتم ارجاع له نتيجة فقط
-        return $practiceExams;
-    }
-
-    public static function retrieveCompletePractiseExams($userId, $departmentCoursePartId)
-    {
-
-        $practiceExams =  DB::table('practice_exams')
-            ->join('department_course_parts', 'practice_exams.department_course_part_id', '=', 'department_course_parts.id')
-            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-            ->select(
-                'courses.arabic_name as course_name',
-                'course_parts.part_id as course_part_name',
-                'practice_exams.id',
-                'practice_exams.title'
-                // practice_exams.datetime,
-            )
-            ->where('practice_exams.department_course_part_id', '=', $departmentCoursePartId)
-            ->where('practice_exams.user_id', '=', $userId)
-            ->where('practice_exams.status', '=', ExamStatusEnum::COMPLETE->value)
-            ->get();
-        $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
-        $practiceExams = self::retrievePractiseExamsResult($practiceExams);
-        return $practiceExams;
-    }
-
-    public static function retrieveSuspendedPractiseExams($userId, $departmentCoursePartId)
-    {
-
-        $practiceExams =  DB::table('practice_exams')
-            ->join('department_course_parts', 'practice_exams.department_course_part_id', '=', 'department_course_parts.id')
-            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-            ->select(
-                'courses.arabic_name as course_name',
-                'course_parts.part_id as course_part_name',
-                'practice_exams.id',
-                'practice_exams.title'
-                // practice_exams.datetime,
-            )
-            ->where('practice_exams.department_course_part_id', '=', $departmentCoursePartId)
-            ->where('practice_exams.user_id', '=', $userId)
-            ->where('practice_exams.status', '=', ExamStatusEnum::SUSPENDED->value)
-            ->get();
-        $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
-        $practiceExams = self::retrievePractiseExamsResult($practiceExams);
-        return $practiceExams;
-    }
-
-    public static function retrievePractiseExams($userId, $departmentCoursePartId)
-    {
-
-        $practiceExams =  DB::table('practice_exams')
-            ->join('department_course_parts', 'practice_exams.department_course_part_id', '=', 'department_course_parts.id')
-            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-            ->select(
-                'courses.arabic_name as course_name',
-                'course_parts.part_id as course_part_name',
-                'practice_exams.id',
-                'practice_exams.title',
-                'practice_exams.status as status_name'
-                // practice_exams.datetime,
-            )
-            ->where('practice_exams.department_course_part_id', '=', $departmentCoursePartId)
-            ->where('practice_exams.user_id', '=', $userId)
-            ->get();
-        $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, [
-            new EnumReplacement('course_part_name', CoursePartsEnum::class),
-            new EnumReplacement('status_name', ExamStatusEnum::class),
-
-        ]);
-        $practiceExams = self::retrievePractiseExamsResult($practiceExams);
-        return $practiceExams;
-    }
 }

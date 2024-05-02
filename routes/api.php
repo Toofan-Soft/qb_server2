@@ -2,9 +2,9 @@
 
 use App\Models\Topic;
 use App\Enums\Example;
-use App\Enums\ExamTypeEnum;
 use App\Enums\RoleEnum;
 use App\Traits\EnumTraits;
+use App\Enums\ExamTypeEnum;
 
 
 /*
@@ -23,10 +23,12 @@ use App\Enums\SemesterEnum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\EnumsController;
 use App\Http\Controllers\GuestController;
-use App\Http\Controllers\TopicController;
 // use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\TopicController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\FilterController;
 use App\Http\Controllers\ChapterController;
 use App\Http\Controllers\CollegeController;
 use App\Http\Controllers\StudentController;
@@ -43,17 +45,16 @@ use App\Http\Controllers\UserManagmentController;
 use App\Http\Controllers\CourseLecturerController;
 use App\Http\Controllers\QuestionChoiceController;
 use App\Http\Controllers\DepartmentCourseController;
+use App\Http\Controllers\FavoriteQuestionController;
 use App\Http\Controllers\ProctorOnlinExamController;
 use App\Http\Controllers\StudentOnlinExamController;
 use App\Http\Controllers\LecturerOnlinExamController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\LecturerOnlineExamController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
 use App\Http\Controllers\DepartmentCoursePartController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
-use App\Http\Controllers\EnumsController;
-use App\Http\Controllers\FavoriteQuestionController;
-use App\Http\Controllers\FilterController;
 
 // Route::post('register',[UserController::class,'register']);
 Route::post('register',[GuestController::class,'addGuest']);
@@ -77,7 +78,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('change-password',[UserController::class,'changePassword']);
 
 //lecturer onlineExam
-    Route::post('lecturer-online-exam/add', [LecturerOnlinExamController::class, 'addOnlineExam']);
+    Route::post('lecturer-online-exam/add', [LecturerOnlineExamController::class, 'addOnlineExam']);
 
 //paper exam
 Route::post('paper-exam/add', [PaperExamController::class, 'addPaperExam']);
@@ -314,18 +315,18 @@ Route::prefix('user/')->group(function () {
 
 //lecturer online exam
 Route::prefix('lecturer-online-exam/')->group(function () {
-    // Route::post('add', [LecturerOnlinExamController::class, 'addOnlineExam']);
-    Route::put('modify', [LecturerOnlinExamController::class, 'modifyOnlineExam']);
-    Route::put('change-status', [LecturerOnlinExamController::class, 'changeOnlineExamStatus']);
-    Route::delete('delete', [LecturerOnlinExamController::class, 'deleteOnlineExam']);
-    Route::get('retrieve', [LecturerOnlinExamController::class, 'retrieveOnlineExam']);
-    Route::get('retrieve-editable', [LecturerOnlinExamController::class, 'retrieveEditableOnlineExam']);
-    Route::get('retrieve-list', [LecturerOnlinExamController::class, 'retrieveOnlineExams']);
-    Route::get('retrieve-android-list', [LecturerOnlinExamController::class, 'retrieveOnlineExamsAndroid']);
-    Route::get('retrieve-chapter-list', [LecturerOnlinExamController::class, 'retrieveOnlineExamChapters']);
-    Route::get('retrieve-chapter-topic-list', [LecturerOnlinExamController::class, 'retrieveOnlineExamChapterTopics']);
-    Route::get('retrieve-form-list', [LecturerOnlinExamController::class, 'retrieveOnlineExamForms']);
-    Route::get('retrieve-form-question-list', [LecturerOnlinExamController::class, 'retrieveOnlineExamFormQuestions']);
+    // Route::post('add', [LecturerOnlineExamController::class, 'addOnlineExam']);
+    Route::put('modify', [LecturerOnlineExamController::class, 'modifyOnlineExam']);
+    Route::put('change-status', [LecturerOnlineExamController::class, 'changeOnlineExamStatus']);
+    Route::delete('delete', [LecturerOnlineExamController::class, 'deleteOnlineExam']);
+    Route::get('retrieve', [LecturerOnlineExamController::class, 'retrieveOnlineExam']);
+    Route::get('retrieve-editable', [LecturerOnlineExamController::class, 'retrieveEditableOnlineExam']);
+    Route::get('retrieve-list', [LecturerOnlineExamController::class, 'retrieveOnlineExams']);
+    Route::get('retrieve-android-list', [LecturerOnlineExamController::class, 'retrieveOnlineExamsAndroid']);
+    Route::get('retrieve-chapter-list', [LecturerOnlineExamController::class, 'retrieveOnlineExamChapters']);
+    Route::get('retrieve-chapter-topic-list', [LecturerOnlineExamController::class, 'retrieveOnlineExamChapterTopics']);
+    Route::get('retrieve-form-list', [LecturerOnlineExamController::class, 'retrieveOnlineExamForms']);
+    Route::get('retrieve-form-question-list', [LecturerOnlineExamController::class, 'retrieveOnlineExamFormQuestions']);
 });
 
 
@@ -378,11 +379,11 @@ Route::prefix('paper-exam/')->group(function () {
 Route::prefix('practice-exam/')->group(function () {
     // Route::post('add', [PracticeExamController::class, 'addPracticeExam']);
     Route::put('modify', [PracticeExamController::class, 'modifyPracticeExam']);
-    Route::put('finish', [PracticeExamController::class, 'modifyPracticeExam']);
-    Route::put('save-question-answer', [PracticeExamController::class, 'modifyPracticeExam']);
-    Route::put('suspend', [PracticeExamController::class, 'modifyPracticeExam']);
+    Route::put('finish', [PracticeExamController::class, 'finishPractiseExam']);
+    Route::put('save-question-answer', [PracticeExamController::class, 'savePractiseExamQuestionAnswer']);
+    Route::put('suspend', [PracticeExamController::class, 'suspendPractiseExam']);
     Route::delete('delete', [PracticeExamController::class, 'deletePracticeExam']);
-    Route::get('retrieve', [PracticeExamController::class, 'retrievePracticeExam']);
+    Route::get('retrieve', [PracticeExamController::class, 'retrievePractiseExam']);
     Route::get('retrieve-editable', [PracticeExamController::class, 'retrieveEditablePracticeExam']);
     Route::get('retrieve-result', [PracticeExamController::class, 'retrieveEditablePracticeExam']);
     // Route::get('retrieve-list', [PracticeExamController::class, 'retrievePractiseExams']);

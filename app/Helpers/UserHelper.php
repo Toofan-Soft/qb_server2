@@ -52,71 +52,7 @@ class UserHelper
             'owner_type' => $ownerTypeId,
         ]);
 
-<<<<<<< HEAD
-
-        if($ownerTypeId === OwnerTypeEnum::EMPLOYEE->value){
-
-            $employee = Employee::findOrFail($ownerId);
-            $employee->update([
-                'user_id' => $user->id,
-            ]);
-            if($roles){
-                self::addUserRoles( $user, $roles );
-            }else {
-                $user->user_roles()->create([
-                    'role_id' => RoleEnum::LECTURER->value,
-                ]);
-            }
-            $token = $user->createToken('quesionbanklaravelapi')->accessToken;
-            $user->notify(new EmaiVerificationNotification ($generatedToken));
-            // return true;
-            return   $token ;
-
-        }elseif ($ownerTypeId === OwnerTypeEnum::LECTURER->value) {
-
-            $lecturer = Employee::findOrFail($ownerId);
-            $lecturer->update([
-                'user_id' => $user->id,
-            ]);
-
-            if($roles){
-                self::addUserRoles( $user, $roles );
-            }else {
-                $user->user_roles()->create([
-                    'role_id' => RoleEnum::LECTURER->value,
-                ]);
-            }
-            $token = $user->createToken('quesionbanklaravelapi')->accessToken;
-            $user->notify(new EmaiVerificationNotification ($generatedToken));
-            return true;
-
-        }elseif ($ownerTypeId === OwnerTypeEnum::STUDENT->value) {
-
-            $student = Student::findOrFail($ownerId);
-            $student->update([
-                'user_id' => $user->id,
-            ]);
-
-            if($roles){
-                self::addUserRoles( $user, $roles );
-            }else {
-                $user->user_roles()->create([
-                    'role_id' => RoleEnum::STUDENT->value,
-                ]);
-            }
-
-            $token = $user->createToken('quesionbanklaravelapi')->accessToken;
-            $user->notify(new EmaiVerificationNotification ($generatedToken));
-            return true;
-        }else{
-
-            $guest = Guest::findOrFail($ownerId);
-            $guest->update([
-                'user_id' => $user->id,
-            ]);
-=======
         foreach ($roles as $role) {
->>>>>>> 60b13af2688e3346577884998e9a8ffd3d1b2d65
             $user->user_roles()->create([
                 'role_id' => $role,
             ]);
@@ -148,7 +84,7 @@ class UserHelper
     public static function retrieveOwnerRoles($ownerTypeId)
     {
         $userRoles = [];
-        
+
         if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
             $userRoles = [
                 [

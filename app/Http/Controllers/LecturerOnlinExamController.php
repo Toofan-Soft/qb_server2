@@ -83,18 +83,18 @@ class LecturerOnlinExamController extends Controller
             'id' => $realExam->id,
         ]);
 
-        // foreach ($request->question_types as $question_type) {
+        foreach ($request->question_types as $question_type) {
             $realExam->real_exam_question_types()->create([
-                'question_type' => $request->question_types['type_id'],
-                'question_count' => $request->question_types['questions_count'],
-                'question_score' => $request->question_types['question_score'],
+                'question_type' => $question_type['type_id'],
+                'question_count' => $question_type['questions_count'],
+                'question_score' => $question_type['question_score'],
             ]);
-        // }
+        }
 
         if (intval($request->form_configuration_method) === FormConfigurationMethodEnum::SIMILAR_FORMS->value) {
             $realExam->forms()->create();
         } else {
-            foreach ($request->forms_count as $form) {
+            for ($i = 0; $i <= $request->forms_count; $i++ ) {
                 $realExam->forms()->create();
             }
         }

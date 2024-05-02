@@ -45,7 +45,7 @@ class UserManagmentController extends Controller
         foreach ($request->roles_ids as $role_id) {
             if (in_array($userRoles['role_id'], $role_id)) {
                 $user->user_roles()->where('role_id', '=', $role_id)->delete();
-                
+
             } else {
                 UserHelper::addUserRoles($user->id, [$role_id]);
             }
@@ -57,11 +57,11 @@ class UserManagmentController extends Controller
     {
         $user = User::findOrFail($request->id);
         if ($user->status === UserStatusEnum::ACTIVATED->value) {
-            $user->uodate([
+            $user->update([
                 'status' =>  UserStatusEnum::INACTIVE->value,
             ]);
         } else {
-            $user->uodate([
+            $user->update([
                 'status' =>  UserStatusEnum::ACTIVATED->value,
             ]);
         }

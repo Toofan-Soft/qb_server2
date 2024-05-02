@@ -11,7 +11,7 @@ class PracticeExamQuestion extends Model
     use HasFactory;
     public $timestamps = false;
 
-    public $incrementing = false; // This indicates that the model does not auto-increment its primary key.
+    public $incrementing = false;  
     protected $primaryKey  = ['practice_exam_id','question_id'];
     protected $fillable = [
         'practice_exam_id',

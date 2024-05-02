@@ -22,6 +22,7 @@ use App\Http\Controllers\Controller;
 use App\Enums\CourseStudentStatusEnum;
 use Illuminate\Support\Facades\Storage;
 use App\Enums\StudentOnlineExamStatusEnum;
+use App\Models\RealExam;
 
 class ProctorOnlinExamController extends Controller
 {
@@ -51,37 +52,58 @@ return $onlineExams;
 
     public function retrieveOnlineExam(Request $request)
     {
-        $realExam = OnlineExam::findOrFail($request->id)->real_exam()->get([
-            'datetime', 'duration',
-            'type as type_name', 'note as special_note'
+        $realExam = RealExam::findOrFail($request->id ,[
+            'id','datetime', 'duration',
+            'type as type_name', 'note as special_note', 'course_lecturer_id'
         ]);
         $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
-               new EnumReplacement('type_name', ExamTypeEnum::class)
-            ]);
+            new EnumReplacement('type_name', ExamTypeEnum::class)
+        ]);
         $jsonData = Storage::disk('local')->get('generalNotes.json'); // get notes from json file
         $general_note = json_decode($jsonData, true);
         $realExam['general_note'] =  $general_note;        //// Done
-        
+
         $realExam = ExamHelper::getRealExamsScore($realExam);
-        $courselecturer = $realExam->lecturer_course();
-        $lecturer = $courselecturer->employee()->get(['arabic_name as lecturer_name']);
-        $departmentCoursePart = $courselecturer->department_course_part();
-        $coursePart = $departmentCoursePart->course_part(['part_id as course_part_name']);
+        $courselecturer = $realExam->course_lecturer()->first();
+        $lecturer =  Employee::where('id', $courselecturer->lecturer_id)->first(['arabic_name as lecturer_name']);
+        $departmentCoursePart = $courselecturer->department_course_part()->first();
+        $coursePart = $departmentCoursePart->course_part()->first(['part_id as course_part_name']);
         $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
-               new EnumReplacement('course_part_name', CoursePartsEnum::class),
+            new EnumReplacement('course_part_name', CoursePartsEnum::class),
         ]);
-        $departmentCourse = $departmentCoursePart->department_course()->get(['level as level_name', 'semester as semester_name']);
+
+        $departmentCourse = $departmentCoursePart->department_course()->first(['level as level_name', 'semester as semester_name', 'department_id', 'course_id']);
         $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
-               new EnumReplacement('level_name', LevelsEnum::class),
-               new EnumReplacement('semester_name', SemesterEnum::class),
+            new EnumReplacement('level_name', LevelsEnum::class),
+            new EnumReplacement('semester_name', SemesterEnum::class),
         ]);
-        $department = $departmentCourse->department()->get(['arabic_name as department_name']);
-        $college = $department->college()->get(['arabic_name as college_name']);
-        $course = $departmentCourse->course()->get(['arabic_name as course_name']);
 
-        array_merge($realExam, $lecturer, $coursePart, $departmentCourse, $department, $college, $course); // merge all with realExam
+        $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
+        $college = $department->college()->first(['arabic_name as college_name']);
+        $course = $departmentCourse->course()->first(['arabic_name as course_name']);
 
-        return $realExam;
+        //*** make unset to : 'department_id', 'course_id', 'college_id', 'course_lecturer_id' , 'id'
+        $departmentCourse = $departmentCourse->toArray();
+        unset($departmentCourse['department_id']);
+        unset($departmentCourse['course_id']);
+
+        $department = $department->toArray();
+        unset($department['college_id']);
+
+        $realExam = $realExam->toArray();
+        unset($realExam['course_lecturer_id']);
+        unset($realExam['id']);
+
+        $realExam =
+        $realExam  +
+        $lecturer->toArray() +
+        $coursePart->toArray() +
+        $departmentCourse  +
+        $department +
+        $college->toArray() +
+        $course->toArray();
+
+        return ResponseHelper::successWithData($realExam);
     }
 
     public function retrieveOnlineExamStudents(Request $request)
@@ -152,47 +174,57 @@ return $onlineExams;
 
     public function suspendStudentOnlineExam(Request $request)
     {
-       $studentOnlineExam =  StudentOnlineExam::where('online_exam_id', $request->exam_id)
-                                                ->where('student_id', $request->student_id)->first();
+        $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
+            ->where('student_id', $request->student_id)
+            ->first();
 
-       if(intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::ACTIVE->value){
-
-        $studentOnlineExam->update([
-            'status' =>  StudentOnlineExamStatusEnum::SUSPENDED->value,
-        ]);
-           return ResponseHelper::success();
-       }else{
-        return abort(404);
-       }
+        if ($studentOnlineExam && intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::ACTIVE->value) {
+            StudentOnlineExam::where('online_exam_id', $request->exam_id)
+                ->where('student_id', $request->student_id)
+                ->update([
+                    'status' => StudentOnlineExamStatusEnum::SUSPENDED->value,
+                ]);
+            return ResponseHelper::success();
+        } else {
+            return abort(404);
+        }
     }
 
     public function continueStudentOnlineExam(Request $request)
     {
-        $studentOnlineExam =  StudentOnlineExam::where('online_exam_id', $request->exam_id)
-                                                ->where('student_id', $request->student_id)->first();
-       if(intval($studentOnlineExam->status)  === StudentOnlineExamStatusEnum::SUSPENDED->value){
+        $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
+        ->where('student_id', $request->student_id)
+        ->first();
 
-        $studentOnlineExam->update([
-            'status' => StudentOnlineExamStatusEnum::ACTIVE->value,
-
-        ]);
-    }else{
+    if ($studentOnlineExam && intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value) {
+        StudentOnlineExam::where('online_exam_id', $request->exam_id)
+            ->where('student_id', $request->student_id)
+            ->update([
+                'status' => StudentOnlineExamStatusEnum::ACTIVE->value,
+            ]);
+        return ResponseHelper::success();
+    } else {
         return abort(404);
     }
     }
 
     public function finishStudentOnlineExam(Request $request)
     {
-        $studentOnlineExam =  StudentOnlineExam::where('online_exam_id', $request->exam_id)
-                                                ->where('student_id', $request->student_id)->first();
-        if(!intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::COMPLETE->value){
-            $studentOnlineExam->update([
+        $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
+        ->where('student_id', $request->student_id)
+        ->first();
+
+    if ($studentOnlineExam && intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::COMPLETE->value) {
+        StudentOnlineExam::where('online_exam_id', $request->exam_id)
+            ->where('student_id', $request->student_id)
+            ->update([
                 'status' => StudentOnlineExamStatusEnum::CANCELED->value,
                 'end_datetime' => now()
             ]);
-        }else{
-            return abort(404);
-        }
+        return ResponseHelper::success();
+    } else {
+        return abort(404);
+    }
     }
 
 }

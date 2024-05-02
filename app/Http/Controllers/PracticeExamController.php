@@ -31,6 +31,7 @@ use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
 use App\AlgorithmAPI\GeneratePractiseExam;
 use App\Enums\FormConfigurationMethodEnum;
+use App\Models\DepartmentCoursePart;
 
 class PracticeExamController extends Controller
 {
@@ -97,23 +98,41 @@ class PracticeExamController extends Controller
         return DeleteHelper::deleteModel($request->id);
     }
 
-    public function retrievePractiseExams(Request $request)
+    public function retrievePracticeExams(Request $request)
     {
-        $user = User::findOrFail(auth()->user()->id)->first();
-        $practiseExams = [];
+        $userId = auth()->user()->id;
+        $practiceExams =  DB::table('practice_exams')
+            ->join('department_course_parts', 'practice_exams.department_course_part_id', '=', 'department_course_parts.id')
+            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+            ->select(
+                'courses.arabic_name as course_name',
+                'course_parts.part_id as course_part_name',
+                'practice_exams.id',
+                'practice_exams.title',
+                // practice_exams.datetime,
+            )
+            ->when($request->status_id === null, function ($query)  {
+                return  $query ->selectRaw('practice_exams.status as status_name');
+             })
 
-        if ($request->status_id) {
-
-            if ($request->status_id === ExamStatusEnum::COMPLETE->value) {
-
-                $practiseExams = ExamHelper::retrieveCompletePractiseExams($user->id, $request->department_course_part_id);
-            } elseif ($request->status_id === ExamStatusEnum::SUSPENDED->value) {
-                $practiseExams = ExamHelper::retrieveSuspendedPractiseExams($user->id, $request->department_course_part_id);
+            ->when($request->status_id , function ($query) use ($request) {
+                return  $query ->where('practice_exams.status', '=', $request->status_id);
+             })
+             ->where('practice_exams.department_course_part_id', '=', $request->department_course_part_id)
+             ->where('practice_exams.user_id', '=', $userId)
+            ->get();
+            $enumReplacement = [
+                new EnumReplacement('course_part_name', CoursePartsEnum::class),
+            ];
+            if($request->status_id === null){
+                array_push($enumReplacement, new EnumReplacement('status_name', ExamStatusEnum::class));
             }
-        } else {
-            $practiseExams = ExamHelper::retrievePractiseExams($user->id, $request->department_course_part_id);
-        }
-        return ResponseHelper::successWithData($practiseExams);
+        $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, $enumReplacement );
+        $practiceExams = self::retrievePractiseExamsResult($practiceExams);
+
+        return ResponseHelper::successWithData($practiceExams);
     }
 
     public function retrievePractiseExamsAndroid(Request $request)
@@ -126,7 +145,7 @@ class PracticeExamController extends Controller
         return $practiseExams;
     }
 
-    public function retrievePractiseExamsQuestions(Request $request)
+    public function retrievePractiseExamsQuestions(Request $request) // *** stay not complete
     {
         $practiseExamQuestions = [];
 
@@ -163,34 +182,49 @@ class PracticeExamController extends Controller
     {
         $practiseExam = PracticeExam::findOrFail($request->id, [
             // 'datetime'
-            'title', 'duration', 'language as language_name',
-            'conduct_method as is_mandatory_question_sequence', 'status as is_complete'
+            'id','title', 'duration', 'language as language_name',
+            'conduct_method as is_mandatory_question_sequence', 'status as is_complete','department_course_part_id'
         ]);
         $practiseExam = ProcessDataHelper::enumsConvertIdToName($practiseExam, [
             new EnumReplacement('language_name', LanguageEnum::class)
         ]);
 
-        $departmentCoursePart = $practiseExam->department_course_part();
+        $departmentCoursePart = DepartmentCoursePart::findOrFail($practiseExam->department_course_part_id);
 
-        $coursePart = $departmentCoursePart->course_part(['part_id as course_part_name']);
+        $coursePart = $departmentCoursePart->course_part()->first(['part_id as course_part_name']);
         $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
             new EnumReplacement('course_part_name', CoursePartsEnum::class)
         ]);
 
-        $departmentCourse = $departmentCoursePart->department_course()->get(['level as level_name', 'semester as semester_name']);
+        $departmentCourse = $departmentCoursePart->department_course()->first(['level as level_name', 'semester as semester_name', 'department_id', 'course_id']);
         $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
             new EnumReplacement('level_name', LevelsEnum::class),
             new EnumReplacement('semester_name', SemesterEnum::class)
         ]);
 
-        $department = $departmentCourse->department()->get(['arabic_name as department_name']);
+        $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
 
-        $college = $department->college()->get(['arabic_name as college_name']);
+        $college = $department->college()->first(['arabic_name as college_name']);
 
-        $course = $departmentCourse->course()->get(['arabic_name as course_name']);
+        $course = $departmentCourse->course()->first(['arabic_name as course_name']);
 
 
-        array_merge($practiseExam, $coursePart, $departmentCourse, $department, $college, $course); // merge all with realExam
+        $departmentCourse = $departmentCourse->toArray();
+        unset($departmentCourse['department_id']);
+        unset($departmentCourse['course_id']);
+
+        $department = $department->toArray();
+        unset($department['college_id']);
+
+        $practiseExam = $practiseExam->toArray();
+        unset($practiseExam['department_course_part_id']);
+
+        $practiseExam = $practiseExam +
+            $coursePart->toArray() +
+            $departmentCourse +
+            $department +
+            $college->toArray() +
+            $course->toArray();
 
         return ResponseHelper::successWithData($practiseExam);
     }
@@ -204,22 +238,25 @@ class PracticeExamController extends Controller
 
     public function savePractiseExamQuestionAnswer(Request $request)
     {
-
         $questionType = Question::findOrFail($request->question_id, ['type']);
+
         $answerId = null;
-        if ($questionType->type === QuestionTypeEnum::TRUE_FALSE->value) {
+        if (intval($questionType->type) === QuestionTypeEnum::TRUE_FALSE->value) {
 
             $answerId = ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
         } else {
-            $answerId =  $request->choice_id;
+            $answerId =  intval($request->choice_id );
         }
-        $practiseExamQuestion = PracticeExamQuestion::findOrFail($request->exma_id, $request->question_id);
+
+        $practiseExamQuestion = PracticeExamQuestion::where('practice_exam_id', $request->exam_id)
+                                                     ->where('question_id', $request->question_id)
+                                                     ->first();
         $practiseExamQuestion->update([
-            'answer' => $answerId,
+            'answer' =>  $answerId,
             'answer_duration' => $request->answer_duration ?? null,
         ]);
 
-        return response()->json(['message' => 'succesful'], 200);
+        return ResponseHelper::success();
     }
 
     public function finishPractiseExam(Request $request)
@@ -229,19 +266,21 @@ class PracticeExamController extends Controller
             'status' => ExamStatusEnum::COMPLETE->value,
             // 'end_datetime' => now(),
         ]);
-        return response()->json(['message' => 'succesful'], 200);
+        return ResponseHelper::success();
     }
 
     public function suspendPractiseExam(Request $request)
     {
         $practiseExam = PracticeExam::findOrFail($request->id);
-        if ($practiseExam->status === ExamStatusEnum::ACTIVE->value) {
+
+        if (intval($practiseExam->status) === ExamStatusEnum::ACTIVE->value) {
             $practiseExam->update([
                 'status' => ExamStatusEnum::SUSPENDED->value,
             ]);
-            return response()->json(['message' => 'succesful'], 200);
+            return $practiseExam;
+            return ResponseHelper::success();
         } else {
-            // return response()->json(['message' => 'failed'], 200);
+            return abort(404);
         }
     }
 
@@ -303,9 +342,7 @@ class PracticeExamController extends Controller
          */
         return $examQuestions;
     }
-
-
-
+    
     public function rules(Request $request): array
     {
         $rules = [

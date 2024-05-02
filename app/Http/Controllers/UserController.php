@@ -5,20 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Guest;
 use Ichtrojan\Otp\Otp;
+use App\Models\Student;
+use App\Models\Employee;
 use App\Enums\GenderEnum;
 use App\Enums\JobTypeEnum;
 use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
-use App\Enums\QualificationEnum;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHelper;
+use App\Enums\QualificationEnum;
 use App\Helpers\EnumReplacement;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Notifications\ResetPasswordNotificationVerification;
 use Symfony\Component\Console\Helper\ProcessHelper;
+use App\Notifications\ResetPasswordNotificationVerification;
 
 class UserController extends Controller
 {
@@ -84,19 +86,19 @@ class UserController extends Controller
 
         if($user->owner_type === OwnerTypeEnum::GUEST->value){
             $attributes = ['name', 'phone', 'gender as gender_name','image_url'];
-            $owner = $user->guest()->get($attributes);
+            $owner = Guest::where('user_id', $user->id)->first($attributes);
             array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
-            
+
         }elseif($user->owner_type === OwnerTypeEnum::STUDENT->value){
             $attributes = ['arabic_name', 'english_name' , 'phone', 'birthdate', 'gender as gender_name','image_url'];
-            $owner = $user->student()->get($attributes);
+            $owner = Student::where('user_id', $user->id)->first($attributes);
             array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
 
         }else{
-            $attributes = ['arabic_name', 'english_name' , 'phone', 'image_url', 'specialization', 
+            $attributes = ['arabic_name', 'english_name' , 'phone', 'image_url', 'specialization',
             'qualification as qualification_name', 'job_type as job_type_name'
         ];
-            $owner = $user->employee()->get($attributes);
+            $owner = Employee::where('user_id', $user->id)->first($attributes);
             array_push($enumReplacements, new EnumReplacement('qualification_name', QualificationEnum::class));
             array_push($enumReplacements, new EnumReplacement('job_type_name', JobTypeEnum::class));
         }

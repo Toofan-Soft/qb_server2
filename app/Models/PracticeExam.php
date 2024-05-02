@@ -33,7 +33,7 @@ class PracticeExam extends Model
         'language' =>LanguageEnum::class,
         'difficulty_level' =>ExamDifficultyLevelEnum::class,
         'conduct_method' =>ExamConductMethodEnum::class,
-        'status' =>ExamStatusEnum::class,
+        // 'status' =>ExamStatusEnum::class,
     ];
 
 
