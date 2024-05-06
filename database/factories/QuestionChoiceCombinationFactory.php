@@ -27,9 +27,6 @@ final class QuestionChoiceCombinationFactory extends Factory
     public function definition(): array
     {
         return [
-            'combination_id' => fake()->randomNumber(),
-            'question_id' => fake()->randomNumber(),
-            'combination_choices' => fake()->optional()->word,
         ];
     }
 }

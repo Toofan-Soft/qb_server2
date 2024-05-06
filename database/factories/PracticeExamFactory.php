@@ -35,7 +35,7 @@ final class PracticeExamFactory extends Factory
             'status' => fake()->randomElement(['0', '1', '2']),
             'department_course_part_id' => fake()->randomNumber(),
             'user_id' => fake()->uuid,
-            // 'department_course_parts_id' => \App\Models\DepartmentCoursePart::factory(),
+            'department_course_part_id' => fake()->randomNumber(),
         ];
     }
 }

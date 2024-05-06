@@ -199,7 +199,7 @@ class ExamHelper
         return $forms;
     }
 
-    // need to test 
+    // need to test
     private static function getRealExamFormsNames($form_name_method, $forms_count)
     {
         $formsNames = [];
@@ -333,9 +333,11 @@ class ExamHelper
 
     public static function checkTrueFalseQuestionAnswer(Question $qeustion, $answer): bool
     {
+        return true;
     }
     public static function checkChoicesQuestionAnswer(Question $qeustion, $answer, $combinationId): bool
     {
+        return true;
     }
 
     public static function getExamResultAppreciation($scoreRate)

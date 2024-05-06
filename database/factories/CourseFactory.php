@@ -27,8 +27,8 @@ final class CourseFactory extends Factory
     public function definition(): array
     {
         return [
-            'arabic_name' => fake()->optional()->word,
-            'english_name' => fake()->optional()->word,
+            'arabic_name' => fake()->unique()->word,
+            'english_name' => fake()->unique()->word,
         ];
     }
 }

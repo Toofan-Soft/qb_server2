@@ -31,7 +31,7 @@ final class PracticeExamQuestionFactory extends Factory
             'question_id' => fake()->randomNumber(),
             'combination_id' => fake()->optional()->randomNumber(),
             'answer' => fake()->optional()->randomNumber(),
-            'answer_duration' => fake()->randomNumber(),
+            'answer_duration' => fake()->optional()->randomNumber(),
         ];
     }
 }

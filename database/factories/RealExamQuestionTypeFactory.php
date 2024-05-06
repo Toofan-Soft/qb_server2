@@ -29,7 +29,7 @@ final class RealExamQuestionTypeFactory extends Factory
         return [
             'real_exam_id' => fake()->randomNumber(),
             'question_type' => fake()->randomElement(['0', '1']),
-            'question_count' => fake()->randomNumber(),
+            'questions_count' => fake()->randomNumber(),
             'question_score' => fake()->randomFloat(),
         ];
     }

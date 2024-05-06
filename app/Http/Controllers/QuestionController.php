@@ -268,7 +268,7 @@ class QuestionController extends Controller
         $rules = [
             'topic_id' => 'required|exists:topics,id',
             'content' => 'required|string',
-            'attachment' => 'nullable|string',
+            'attachment' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'title' => 'nullable|string',
             'type_id' => ['required', new Enum(QuestionTypeEnum::class)], // Assuming QuestionTypeEnum holds valid values
             'difficulty_level_id' => 'required|float',

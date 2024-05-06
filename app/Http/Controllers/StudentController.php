@@ -204,7 +204,7 @@ class StudentController extends Controller
             'arabic_name' => 'required|string',
             'english_name' => 'required|string',
             'phone' => 'nullable|string|unique:students,phone',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender_id' => ['required', new Enum(GenderEnum::class)],
             'birthdate' => 'nullable|date',
             // 'user_id' => 'nullable|uuid|unique:users,id',

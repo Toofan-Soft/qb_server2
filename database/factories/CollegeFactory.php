@@ -27,8 +27,8 @@ final class CollegeFactory extends Factory
     public function definition(): array
     {
         return [
-            'arabic_name' => fake()->word,
-            'english_name' => fake()->word,
+            'arabic_name' => fake()->unique()->word,
+            'english_name' => fake()->unique()->word,
             'logo_url' => fake()->optional()->word,
             'description' => fake()->optional()->text,
             'phone' => fake()->optional()->phoneNumber,

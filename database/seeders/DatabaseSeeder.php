@@ -61,143 +61,149 @@ class DatabaseSeeder extends Seeder
         // \App\Models\CoursePart::factory(10)->create();
         // // //////
 
-        //  College::factory()->count(10)->create()->each(function ($college) {
-        //     $college->departments()->save(Department::factory()->make());
-        // });
-
-                // Course::factory()->count(10)->create()->each(function ($course) {
-                //     $coursePart = CoursePart::factory()->create([
-                //         'course_id' => $course->id, // Assign the current course's ID
-                //     ]);
-
-                //     $department = Department::inRandomOrder()->first(); // Get a random department
-                //     $departmentCourse = DepartmentCourse::factory()->create([
-                //         'course_id' => $course->id,
-                //         'department_id' => $department->id, // Assign a random department ID
-                //     ]);
-
-                //     $departmentCoursepart = DepartmentCoursePart::factory()->create([
-                //         'department_course_id' => $departmentCourse->id,
-                //         'course_part_id' => $coursePart->id, // Assign a random department ID
-                //     ]);
-
-                //     $chapter = Chapter::factory()->create([
-                //         'course_part_id' => $coursePart->id,
-                //     ]);
-
-                //     $topic = Topic::factory()->create([
-                //         'chapter_id' => $chapter->id,
-                //     ]);
-
-                //     $departmentcoursetopic = DepartmentCoursePartTopic::factory()->create([
-                //         'department_course_part_id' => $departmentCourse->id,
-                //         'topic_id' => $topic->id,
-                //     ]);
-                // });
-
-        /////////////////////
-
-        // $topic = Topic::inRandomOrder()->first();
-        // Question::factory()->count(10)->create([
-        //     'topic_id' => $topic->id,
-        //   ])->each(function ($question) {
-        //      $choice = Choice::factory()->create([
-        //         'question_id' => $question->id,
-        //     ]);
-
-        //     $qusage = QuestionUsage::factory()->create([
-        //         'question_id' => $question->id,
-        //     ]);
-
-        //     $truefalse = TrueFalseQuestion::factory()->create([
-        //         'question_id' => $question->id,
-        //     ]);
-        // });
-
-////////////////////////////
-
-    //    User::factory()->count(10)->create([
-    //         'password' => '12345678',
-    //     ])->each(function ($user) {
-    //         $departmentCoursepart = DepartmentCoursePart::inRandomOrder()->first();
-    //         $departmentCourse = DepartmentCourse::inRandomOrder()->first();
-    //         $question = Question::inRandomOrder()->first();
-
-    //         $userRole = UserRole::factory()->create([
-    //             'user_id' => $user->id,
-    //         ]);
-
-    //         $employee = Employee::factory()->create([
-    //             'user_id' => $user->id,
-    //         ]);
-
-    //         $courseLecturer = CourseLecturer::factory()->create([
-    //             'lecturer_id' => $employee->id,
-    //             'department_course_part_id' => $departmentCoursepart->id, ///
-    //         ]);
-
-    //         $realExam = RealExam::factory()->create([
-    //             'course_lecturer_id' => $courseLecturer->id,
-    //         ]);
-
-    //         $realExamQuestionType = RealExamQuestionType::factory()->create([
-    //             'real_exam_id' => $realExam->id,
-    //         ]);
-    //         $form = Form::factory()->create([
-    //             'real_exam_id' => $realExam->id,
-    //         ]);
-
-    //         $onlineExam = OnlineExam::factory()->create([
-    //             'id' => $realExam->id,
-    //             'proctor_id' => $employee->id
-    //         ]);
 
 
-    //         $paperExam = PaperExam::factory()->create([
-    //             'id' => $realExam->id,
-    //         ]);
-    //         $practiseExam = PracticeExam::factory()->create([
-    //             'department_course_part_id' => $departmentCoursepart->id, ///
-    //             'user_id' => $user->id,
-    //         ]);
 
-    //         $guest = Guest::factory()->create([
-    //             'user_id' => $user->id,
-    //         ]);
-    //         $student = Student::factory()->create([
-    //             'user_id' => $user->id,
-    //         ]);
 
-    //         $StudentonlineExam = CourseStudent::factory()->create([
-    //             'department_course_id' => $departmentCourse->id,
-    //             'student_id' => $student->id,
-    //         ]);
 
-    //         $StudentonlineExam = StudentOnlineExam::factory()->create([
-    //             'online_exam_id' => $onlineExam->id,
-    //             'student_id' => $student->id,
-    //         ]);
 
-    //         $formQuestion = FormQuestion::factory()->create([
-    //             'question_id' => $question->id,
-    //             'form_id' => $form->id,
-    //         ]);
+//          College::factory()->count(10)->create()->each(function ($college) {
+//             $college->departments()->save(Department::factory()->make());
+//         });
 
-    //         $studentAnswer = StudentAnswer::factory()->create([
-    //             'question_id' => $question->id,
-    //             'form_id' => $form->id,
-    //             'student_id' => $student->id,
-    //         ]);
+//                 Course::factory()->count(10)->create()->each(function ($course) {
+//                     $coursePart = CoursePart::factory()->create([
+//                         'course_id' => $course->id, // Assign the current course's ID
+//                     ]);
 
-    //         $practiseExamQuestion = PracticeExamQuestion::factory()->create([
-    //             'practice_exam_id' => $practiseExam->id,
-    //             'question_id' => $question->id,
-    //         ]);
-    //         $favoriteQuestion = FavoriteQuestion::factory()->create([
-    //             'user_id' => $user->id,
-    //             'question_id' => $question->id,
-    //         ]);
-    //     });
+//                     $department = Department::inRandomOrder()->first(); // Get a random department
+//                     $departmentCourse = DepartmentCourse::factory()->create([
+//                         'course_id' => $course->id,
+//                         'department_id' => $department->id, // Assign a random department ID
+//                     ]);
+
+//                     $departmentCoursepart = DepartmentCoursePart::factory()->create([
+//                         'department_course_id' => $departmentCourse->id,
+//                         'course_part_id' => $coursePart->id, // Assign a random department ID
+//                     ]);
+
+//                     $chapter = Chapter::factory()->create([
+//                         'course_part_id' => $coursePart->id,
+//                     ]);
+
+//                     $topic = Topic::factory()->create([
+//                         'chapter_id' => $chapter->id,
+//                     ]);
+
+//                     $departmentcoursetopic = DepartmentCoursePartTopic::factory()->create([
+//                         'department_course_part_id' => $departmentCourse->id,
+//                         'topic_id' => $topic->id,
+//                     ]);
+//                 });
+
+//         /////////////////////
+
+//         $topic = Topic::inRandomOrder()->first();
+//         Question::factory()->count(10)->create([
+//             'topic_id' => $topic->id,
+//           ])->each(function ($question) {
+//              $choice = Choice::factory()->create([
+//                 'question_id' => $question->id,
+//             ]);
+
+//             $qusage = QuestionUsage::factory()->create([
+//                 'question_id' => $question->id,
+//             ]);
+
+//             $truefalse = TrueFalseQuestion::factory()->create([
+//                 'question_id' => $question->id,
+//             ]);
+//         });
+
+// ////////////////////////////
+
+//        User::factory()->count(10)->create([
+//             'password' => '12345678',
+//         ])->each(function ($user) {
+//             $departmentCoursepart = DepartmentCoursePart::inRandomOrder()->first();
+//             $departmentCourse = DepartmentCourse::inRandomOrder()->first();
+//             $question = Question::inRandomOrder()->first();
+
+//             $userRole = UserRole::factory()->create([
+//                 'user_id' => $user->id,
+//             ]);
+
+//             $employee = Employee::factory()->create([
+//                 'user_id' => $user->id,
+//             ]);
+
+//             $courseLecturer = CourseLecturer::factory()->create([
+//                 'lecturer_id' => $employee->id,
+//                 'department_course_part_id' => $departmentCoursepart->id, ///
+//             ]);
+
+//             $realExam = RealExam::factory()->create([
+//                 'course_lecturer_id' => $courseLecturer->id,
+//             ]);
+
+//             $realExamQuestionType = RealExamQuestionType::factory()->create([
+//                 'real_exam_id' => $realExam->id,
+//             ]);
+//             $form = Form::factory()->create([
+//                 'real_exam_id' => $realExam->id,
+//             ]);
+
+//             $onlineExam = OnlineExam::factory()->create([
+//                 'id' => $realExam->id,
+//                 'proctor_id' => $employee->id
+//             ]);
+
+
+//             $paperExam = PaperExam::factory()->create([
+//                 'id' => $realExam->id,
+//             ]);
+//             $practiseExam = PracticeExam::factory()->create([
+//                 'department_course_part_id' => $departmentCoursepart->id, ///
+//                 'user_id' => $user->id,
+//             ]);
+
+//             $guest = Guest::factory()->create([
+//                 'user_id' => $user->id,
+//             ]);
+//             $student = Student::factory()->create([
+//                 'user_id' => $user->id,
+//             ]);
+
+//             $StudentonlineExam = CourseStudent::factory()->create([
+//                 'department_course_id' => $departmentCourse->id,
+//                 'student_id' => $student->id,
+//             ]);
+
+//             $StudentonlineExam = StudentOnlineExam::factory()->create([
+//                 'online_exam_id' => $onlineExam->id,
+//                 'student_id' => $student->id,
+//             ]);
+
+//             $formQuestion = FormQuestion::factory()->create([
+//                 'question_id' => $question->id,
+//                 'form_id' => $form->id,
+//             ]);
+
+//             $studentAnswer = StudentAnswer::factory()->create([
+//                 'question_id' => $question->id,
+//                 'form_id' => $form->id,
+//                 'student_id' => $student->id,
+//             ]);
+
+//             $practiseExamQuestion = PracticeExamQuestion::factory()->create([
+//                 'practice_exam_id' => $practiseExam->id,
+//                 'question_id' => $question->id,
+//             ]);
+//             $favoriteQuestion = FavoriteQuestion::factory()->create([
+//                 'user_id' => $user->id,
+//                 'question_id' => $question->id,
+//             ]);
+//         });
 
      }
 }

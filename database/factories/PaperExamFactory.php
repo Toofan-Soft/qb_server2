@@ -28,7 +28,7 @@ final class PaperExamFactory extends Factory
     {
         return [
             'id' => fake()->randomNumber(),
-            'Course_lecturer_name' => fake()->word,
+            'course_lecturer_name' => fake()->word,
         ];
     }
 }

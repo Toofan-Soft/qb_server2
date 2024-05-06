@@ -35,7 +35,7 @@ final class RealExamFactory extends Factory
             'datetime' => fake()->dateTime(),
             'duration' => fake()->randomNumber(),
             'type' => fake()->randomElement(['0', '1']),
-            'exam_type' => fake()->randomElement(['0', '1', '2']),
+            'exam_type' => fake()->randomElement(['0', '1']),
             'note' => fake()->optional()->sentence,
             'course_lecturer_id' => fake()->randomNumber(),
         ];

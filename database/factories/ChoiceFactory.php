@@ -28,7 +28,7 @@ final class ChoiceFactory extends Factory
     {
         return [
             'question_id' => fake()->randomNumber(),
-            'content' => fake()->optional()->text,
+            'content' => fake()->text,
             'attachment' => fake()->optional()->word,
             'status' => fake()->randomElement(['0', '1']),
         ];

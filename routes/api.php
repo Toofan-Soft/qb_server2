@@ -22,10 +22,11 @@ use App\Enums\SemesterEnum;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\Process\Process;
+// use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EnumsController;
 use App\Http\Controllers\GuestController;
-// use App\Http\Controllers\Auth\UserController;
 use App\Http\Controllers\TopicController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FilterController;
@@ -52,12 +53,14 @@ use App\Http\Controllers\LecturerOnlinExamController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\LecturerOnlineExamController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
+use robertogallea\LaravelPython\Services\LaravelPython;
 use App\Http\Controllers\DepartmentCoursePartController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
 
 // Route::post('register',[UserController::class,'register']);
-Route::post('register',[GuestController::class,'addGuest']);
+Route::post('guest/add',[GuestController::class,'addGuest']);
 
 
 // Route::get('index',[UserController::class,'index']);
@@ -88,7 +91,8 @@ Route::get('paper-exam/retrieve-android-list', [PaperExamController::class, 'ret
 //practice-exam
 Route::post('practice-exam/add', [PracticeExamController::class, 'addPracticeExam']);
 Route::get('practice-exam/retrieve-list', [PracticeExamController::class, 'retrievePractiseExams']);
-});
+
+// });///
 
 //univercity
 Route::prefix('university/')->group(function () {
@@ -279,7 +283,7 @@ Route::prefix('course-student/')->group(function () {
 
 //guest
 Route::prefix('guest/')->group(function () {
-    Route::post('add', [GuestController::class, 'addGuest']);
+    // Route::post('add', [GuestController::class, 'addGuest']);
     Route::put('modify', [GuestController::class, 'modifyGuest']);
     Route::get('retrieve-editable', [GuestController::class, 'retrieveEditableGuestProfile']);
 });
@@ -391,6 +395,7 @@ Route::prefix('practice-exam/')->group(function () {
     Route::get('retrieve-question-list', [PracticeExamController::class, 'retrievePracticeExams']);
 });
 
+});////
 
 //favorite question
 Route::prefix('favorite-question/')->group(function () {
@@ -470,6 +475,39 @@ Route::get('getenum', function () {
     $enumArray = EnumTraits::getEnum( SemesterEnum::class, 'en');
 
     return response()->json(['names' => $enumArray]);
+});
+
+Route::get('execute-python', function () {
+
+    $arrayData = [
+        'id' => 1,
+        'name' => 'nasser',
+        'age' => 22,
+    ];
+
+    $jsonData = json_encode($arrayData);
+
+    // $command = 'python ' . base_path() . '\app\Scripts\example.py '  ;
+    // $output = shell_exec($command);
+    // return $output;
+
+    $process = new Process([
+        'C:\Users\Nasser\AppData\Local\Programs\Python\Python39\python',
+        base_path() . '\app\Scripts\example.py',
+    ]);
+    $process->setEnv([
+        'SYSTEMROOT' => getenv('SYSTEMROOT'),
+        'PATH' => getenv('PATH')
+    ]);
+     $process->run();
+
+    if (!$process->isSuccessful()) {
+        throw new ProcessFailedException($process);
+    }
+
+    // $updatedArray = json_decode($process->getOutput(), true);
+    return $process->getOutput();
+
 });
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();

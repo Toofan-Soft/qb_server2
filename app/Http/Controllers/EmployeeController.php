@@ -67,8 +67,8 @@ class EmployeeController extends Controller
 
     public function modifyEmployee (Request $request)
     {
-        if($failed = ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError($failed);
+        if(  ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
         }
         $employee = Employee::findOrFail($request->id);
 
@@ -138,7 +138,7 @@ class EmployeeController extends Controller
             'arabic_name' => 'required|string',
             'english_name' => 'required|string',
             'phone' => 'nullable|string|unique:employees,phone',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'job_type_id' => ['required',new Enum (JobTypeEnum::class)], // Assuming JobTypeEnum holds valid values
             'qualification_id' => ['required',new Enum (QualificationEnum::class)], // Assuming QualificationEnum holds valid values
             'specialization' => 'nullable|string',

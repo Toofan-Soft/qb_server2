@@ -252,10 +252,9 @@ class LecturerOnlineExamController extends Controller
             new EnumReplacement('status_name', ExamStatusEnum::class),
             new EnumReplacement('conduct_method_name', ExamStatusEnum::class),
         ]);
-
-        // $onlineExam = ProcessDataHelper::columnConvertIdToName($onlineExam, [ // need to fix columnConvertIdToName method
-        //     new ColumnReplacement('proctor_name', 'arabic_name', Employee::class),
-        // ]);
+        $onlineExam = ProcessDataHelper::columnConvertIdToName($onlineExam, [ // need to fix columnConvertIdToName method
+            new ColumnReplacement('proctor_name', 'arabic_name', Employee::class),
+        ]);
 
 
         $courseLecturer = $realExam->course_lecturer()->first();

@@ -35,7 +35,7 @@ class GuestController extends Controller
          return ResponseHelper::successWithToken($response);
 
         }
-        
+
     public function modifyGuest (Request $request)
     {
 
@@ -43,7 +43,8 @@ class GuestController extends Controller
             return  ResponseHelper::clientError(401);
         }
 
-        $guest = Guest::findOrFail(auth()->user()->id);
+        $guest = Guest::where('user_id', auth()->user()->id)->first();
+        return Guest::all();
         $guest->update([
             'name' => $request->name ??  $guest->name ,
             'phone' => $request->phone ?? $guest->phone ,
@@ -67,7 +68,7 @@ class GuestController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'phone' => 'nullable|string|unique:guests,phone',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender_id' => ['required',new Enum(GenderEnum::class)], // Assuming GenderEnum holds valid values
             //'user_id' => 'nullable|uuid|unique:users,id',
         ];

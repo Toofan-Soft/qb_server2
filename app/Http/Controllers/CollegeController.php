@@ -151,7 +151,7 @@ class CollegeController extends Controller
         $rules = [
             'arabic_name' => 'required|string|max:255',
             'english_name' => 'required|string|max:255',
-            'logo' =>  'image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust max size as needed
+            'logo' =>  'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust max size as needed
             'description' => 'nullable|string',
             'phone' => 'nullable|string|unique:colleges,phone',
             'email' => 'nullable|email|unique:colleges,email',

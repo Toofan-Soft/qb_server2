@@ -51,7 +51,7 @@ class UserController extends Controller
         ]);
 
         if ($validation->fails()) {
-            return ResponseHelper::clientError(401);
+            return ResponseHelper::clientError(401); 
           }
 
         if (auth()->attempt($input)) {

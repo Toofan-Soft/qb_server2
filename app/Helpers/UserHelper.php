@@ -28,29 +28,29 @@ class UserHelper
         // add user status by default
         $generatedToken = self::generateAlphanumericToken(8);
 
-        $parent = null;
-        if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
-            $parent = Guest::findOrFail($ownerId);
-            array_push($roles, RoleEnum::GUEST->value);
-        } elseif ($ownerTypeId === OwnerTypeEnum::STUDENT->value) {
-            $parent = Student::findOrFail($ownerId);
-            array_push($roles, RoleEnum::STUDENT->value);
-        } elseif ($ownerTypeId === OwnerTypeEnum::LECTURER->value) {
-            $parent = Employee::findOrFail($ownerId);
-            array_push($roles, RoleEnum::LECTURER->value);
-        } elseif ($ownerTypeId === OwnerTypeEnum::EMPLOYEE->value) {
-            $parent = Employee::findOrFail($ownerId);
-        } else {
-            $parent = Employee::findOrFail($ownerId);
-            array_push($roles, RoleEnum::LECTURER->value);
-        }
-
-        $user = $parent->user()->create([
+        $user = User::create([
             'email' => $email,
             'password' => ($password) ?  bcrypt($password) : $generatedToken,
             'status' => UserStatusEnum::ACTIVATED->value,
             'owner_type' => $ownerTypeId,
         ]);
+
+        $owner = null;
+        if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
+            $owner = Guest::findOrFail($ownerId)->update(['user_id' => $user->id]);
+            array_push($roles, RoleEnum::GUEST->value);
+        } elseif ($ownerTypeId === OwnerTypeEnum::STUDENT->value) {
+            $owner = Student::findOrFail($ownerId)->update(['user_id' => $user->id]);
+            array_push($roles, RoleEnum::STUDENT->value);
+        } elseif ($ownerTypeId === OwnerTypeEnum::LECTURER->value) {
+            $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
+            array_push($roles, RoleEnum::LECTURER->value);
+        } elseif ($ownerTypeId === OwnerTypeEnum::EMPLOYEE->value) {
+            $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
+        } else {
+            $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
+            array_push($roles, RoleEnum::LECTURER->value);
+        }
 
         foreach ($roles as $role) {
             $user->user_roles()->create([
