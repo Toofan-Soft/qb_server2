@@ -2,12 +2,12 @@
 
 namespace App\Policies;
 
-use App\Enums\UserRoleEnum;
-use App\Models\College;
 use App\Models\User;
+use App\Models\Department;
+use App\Enums\UserRoleEnum;
 use Illuminate\Auth\Access\Response;
 
-class CollegePolicy
+class DepartmentPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -20,7 +20,7 @@ class CollegePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, College $college): bool
+    public function view(User $user, Department $department): bool
     {
         //
     }
@@ -36,7 +36,7 @@ class CollegePolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, College $college): bool
+    public function update(User $user, Department $department): bool
     {
         return ((int)auth()->user()->user_roles->first()->{'role_id '} === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
     }
@@ -44,15 +44,15 @@ class CollegePolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, College $college): bool
+    public function delete(User $user, Department $department): bool
     {
-        return ((int)auth()->user()->user_roles->first()->{'role_id '} === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
+        //
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, College $college): bool
+    public function restore(User $user, Department $department): bool
     {
         //
     }
@@ -60,7 +60,7 @@ class CollegePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, College $college): bool
+    public function forceDelete(User $user, Department $department): bool
     {
         //
     }

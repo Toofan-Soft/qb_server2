@@ -69,7 +69,7 @@ class PaperExamController extends Controller
 
         $paperExam =  PaperExam::create([
             'id' => $realExam->id,
-            'Course_lecturer_name' => $request->lecturer_name ?? $employee->arabic_name,
+            'course_lecturer_name' => $request->lecturer_name ?? $employee->arabic_name,
         ]);
 
             foreach ($request->question_types as $question_type) {
@@ -357,7 +357,7 @@ class PaperExamController extends Controller
             'datetime', 'type as type_id', 'note as special_note'
         ]);
 
-        $paperExam =  PaperExam::where('id', $realExam->id)->first(['Course_lecturer_name as lecturer_name']);
+        $paperExam =  PaperExam::where('id', $realExam->id)->first(['course_lecturer_name as lecturer_name']);
         $realExam = $realExam->toArray();
         unset($realExam['id']);
         $realExam = $realExam + $paperExam->toArray();

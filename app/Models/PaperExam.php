@@ -15,7 +15,7 @@ class PaperExam extends Model
     public $incrementing = false; // This indicates that the model does not auto-increment its primary key.
     protected $fillable = [
         'id',
-        'Course_lecturer_name',
+        'course_lecturer_name',
     ];
 
     public function real_exam() : HasOne {

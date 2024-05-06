@@ -14,6 +14,7 @@ use App\Enums\LevelsCountEnum;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Support\Facades\Validator;
 
@@ -26,6 +27,9 @@ class DepartmentController extends Controller
         if( ValidateHelper::validateData($request, $this->rules($request))){
             return  ResponseHelper::clientError(401);
         }
+
+        Gate::authorize('create', Department::class);
+
         $college = College::findOrFail($request->college_id);
         $college->departments()->create([
             'arabic_name' => $request->arabic_name,
@@ -43,6 +47,8 @@ class DepartmentController extends Controller
             return  ResponseHelper::clientError(401);
         }
 
+        Gate::authorize('update', Department::class);
+
         $department = Department::findOrFail($request->id);
         $department->update([
             'arabic_name' => $request->arabic_name ?? $department->arabic_name,
@@ -57,6 +63,7 @@ class DepartmentController extends Controller
 
     public function deleteDepartment(Request $request)
     {
+        Gate::authorize('delete', Department::class);
         $department = Department::findOrFail($request->id);
        return DeleteHelper::deleteModel($department);
     }

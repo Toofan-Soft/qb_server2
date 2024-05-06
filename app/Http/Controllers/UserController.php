@@ -51,7 +51,7 @@ class UserController extends Controller
         ]);
 
         if ($validation->fails()) {
-            return ResponseHelper::clientError(401); 
+            return ResponseHelper::clientError(401);
           }
 
         if (auth()->attempt($input)) {
@@ -69,11 +69,8 @@ class UserController extends Controller
     {
         Auth::logout();
         if (Auth::check()) {
-            // User is still logged in
             return ResponseHelper::serverError();
-            // return ResponseHelper::serverError('User not logged out');
         } else {
-            // User is logged out
             return ResponseHelper::success();
         }
     }
