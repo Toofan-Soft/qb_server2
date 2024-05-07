@@ -31,8 +31,14 @@ class GuestController extends Controller
             'image_url' => ImageHelper::uploadImage($request->image) ,
         ]);
 
-         $response = UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password);
-         return ResponseHelper::successWithToken($response);
+        //  $response = UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password);
+        //  return ResponseHelper::successWithToken($response);
+
+
+        if(!UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password)) {
+            return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
+          }
+         return ResponseHelper::success();
 
         }
 

@@ -33,6 +33,7 @@ class UserHelper
             'password' => ($password) ?  bcrypt($password) : $generatedToken,
             'status' => UserStatusEnum::ACTIVATED->value,
             'owner_type' => $ownerTypeId,
+            'email_verified_at' =>($ownerTypeId === OwnerTypeEnum::GUEST->value) ? null: now(),
         ]);
 
         $owner = null;
@@ -60,12 +61,12 @@ class UserHelper
 
         $user->notify(new EmaiVerificationNotification($generatedToken));
 
-        if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
-            $token = $user->createToken('quesionbanklaravelapi')->accessToken;
-            return $token;
-        } else {
+        // if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
+        //     $token = $user->createToken('quesionbanklaravelapi')->accessToken;
+        //     return $token;
+        // } else {
             return true;
-        }
+        // }
     }
 
     public static function addUserRoles(User $user, $roles = [])

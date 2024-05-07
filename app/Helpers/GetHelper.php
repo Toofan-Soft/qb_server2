@@ -24,14 +24,14 @@ class GetHelper
 
     // public static function retrieveModelsWithEnum($model, $attributes = null , $conditionAttribute = [] , $enumAttributes =[] , $enumClasses =[]) {
         /**
-         * using: retrieve data from sent model 
+         * using: retrieve data from sent model
          * parameters: $
-         *      model : 
-         *      attributes : 
-         *      conditionAttribute : 
-         *      enumReplacements : 
-         *      columnReplacements : 
-         * return: 
+         *      model :
+         *      attributes :
+         *      conditionAttribute :
+         *      enumReplacements :
+         *      columnReplacements :
+         * return:
          */
     public static function retrieveModels($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
         $query = $model::query();
@@ -63,13 +63,6 @@ class GetHelper
             }
         }
 
-        if($enumReplacements){
-            $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
-        }
-
-        if($columnReplacements){
-            $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
-        }
         foreach ($rows as $row) {
             if (isset($row->logo_url)) {
                 $row->logo_url = asset($row->logo_url);
@@ -77,6 +70,15 @@ class GetHelper
                 $row->image_url = asset($row->image_url);
             }
         }
+
+        if($enumReplacements){
+            $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
+        }
+
+        if($columnReplacements){
+            $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
+        }
+
           return ResponseHelper::successWithData($rows);
     }
 

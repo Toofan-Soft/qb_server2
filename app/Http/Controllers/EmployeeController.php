@@ -43,22 +43,22 @@ class EmployeeController extends Controller
         ]);
 
         if ($request->email) {
-            if($employee->job_type === JobTypeEnum::EMPLOYEE->value){
+            if(intval($employee->job_type) === JobTypeEnum::EMPLOYEE->value){
                 $ownerTypeId = OwnerTypeEnum::EMPLOYEE->value;
-            }elseif($employee->job_type === JobTypeEnum::LECTURER->value){
+            }elseif(intval($employee->job_type) === JobTypeEnum::LECTURER->value){
                 $ownerTypeId = OwnerTypeEnum::LECTURER->value;
             }else{
                 $ownerTypeId = -1;
                 // $ownerTypeId = OwnerTypeEnum::EMPLOYEE->value;
             }
 
-        //    if(!UserHelper::addUser($request->email, $ownerTypeId, $employee->id)) {
-        //      return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
-        //    }
+           if(!UserHelper::addUser($request->email, $ownerTypeId, $employee->id)) {
+             return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
+           }
 
         //!!!!!!!!!!** this two lines only for test , then will delete them
-        $response = UserHelper::addUser($request->email, $ownerTypeId, $employee->id);
-        return ResponseHelper::successWithToken($response);
+        // $response = UserHelper::addUser($request->email, $ownerTypeId, $employee->id);
+        // return ResponseHelper::successWithToken($response);
         }
 
         return ResponseHelper::success();
@@ -67,20 +67,20 @@ class EmployeeController extends Controller
 
     public function modifyEmployee (Request $request)
     {
-        if(  ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError(401);
+        if(  $x = ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError1($x);
         }
         $employee = Employee::findOrFail($request->id);
 
        $employee->update([
-            'arabic_name' =>  $request->arabic_name?? $employee->arabic_name,
-            'english_name' =>  $request->english_name?? $employee->english_name,
+            'arabic_name' =>  $request->arabic_name ?? $employee->arabic_name,
+            'english_name' =>  $request->english_name ?? $employee->english_name,
             'phone' => $request->phone?? $employee->phone,
             'image_url' => ImageHelper::updateImage($request->image, $employee->image_url),
-            'job_type' => $request->job_type_id?? $employee->job_type,
-            'qualification' =>  $request->qualification_id?? $employee->qualification,
-            'specialization' =>  $request->specialization?? $employee->specialization,
-            'gender' =>  $request->gender_id?? $employee->gender,
+            'job_type' => $request->job_type_id ?? $employee->job_type,
+            'qualification' =>  $request->qualification_id ?? $employee->qualification,
+            'specialization' =>  $request->specialization ?? $employee->specialization,
+            'gender' =>  $request->gender_id ?? $employee->gender,
         ]);
 
         return ResponseHelper::success();
@@ -145,7 +145,7 @@ class EmployeeController extends Controller
             'gender_id' => ['required',new Enum (GenderEnum::class)], // Assuming GenderEnum holds valid values
            // 'user_id' => 'nullable|uuid|unique:users,id',
         ];
-        if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
+        if ($request->method() === 'PUT' || $request->method() === 'PATCH') {   
             $rules = array_filter($rules, function ($attribute) use ($request) {
                 // Ensure strict type comparison for security
                 return $request->has($attribute);

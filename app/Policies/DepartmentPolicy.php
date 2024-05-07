@@ -30,7 +30,7 @@ class DepartmentPolicy
      */
     public function create(User $user): bool
     {
-        return ((int)auth()->user()->user_roles->first()->{'role_id '} === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
+        return ((int)auth()->user()->user_roles->first()->role_id === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
     }
 
     /**
@@ -38,7 +38,7 @@ class DepartmentPolicy
      */
     public function update(User $user, Department $department): bool
     {
-        return ((int)auth()->user()->user_roles->first()->{'role_id '} === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
+        return ((int)auth()->user()->user_roles->first()->role_id === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
     }
 
     /**

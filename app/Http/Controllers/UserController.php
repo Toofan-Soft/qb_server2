@@ -32,14 +32,18 @@ class UserController extends Controller
 
     public function verifyAccount(Request $request)
     {
-        $otp2 = $this->otp->validate(auth()->user()->email, $request->code);
+        // $otp2 = $this->otp->validate($request->email, $request->code);
+        $otp2 = $this->otp->validate($request->code);
+
         if(!$otp2->status){
             return ResponseHelper::clientError(401);
         }
-        $user = User::where('email',$request->email)->first();
-        $user->update(['email_verified_at'=> now()] );
-        $success['success'] = true;
-        return ResponseHelper::success();
+        $user = User::where('email',$otp2->email)->first();
+        $user->update(['email_verified_at' => now()] );
+
+        $token =  $user->createToken('quesionbanklaravelapi')->accessToken;
+        return ResponseHelper::successWithToken($token);
+        // return ResponseHelper::success();
     }
 
     public function login(Request $request)
@@ -57,9 +61,10 @@ class UserController extends Controller
         if (auth()->attempt($input)) {
             $user = Auth::user();
 
-            $token =  $user->createToken('quesionbanklaravelapi')->accessToken;
-           return ResponseHelper::successWithToken($token);
-
+            if($user->email_verified_at !== null){
+                $token =  $user->createToken('quesionbanklaravelapi')->accessToken;
+                return ResponseHelper::successWithToken($token);
+            }
         } else {
             return ResponseHelper::clientError(401);
           }
@@ -124,7 +129,7 @@ class UserController extends Controller
         return ResponseHelper::success();
     }
 
-    // reset password by email
+    // reset password by email // this for make notify by send code to email , then user where make req to changePasswordAfterAccountReovery method
     public function requestAccountReovery(Request $request)
     {
         $validator = Validator::make($request->all(), ['email' => 'required|email']);
@@ -135,7 +140,6 @@ class UserController extends Controller
         $user = User::where('email',$input)->first();
         if($user){
             $user->notify(new ResetPasswordNotificationVerification());
-            $success['success'] = true;
             return ResponseHelper::success();
         }else {
             return ResponseHelper::clientError(401);
@@ -144,11 +148,11 @@ class UserController extends Controller
     }
     public function changePasswordAfterAccountReovery(Request $request)
     {
-        $otp2 = $this->otp->validate(auth()->user()->email, $request->code);
+        $otp2 = $this->otp->validate($request->code);
         if(! $otp2->status){
             return ResponseHelper::clientError(401);
         }
-        $user = User::where('email',$request->email)->first();
+        $user = User::where('email',$otp2->email)->first();
         $user->update(['password' => bcrypt($request->new_password)]);
         return ResponseHelper::success();
     }

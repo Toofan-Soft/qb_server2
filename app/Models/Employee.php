@@ -28,7 +28,7 @@ class Employee extends Model
 
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
-        'job_type' => JobTypeEnum::class,
+        // 'job_type' => JobTypeEnum::class,
         'qualification' => QualificationEnum::class,
         'gender' => GenderEnum::class,
     ];

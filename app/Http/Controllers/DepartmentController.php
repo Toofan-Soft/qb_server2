@@ -65,7 +65,7 @@ class DepartmentController extends Controller
     {
         Gate::authorize('delete', Department::class);
         $department = Department::findOrFail($request->id);
-       return DeleteHelper::deleteModel($department);
+        return DeleteHelper::deleteModel($department);
     }
 
     public function retrieveDepartments(Request $request)

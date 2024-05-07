@@ -62,7 +62,10 @@ use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
 
 
 Route::post('register', [GuestController::class, 'addGuest']);
+Route::post('verify', [UserController::class, 'verifyAccount']);
 Route::post('login', [UserController::class, 'login']);
+Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
+Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
 // Route::post('forget_password',[ForgetPasswordController::class,'forget_password']);
 // Route::post('password_reset',[ResetPasswordController::class,'password_reset']);
 // Route::get('logout',[UserController::class,'logout']);
@@ -293,12 +296,12 @@ Route::middleware('auth:api')->group(function () {
 
     //user
     Route::prefix('user/')->group(function () {
-        Route::post('verify', [UserController::class, 'verifyAccount']);
-        Route::post('login', [UserController::class, 'login']);
+        // Route::post('verify', [UserController::class, 'verifyAccount']);
+        // Route::post('login', [UserController::class, 'login']);
         Route::post('logout', [UserController::class, 'logou']);
         Route::put('change-password', [UserController::class, 'changePassword']);
-        Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
-        Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+        // Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
+        // Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
         Route::get('retrieve-profile', [UserController::class, 'retrieveProfile']);
     });
 
@@ -382,9 +385,10 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-question-list', [PracticeExamController::class, 'retrievePracticeExams']);
     });
 
+    /// for test just
     Route::get('test', function () {
-        return ((int)auth()->user()->user_roles->first()->{'role_id '} === UserRoleEnum::GUEST->value) ? "hello world" : null;
-
+       return auth()->user();
+        return ((int)auth()->user()->user_roles->first()->role_id === UserRoleEnum::LECTURER->value) ? "hello world" : "null";
 
        });
 }); ////

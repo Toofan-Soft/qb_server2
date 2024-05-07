@@ -30,7 +30,7 @@ class CollegePolicy
      */
     public function create(User $user): bool
     {
-        return ((int)auth()->user()->user_roles->first()->{'role_id '} === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
+        return ((int)auth()->user()->user_roles->first()->role_id === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
     }
 
     /**
@@ -38,7 +38,7 @@ class CollegePolicy
      */
     public function update(User $user, College $college): bool
     {
-        return ((int)auth()->user()->user_roles->first()->{'role_id '} === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
+        return ((int)auth()->user()->user_roles->first()->role_id === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
     }
 
     /**
@@ -46,7 +46,7 @@ class CollegePolicy
      */
     public function delete(User $user, College $college): bool
     {
-        return ((int)auth()->user()->user_roles->first()->{'role_id '} === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
+        return ((int)auth()->user()->user_roles->first()->role_id === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
     }
 
     /**

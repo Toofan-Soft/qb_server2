@@ -20,7 +20,7 @@ class UserRole extends Model
     ];
 
     protected $casts = [
-        'role_id' => RoleEnum::class,
+        // 'role_id' => RoleEnum::class,
     ];
 
     public function user() : BelongsTo {
