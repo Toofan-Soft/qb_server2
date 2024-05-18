@@ -2,11 +2,14 @@
 
 namespace App\Helpers;
 
+use stdClass;
 use Traversable;
 use App\Models\Form;
 use App\Models\Student;
+use App\Models\Question;
 use App\Models\RealExam;
 use App\Enums\LevelsEnum;
+use App\Traits\EnumTraits;
 use App\Enums\ExamTypeEnum;
 use App\Enums\LanguageEnum;
 use App\Enums\SemesterEnum;
@@ -17,6 +20,7 @@ use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\QuestionHelper;
+use App\Enums\FormNameMethodEnum;
 use App\Helpers\EnumReplacement1;
 use App\Models\TrueFalseQuestion;
 use Illuminate\Http\UploadedFile;
@@ -27,11 +31,8 @@ use App\Models\RealExamQuestionType;
 use Illuminate\Support\Facades\Storage;
 use App\Models\QuestionChoiceCombination;
 use App\Enums\FormConfigurationMethodEnum;
-use App\Enums\FormNameMethodEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
-use App\Models\Question;
 use Illuminate\Database\Eloquent\Collection;
-use stdClass;
 
 class ExamHelper
 {
@@ -80,21 +81,21 @@ class ExamHelper
             if (is_array($realExam)) {
                 if (isset($realExam['id'])) {
                     $temp = RealExam::findOrFail($realExam['id']);
-                    $realExamQuestionTypes = $temp->real_exam_question_types()->get(['question_count', 'question_score']);
+                    $realExamQuestionTypes = $temp->real_exam_question_types()->get(['questions_count', 'question_score']);
                     $score = 0;
                     foreach ($realExamQuestionTypes as $realExamQuestionType) {
-                        $score += $realExamQuestionType->question_count * $realExamQuestionType->question_score;
+                        $score += $realExamQuestionType->questions_count * $realExamQuestionType->question_score;
                     }
                     $realExam['score'] = $score;
                     $processedRealExams[] = $realExam;
                 }
             } else {
                 $temp = RealExam::findOrFail($realExam->id);
-                $realExamQuestionTypes = $temp->real_exam_question_types()->get(['question_count', 'question_score']);
-                // $realExamQuestionTypes = $realExam->real_exam_question_types()->get(['question_count', 'question_score']);
+                $realExamQuestionTypes = $temp->real_exam_question_types()->get(['questions_count', 'question_score']);
+                // $realExamQuestionTypes = $realExam->real_exam_question_types()->get(['questions_count', 'question_score']);
                 $score = 0;
                 foreach ($realExamQuestionTypes as $realExamQuestionType) {
-                    $score += $realExamQuestionType->question_count * $realExamQuestionType->question_score;
+                    $score += $realExamQuestionType->questions_count * $realExamQuestionType->question_score;
                 }
                 $realExam->score = $score;
                 $processedRealExams[] = $realExam;
@@ -108,11 +109,11 @@ class ExamHelper
     // {
     //     foreach ($realExams as $realExam ) {
     //         $temp = RealExam::findOrFail($realExam['id']);
-    //         $realExamQuestionTypes = $temp->real_exam_question_types()->get(['question_count', 'question_score']);
+    //         $realExamQuestionTypes = $temp->real_exam_question_types()->get(['questions_count', 'question_score']);
 
     //         $score = 0;
     //         foreach ($realExamQuestionTypes as $realExamQuestionType) {
-    //             $score += $realExamQuestionType->question_count *  $realExamQuestionType->question_score;
+    //             $score += $realExamQuestionType->questions_count *  $realExamQuestionType->question_score;
     //         }
 
     //         $realExam['score'] = $score;
@@ -126,11 +127,11 @@ class ExamHelper
     // public static function getRealExamScore1($realExam) // recieve single array of data , not object has multiple
     // {
     //         $temp = RealExam::findOrFail($realExam['id']);
-    //         $realExamQuestionTypes = $temp->real_exam_question_types()->get(['question_count', 'question_score']);
+    //         $realExamQuestionTypes = $temp->real_exam_question_types()->get(['questions_count', 'question_score']);
 
     //         $score = 0;
     //         foreach ($realExamQuestionTypes as $realExamQuestionType) {
-    //             $score += $realExamQuestionType->question_count *  $realExamQuestionType->question_score;
+    //             $score += $realExamQuestionType->questions_count *  $realExamQuestionType->question_score;
     //         }
     //         $realExam['score'] = $score;
 
@@ -325,7 +326,8 @@ class ExamHelper
                 ->get();
 
             $questions = QuestionHelper::retrieveQuestionsAnswer($questions, $type->type_name);
-            $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
+            // $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
+            $formQuestions[EnumTraits::getNameByNumber($type->type_name, QuestionTypeEnum::class)] = $questions;
         }
         return $formQuestions;
     }

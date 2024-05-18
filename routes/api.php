@@ -1,10 +1,10 @@
 <?php
 
+use App\Models\User;
 use App\Models\Topic;
 use App\Enums\Example;
 use App\Enums\RoleEnum;
 use App\Traits\EnumTraits;
-use App\Enums\ExamTypeEnum;
 
 
 /*
@@ -18,12 +18,13 @@ use App\Enums\ExamTypeEnum;
 |
 */
 
-use App\Enums\SemesterEnum;
+use App\Enums\ExamTypeEnum;
 
+use App\Enums\SemesterEnum;
 use App\Enums\UserRoleEnum;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 // use App\Http\Controllers\Auth\UserController;
+use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EnumsController;
@@ -61,9 +62,9 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
 
 
-Route::post('register', [GuestController::class, 'addGuest']);
-Route::post('verify', [UserController::class, 'verifyAccount']);
-Route::post('login', [UserController::class, 'login']);
+Route::post('user/register', [GuestController::class, 'addGuest']);
+Route::post('user/verify', [UserController::class, 'verifyAccount']);
+Route::post('user/login', [UserController::class, 'login']);
 Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
 Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
 // Route::post('forget_password',[ForgetPasswordController::class,'forget_password']);
@@ -88,7 +89,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('practice-exam/add', [PracticeExamController::class, 'addPracticeExam']);
     Route::get('practice-exam/retrieve-list', [PracticeExamController::class, 'retrievePractiseExams']);
 
-    // });///
+     });///
 
     //univercity
     Route::prefix('university/')->group(function () {
@@ -391,7 +392,8 @@ Route::middleware('auth:api')->group(function () {
         return ((int)auth()->user()->user_roles->first()->role_id === UserRoleEnum::LECTURER->value) ? "hello world" : "null";
 
        });
-}); ////
+
+// }); ////
 
 //favorite question
 Route::prefix('favorite-question/')->group(function () {
@@ -475,6 +477,8 @@ Route::get('getenum', function () {
 
 Route::get('execute-python', function () {
 
+    // return User::all();
+
     $arrayData = [
         'id' => 1,
         'name' => 'nasser',
@@ -490,11 +494,14 @@ Route::get('execute-python', function () {
     $process = new Process([
         'C:\Users\Nasser\AppData\Local\Programs\Python\Python39\python',
         base_path() . '\app\Scripts\example.py',
+        $jsonData
     ]);
+
     $process->setEnv([
         'SYSTEMROOT' => getenv('SYSTEMROOT'),
         'PATH' => getenv('PATH')
     ]);
+
     $process->run();
 
     if (!$process->isSuccessful()) {

@@ -6,6 +6,7 @@ use stdClass;
 use Traversable;
 use App\Models\Course;
 use App\Enums\GenderEnum;
+use App\Traits\EnumTraits;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -65,7 +66,8 @@ public static function enumsConvertIdToName($data, $enumReplacements)
         foreach ($enumReplacements as $enumReplacement) {
             // if (isset($item[$enumReplacement->columnName]) && is_numeric($item[$enumReplacement->columnName])) {
                 // if (property_exists($item, $enumReplacement->columnName) && is_numeric($item->{$enumReplacement->columnName})) {
-                $item->{$enumReplacement->columnName} = $enumReplacement->enumClass::getNameByNumber($item->{$enumReplacement->columnName});
+                // $item->{$enumReplacement->columnName} = $enumReplacement->enumClass::getNameByNumber($item->{$enumReplacement->columnName});
+                $item->{$enumReplacement->columnName} =  EnumTraits::getNameByNumber($item->{$enumReplacement->columnName}, $enumReplacement->enumClass);
             // }
         }
     }

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Pusher\Pusher;
 use App\Models\User;
 use App\Models\College;
+use App\Events\FireEvent;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Helpers\ImageHelper;
@@ -46,6 +48,7 @@ class CollegeController extends Controller
 
     public function modifyCollege (Request $request)
     {
+
         if(ValidateHelper::validateData($request, $this->rules($request))){
             return  ResponseHelper::clientError(401);
         }
@@ -63,7 +66,10 @@ class CollegeController extends Controller
             'telegram' => $request->telegram ?? $college->telegram,
             'logo_url' => ImageHelper::updateImage($request->logo, $college->logo_url)
         ]);
-       return ResponseHelper::success();
+
+        // event(new FireEvent($college));
+
+      return ResponseHelper::success();
     }
 
 

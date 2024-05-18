@@ -28,8 +28,8 @@ class EmployeeController extends Controller
     public function addEmployee(Request $request)
     {
 
-        if($x= ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError1($x);
+        if(ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError();
         }
        $employee =  Employee::create([
             'arabic_name' =>  $request->arabic_name,
@@ -145,7 +145,7 @@ class EmployeeController extends Controller
             'gender_id' => ['required',new Enum (GenderEnum::class)], // Assuming GenderEnum holds valid values
            // 'user_id' => 'nullable|uuid|unique:users,id',
         ];
-        if ($request->method() === 'PUT' || $request->method() === 'PATCH') {   
+        if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {
                 // Ensure strict type comparison for security
                 return $request->has($attribute);

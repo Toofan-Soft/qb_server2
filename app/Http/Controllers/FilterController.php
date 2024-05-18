@@ -195,15 +195,35 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLevelCourses(Request $request)
     {
+        // if ($request->department_id && $request->level_id) {
+        //     $departmentCourses =  DB::table('departments')
+        //         ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
+        //         ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+        //         ->select('department_courses.id', 'courses.arabic_name as name')
+        //         ->where('departments.id', '=', $request->department_id)
+        //         ->where('department_courses.level', '=', $request->level_id)
+        //         ->get();
+        //     return ResponseHelper::successWithData($departmentCourses);
+
         if ($request->department_id && $request->level_id) {
-            $departmentCourses =  DB::table('departments')
-                ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
-                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                ->select('department_courses.id', 'courses.arabic_name as name')
-                ->where('departments.id', '=', $request->department_id)
-                ->where('department_courses.level', '=', $request->level_id)
-                ->get();
-            return ResponseHelper::successWithData($departmentCourses);
+            // Fetch department with related department courses and courses
+            $departmentCourses = Department::with(['department_courses.course'])
+                ->where('id', $request->department_id)
+                ->whereHas('department_courses', function($query) use ($request) {
+                    $query->where('level', $request->level_id);
+                })
+                ->first();
+
+            // Extract the required information
+            $data = $departmentCourses->department_courses->map(function($departmentCourse) {
+                return [
+                    'id' => $departmentCourse->id,
+                    'name' => $departmentCourse->course->arabic_name,
+                ];
+            });
+
+            return ResponseHelper::successWithData($data);
+
         } else {
             return ResponseHelper::clientError(401);
             // return response()->json(['error_message' => 'department_id or level_id is empty'], 401);

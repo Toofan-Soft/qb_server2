@@ -65,7 +65,7 @@ class OnlinExamHelper
                 ->where('student_online_exams.student_id', '=', $student->id)
                 ->where('student_online_exams.status', '=', StudentOnlineExamStatusEnum::COMPLETE->value)
             ->get();
-            $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams ,[new EnumReplacement1('course_part_name', CoursePartsEnum::class)] );
+            $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams ,[new EnumReplacement('course_part_name', CoursePartsEnum::class)] );
             $onlineExams = self::retrieveStudentOnlineExamsResult($onlineExams);
         return $onlineExams;
     }
@@ -86,7 +86,7 @@ class OnlinExamHelper
                 ->where('student_online_exams.student_id', '=', $student->id)
                 ->where('student_online_exams.status','!=', StudentOnlineExamStatusEnum::COMPLETE->value)
             ->get();
-        $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams ,[new EnumReplacement1('course_part_name', CoursePartsEnum::class)] );
+        $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams ,[new EnumReplacement('course_part_name', CoursePartsEnum::class)] );
 
         return $onlineExams;
     }

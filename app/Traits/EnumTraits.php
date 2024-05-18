@@ -42,7 +42,10 @@ trait EnumTraits
         foreach ($cases as $case) {
             $number = $case->getValues()[0];
             $name = $language === 'ar' ? $case->getArabicName() : $case->getEnglishName();
-            $result[] = [$number, $name];
+            array_push(  $result, [
+                'id'=> $number,
+                'name'=> $name,
+            ]);
         }
         return $result;
     }

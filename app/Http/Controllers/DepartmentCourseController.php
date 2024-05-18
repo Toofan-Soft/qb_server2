@@ -9,6 +9,7 @@ use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Models\CoursePart;
 use App\Models\Department;
+use App\Traits\EnumTraits;
 use App\Enums\SemesterEnum;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
@@ -169,7 +170,8 @@ class DepartmentCourseController extends Controller
         foreach ($semesters as $semester) {
             $departmentCourses = [
                 'id' => $semester['semester'],
-                'name' => SemesterEnum::getNameByNumber($semester->semester)
+                // 'name' => SemesterEnum::getNameByNumber($semester->semester)
+                'name' =>  EnumTraits::getNameByNumber($semester->semester, SemesterEnum::class)
             ];
             $semestersCourses = DepartmentCourse::where('department_id', $request->department_id)
                 ->where('level', $request->level_id)

@@ -96,13 +96,13 @@ return $onlineExams;
         unset($realExam['id']);
 
         $realExam =
-        $realExam  +
-        $lecturer->toArray() +
-        $coursePart->toArray() +
-        $departmentCourse  +
-        $department +
-        $college->toArray() +
-        $course->toArray();
+                    $realExam  +
+                    $lecturer->toArray() +
+                    $coursePart->toArray() +
+                    $departmentCourse  +
+                    $department +
+                    $college->toArray() +
+                    $course->toArray();
 
         return ResponseHelper::successWithData($realExam);
     }
@@ -228,11 +228,11 @@ return $onlineExams;
     }
     }
 
-    // not complete 
+    // not complete
     private function getStudentAnsweredQuestionsCount($formId, $studentId)
     {
-        
-        $formId = 1; // يتم عمل دالة لمعرفة رقم النموذج حق الطالب، او جعل هذه الدالة تستقبل رقم النموذج 
+
+        $formId = 1; // يتم عمل دالة لمعرفة رقم النموذج حق الطالب، او جعل هذه الدالة تستقبل رقم النموذج
         $questionsCount = StudentAnswer::where('form_id', '=', $formId)
         ->where('student_id', '=', $studentId)->count();
 

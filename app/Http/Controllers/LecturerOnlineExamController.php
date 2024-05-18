@@ -90,7 +90,7 @@ class LecturerOnlineExamController extends Controller
             foreach ($request->question_types as $question_type) {
                 $realExam->real_exam_question_types()->create([
                     'question_type' => $question_type['type_id'],
-                    'question_count' => $question_type['questions_count'],
+                    'questions_count' => $question_type['questions_count'],
                     'question_score' => $question_type['question_score'],
                 ]);
             }
@@ -271,7 +271,7 @@ class LecturerOnlineExamController extends Controller
         $department = $departmentCourse->department()->first(['arabic_name as department_name','college_id']);
         $college = $department->college()->first(['arabic_name as college_name']);
         $course = $departmentCourse->course()->first(['arabic_name as course_name']);
-        $questionTypes = $realExam->real_exam_question_types()->get(['question_type as type_name', 'question_count', 'question_score']);
+        $questionTypes = $realExam->real_exam_question_types()->get(['question_type as type_name', 'questions_count', 'question_score']);
         $questionTypes = ProcessDataHelper::enumsConvertIdToName($questionTypes, [
             new EnumReplacement('type_name', QuestionTypeEnum::class),
         ]);

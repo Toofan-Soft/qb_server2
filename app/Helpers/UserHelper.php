@@ -7,12 +7,13 @@ use App\Models\Guest;
 use App\Enums\RoleEnum;
 use App\Models\Student;
 use App\Models\Employee;
+use App\Models\UserRole;
+use App\Traits\EnumTraits;
 use Illuminate\Support\Str;
 use App\Enums\OwnerTypeEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Enums\UserStatusEnum;
-use App\Models\UserRole;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -90,7 +91,8 @@ class UserHelper
             $userRoles = [
                 [
                     'id' => RoleEnum::GUEST->value,
-                    'name' =>RoleEnum::getNameByNumber(RoleEnum::GUEST->value),
+                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::GUEST->value),
+                    'name' =>EnumTraits::getNameByNumber(RoleEnum::GUEST->value, RoleEnum::class),
                     'is_mandatory' => true
                 ]
             ];
@@ -98,7 +100,8 @@ class UserHelper
             $userRoles = [
                 [
                     'id' => RoleEnum::STUDENT->value,
-                    'name' =>RoleEnum::getNameByNumber(RoleEnum::STUDENT->value),
+                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::STUDENT->value),
+                    'name' =>EnumTraits::getNameByNumber(RoleEnum::STUDENT->value, RoleEnum::class),
                     'is_mandatory' => true
                 ]
             ];
@@ -106,17 +109,20 @@ class UserHelper
             $userRoles = [
                 [
                     'id' => RoleEnum::LECTURER->value,
-                    'name' =>RoleEnum::getNameByNumber(RoleEnum::LECTURER->value),
+                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::LECTURER->value),
+                    'name' =>EnumTraits::getNameByNumber(RoleEnum::LECTURER->value, RoleEnum::class),
                     'is_mandatory' => true
                 ],
                 [
                     'id' => RoleEnum::QUESTION_ENTRY->value,
-                    'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_ENTRY->value),
+                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_ENTRY->value),
+                    'name' =>EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
                     'is_mandatory' => false
                 ],
                 [
                     'id' => RoleEnum::PROCTOR->value,
-                    'name' =>RoleEnum::getNameByNumber(RoleEnum::PROCTOR->value),
+                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::PROCTOR->value),
+                    'name' =>EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
                     'is_mandatory' => false
                 ]
             ];
@@ -124,27 +130,32 @@ class UserHelper
             $userRoles = [
                 [
                     'id' => RoleEnum::QUESTION_REVIEWER->value,
-                    'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value),
+                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value),
+                    'name' =>EnumTraits::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value, RoleEnum::class),
                     'is_mandatory' => false
                 ],
                 [
                     'id' => RoleEnum::QUESTION_ENTRY->value,
-                    'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_ENTRY->value),
+                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_ENTRY->value),
+                    'name' =>EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
                     'is_mandatory' => false
                 ],
                 [
                     'id' => RoleEnum::PROCTOR->value,
-                    'name' =>RoleEnum::getNameByNumber(RoleEnum::PROCTOR->value),
+                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::PROCTOR->value),
+                    'name' =>EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
                     'is_mandatory' => false
                 ],
                 [
                     'id' => RoleEnum::SYSTEM_ADMINISTRATOR->value,
-                    'name' =>RoleEnum::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value),
+                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value),
+                    'name' =>EnumTraits::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value, RoleEnum::class),
                     'is_mandatory' => false
                 ],
                 [
                     'id' => RoleEnum::DATA_ENTRY->value,
-                    'name' =>RoleEnum::getNameByNumber(RoleEnum::DATA_ENTRY->value),
+                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::DATA_ENTRY->value),
+                    'name' =>EnumTraits::getNameByNumber(RoleEnum::DATA_ENTRY->value, RoleEnum::class),
                     'is_mandatory' => false
                 ]
             ];

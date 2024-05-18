@@ -10,6 +10,7 @@ use App\Models\RealExam;
 use App\Enums\LevelsEnum;
 use App\Models\Department;
 use App\Models\OnlineExam;
+use App\Traits\EnumTraits;
 use App\Enums\ExamTypeEnum;
 use App\Enums\LanguageEnum;
 use App\Enums\SemesterEnum;
@@ -143,7 +144,8 @@ class StudentOnlinExamController extends Controller
                 ->get();
 
             $questions = QuestionHelper::retrieveStudentExamQuestions($questions, $type->type_name);
-            $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
+            // $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
+            $formQuestions[ EnumTraits::getNameByNumber($type->type_name, QuestionTypeEnum::class)] = $questions;
         }
         return ResponseHelper::successWithData($formQuestions);
 
@@ -201,7 +203,7 @@ class StudentOnlinExamController extends Controller
         return $examForms[$selectedStudentForm];
     }
 
-    // need to test 
+    // need to test
     private function retrieveCompleteStudentOnlineExams($studentId)
     {
         $onlineExams =  DB::table('student_online_exams')
@@ -252,7 +254,7 @@ class StudentOnlinExamController extends Controller
             $question = Question::findOrFail($questionAnswer->questoin_id);
             if(intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value){
                 if(ExamHelper::checkTrueFalseQuestionAnswer($question, $questionAnswer->answer)){
-                    $StudentScore += $examScores[QuestionTypeEnum::TRUE_FALSE->value];   
+                    $StudentScore += $examScores[QuestionTypeEnum::TRUE_FALSE->value];
                 }
 
             }else{
