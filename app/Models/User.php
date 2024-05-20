@@ -34,8 +34,8 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'status' =>UserStatusEnum::class,
-        'owner_type' => OwnerTypeEnum::class,
+        // 'status' =>UserStatusEnum::class,
+        // 'owner_type' => OwnerTypeEnum::class,
         'password' => 'hashed',
         'email_verified_at' => 'datetime',
     ];

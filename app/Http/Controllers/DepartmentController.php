@@ -79,7 +79,7 @@ class DepartmentController extends Controller
     public function retrieveBasicDepartmentsInfo(Request $request)
     {
         $attributes = ['id', 'arabic_name as name', 'logo_url'];
-        $conditionAttribute = ['college_id', $request->college_id];
+        $conditionAttribute = ['college_id' => $request->college_id];
         return GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
     }
 
@@ -87,7 +87,7 @@ class DepartmentController extends Controller
     public function retrieveDepartment(Request $request)
     {
         $attributes = ['arabic_name', 'english_name', 'levels_count', 'logo_url', 'description'];
-        $conditionAttribute = ['id', $request->id];
+        $conditionAttribute = ['id' => $request->id];
         return GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
     }
 

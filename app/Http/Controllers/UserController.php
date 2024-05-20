@@ -79,19 +79,20 @@ class UserController extends Controller
             return ResponseHelper::success();
         }
     }
-    public function retrieveProfile()
+    public function retrieveProfile(Request $request)
     {
         $user = auth()->user();
 
+    
         $owner = null;
         $enumReplacements = [];
 
-        if($user->owner_type === OwnerTypeEnum::GUEST->value){
+        if(intval($user->owner_type) === OwnerTypeEnum::GUEST->value){
             $attributes = ['name', 'phone', 'gender as gender_name','image_url'];
             $owner = Guest::where('user_id', $user->id)->first($attributes);
             array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
 
-        }elseif($user->owner_type === OwnerTypeEnum::STUDENT->value){
+        }elseif(intval($user->owner_type) === OwnerTypeEnum::STUDENT->value){
             $attributes = ['arabic_name', 'english_name' , 'phone', 'birthdate', 'gender as gender_name','image_url'];
             $owner = Student::where('user_id', $user->id)->first($attributes);
             array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));

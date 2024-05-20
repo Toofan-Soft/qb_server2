@@ -30,9 +30,9 @@ class PracticeExam extends Model
 
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
-        'language' =>LanguageEnum::class,
-        'difficulty_level' =>ExamDifficultyLevelEnum::class,
-        'conduct_method' =>ExamConductMethodEnum::class,
+        // 'language' =>LanguageEnum::class,
+        // 'difficulty_level' =>ExamDifficultyLevelEnum::class,
+        // 'conduct_method' =>ExamConductMethodEnum::class,
         // 'status' =>ExamStatusEnum::class,
     ];
 

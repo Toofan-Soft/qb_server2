@@ -20,7 +20,7 @@ class CourseStudent extends Model
         'status',
     ];
     protected $casts = [
-        'status' => CourseStudentStatusEnum::class,
+        // 'status' => CourseStudentStatusEnum::class,
 
     ];
 

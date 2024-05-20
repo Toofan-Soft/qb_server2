@@ -66,6 +66,7 @@ class CoursePartController extends Controller
         ];
           return GetHelper::retrieveModels(CoursePart::class, $attributes, $conditionAttribute, $enumReplacements);
     }
+    
 
     public function retrieveEditableCoursePart(Request $request)
     {

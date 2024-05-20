@@ -22,7 +22,7 @@ class RealExamQuestionType extends Model
 
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
-        'question_type' => QuestionTypeEnum::class,
+        // 'question_type' => QuestionTypeEnum::class,
     ];
 
     public function real_exam() : BelongsTo {

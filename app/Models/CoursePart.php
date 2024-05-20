@@ -13,7 +13,7 @@ class CoursePart extends Model
 {
     use HasFactory;
     public $timestamps = false;
-    
+
     protected $fillable = [
         'course_id',
         'description',
@@ -23,8 +23,8 @@ class CoursePart extends Model
 
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
-        'part_id' => CoursePartsEnum::class,
-        'status' => CourseStatusEnum::class,
+        // 'part_id' => CoursePartsEnum::class,
+        // 'status' => CourseStatusEnum::class,
     ];
 
     public function course() : BelongsTo {

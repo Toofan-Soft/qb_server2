@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Choice extends Model
 {
     use HasFactory;
-    public $timestamps = false;  
+    public $timestamps = false;
     protected $fillable = [
         'question_id',
         'content',
@@ -20,7 +20,7 @@ class Choice extends Model
 
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
-        'status' =>ChoiceStatusEnum::class  ,
+        // 'status' =>ChoiceStatusEnum::class  ,
 
     ];
     public function question() : BelongsTo {

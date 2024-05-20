@@ -27,7 +27,7 @@ class OnlineExam extends Model
 
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
-        'conduct_method' => ExamConductMethodEnum::class,
+        // 'conduct_method' => ExamConductMethodEnum::class,
         'exam_datetime_notification_datetime' => 'datetime',
         'result_notification_datetime' => 'datetime',
         // 'status' => ExamStatusEnum::class,

@@ -25,7 +25,7 @@ class Student extends Model
     ];
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
-        'gender' => GenderEnum::class,
+        // 'gender' => GenderEnum::class,
         'birthdate' => 'datetime',
     ];
 

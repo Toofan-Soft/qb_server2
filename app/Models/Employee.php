@@ -29,8 +29,8 @@ class Employee extends Model
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
         // 'job_type' => JobTypeEnum::class,
-        'qualification' => QualificationEnum::class,
-        'gender' => GenderEnum::class,
+        // 'qualification' => QualificationEnum::class,
+        // 'gender' => GenderEnum::class,
     ];
 
     public function user() : BelongsTo {

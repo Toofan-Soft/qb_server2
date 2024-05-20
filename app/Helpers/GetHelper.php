@@ -33,6 +33,7 @@ class GetHelper
          *      columnReplacements :
          * return:
          */
+
     public static function retrieveModels($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
         $query = $model::query();
         $rows = null;
@@ -79,7 +80,10 @@ class GetHelper
             $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
         }
 
-          return ResponseHelper::successWithData($rows);
+        if (count($rows) === 1) {
+            return ResponseHelper::successWithData($rows->first());
+          }
+         return ResponseHelper::successWithData($rows);
     }
 
 }

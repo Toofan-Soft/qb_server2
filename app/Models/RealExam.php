@@ -36,11 +36,11 @@ class RealExam extends Model
 
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
-        'language' => LanguageEnum::class,
-        'difficulty_level' => ExamDifficultyLevelEnum::class,
-        'form_configuration_method' => FormConfigurationMethodEnum::class,
-        'form_name_method' => FormNameMethodEnum::class,
-        'type' => RealExamTypeEnum::class,
+        // 'language' => LanguageEnum::class,
+        // 'difficulty_level' => ExamDifficultyLevelEnum::class,
+        // 'form_configuration_method' => FormConfigurationMethodEnum::class,
+        // 'form_name_method' => FormNameMethodEnum::class,
+        // 'type' => RealExamTypeEnum::class,
         // 'exam_type' => ExamTypeEnum::class,
         'exam_date' => 'datetime',
     ];

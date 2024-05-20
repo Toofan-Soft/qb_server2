@@ -24,7 +24,7 @@ class Chapter extends Model
 
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
-        'status' => ChapterStatusEnum::class,
+        // 'status' => ChapterStatusEnum::class,
     ];
 
     public function course_part() : BelongsTo {

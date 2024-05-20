@@ -89,6 +89,8 @@ Route::middleware('auth:api')->group(function () {
     Route::post('practice-exam/add', [PracticeExamController::class, 'addPracticeExam']);
     Route::get('practice-exam/retrieve-list', [PracticeExamController::class, 'retrievePractiseExams']);
 
+    // user
+    Route::get('retrieve-profile', [UserController::class, 'retrieveProfile']);
      });///
 
     //univercity
@@ -114,7 +116,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('add', [DepartmentController::class, 'addDepartment']);
         Route::put('modify', [DepartmentController::class, 'modifyDepartment']);
         Route::delete('delete', [DepartmentController::class, 'deleteDepartment']);
-        Route::get('retrieve', [DepartmentController::class, 'retrieveDepartment']);
         Route::get('retrieve', [DepartmentController::class, 'retrieveDepartment']); //http://127.0.0.1:8000/api/colleges/1
         Route::get('retrieve-list', [DepartmentController::class, 'retrieveDepartments']);
         Route::get('retrieve-basic-info-list', [DepartmentController::class, 'retrieveBasicDepartmentsInfo']);
@@ -136,7 +137,6 @@ Route::middleware('auth:api')->group(function () {
         Route::post('add', [CoursePartController::class, 'addCoursePart']);
         Route::put('modify', [CoursePartController::class, 'modifyCoursePart']);
         Route::delete('delete', [CoursePartController::class, 'deleteCoursePart']);
-        Route::get('retrieve-editable', [CoursePartController::class, 'retrieveEditableCoursePart']);
         Route::get('retrieve-editable', [CoursePartController::class, 'retrieveEditableCoursePart']); //http://127.0.0.1:8000/api/colleges/1
         Route::get('retrieve-list', [CoursePartController::class, 'retrieveCourseParts']);
     });
@@ -475,9 +475,11 @@ Route::get('getenum', function () {
     return response()->json(['names' => $enumArray]);
 });
 
-Route::get('execute-python', function () {
 
-    // return User::all();
+Route::get('execute-python', function () {
+    // $command = 'python ' . base_path() . '\app\Scripts\example.py '  ;
+    // $output = shell_exec($command);
+    // return $output;
 
     $arrayData = [
         'id' => 1,
@@ -486,14 +488,11 @@ Route::get('execute-python', function () {
     ];
 
     $jsonData = json_encode($arrayData);
-
-    // $command = 'python ' . base_path() . '\app\Scripts\example.py '  ;
-    // $output = shell_exec($command);
-    // return $output;
-
+    $methodName = 'process_data';
     $process = new Process([
-        'C:\Users\Nasser\AppData\Local\Programs\Python\Python39\python',
+        'C:\Users\Nasser\AppData\Local\Programs\Python\Python39\python.exe',
         base_path() . '\app\Scripts\example.py',
+        $methodName,
         $jsonData
     ]);
 
