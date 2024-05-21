@@ -8,15 +8,14 @@ global best_questions
 
 
 class Question:
-    # def __init__(self, question_id, difficulty_level, selection_times, last_selection, answer_time, topic_id, type_id):
-    def __init__(self, question_id, difficulty_level, selection_times, last_selection, answer_time, topic_id):
+    def __init__(self, question_id, difficulty_level, selection_times, last_selection, answer_time, topic_id, type_id):
         self.id = question_id
         self.difficulty_level = difficulty_level
         self.selection_times = selection_times
         self.last_selection = last_selection
         self.answer_time = answer_time
         self.topic_id = topic_id
-        # self.type_id = type_id
+        self.type_id = type_id
 
     def to_gene(self):
         traits: List[Trait] = [Trait(Code.DIFFICULTY_LEVEL, self.difficulty_level),
@@ -47,6 +46,8 @@ class Dataset:
     def build(self):
         self.topics_count = len({question.topic_id for question in self.questions})
         self.__build_st_utilities()
+        self.__build_ls_utilities()
+        self.__build_topics_utilities()
 
     def __build_st_utilities(self):
         levels = set(question.selection_times for question in self.questions)
@@ -62,7 +63,7 @@ class Dataset:
         for i, level in enumerate(levels):
             self.ls_levels.append(Level((i + 1), level))
 
-        self.st_max = max(level.value for level in self.ls_levels)
+        self.ls_max = max(level.value for level in self.ls_levels)
 
     def __build_topics_utilities(self):
         self.topics = list(set(question.topic_id for question in self.questions))
@@ -80,7 +81,7 @@ dataset = Dataset([])
 
 
 def get_best_questions(type_id):
-    return [question for question in best_questions if question.type_id <= type_id]
+    return [question for question in dataset.questions if question.type_id == type_id]
 
 
 def st_prob_of(value):
@@ -106,4 +107,4 @@ def topics():
 
 
 def topics_count():
-    return dataset.topics
+    return len(dataset.topics)

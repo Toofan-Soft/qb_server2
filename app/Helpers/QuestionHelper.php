@@ -20,14 +20,14 @@ class QuestionHelper
 {
     /**
      * using: generate question choices combination by call algorithm api, and store output of algorithm in database
-     * parameters: 
+     * parameters:
      *      question : object from Question model class
-     * return: 
+     * return:
      */
     public static function generateQuestionChoicesCombination(Question $question){
-        $algorithmData = $question->choices()->get(['id', 'status as is_true']);
+        $algorithmData = $question->choices()->get(['id', 'status as isCorrect']);
         foreach ($algorithmData as $choice) {
-            $choice['is_true'] = ($choice->is_true === ChoiceStatusEnum::CORRECT_ANSWER->value) ? true : false;
+            $choice['isCorrect'] = ($choice->isCorrect === ChoiceStatusEnum::CORRECT_ANSWER->value) ? true : false;
         }
         $questionChoicesCombination = (new GenerateQuestionChoicesCombination())->execute($algorithmData);
 
@@ -37,7 +37,7 @@ class QuestionHelper
                 'combination_choices' => $choiceCombination
             ]);
         }
-        
+
         // return ResponseHelper::success();
     }
 

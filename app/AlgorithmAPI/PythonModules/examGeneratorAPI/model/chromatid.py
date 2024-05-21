@@ -1,6 +1,6 @@
 from typing import List
 
-from gene import Gene
+from model.gene import Gene
 
 
 class Chromatid:

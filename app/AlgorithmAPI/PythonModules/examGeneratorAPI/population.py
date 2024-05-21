@@ -23,9 +23,9 @@ def init(individuals_count, chromosomes_count, chromatids_and_gens):
                 genes: List[Gene] = []
 
                 for ques in np.random.choice(get_best_questions(chromatid), size=gens_count, replace=False):
-                    genes.append(ques.get_gens())
+                    genes.append(ques.to_gene())
 
-                chromatids.append(Chromatid(genes))
+                chromatids.append(Chromatid(chromatid, genes))
 
             chromosomes.append(Chromosome(chromatids))
 

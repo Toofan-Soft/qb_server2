@@ -18,8 +18,8 @@ def mutation(individual, pm):
 
                         index = np.random.randint(len(best_questions))
                         ques = best_questions[index]
-                        if ques.id not in [gene.id for gene in chromosome.genes]:
+                        if ques.id not in [gene.id for gene in chromatid.genes]:
                             new_ques = ques
 
-                    chromatid.genes[m] = new_ques.getGene()
+                    chromatid.genes[m] = new_ques.to_gene()
     return individual

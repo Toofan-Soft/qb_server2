@@ -5,13 +5,13 @@ namespace App\AlgorithmAPI;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-class GenerateQuestionChoicesCombination
+class UncombineQuestionChoicesCombination
 {
     public function execute($data)
     {
 
     $jsonData = json_encode($data);
-    $methodName = 'combine';
+    $methodName = 'uncombine';
     $process = new Process([
         'C:\Users\Nasser\AppData\Local\Programs\Python\Python39\python.exe',
         base_path() . 'App\AlgorithmAPI\PythonModules\combinationGeneratorAPI\start.py',

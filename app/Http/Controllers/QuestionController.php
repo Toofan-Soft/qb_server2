@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Algorithm\QuestionChoices;
-use App\AlgorithmAPI\GenerateQuestionChoicesCombination;
 use App\Models\Topic;
 use App\Models\Choice;
 use App\Models\College;

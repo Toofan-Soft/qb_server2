@@ -151,17 +151,18 @@ class StudentController extends Controller
                 'colleges.arabic_name as college_name'
             )
             ->where('students.id', '=', $request->id)
-            ->get();
+            ->first();
+
             $enumReplacements = [
                 new EnumReplacement( 'gender_name', GenderEnum::class),
-                new EnumReplacement( 'level_name', LevelsEnum::class),
+                // new EnumReplacement( 'level_name', LevelsEnum::class),
               ];
         $columnReplacements = [
             new ColumnReplacement('email', 'email', User::class)
         ];
-        $student['level_name'] = $this->getStudentDepartmentAndLevel($request->id)['level_id'];
+        // $student['level_name'] = $this->getStudentDepartmentAndLevel($request->id)['level_id'];
         $student = ProcessDataHelper::enumsConvertIdToName($student, $enumReplacements);
-        $student = ProcessDataHelper::columnConvertIdToName($student, $columnReplacements);
+        // $student = ProcessDataHelper::columnConvertIdToName($student, $columnReplacements);
 
         return ResponseHelper::successWithData($student);
 

@@ -49,10 +49,10 @@ class LecturerOnlineExamController extends Controller
             return ResponseHelper::clientError(401);
         }
 
-        // $algorithmData = $this->getAlgorithmData($request);
-        // $examFormsQuestions = (new GenerateOnlineExam())->execute($algorithmData);
+        $algorithmData = $this->getAlgorithmData($request);
+        $examFormsQuestions = (new GenerateOnlineExam())->execute($algorithmData);
 
-        // if ($examFormsQuestions->data) { // modify to use has function
+        if ($examFormsQuestions->data) { // modify to use has function
 
             $user = User::findOrFail(auth()->user()->id);
 
@@ -374,7 +374,10 @@ class LecturerOnlineExamController extends Controller
             'difficulty_level_id' => $request->difficulty_level_id,
             'forms_count' => $request->forms_count,
             'form_configuration_method_id' => $request->form_configuration_method_id,
-            'questions_types' => $request->questions_types,
+            'questions_types' => [
+                'type_id' => $request->questions_types['type_id'],
+                'questions_count' => $request->questions_types['questions_count']
+            ],
         ];
 
         $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
@@ -387,17 +390,16 @@ class LecturerOnlineExamController extends Controller
             ->join('topics', 'questions.topic_id', '=', 'topics.id')
             ->select(
                 'questions.id',
-                'questions.type',
+                'questions.type as type_id',
                 'questions.difficulty_level',
-                'questions.estimated_answer_time',
+                'questions.estimated_answer_time as answer_time',
                 'question_usages.online_exam_last_selection_datetime',
                 'question_usages.practice_exam_last_selection_datetime',
                 'question_usages.paper_exam_last_selection_datetime',
                 'question_usages.online_exam_selection_times_count',
                 'question_usages.practice_exam_selection_times_count',
                 'question_usages.paper_exam_selection_times_count',
-                'topics.id',
-                'topics.chapter_id'
+                'topics.id as topic_id',
             )
             ->where('questions.status', '=', QuestionStatusEnum::ACCEPTED->value)
             ->where('questions.language', '=', $request->language_id)
@@ -405,6 +407,12 @@ class LecturerOnlineExamController extends Controller
             ->whereIn('questions.type', $questionTypesIds)
             ->whereIn('topics.id', $request->topicsIds)
             ->get();
+            foreach ($questions as $question) {
+             $question->last_selection = ($online_exam_last_selection_datetime +
+                                         $practice_exam_last_selection_datetime +
+                                          $paper_exam_last_selection_datetime)/3;
+            }
+
         $algorithmData['questions'] = $questions;
         return $algorithmData;
     }

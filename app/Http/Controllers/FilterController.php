@@ -111,7 +111,7 @@ class FilterController extends Controller
     {
         $attributes = ['id', 'arabic_name as name'];
         $conditionAttribute = ['college_id'  => $request->college_id];
-        return GetHelper::retrieveModels(CoursePart::class, $attributes,  $conditionAttribute);
+        return GetHelper::retrieveModels(Department::class, $attributes,  $conditionAttribute);
     }
 
     public function retrieveLecturerDepartments(Request $request)
@@ -157,23 +157,21 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLevels(Request $request)
     {
-        $attributes = ['level_id as name'];
-        $department = Department::findOrFial($request->department_id);
-        $departmentLevels = $department->department_courses()->get($attributes)->distinct();
+        $attributes = ['level as name'];
+        $department = Department::findOrFail($request->department_id);
+        $departmentLevels = $department->department_courses()->first($attributes);
 
-        // $departmentLevels =  DB::table('departments')
-        // ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
-        // ->select('department_courses.level_id as name')
-        // ->where('departments.id', '=', $request->department_id)
-        // ->distinct()
-        // ->get();
-
-        $departmentLevels['id'] = $departmentLevels['name'];
+        $id = $departmentLevels['name'];
         $enumReplacements = [
             new EnumReplacement('name', LevelsEnum::class),
         ];
         $departmentLevels = ProcessDataHelper::enumsConvertIdToName($departmentLevels, $enumReplacements);
-        return ResponseHelper::successWithData($departmentLevels);
+
+        $data = [
+            'id' => $id,
+            'name' => $departmentLevels->name,
+        ];
+        return ResponseHelper::successWithData([$data]);
     }
 
     public function retrieveDepartmentCourses(Request $request)

@@ -275,7 +275,7 @@ Route::middleware('auth:api')->group(function () {
 
     //guest
     Route::prefix('guest/')->group(function () {
-        // Route::post('add', [GuestController::class, 'addGuest']);
+        Route::post('add', [GuestController::class, 'addGuest']);
         Route::put('modify', [GuestController::class, 'modifyGuest']);
         Route::get('retrieve-editable', [GuestController::class, 'retrieveEditableGuestProfile']);
     });
@@ -388,9 +388,7 @@ Route::middleware('auth:api')->group(function () {
 
     /// for test just
     Route::get('test', function () {
-       return auth()->user();
-        return ((int)auth()->user()->user_roles->first()->role_id === UserRoleEnum::LECTURER->value) ? "hello world" : "null";
-
+        return now()->getTimestamp();
        });
 
 // }); ////
@@ -467,15 +465,15 @@ Route::prefix('filter/')->group(function () {
 
 //test enum
 Route::get('getenum', function () {
-    $englishNames = EnumTraits::getEnglishNames(SemesterEnum::class);
-    $arabicNames = EnumTraits::getArabicNames(SemesterEnum::class);
-    $nameByNumber = EnumTraits::getNameByNumber(1,  SemesterEnum::class, 'en');
-    $enumArray = EnumTraits::getEnum(SemesterEnum::class, 'en');
+    // $englishNames = EnumTraits::getEnglishNames(SemesterEnum::class);
+    // $arabicNames = EnumTraits::getArabicNames(SemesterEnum::class);
+    // $nameByNumber = EnumTraits::getNameByNumber(1,  SemesterEnum::class, 'en');
+    // $enumArray = EnumTraits::getEnum(SemesterEnum::class, 'en');
 
-    return response()->json(['names' => $enumArray]);
+
 });
 
-
+///////////
 Route::get('execute-python', function () {
     // $command = 'python ' . base_path() . '\app\Scripts\example.py '  ;
     // $output = shell_exec($command);
@@ -488,7 +486,7 @@ Route::get('execute-python', function () {
     ];
 
     $jsonData = json_encode($arrayData);
-    $methodName = 'process_data';
+    $methodName = 'method_one';
     $process = new Process([
         'C:\Users\Nasser\AppData\Local\Programs\Python\Python39\python.exe',
         base_path() . '\app\Scripts\example.py',
