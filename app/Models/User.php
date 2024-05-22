@@ -37,10 +37,19 @@ class User extends Authenticatable
         // 'status' =>UserStatusEnum::class,
         // 'owner_type' => OwnerTypeEnum::class,
         'password' => 'hashed',
-        'email_verified_at' => 'datetime',
+        // 'email_verified_at' => 'datetime',
     ];
 
+    public function getEmailVerifiedAtAttribute($value)
+    {
+        return strtotime($value);
+    }
 
+    public function setEmailVerifiedAtAttribute($value)
+    {
+        $this->attributes['email_verified_at'] = date('Y-m-d H:i:s', $value);
+    }
+    
     public function user_roles() : HasMany {
         return $this->HasMany(UserRole::class);
     }

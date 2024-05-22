@@ -32,12 +32,40 @@ class QuestionUsage extends Model
     ];
 
     protected $casts = [
-        'online_exam_selection_times_count' =>'datetime',
-        'practice_exam_selection_times_count'=>'datetime',
-        'paper_exam_selection_times_count'=>'datetime',
+        // 'online_exam_selection_times_count' =>'datetime',
+        // 'practice_exam_selection_times_count'=>'datetime',
+        // 'paper_exam_selection_times_count'=>'datetime',
     ];
 
+    public function getOnlineExamSelectionTimesCountAttribute($value)
+    {
+        return $value ? strtotime($value) : null;
+    }
 
+    public function setOnlineExamSelectionTimesCountAttribute($value)
+    {
+        $this->attributes['online_exam_selection_times_count'] = $value ? date('Y-m-d H:i:s', $value) : null;
+    }
+
+    public function getPracticeExamSelectionTimesCountAttribute($value)
+    {
+        return $value ? strtotime($value) : null;
+    }
+
+    public function setPracticeExamSelectionTimesCountAttribute($value)
+    {
+        $this->attributes['practice_exam_selection_times_count'] = $value ? date('Y-m-d H:i:s', $value) : null;
+    }
+
+    public function getPaperExamSelectionTimesCountAttribute($value)
+    {
+        return $value ? strtotime($value) : null;
+    }
+
+    public function setPaperExamSelectionTimesCountAttribute($value)
+    {
+        $this->attributes['paper_exam_selection_times_count'] = $value ? date('Y-m-d H:i:s', $value) : null;
+    }
     public function question() : BelongsTo {
         return $this->BelongsTo(Question::class);
     }

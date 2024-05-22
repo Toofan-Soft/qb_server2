@@ -23,24 +23,25 @@ class GetHelper
 
 
     // public static function retrieveModelsWithEnum($model, $attributes = null , $conditionAttribute = [] , $enumAttributes =[] , $enumClasses =[]) {
-        /**
-         * using: retrieve data from sent model
-         * parameters: $
-         *      model :
-         *      attributes :
-         *      conditionAttribute :
-         *      enumReplacements :
-         *      columnReplacements :
-         * return:
-         */
+    /**
+     * using: retrieve data from sent model
+     * parameters: $
+     *      model :
+     *      attributes :
+     *      conditionAttribute :
+     *      enumReplacements :
+     *      columnReplacements :
+     * return:
+     */
 
-    public static function retrieveModels($model, $attributes = null , $conditionAttribute = [] , $enumReplacements = null, $columnReplacements =null) {
+    public static function retrieveModels($model, $attributes = null, $conditionAttribute = [], $enumReplacements = null, $columnReplacements = null)
+    {
         $query = $model::query();
         $rows = null;
         if (empty($conditionAttribute)) {
             if (empty($attributes)) {
                 $rows = $model::all();
-            }else {
+            } else {
                 $rows = $model::all($attributes);
             }
         } else {
@@ -52,15 +53,15 @@ class GetHelper
                     }
                 });
                 $rows = $query->get();
-            }else {
+            } else {
 
-            $query = $query->where(function ($query) use ($conditionAttribute) {
-                foreach ($conditionAttribute as $column => $value) {
-                    $query->where($column, '=', $value);
-                }
-            });
+                $query = $query->where(function ($query) use ($conditionAttribute) {
+                    foreach ($conditionAttribute as $column => $value) {
+                        $query->where($column, '=', $value);
+                    }
+                });
 
-            $rows = $query->get($attributes);
+                $rows = $query->get($attributes);
             }
         }
 
@@ -72,18 +73,70 @@ class GetHelper
             }
         }
 
-        if($enumReplacements){
+        if ($enumReplacements) {
             $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
         }
 
-        if($columnReplacements){
+        if ($columnReplacements) {
             $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
         }
 
-        if (count($rows) === 1) {
-            return ResponseHelper::successWithData($rows->first());
-          }
-         return ResponseHelper::successWithData($rows);
+        // if (count($rows) === 1) {
+        //     return ResponseHelper::successWithData($rows->first());
+        //   }
+        return ResponseHelper::successWithData($rows);
     }
 
+
+    public static function retrieveModel($model, $attributes = null, $conditionAttribute = [], $enumReplacements = null, $columnReplacements = null)
+    {
+        $query = $model::query();
+        $rows = null;
+        if (empty($conditionAttribute)) {
+            if (empty($attributes)) {
+                $rows = $model::all();
+            } else {
+                $rows = $model::all($attributes);
+            }
+        } else {
+            if (empty($attributes)) {
+
+                $query = $query->where(function ($query) use ($conditionAttribute) {
+                    foreach ($conditionAttribute as $column => $value) {
+                        $query->where($column, '=', $value);
+                    }
+                });
+                $rows = $query->first();
+            } else {
+
+                $query = $query->where(function ($query) use ($conditionAttribute) {
+                    foreach ($conditionAttribute as $column => $value) {
+                        $query->where($column, '=', $value);
+                    }
+                });
+
+                $rows = $query->first($attributes);
+            }
+        }
+
+        foreach ($rows as $row) {
+            if (isset($row->logo_url)) {
+                $row->logo_url = asset($row->logo_url);
+            } elseif (isset($row->image_url)) {
+                $row->image_url = asset($row->image_url);
+            }
+        }
+
+        if ($enumReplacements) {
+            $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
+        }
+
+        if ($columnReplacements) {
+            $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
+        }
+
+
+        return ResponseHelper::successWithData($rows);
+        
+    }
 }

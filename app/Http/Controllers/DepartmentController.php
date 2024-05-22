@@ -88,7 +88,7 @@ class DepartmentController extends Controller
     {
         $attributes = ['arabic_name', 'english_name', 'levels_count', 'logo_url', 'description'];
         $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
+        return GetHelper::retrieveModel(Department::class, $attributes, $conditionAttribute);
     }
 
 

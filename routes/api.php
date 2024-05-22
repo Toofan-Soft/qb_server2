@@ -90,7 +90,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('practice-exam/retrieve-list', [PracticeExamController::class, 'retrievePractiseExams']);
 
     // user
-    Route::get('retrieve-profile', [UserController::class, 'retrieveProfile']);
+    Route::get('user/retrieve-profile', [UserController::class, 'retrieveProfile']);
      });///
 
     //univercity
@@ -303,7 +303,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('change-password', [UserController::class, 'changePassword']);
         // Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
         // Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
-        Route::get('retrieve-profile', [UserController::class, 'retrieveProfile']);
+        // Route::get('retrieve-profile', [UserController::class, 'retrieveProfile']);
     });
 
 
@@ -387,8 +387,12 @@ Route::middleware('auth:api')->group(function () {
     });
 
     /// for test just
-    Route::get('test', function () {
-        return now()->getTimestamp();
+    Route::post('test', function (Request $request) {
+        // return now()->getTimestamp();
+
+        foreach ($request->examQuestions as $examQuestion) {
+
+        }
        });
 
 // }); ////

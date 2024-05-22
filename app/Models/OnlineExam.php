@@ -28,10 +28,33 @@ class OnlineExam extends Model
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
         // 'conduct_method' => ExamConductMethodEnum::class,
-        'exam_datetime_notification_datetime' => 'datetime',
-        'result_notification_datetime' => 'datetime',
+        // 'exam_datetime_notification_datetime' => 'datetime',
+        // 'result_notification_datetime' => 'datetime',
         // 'status' => ExamStatusEnum::class,
     ];
+
+    public function getExamDatetimeNotificationDatetimeAttribute($value)
+    {
+        return $value ? strtotime($value) : null;
+    }
+
+
+    public function setExamDatetimeNotificationDatetimeAttribute($value)
+    {
+        $this->attributes['exam_datetime_notification_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
+    }
+
+
+    public function getResultNotificationDatetimeAttribute($value)
+    {
+        return $value ? strtotime($value) : null;
+    }
+
+    
+    public function setResultNotificationDatetimeAttribute($value)
+    {
+        $this->attributes['result_notification_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
+    }
 
     public function student_online_exams() : HasMany {
         return $this->HasMany(StudentOnlineExam::class);

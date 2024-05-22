@@ -22,10 +22,30 @@ class StudentOnlineExam extends Model
     ];
 
     protected $casts = [
-        'start_datetime' => 'datetime',
-        'end_datetime' => 'datetime',
+        // 'start_datetime' => 'datetime',
+        // 'end_datetime' => 'datetime',
         // 'status' => StudentOnlineExamStatusEnum::class,
     ];
+
+    public function getStartDatetimeAttribute($value)
+    {
+        return $value ? strtotime($value) : null;
+    }
+
+    public function setStartDatetimeAttribute($value)
+    {
+        $this->attributes['start_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
+    }
+
+    public function getEndDatetimeAttribute($value)
+    {
+        return $value ? strtotime($value) : null;
+    }
+
+    public function setEndDatetimeAttribute($value)
+    {
+        $this->attributes['end_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
+    }
     public function student() : BelongsTo {
         return $this->BelongsTo(Student::class);
     }

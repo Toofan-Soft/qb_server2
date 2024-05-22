@@ -63,7 +63,7 @@ class UserController extends Controller
 
             if($user->email_verified_at !== null){
                 $token =  $user->createToken('quesionbanklaravelapi')->accessToken;
-                return ResponseHelper::successWithToken($token);
+                return ResponseHelper::successWithTokenAndUserType($token, $user->owner_type);
             }
         } else {
             return ResponseHelper::clientError(401);
@@ -83,7 +83,7 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-    
+
         $owner = null;
         $enumReplacements = [];
 

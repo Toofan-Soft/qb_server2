@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\CoursePartsEnum;
+use App\Enums\CourseStatusEnum;
 use App\Models\User;
 use  App\Models\Student;
 use App\Enums\GenderEnum;
@@ -36,8 +38,8 @@ class StudentController extends Controller
 
     public function addStudent(Request $request)
     {
-        if ($failed = ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError($failed);
+        if ($v=ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError1($v);
         }
         $student =  Student::create([
             'academic_id' => $request->academic_id,
@@ -45,7 +47,7 @@ class StudentController extends Controller
             'english_name' =>  $request->english_name,
             'phone' => $request->phone ?? null,
             'image_url' => $request->hasFile('image') ? ImageHelper::uploadImage($request->file('image')) : null,
-            'birthdate' =>  $request->birthdate ?? null,
+            'birthdate' =>  strtotime($request->birthdate) ?? null,
             'gender' =>  $request->gender_id,
         ]);
 
@@ -79,7 +81,7 @@ class StudentController extends Controller
 
         if ($request->level_id) {
             $studnetDepartmentAndLevel = $this->getStudentDepartmentAndLevel($student->id);
-            if ($request->level_id <= $studnetDepartmentAndLevel['level_id']) {
+            if ($request->level_id <= $studnetDepartmentAndLevel->level_id) {
                 return ResponseHelper::clientError('لا يمكنك تغيير مستوى الطالب الي مستوى ادنى من المستوى الحالي');
             } else {
                 // aupdate status of courses for last level
@@ -106,8 +108,8 @@ class StudentController extends Controller
 
     public function deleteStudent(Request $request)
     {
-        $employee = Student::findeOrFail( $request->id);
-        return DeleteHelper::deleteModel($employee);
+        $student = Student::findOrFail( $request->id);
+        return DeleteHelper::deleteModel($student);
     }
 
     public function retrieveStudents(Request $request)
@@ -162,7 +164,7 @@ class StudentController extends Controller
         ];
         // $student['level_name'] = $this->getStudentDepartmentAndLevel($request->id)['level_id'];
         $student = ProcessDataHelper::enumsConvertIdToName($student, $enumReplacements);
-        // $student = ProcessDataHelper::columnConvertIdToName($student, $columnReplacements);
+        $student = ProcessDataHelper::columnConvertIdToName($student, $columnReplacements);
 
         return ResponseHelper::successWithData($student);
 
@@ -171,9 +173,11 @@ class StudentController extends Controller
     public function retrieveEditableStudent(Request $request)
     {
     $attributes = ['academic_id', 'arabic_name','english_name', 'gender as gender_id', 'phone', 'birthdate', 'image_url'];
-    $student = Student::findeOrFail( $request->id, $attributes);
-    $student['level_id'] = $this->getStudentDepartmentAndLevel($request->id)['level_id'];
-
+    $student = Student::findOrFail( $request->id, $attributes);
+    $studentLevelAndDept = $this->getStudentDepartmentAndLevel($request->id);
+    if($studentLevelAndDept !==  null){
+        $student['level_id'] = $studentLevelAndDept->level_id;
+    }
         return ResponseHelper::successWithData($student);
     }
 
@@ -192,9 +196,22 @@ class StudentController extends Controller
 
     private function getStudentDepartmentAndLevel($studnetId)
     {
-        // يجب التركيز ان قد يكون الطالب معاه مواد باكثر من مستوى
-        // ترتيب المستويات وارجاع اعلى مستوى تكون مقرراته نشطة
-        $studnetDepartmentAndLevel = [];
+        $studnetDepartmentAndLevel =  DB::table('students')
+        ->join('course_students', 'students.id', '=', 'course_students.student_id')
+        ->join('department_courses', 'course_students.department_course_id', '=', 'department_courses.id')
+        ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+        ->join('course_parts', 'courses.id', '=', 'course_parts.course_id')
+        ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+        ->select(
+            'department_courses.level as level_id',
+            'departments.arabic_name as department_name',
+        )
+        ->where('students.id', '=', $studnetId)
+        ->where('course_parts.status', '=', CourseStatusEnum::AVAILABLE->value) // Assuming there's a column indicating if the course is active
+        ->orderBy('department_courses.level', 'desc') // Order by level in descending order
+        ->first();
+
+
         return $studnetDepartmentAndLevel;
     }
 
@@ -204,10 +221,10 @@ class StudentController extends Controller
             'academic_id' => 'required|integer',
             'arabic_name' => 'required|string',
             'english_name' => 'required|string',
-            'phone' => 'nullable|string|unique:students,phone',
+            'phone' => 'nullable|integer|unique:students,phone',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender_id' => ['required', new Enum(GenderEnum::class)],
-            'birthdate' => 'nullable|date',
+            'birthdate' => 'nullable|integer',
             // 'user_id' => 'nullable|uuid|unique:users,id',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

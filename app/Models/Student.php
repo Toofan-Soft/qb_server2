@@ -23,6 +23,16 @@ class Student extends Model
         'gender',
         'academic_id',
     ];
+
+    public function getBirthdateAttribute($value)
+    {
+        return strtotime($value);
+    }
+    
+    public function setBirthdateAttribute($value)
+    {
+        $this->attributes['birthdate'] = date('Y-m-d H:i:s', $value);
+    }
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
         // 'gender' => GenderEnum::class,

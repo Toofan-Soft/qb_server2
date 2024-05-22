@@ -147,7 +147,7 @@ class CollegeController extends Controller
 
         $attributes = [ 'arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
         $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModels(College::class, $attributes, $conditionAttribute);
+        return GetHelper::retrieveModel(College::class, $attributes, $conditionAttribute);
 
     }
 

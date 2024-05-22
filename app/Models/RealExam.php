@@ -42,8 +42,18 @@ class RealExam extends Model
         // 'form_name_method' => FormNameMethodEnum::class,
         // 'type' => RealExamTypeEnum::class,
         // 'exam_type' => ExamTypeEnum::class,
-        'exam_date' => 'datetime',
+        // 'datetime' => 'datetime',
     ];
+
+    public function getDateTimeAttribute($value)
+    {
+        return strtotime($value);
+    }
+
+    public function setDateTimeAttribute($value)
+    {
+        $this->attributes['datetime'] = date('Y-m-d H:i:s', $value);
+    }
 
     public function course_lecturer() : BelongsTo {
         return $this->BelongsTo(CourseLecturer::class);

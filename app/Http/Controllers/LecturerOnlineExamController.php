@@ -111,9 +111,9 @@ class LecturerOnlineExamController extends Controller
 
 
             return ResponseHelper::successWithData($realExam->id);
-        // }else{
-        //     return ResponseHelper::serverError();
-        // }
+        }else{
+            return ResponseHelper::serverError();
+        }
 
     }
 
