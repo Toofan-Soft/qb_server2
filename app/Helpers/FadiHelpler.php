@@ -420,7 +420,6 @@ class FadiHelper
          * return: ResponseHelper 
          */
     }
-
     
 
 }
