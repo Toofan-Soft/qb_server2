@@ -8,7 +8,7 @@ use App\Enums\AccessibilityStatusEnum;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 
-class GenerateOnlineExam
+class GenerateExam
 {
     /**
      * اذا كان لا يوجد اختلاف في اسئلة النماذج يتم ارجاع  البيانات كتالي....

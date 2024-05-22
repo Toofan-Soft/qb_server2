@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Employee;
+use App\Models\Question;
 use App\Models\RealExam;
 use App\Enums\LevelsEnum;
 use App\Models\PaperExam;
@@ -17,12 +18,14 @@ use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
+use App\Helpers\DatetimeHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
 use App\Helpers\OnlinExamHelper;
 use App\Enums\FormNameMethodEnum;
 use App\Enums\QuestionStatusEnum;
+use App\AlgorithmAPI\GenerateExam;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -30,7 +33,6 @@ use App\Models\DepartmentCoursePart;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
-use App\AlgorithmAPI\GeneratePaperExam;
 use App\Enums\FormConfigurationMethodEnum;
 
 class PaperExamController extends Controller
@@ -41,11 +43,10 @@ class PaperExamController extends Controller
             return  ResponseHelper::clientError1($x);
         }
 
-        // $algorithmData = $this->getAlgorithmData($request);
-        // $examFormsQuestions = (new GeneratePaperExam())->execute($algorithmData);
+        $algorithmData = $this->getAlgorithmData($request);
+        $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
 
-        // if ($examFormsQuestions->data) { // modify to use has function
-
+        if ($examFormsQuestions->data) { // modify to use has function
 
             $user = User::findOrFail(auth()->user()->id);
             $employee = Employee::where('user_id',  $user->id )->first(); //6fb56ec0-76b9-3cc1-8367-0e2a5f65451d
@@ -72,7 +73,7 @@ class PaperExamController extends Controller
             'course_lecturer_name' => $request->lecturer_name ?? $employee->arabic_name,
         ]);
 
-            foreach ($request->question_types as $question_type) {
+            foreach ($request->questions_types as $question_type) {
                 $realExam->real_exam_question_types()->create([
                     'question_type' => $question_type['type_id'],
                     'questions_count' => $question_type['questions_count'],
@@ -82,31 +83,31 @@ class PaperExamController extends Controller
 
             //////////add Topics of exam
 
-            if (intval($request->form_configuration_method) === FormConfigurationMethodEnum::SIMILAR_FORMS->value) {
-                $realExam->forms()->create();
-            } else {
-                for ($i = 0; $i <= $request->forms_count; $i++ ) {
-                    $realExam->forms()->create();
-                }
-
-            }
-
-            // foreach ($examFormsQuestions as $formQuestions) {
-            //     $formQuestions = $this->getQuestionsChoicesCombinations($formQuestions);
-            //     $form = $realExam->forms()->create();
-            //     foreach ($formQuestions as $formQuestion) {
-            //         $form->form_questions()->create([
-            //             'question_id' => $formQuestion->question_id,
-            //             'combination_id' => $formQuestion->combination_id?? null,
-            //         ]);
+            // if (intval($request->form_configuration_method) === FormConfigurationMethodEnum::SIMILAR_FORMS->value) {
+            //     $realExam->forms()->create();
+            // } else {
+            //     for ($i = 0; $i <= $request->forms_count; $i++ ) {
+            //         $realExam->forms()->create();
             //     }
+
             // }
+
+            foreach ($examFormsQuestions as $questionsIds) {
+                $formQuestions = $this->getQuestionsChoicesCombinations($questionsIds);
+                $form = $realExam->forms()->create();
+                foreach ($formQuestions as $question) {
+                    $form->form_questions()->create([
+                        'question_id' => $question->question_id,
+                        'combination_id' => $question->combination_id?? null,
+                    ]);
+                }
+            }
             ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
 
             return ResponseHelper::successWithData($realExam->id);
-        // }else{
-        //     return ResponseHelper::serverError();
-        // }
+        }else{
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyPaperExam(Request $request)
@@ -386,18 +387,48 @@ class PaperExamController extends Controller
     public function exportPaperExamToPDF(Request $request)
     {
         // id, with mirror?, with answered mirror?
+       /* Data:
+    *   .
+    *   . university
+    *   . college
+    *   . department
+    *   . level
+    *   .
+    *   . course
+    *   . course part
+    *   . exam type
+    *   . date
+    *   . duration
+    *
+    *   . lecturer
+    *   . score
+    *
+    *   . forms
+    *       . form name?
+    *       . questions
+    *           . content
+    *           . attachment?
+    *           . is true?
+    *           . choices?
+    *               . content
+    *               . attachment?
+    *               . is true?
+    *   .
+    * */
+
     }
 
     private function getAlgorithmData($request)
     {
         // دالة مشتركة للاختبار الحقيقي والورقي
         $algorithmData = [
-            'duration' => $request->duration,
-            'language_id' => $request->language_id,
-            'difficulty_level_id' => $request->difficulty_level_id,
-            'forms_count' => $request->forms_count,
-            'form_configuration_method_id' => $request->form_configuration_method_id,
-            'questions_types' => $request->questions_types,
+            'estimated_time' => $request->duration,
+            'difficulty_level' => $request->difficulty_level_id,
+            'forms_count' => ($request->form_configuration_method_id === FormConfigurationMethodEnum::DIFFERENT_FORMS->value)? $request->forms_count : 1,
+            'question_types_and_questions_count' => [
+                'id' => $request->questions_types['type_id'],
+                'count' => $request->questions_types['questions_count']
+            ],
         ];
 
         $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
@@ -410,17 +441,16 @@ class PaperExamController extends Controller
             ->join('topics', 'questions.topic_id', '=', 'topics.id')
             ->select(
                 'questions.id',
-                'questions.type',
+                'questions.type as type_id',
                 'questions.difficulty_level',
-                'questions.estimated_answer_time',
+                'questions.estimated_answer_time as answer_time',
                 'question_usages.online_exam_last_selection_datetime',
                 'question_usages.practice_exam_last_selection_datetime',
                 'question_usages.paper_exam_last_selection_datetime',
                 'question_usages.online_exam_selection_times_count',
                 'question_usages.practice_exam_selection_times_count',
                 'question_usages.paper_exam_selection_times_count',
-                'topics.id',
-                'topics.chapter_id'
+                'topics.id as topic_id',
             )
             ->where('questions.status', '=', QuestionStatusEnum::ACCEPTED->value)
             ->where('questions.language', '=', $request->language_id)
@@ -428,21 +458,61 @@ class PaperExamController extends Controller
             ->whereIn('questions.type', $questionTypesIds)
             ->whereIn('topics.id', $request->topicsIds)
             ->get();
+            foreach ($questions as $question) {
+                // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
+
+                $question['last_selection'] = DatetimeHelper::convertSecondsToDays(
+                    DatetimeHelper::getDifferenceInSeconds(now(), $question->online_exam_last_selection_datetime) + 
+                    DatetimeHelper::getDifferenceInSeconds(now(), $question->practice_exam_last_selection_datetime) + 
+                    DatetimeHelper::getDifferenceInSeconds(now(), $question->paper_exam_last_selection_datetime)
+                    ) / 3;
+                $question['selection_times'] = (
+                    $question->online_exam_selection_times_count + 
+                    $question->practice_exam_selection_times_count + 
+                    $question->paper_exam_selection_times_count
+            ) / 3;
+            // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة 
+            unset($question['online_exam_last_selection_datetime']);
+            unset($question['practice_exam_last_selection_datetime']);
+            unset($question['paper_exam_last_selection_datetime']);
+            unset($question['online_exam_selection_times_count']);
+            unset($question['practice_exam_selection_times_count']);
+            unset($question['paper_exam_selection_times_count']);
+            }
         $algorithmData['questions'] = $questions;
         return $algorithmData;
     }
 
-    private function getQuestionsChoicesCombinations($formQuestions)
+    private function getQuestionsChoicesCombinations($questionsIds)
     {
         // يفضل ان يتم عملها مشترك ليتم استخداما في الاختبار الورقي والتجريبي
         // تقوم هذه الدالة باختيار توزيعة الاختيارات للاسئلة من نوع اختيار من متعدد
-        /**
-         * steps of function
-         *   اختيار الاسئلة التي نوعها اختيار من متعدد
-         *   اختيار احد التوزيعات التي يمتلكها السؤال بشكل عشوائي
-         *   يتم اضافة رقم التوزيعة المختارة الي السؤال
-         */
+       /**
+        * steps of function
+        *   اختيار الاسئلة التي نوعها اختيار من متعدد
+        *   اختيار احد التوزيعات التي يمتلكها السؤال بشكل عشوائي
+        *   يتم اضافة رقم التوزيعة المختارة الي السؤال
+        */
+        $formQuestions = [];
+        foreach ($questionsIds as $questionId) {
+            $question = Question::findOrFail($questionId);
+            $combination_id = null;
+            if($question->type === QuestionTypeEnum::MULTIPLE_CHOICE->value){
+                $combination_id = $this->selectQuestionsChoicesCombination($question);
+            }
+            array_push($formQuestions, [
+                'question_id' => $questionId,
+                'combination_id' => $combination_id
+            ]);
+        }
         return $formQuestions;
+    }
+
+    private function selectQuestionsChoicesCombination(Question $question): int
+    {
+        $qestioChoicesCombinations = $question->question_choices_combinations()->get(['combination_id']);
+        $selectedIndex = array_rand($qestioChoicesCombinations->combination_id);
+        return $qestioChoicesCombinations->combination_id[$selectedIndex];
     }
 
 

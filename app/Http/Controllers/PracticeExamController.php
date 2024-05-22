@@ -15,23 +15,24 @@ use App\Enums\ExamStatusEnum;
 use App\Helpers\DeleteHelper;
 use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
+use App\Helpers\DatetimeHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
 use App\Helpers\OnlinExamHelper;
 use App\Enums\QuestionStatusEnum;
 use App\Helpers\EnumReplacement1;
+use App\AlgorithmAPI\GenerateExam;
 use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Enums\ExamConductMethodEnum;
+use App\Models\DepartmentCoursePart;
 use App\Models\PracticeExamQuestion;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
-use App\AlgorithmAPI\GeneratePractiseExam;
 use App\Enums\FormConfigurationMethodEnum;
-use App\Models\DepartmentCoursePart;
 
 class PracticeExamController extends Controller
 {
@@ -42,7 +43,7 @@ class PracticeExamController extends Controller
         }
 
         $algorithmData = $this->getAlgorithmData($request);
-        $examQuestions = (new GeneratePractiseExam())->execute($algorithmData);
+        $examQuestions = (new GenerateExam())->execute($algorithmData);
 
         if ($examQuestions->data) { // modify to use has function
 
@@ -69,7 +70,7 @@ class PracticeExamController extends Controller
 
             //////////add Topics of exam
 
-            $examQuestions = $this->getQuestionsChoicesCombinations($examQuestions);
+            $examQuestions = $this->getQuestionsChoicesCombinations($examQuestions[0]);
             foreach ($examQuestions as $examQuestion) {
                 $practiceExam->practice_exam_question()->create([
                     'question_id' => $examQuestion->question_id,
@@ -293,13 +294,13 @@ class PracticeExamController extends Controller
     {
         // دالة مشتركة للاختبار الالكتروني والورقي
         $algorithmData = [
-            'duration' => $request->duration,
-            'language_id' => $request->language_id,
-            'difficulty_level_id' => $request->difficulty_level_id,
-            // هل امرر قيم افتراضية لبيانات النماذج او هو بيعرف
-            // 'forms_count' => 1,
-            // 'form_configuration_method_id' => FormConfigurationMethodEnum::DIFFERENT_FORMS->value,
-            // 'questions_types' => $request->questions_types,
+            'estimated_time' => $request->duration,
+            'difficulty_level' => $request->difficulty_level_id,
+            'forms_count' => 1,
+            'question_types_and_questions_count' => [
+                'id' => $request->questions_types['type_id'],
+                'count' => $request->questions_types['questions_count']
+            ],
         ];
 
         $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
@@ -312,17 +313,16 @@ class PracticeExamController extends Controller
             ->join('topics', 'questions.topic_id', '=', 'topics.id')
             ->select(
                 'questions.id',
-                'questions.type',
+                'questions.type as type_id',
                 'questions.difficulty_level',
-                'questions.estimated_answer_time',
+                'questions.estimated_answer_time as answer_time',
                 'question_usages.online_exam_last_selection_datetime',
                 'question_usages.practice_exam_last_selection_datetime',
                 'question_usages.paper_exam_last_selection_datetime',
                 'question_usages.online_exam_selection_times_count',
                 'question_usages.practice_exam_selection_times_count',
                 'question_usages.paper_exam_selection_times_count',
-                'topics.id',
-                'topics.chapter_id'
+                'topics.id as topic_id',
             )
             ->where('questions.status', '=', QuestionStatusEnum::ACCEPTED->value)
             ->where('questions.language', '=', $request->language_id)
@@ -330,21 +330,61 @@ class PracticeExamController extends Controller
             ->whereIn('questions.type', $questionTypesIds)
             ->whereIn('topics.id', $request->topicsIds)
             ->get();
+            foreach ($questions as $question) {
+                // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
+
+                $question['last_selection'] = DatetimeHelper::convertSecondsToDays(
+                    DatetimeHelper::getDifferenceInSeconds(now(), $question->online_exam_last_selection_datetime) + 
+                    DatetimeHelper::getDifferenceInSeconds(now(), $question->practice_exam_last_selection_datetime) + 
+                    DatetimeHelper::getDifferenceInSeconds(now(), $question->paper_exam_last_selection_datetime)
+                    ) / 3;
+                $question['selection_times'] = (
+                    $question->online_exam_selection_times_count + 
+                    $question->practice_exam_selection_times_count + 
+                    $question->paper_exam_selection_times_count
+            ) / 3;
+            // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة 
+            unset($question['online_exam_last_selection_datetime']);
+            unset($question['practice_exam_last_selection_datetime']);
+            unset($question['paper_exam_last_selection_datetime']);
+            unset($question['online_exam_selection_times_count']);
+            unset($question['practice_exam_selection_times_count']);
+            unset($question['paper_exam_selection_times_count']);
+            }
         $algorithmData['questions'] = $questions;
         return $algorithmData;
     }
 
-    private function getQuestionsChoicesCombinations($examQuestions)
+    private function getQuestionsChoicesCombinations($questionsIds)
     {
         // يفضل ان يتم عملها مشترك ليتم استخداما في الاختبار الورقي والتجريبي
         // تقوم هذه الدالة باختيار توزيعة الاختيارات للاسئلة من نوع اختيار من متعدد
-        /**
-         * steps of function
-         *   اختيار الاسئلة التي نوعها اختيار من متعدد
-         *   اختيار احد التوزيعات التي يمتلكها السؤال بشكل عشوائي
-         *   يتم اضافة رقم التوزيعة المختارة الي السؤال
-         */
-        return $examQuestions;
+       /**
+        * steps of function
+        *   اختيار الاسئلة التي نوعها اختيار من متعدد
+        *   اختيار احد التوزيعات التي يمتلكها السؤال بشكل عشوائي
+        *   يتم اضافة رقم التوزيعة المختارة الي السؤال
+        */
+        $formQuestions = [];
+        foreach ($questionsIds as $questionId) {
+            $question = Question::findOrFail($questionId);
+            $combination_id = null;
+            if($question->type === QuestionTypeEnum::MULTIPLE_CHOICE->value){
+                $combination_id = $this->selectQuestionsChoicesCombination($question);
+            }
+            array_push($formQuestions, [
+                'question_id' => $questionId,
+                'combination_id' => $combination_id
+            ]);
+        }
+        return $formQuestions;
+    }
+
+    private function selectQuestionsChoicesCombination(Question $question): int
+    {
+        $qestioChoicesCombinations = $question->question_choices_combinations()->get(['combination_id']);
+        $selectedIndex = array_rand($qestioChoicesCombinations->combination_id);
+        return $qestioChoicesCombinations->combination_id[$selectedIndex];
     }
 
 
