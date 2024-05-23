@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use App\AlgorithmAPI\UncombineQuestionChoicesCombination;
+use App\Enums\CombinationChoiceTypeEnum;
 use stdClass;
 use Traversable;
 use App\Models\Form;
@@ -32,6 +34,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\QuestionChoiceCombination;
 use App\Enums\FormConfigurationMethodEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
+use App\Models\Choice;
 use Illuminate\Database\Eloquent\Collection;
 
 class ExamHelper
@@ -201,7 +204,7 @@ class ExamHelper
     }
 
     // need to test
-    private static function getRealExamFormsNames($form_name_method, $forms_count)
+    public static function getRealExamFormsNames($form_name_method, $forms_count)
     {
         $formsNames = [];
         if ($form_name_method === FormNameMethodEnum::DECIMAL_NUMBERING->value) {
@@ -346,4 +349,137 @@ class ExamHelper
     {
         return 'exelent';
     }
+
+    /**
+     ***** job: 
+     * this function using for multi choice question in exam 
+     ***** parameters: 
+     * $qeustionId: int 
+     * combinationId: int 
+     * withChoiceId: int 
+     * withAnswer: int 
+     ***** return: 
+     * choices [id, content, attachment, is_true]
+     */
+    public static function retrieveCombinationChoices($qeustionId, $combinationId, bool $withChoiceId, bool $withAnswer)
+    {
+        $result = null;
+        $choices = self::uncombinateCombination($qeustionId, $combinationId);
+        if($withChoiceId && $withAnswer){
+            $result = self::retrieveCombinationChoicesWithIdAndAnswer($choices);
+        }elseif($withChoiceId && !$withAnswer){
+            $result = self::retrieveCombinationChoicesWithId($choices);
+        }elseif(!$withChoiceId && $withAnswer){
+            $result = self::retrieveCombinationChoicesWithAnswer($choices);
+        }else{
+            $result = self::retrieveCombinationChoicesWithoutIdAndAnswer($choices);
+        }
+        return $result;
+    }
+
+    private static function uncombinateCombination($qeustionId, $combinationId)
+    {
+        $combinationChoices = QuestionChoiceCombination::where('combination_id', '=', $combinationId)
+        ->where('question_id', '=', $qeustionId)->first(['combination_choices']);
+        $choices = (new UncombineQuestionChoicesCombination())->execute($combinationChoices);
+        
+        return $choices;
+    }
+    
+    private static function retrieveCombinationChoicesWithIdAndAnswer($choices)
+    {
+        $result = [];
+        foreach ($choices as $choice) {
+            $temp = [];
+            if($choice->ids){
+                $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
+                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
+            }else{
+                if($choice->id == -1){
+                    $temp['id'] = CombinationChoiceTypeEnum::ALL->value;
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
+                }elseif($choice->id == -2){
+                    $temp['id'] = CombinationChoiceTypeEnum::NOTHING->value;
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+                    
+                }else{
+                    $temp = Choice::findOrFail($choice->id)->first(['id', 'content', 'attachment as attachment_url']);
+                }
+            }
+            $temp['is_true'] = $choice->isCorrect;
+            array_push($result, $temp);
+        }
+        return $result;
+    }
+
+    private static function retrieveCombinationChoicesWithId($choices)
+    {
+        $result = [];
+        foreach ($choices as $choice) {
+            $temp = [];
+            if($choice->ids){
+                $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
+                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
+            }else{
+                if($choice->id == -1){
+                    $temp['id'] = CombinationChoiceTypeEnum::ALL->value;
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
+                }elseif($choice->id == -2){
+                    $temp['id'] = CombinationChoiceTypeEnum::NOTHING->value;
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+                    
+                }else{
+                    $temp = Choice::findOrFail($choice->id)->first(['id', 'content', 'attachment as attachment_url']);
+                }
+            }
+            array_push($result, $temp);
+        }
+        return $result;
+    }
+
+    private static function retrieveCombinationChoicesWithAnswer($choices)
+    {
+        $result = [];
+        foreach ($choices as $choice) {
+            $temp = [];
+            if($choice->ids){
+                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
+            }else{
+                if($choice->id == -1){
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
+                }elseif($choice->id == -2){
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+                    
+                }else{
+                    $temp = Choice::findOrFail($choice->id)->first(['content', 'attachment as attachment_url']);
+                }
+            }
+            $temp['is_true'] = $choice->isCorrect;
+            array_push($result, $temp);
+        }
+        return $result;
+    }
+
+    private static function retrieveCombinationChoicesWithoutIdAndAnswer($choices)
+    {
+        $result = [];
+        foreach ($choices as $choice) {
+            $temp = [];
+            if($choice->ids){
+                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
+            }else{
+                if($choice->id == -1){
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
+                }elseif($choice->id == -2){
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+                    
+                }else{
+                    $temp = Choice::findOrFail($choice->id)->first(['content', 'attachment as attachment_url']);
+                }
+            }
+            array_push($result, $temp);
+        }
+        return $result;
+    }
+    
 }

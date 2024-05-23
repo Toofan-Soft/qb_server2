@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Form;
 use App\Models\User;
 use App\Models\Employee;
 use App\Models\Question;
@@ -33,7 +34,10 @@ use App\Models\DepartmentCoursePart;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
+use Illuminate\Support\Facades\Storage;
 use App\Enums\FormConfigurationMethodEnum;
+use App\Enums\TrueFalseAnswerEnum;
+use App\Models\TrueFalseQuestion;
 
 class PaperExamController extends Controller
 {
@@ -389,19 +393,19 @@ class PaperExamController extends Controller
         // id, with mirror?, with answered mirror?
        /* Data:
     *   .
-    *   . university
-    *   . college
-    *   . department
-    *   . level
+    *   . university *
+    *   . college *
+    *   . department *
+    *   . level *
     *   .
-    *   . course
-    *   . course part
-    *   . exam type
-    *   . date
-    *   . duration
+    *   . course *
+    *   . course part *
+    *   . exam type *
+    *   . date *
+    *   . duration *
     *
-    *   . lecturer
-    *   . score
+    *   . lecturer *
+    *   . score *
     *
     *   . forms
     *       . form name?
@@ -415,7 +419,129 @@ class PaperExamController extends Controller
     *               . is true?
     *   .
     * */
+    // تبقى جزء فحص اذا كان يشتي مع اجابة او لا
 
+    $realExam = RealExam::findOrFail($request->id,[
+        'id', 'datetime', 'duration', 'type as type_name', 'course_lecturer_id', 
+        'forms_count', 'form_name_method', 'form_configuration_method',
+    ]);
+
+    $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
+        new EnumReplacement('type_name', ExamTypeEnum::class),
+    ]);
+
+    $paperExam = PaperExam::where('id', $realExam->id)->first(['course_lecturer_name as lecturer_name']);
+    // $paperExam = $realExam->paper_exam()->first(['course_lecturer_name as lecturer_name']);
+
+    $courseLecturer = $realExam->course_lecturer()->first();
+    $departmentCoursePart = $courseLecturer->department_course_part()->first();
+
+    $coursePart = $departmentCoursePart->course_part()->first(['part_id as course_part_name']);
+    $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
+        new EnumReplacement('course_part_name', CoursePartsEnum::class)
+    ]);
+    $departmentCourse = $departmentCoursePart->department_course()->first(['level as level_name', 'semester as semester_name', 'department_id', 'course_id']);
+    $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
+        new EnumReplacement('level_name', LevelsEnum::class),
+        new EnumReplacement('semester_name', SemesterEnum::class)
+    ]);
+    $department = $departmentCourse->department()->first(['arabic_name as department_name','college_id']);
+
+    $college = $department->college()->first(['arabic_name as college_name']);
+
+    $course = $departmentCourse->course()->first(['arabic_name as course_name']);
+    // Total Score of exam 
+    $questionsTypes = $realExam->real_exam_question_types()->get(['questions_count', 'question_score']);
+    $totalScore = 0;
+    foreach ($questionsTypes as $questionType) {
+        $totalScore += ($questionType->questions_count * $questionType->question_score);
+    }
+    // university name 
+    $jsonData = Storage::disk('local')->get('university.json');
+    $universityData = json_decode($jsonData, true);
+    $universityName = [
+        'arabic_name' => $universityData['arabic_name'],
+    ];
+
+    // form and form questions 
+    // as [formName, questions[], .....] or [formsName[name,...], questoins[]]
+    $examFormsQuestions = [];
+        $formsNames = ExamHelper::getRealExamFormsNames($realExam->form_name_method, $realExam->forms_count);
+        $examForms = $realExam->forms()->get(['id']);
+        if(intval($realExam->form_configuration_methode) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value){
+            $i = 0;
+            foreach ($examForms as $formId) {
+                $formQuestions = $this->getFormQuestions($formId, $request->with_answered_mirror);
+                array_push($examFormsQuestions, [$formsNames[$i++], $formQuestions]);
+            }
+        }else{
+            $formQuestions = $this->getFormQuestions($examForms->id, $request->with_answered_mirror);
+            array_push($examFormsQuestions, $formsNames);
+            array_push($examFormsQuestions, $formQuestions);
+        }
+
+    $departmentCourse = $departmentCourse->toArray();
+    unset($departmentCourse['department_id']);
+    unset($departmentCourse['course_id']);
+
+    $department = $department->toArray();
+    unset($department['college_id']);
+
+    $realExam = $realExam->toArray();
+    unset($realExam['course_lecturer_id']);
+    unset($realExam['id']);
+    unset($realExam['form_name_method']);
+    unset($realExam['forms_count']);
+    unset($realExam['form_configuration_methode']);
+
+    $realExam = $realExam +
+    $paperExam->toArray() +
+        $coursePart->toArray() +
+        $departmentCourse +
+        $department +
+        $college->toArray() +
+        $course->toArray();
+
+
+    $realExam['score'] = $totalScore;
+    $realExam['university_name'] = $universityName;
+    $realExam['forms'] = $examFormsQuestions;
+
+
+
+    return ResponseHelper::successWithData($realExam);
+
+    }
+
+    private function getFormQuestions ($formId, bool $withAnsweredMirror)
+    {
+     // return form questoin as [content, attachment, is_true, choices[content, attachment, is_true]]
+     $questions = [];
+     $form = Form::findOrFail($formId);
+     $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
+     foreach ($formQuestions as $formQuestion) {
+         $question = $formQuestion->question()->first(['content', 'attachment as attachment_url']);
+        if($formQuestion->combination_id){
+            if($withAnsweredMirror){
+                $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, true);
+            }else{
+                $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
+            }
+        }else{
+            if($withAnsweredMirror){
+                $trueFalseQuestion = TrueFalseQuestion::findOrFail($formQuestion->question_id)->first(['answer']);
+                if(intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value){
+                    $question['is_true'] = true;
+                }else{
+                    $question['is_true'] = false;
+                }
+            }
+            }
+        array_push($questions, $question);
+     }
+         
+     return $questions;
+           
     }
 
     private function getAlgorithmData($request)

@@ -41,7 +41,7 @@ if __name__ == "__main__":
     main()
 
 # json_data = [
-#     {"id": 1, "isCorrect": True},
+#     {"id": 1, ""isCorrect: True},
 #     {"id": 2, "isCorrect": True},
 #     {"id": 3, "isCorrect": True},
 #     {"id": 4, "isCorrect": False},
