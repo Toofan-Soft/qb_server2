@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // there is error, first three columns will be timestamp, and second three columns will be integer 
         Schema::create('question_usages', function (Blueprint $table) {
           $table->unsignedBigInteger('question_id')->primary();
           $table->integer('online_exam_last_selection_datetime')->nullable()->default(0);

@@ -116,10 +116,6 @@ class LecturerOnlineExamController extends Controller
         }else{
             return ResponseHelper::serverError();
         }
-<<<<<<< HEAD
-
-=======
->>>>>>> f34f28ed20b33a827fe4ffd9d311a41c03e739fb
     }
 
     public function modifyRealExam(Request $request)

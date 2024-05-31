@@ -1,5 +1,6 @@
+
 class Choice:
-    def __init__(self, id, is_correct):
+    def _init_(self, id, is_correct):
         self.id = id
         self.is_correct = is_correct
 
@@ -9,12 +10,12 @@ class Choice:
 
 
 class Combination:
-    def __init__(self, choices):
+    def _init_(self, choices):
         self.choices = choices
 
     class Choice:
         class Basic:
-            def __init__(self, id, is_correct):
+            def _init_(self, id, is_correct):
                 self.id = id
                 self.is_correct = is_correct
 
@@ -25,7 +26,7 @@ class Combination:
                 }
 
         class Compound:
-            def __init__(self, ids, is_correct):
+            def _init_(self, ids, is_correct):
                 self.ids = ids
                 self.is_correct = is_correct
 
@@ -37,19 +38,19 @@ class Combination:
 
         @staticmethod
         def CORRECT_NOTHING():
-            return Combination.Choice.Basic(0, True)
+            return Combination.Choice.Basic(-2, True)
 
         @staticmethod
         def INCORRECT_NOTHING():
-            return Combination.Choice.Basic(0, False)
+            return Combination.Choice.Basic(-2, False)
 
         @staticmethod
         def CORRECT_ALL():
-            return Combination.Choice.Basic(float('inf'), True)
+            return Combination.Choice.Basic(-1, True)
 
         @staticmethod
         def INCORRECT_ALL():
-            return Combination.Choice.Basic(float('inf'), False)
+            return Combination.Choice.Basic(-1, False)
 
         @staticmethod
         def to_compound(choices):
@@ -68,19 +69,17 @@ class Combination:
             if "." in item:
                 choices.append(Combination.Choice.Compound(list(map(int, item.split("."))), is_correct))
             else:
-                if item == "∞":
-                    choices.append(Combination.Choice.Basic(float('inf'), is_correct))
-                else:
-                    choices.append(Combination.Choice.Basic(int(item), is_correct))
+                choices.append(Combination.Choice.Basic(int(item), is_correct))
 
-        return Combination(choices)
+        combination = Combination([Combination.Choice.Compound([choices[sub_index].id for sub_index in choice.ids], choice.is_correct)
+                    if isinstance(choice,Combination.Choice.Compound) else choice for choice in choices])
+        return combination
 
     def combine(self):
         combined_str = ""
         for choice in self.choices:
             if isinstance(choice, Combination.Choice.Basic):
-                combined_str += (str(choice.id) if choice.id != float('inf') else "∞") + (
-                    "•" if choice.is_correct else "") + ","
+                combined_str += str(choice.id) + ("•" if choice.is_correct else "") + ","
             elif isinstance(choice, Combination.Choice.Compound):
                 combined_str += ".".join(str(self.get_index(id)) for id in choice.ids) + (
                     "•" if choice.is_correct else "") + ","

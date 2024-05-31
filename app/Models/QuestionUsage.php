@@ -20,6 +20,7 @@ class QuestionUsage extends Model
         'online_exam_last_selection_datetime',
         'practice_exam_last_selection_datetime',
         'paper_exam_last_selection_datetime',
+        
         'online_exam_selection_times_count',
         'practice_exam_selection_times_count',
         'paper_exam_selection_times_count',
