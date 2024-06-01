@@ -39,8 +39,8 @@ class Question extends Model
     protected $casts = [
         // 'type' => QuestionTypeEnum::class,
         // 'status' => QuestionStatusEnum::class,
-        'accessability_status' => AccessibilityStatusEnum::class,
-        'language' => LanguageEnum::class,
+        // 'accessability_status' => AccessibilityStatusEnum::class,
+        // 'language' => LanguageEnum::class,
     ];
 
     public function topic() : BelongsTo {

@@ -13,24 +13,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('course_students', function (Blueprint $table) {
-            $table->unsignedBigInteger('department_course_id');
-            $table->unsignedBigInteger('student_id');
-             $table->enum('status', CourseStudentStatusEnum::values());
-
+            $table->enum('status', CourseStudentStatusEnum::values());
             $table->integer('academic_year');
-
-            $table->primary(['department_course_id', 'student_id']);
-
+            
+            $table->unsignedBigInteger('department_course_id');
             $table->foreign('department_course_id')
             ->references('id')
             ->on('department_courses')
             ->onDelete('cascade');
-
+            
+            $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')
-                ->references('id')
-                ->on('students')
-                ->onDelete('cascade');
-
+            ->references('id')
+            ->on('students')
+            ->onDelete('cascade');
+            
+            $table->primary(['department_course_id', 'student_id']);
         });
     }
 

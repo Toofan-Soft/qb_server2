@@ -32,8 +32,8 @@ return new class extends Migration
             $table->enum('type', ExamTypeEnum::values());
             $table->enum('exam_type', RealExamTypeEnum::values()); /////need to add  // mid , month, final
             $table->text('note')->nullable();
+            
             $table->unsignedBigInteger('course_lecturer_id');
-
             $table->foreign('course_lecturer_id')
             ->references('id')
             ->on('course_lecturers')

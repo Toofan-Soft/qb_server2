@@ -15,13 +15,14 @@ return new class extends Migration
     {
         Schema::create('user_roles', function (Blueprint $table) {
              $table->enum('role_id', RoleEnum::values());
+             
              $table->uuid('user_id');
-
-            $table->primary(['user_id', 'role_id']);
-            $table->foreign('user_id')
-            ->references('id')
-            ->on('users')
-            ->onDelete('cascade');
+             $table->foreign('user_id')
+             ->references('id')
+             ->on('users')
+             ->onDelete('cascade');
+             
+             $table->primary(['user_id', 'role_id']);
         });
     }
 

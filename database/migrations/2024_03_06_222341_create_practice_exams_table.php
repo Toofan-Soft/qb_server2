@@ -25,17 +25,15 @@ return new class extends Migration
             $table->bigInteger('duration');
             $table->enum('difficulty_level', ExamDifficultyLevelEnum::values());
             $table->enum('conduct_method', ExamConductMethodEnum::values());
-
             $table->enum('status', ExamStatusEnum::values());
 
             $table->unsignedBigInteger('department_course_part_id');
-            $table->uuid('user_id');
-
             $table->foreign('department_course_part_id')
             ->references('id')
             ->on('department_course_parts')
             ->onDelete('cascade');
-
+            
+            $table->uuid('user_id');
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')

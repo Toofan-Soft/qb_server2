@@ -25,9 +25,8 @@ return new class extends Migration
             $table->enum('qualification', QualificationEnum::values());
             $table->string('specialization')->nullable();
             $table->enum('gender', GenderEnum::values());
+            
             $table->uuid('user_id')->unique()->nullable();
-
-
             $table->foreign('user_id')
             ->references('id')
             ->on('users')

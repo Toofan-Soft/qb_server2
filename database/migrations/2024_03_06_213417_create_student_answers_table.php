@@ -12,37 +12,33 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('student_answers', function (Blueprint $table) {
-            $table->unsignedBigInteger('student_id');
-            $table->unsignedBigInteger('question_id');
-            $table->unsignedBigInteger('form_id');
             $table->integer('answer')->nullable();
             $table->bigInteger('answer_duration')->nullable();
-
-
-            $table->primary(['student_id','question_id', 'form_id']);
-
+            
+            $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')
             ->references('id')
             ->on('students')
             ->onDelete('cascade');
-
+            
             // $table->foreign('question_id')
             // ->references('question_id')
             // ->on('form_questions')
             // ->onDelete('cascade');
-
+            
             // $table->foreign('form_id')
             // ->references('form_id')
             // ->on('form_questions')
             // ->onDelete('cascade');
-
+            
+            $table->unsignedBigInteger('question_id');
+            $table->unsignedBigInteger('form_id');
             $table->foreign(['question_id', 'form_id'])
             ->references(['question_id', 'form_id'])
             ->on('form_questions')
             ->onDelete('cascade');
-
-
-
+            
+            $table->primary(['student_id','question_id', 'form_id']);
 
         });
     }

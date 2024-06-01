@@ -14,20 +14,18 @@ return new class extends Migration
         Schema::create('department_course_part_topics', function (Blueprint $table) {
 
             $table->unsignedBigInteger('department_course_part_id');
-            $table->unsignedBigInteger('topic_id');
-
-            $table->primary(['department_course_part_id', 'topic_id']);
-
             $table->foreign('department_course_part_id')
             ->references('id')
             ->on('department_course_parts')
             ->onDelete('cascade');
-
+            
+            $table->unsignedBigInteger('topic_id');
             $table->foreign('topic_id')
-                ->references('id')
-                ->on('topics')
-                ->onDelete('cascade');
-
+            ->references('id')
+            ->on('topics')
+            ->onDelete('cascade');
+            
+            $table->primary(['department_course_part_id', 'topic_id']);
         });
     }
 

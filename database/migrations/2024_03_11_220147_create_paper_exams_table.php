@@ -15,7 +15,6 @@ return new class extends Migration
             $table->unsignedBigInteger('id')->primary();
             $table->string('course_lecturer_name');
 
-
             $table->foreign('id')
             ->references('id')
             ->on('real_exams')

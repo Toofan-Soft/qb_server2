@@ -38,34 +38,34 @@ class QuestionUsage extends Model
         // 'paper_exam_selection_times_count'=>'datetime',
     ];
 
-    public function getOnlineExamSelectionTimesCountAttribute($value)
+    public function getOnlineExamLastSelectionDatetimeAttribute($value)
     {
         return $value ? strtotime($value) : null;
     }
 
-    public function setOnlineExamSelectionTimesCountAttribute($value)
+    public function setOnlineExamLastSelectionDatetimeAttribute($value)
     {
-        $this->attributes['online_exam_selection_times_count'] = $value ? date('Y-m-d H:i:s', $value) : null;
+        $this->attributes['online_exam_last_selection_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
     }
 
-    public function getPracticeExamSelectionTimesCountAttribute($value)
+    public function getPracticeExamLastSelectionDatetimeAttribute($value)
     {
         return $value ? strtotime($value) : null;
     }
 
-    public function setPracticeExamSelectionTimesCountAttribute($value)
+    public function setPracticeExamLastSelectionDatetimeAttribute($value)
     {
-        $this->attributes['practice_exam_selection_times_count'] = $value ? date('Y-m-d H:i:s', $value) : null;
+        $this->attributes['practice_exam_last_selection_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
     }
 
-    public function getPaperExamSelectionTimesCountAttribute($value)
+    public function getPaperExamLastSelectionDatetimeAttribute($value)
     {
         return $value ? strtotime($value) : null;
     }
 
-    public function setPaperExamSelectionTimesCountAttribute($value)
+    public function setPaperExamLastSelectionDatetimeAttribute($value)
     {
-        $this->attributes['paper_exam_selection_times_count'] = $value ? date('Y-m-d H:i:s', $value) : null;
+        $this->attributes['paper_exam_last_selection_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
     }
     public function question() : BelongsTo {
         return $this->BelongsTo(Question::class);

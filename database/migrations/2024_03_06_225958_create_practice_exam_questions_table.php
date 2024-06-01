@@ -12,23 +12,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('practice_exam_questions', function (Blueprint $table) {
-            $table->unsignedBigInteger('practice_exam_id');
-            $table->unsignedBigInteger('question_id');
             $table->unsignedBigInteger('combination_id')->nullable();
-                // In (select combination_id from question_choices_combination b where b.question_id = question_id)
+            // In (select combination_id from question_choices_combination b where b.question_id = question_id)
             $table->integer('answer')->nullable();
             $table->bigInteger('answer_duration')->nullable();
-            $table->primary(['practice_exam_id','question_id']);
-
+            
+            $table->unsignedBigInteger('practice_exam_id');
             $table->foreign('practice_exam_id')
             ->references('id')
             ->on('practice_exams')
             ->onDelete('cascade');
-
+            
+            $table->unsignedBigInteger('question_id');
             $table->foreign('question_id')
-                ->references('id')
-                ->on('questions')
-                ->onDelete('cascade');
+            ->references('id')
+            ->on('questions')
+            ->onDelete('cascade');
+            
+            $table->primary(['practice_exam_id','question_id']);
         });
 
           //add a check constraint

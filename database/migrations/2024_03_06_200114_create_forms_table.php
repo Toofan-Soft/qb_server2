@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('forms', function (Blueprint $table) {
             $table->id();
+            
             $table->unsignedBigInteger('real_exam_id');
-
             $table->foreign('real_exam_id')
             ->references('id')
             ->on('real_exams')

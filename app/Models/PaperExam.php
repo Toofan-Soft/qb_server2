@@ -18,8 +18,8 @@ class PaperExam extends Model
         'course_lecturer_name',
     ];
 
-    public function real_exam() : HasOne {
-        return $this->HasOne(RealExam::class);
+    public function real_exam() : BelongsTo {
+        return $this->BelongsTo(RealExam::class);
     }
 
 }

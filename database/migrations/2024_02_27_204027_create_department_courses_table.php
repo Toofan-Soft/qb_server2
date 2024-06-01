@@ -16,15 +16,15 @@ return new class extends Migration
     {
         Schema::create('department_courses', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('course_id');
             $table->enum('level', LevelsEnum::values() );
             $table->enum('semester',SemesterEnum::values());
-            $table->unsignedBigInteger('department_id');
+            $table->unsignedBigInteger('course_id');
             $table->foreign('course_id')
             ->references('id')  
             ->on('courses')
             ->onDelete('cascade');
-
+            
+            $table->unsignedBigInteger('department_id');
             $table->foreign('department_id')
                 ->references('id')
                 ->on('departments')

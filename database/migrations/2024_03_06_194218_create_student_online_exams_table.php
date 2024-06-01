@@ -13,22 +13,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('student_online_exams', function (Blueprint $table) {
-            $table->unsignedBigInteger('student_id');
-            $table->unsignedBigInteger('online_exam_id');
             $table->timestamp('start_datetime')->nullable();
             $table->timestamp('end_datetime')->nullable();//
             $table->enum('status', StudentOnlineExamStatusEnum::values());
-            $table->primary(['student_id', 'online_exam_id']);
-
+            
+            $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')
             ->references('id')
             ->on('students')
             ->onDelete('cascade');
-
+            
+            $table->unsignedBigInteger('online_exam_id');
             $table->foreign('online_exam_id')
                 ->references('id')
                 ->on('online_exams')
                 ->onDelete('cascade');
+
+            $table->primary(['student_id', 'online_exam_id']);
         });
     }
 

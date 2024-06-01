@@ -40,7 +40,7 @@ class Employee extends Model
     public function course_lecturers() : HasMany {
         return $this->HasMany(CourseLecturer::class);
     }
-    public function onlin_exams() : HasMany {
+    public function online_exams() : HasMany {
         return $this->HasMany(OnlineExam::class);
     }
 

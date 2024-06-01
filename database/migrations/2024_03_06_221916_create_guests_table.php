@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('phone')->unique()->nullable();
             $table->string('image_url')->nullable();
             $table->enum('gender', GenderEnum::values());
+            
             $table->uuid('user_id')->unique()->nullable();
-
             $table->foreign('user_id')
             ->references('id')
             ->on('users')

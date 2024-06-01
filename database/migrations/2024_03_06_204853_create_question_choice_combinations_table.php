@@ -11,19 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('question_choices_combinations', function (Blueprint $table) {
+        Schema::create('question_choice_combinations', function (Blueprint $table) {
             $table->unsignedBigInteger('combination_id');
             // $table->unsignedBigInteger('combination_id')->autoIncrement();  // Add ->autoIncrement() for auto-incrementing ID
-            $table->unsignedBigInteger('question_id');
-
+            // يحتاج الي جعلة يتزايد بشكل تلقائي لكل سؤال على حده، بحيث يبدا من 1 لكل سؤال 
+            
             $table->string('combination_choices'); ///////// OR  $table->integer('related_ids')->nullable();
             // Then in two ways we casts this column in model to array
-
-            $table->primary(['combination_id', 'question_id']);
+            
+            $table->unsignedBigInteger('question_id');
             $table->foreign('question_id')
             ->references('id')
             ->on('questions')
             ->onDelete('cascade');
+
+            $table->primary(['combination_id', 'question_id']);
         });
     }
 

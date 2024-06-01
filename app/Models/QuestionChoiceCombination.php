@@ -22,7 +22,7 @@ class QuestionChoiceCombination extends Model
     ];
 
     protected $casts = [
-        'combination_choices'  => 'array',
+        // 'combination_choices'  => 'array',
     ];
 
     public function question() : BelongsTo {

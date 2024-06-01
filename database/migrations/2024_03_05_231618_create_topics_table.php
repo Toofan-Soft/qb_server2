@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('arabic_title') ;
             $table->string('english_title');
-            $table->string('description')->nullable();
-            $table->unsignedBigInteger('chapter_id');
+            $table->text('description')->nullable();
             // $table->timestamps();
-
+            
+            $table->unsignedBigInteger('chapter_id');
             $table->foreign('chapter_id')
             ->references('id')
             ->on('chapters')

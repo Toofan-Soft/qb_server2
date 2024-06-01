@@ -20,7 +20,7 @@ class RealExam extends Model
     use HasFactory;
     public $timestamps = false;
     protected $fillable = [
-        'user_id',
+        // 'user_id',
         'difficulty_level',
         'form_configuration_method',
         'forms_count',

@@ -13,24 +13,23 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('form_questions', function (Blueprint $table) {
-            $table->unsignedBigInteger('question_id');
-            $table->unsignedBigInteger('form_id');
+            // In (select combination_id from question_choices_combination b where b.question_id = question_id)
             $table->unsignedBigInteger('combination_id')->nullable();
-             // In (select combination_id from question_choices_combination b where b.question_id = question_id)
-
-            $table->primary(['form_id', 'question_id']);
-            $table->unique(['form_id', 'question_id']);
-
+            
+            $table->unsignedBigInteger('question_id');
             $table->foreign('question_id')
             ->references('id')
             ->on('questions')
             ->onDelete('cascade');
-
+            
+            $table->unsignedBigInteger('form_id');
             $table->foreign('form_id')
             ->references('id')
             ->on('forms')
             ->onDelete('cascade');
-
+            
+            $table->primary(['form_id', 'question_id']);
+            // $table->unique(['form_id', 'question_id']);
 
             // we can make that constraint as :
                // Add foreign key constraint with a subquery

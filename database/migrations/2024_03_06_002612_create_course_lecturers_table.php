@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('course_lecturers', function (Blueprint $table) {
             $table->id();
             $table->integer('academic_year');
+            
             $table->unsignedBigInteger('department_course_part_id');
-            $table->unsignedBigInteger('lecturer_id');
-
             $table->foreign('department_course_part_id')
             ->references('id')
             ->on('department_course_parts')
             ->onDelete('cascade');
-
+            
+            $table->unsignedBigInteger('lecturer_id');
             $table->foreign('lecturer_id')
                 ->references('id')
                 ->on('employees')

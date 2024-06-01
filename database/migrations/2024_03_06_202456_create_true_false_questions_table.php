@@ -14,8 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('true_false_questions', function (Blueprint $table) {
-            $table->unsignedBigInteger('question_id')->primary();
             $table->enum('answer', TrueFalseAnswerEnum::values());
+            $table->unsignedBigInteger('question_id')->primary();
             $table->foreign('question_id')
             ->references('id')
             ->on('questions')

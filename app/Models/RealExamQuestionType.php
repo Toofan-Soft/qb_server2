@@ -16,7 +16,7 @@ class RealExamQuestionType extends Model
     protected $fillable = [
         'real_exam_id',
         'question_type',
-        'question_count',
+        'questions_count',
         'question_score',
     ];
 
