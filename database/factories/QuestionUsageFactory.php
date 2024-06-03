@@ -28,12 +28,12 @@ final class QuestionUsageFactory extends Factory
     {
         return [
             'question_id' => fake()->randomNumber(),
-            'online_exam_last_selection_datetime' => fake()->optional()->randomNumber(),
-            'practice_exam_last_selection_datetime' => fake()->optional()->randomNumber(),
-            'paper_exam_last_selection_datetime' => fake()->optional()->randomNumber(),
-            'online_exam_selection_times_count' => fake()->optional()->dateTime(),
-            'practice_exam_selection_times_count' => fake()->optional()->dateTime(),
-            'paper_exam_selection_times_count' => fake()->optional()->dateTime(),
+            'online_exam_last_selection_datetime' => fake()->optional()->dateTime(),
+            'practice_exam_last_selection_datetime' => fake()->optional()->dateTime(),
+            'paper_exam_last_selection_datetime' => fake()->optional()->dateTime(),
+            'online_exam_selection_times_count' => fake()->optional()->randomNumber(),
+            'practice_exam_selection_times_count' => fake()->optional()->randomNumber(),
+            'paper_exam_selection_times_count' => fake()->optional()->randomNumber(),
             'online_exam_correct_answers_count' => fake()->optional()->randomNumber(),
             'online_exam_incorrect_answers_count' => fake()->optional()->randomNumber(),
             'practice_exam_incorrect_answers_count' => fake()->optional()->randomNumber(),

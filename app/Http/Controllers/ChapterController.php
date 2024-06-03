@@ -41,7 +41,7 @@ class ChapterController extends Controller
 
     public function deleteChapter(Request $request)
     {
-        $chapter = Chapter::findeOrFail( $request->id);
+        $chapter = Chapter::findOrFail( $request->id);
        return DeleteHelper::deleteModel($chapter);
     }
 

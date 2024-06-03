@@ -28,11 +28,13 @@ class CoursePartController extends Controller
         if( ValidateHelper::validateData($request, $this->rules($request))){
             return  ResponseHelper::clientError(401);
         }
+
         $course = Course::findOrFail($request->course_id);
         $course->course_parts()->create([
             'part_id' => $request->course_part_id,
             'description' => $request->description ?? null,
         ]);
+        
        return ResponseHelper::success();
     }
 

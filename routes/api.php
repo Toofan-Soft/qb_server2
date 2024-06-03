@@ -47,6 +47,7 @@ use App\Http\Controllers\CourseStudentController;
 use App\Http\Controllers\UserManagmentController;
 use App\Http\Controllers\CourseLecturerController;
 use App\Http\Controllers\QuestionChoiceController;
+use App\Http\Controllers\InitialDatabaseController;
 use App\Http\Controllers\DepartmentCourseController;
 use App\Http\Controllers\FavoriteQuestionController;
 use App\Http\Controllers\ProctorOnlinExamController;
@@ -464,6 +465,17 @@ Route::prefix('filter/')->group(function () {
     Route::get('retrieve-owner-list', [FilterController::class, 'retrieveOwners']);
     Route::get('retrieve-role-list', [FilterController::class, 'retrieveRoles']);
     Route::get('retrieve-proctor-list', [FilterController::class, 'retrieveProctors']);
+});
+
+
+ // test initial data
+ Route::prefix('initial/')->group(function () {
+    Route::post('add', [InitialDatabaseController::class, 'initialDatabase']);
+    // Route::put('modify', [CollegeController::class, 'modifyCollege']);
+    // Route::delete('delete', [CollegeController::class, 'deleteCollege']);
+    // Route::get('retrieve', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
+    // Route::get('retrieve-list', [CollegeController::class, 'retrieveColleges']);
+    // Route::get('retrieve-basic-info-list', [CollegeController::class, 'retrieveBasicCollegesInfo']);
 });
 
 

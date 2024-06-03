@@ -38,11 +38,10 @@ class QuestionController extends Controller
     public function addQuestion(Request $request)
     {
 
-
-
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
+
         $topic = Topic::findOrFail($request->topic_id);
         $question =  $topic->questions()->create([
             'type' => $request->type_id,
@@ -60,17 +59,18 @@ class QuestionController extends Controller
             $question->true_false_question()->create([
                 'answer' => ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
             ]);
-        }else{
-            if ($request->has('choices')) {
-                foreach ($request->choices as $choice) {
-                    $question->choice()->create([
-                        'content' => $choice['content'],
-                        'attachment' => $choice['attachment'] ?? null,
-                        'status' => $choice['is_true'] ,
-                    ]);
-                }
-            }
         }
+        // else{
+        //     if ($request->has('choices')) {
+        //         foreach ($request->choices as $choice) {
+        //             $question->choice()->create([
+        //                 'content' => $choice['content'],
+        //                 'attachment' => $choice['attachment'] ?? null,
+        //                 'status' => $choice['is_true'] ,
+        //             ]);
+        //         }
+        //     }
+        // }
         return ResponseHelper::success();
     }
 
