@@ -11,10 +11,10 @@ class GenerateQuestionChoicesCombination
     {
 
     $jsonData = json_encode($data);
-    $methodName = 'combine';
+    $methodName = 'combffsine';
     $process = new Process([
-        'C:\Users\Nasser\AppData\Local\Programs\Python\Python39\python.exe',
-        base_path() . 'App\AlgorithmAPI\PythonModules\combinationGeneratorAPI\start.py',
+        'C:\Users\dell\AppData\Local\Programs\Python\Python312\python.exe',
+        base_path() . 'app\AlgorithmAPI\PythonModules\combinationGeneratorAPI\start.py',
         $methodName,
         $jsonData
     ]);

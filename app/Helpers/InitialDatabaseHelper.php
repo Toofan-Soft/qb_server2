@@ -367,10 +367,10 @@ class InitialDatabaseHelper
                 // return $topic;
                 $question = $topic->questions()->create([
                     'type' => QuestionTypeEnum::MULTIPLE_CHOICE->value, 
-                    'difficulty_level' => 2.12,//self::selectRandomDifficultyLevel(), 
-                    'accessbility_status' => 1,//self::selectRandomAccessbilityStatus(), 
+                    'difficulty_level' =>self::selectRandomDifficultyLevel(), 
+                    'accessability_status' => self::selectRandomAccessabilityStatus(), 
                     'language' => LanguageEnum::ARABIC->value, 
-                    'estimated_answer_time' => 180,//self::selectRandomEstimatedAnswerTime(), 
+                    'estimated_answer_time' => self::selectRandomEstimatedAnswerTime(), 
                     'content' => $raw['content'], 
                     'attachment' => null,
                     'title' => null,
@@ -386,8 +386,8 @@ class InitialDatabaseHelper
                 //     'content' => $raw['content'], 
                 // ]);
 
-                return $question;
-                // self::saveQuestionChoices($question, $raw['choices']);
+                // return $question;
+                self::saveQuestionChoices($question, $raw['choices']);
 
             // $question = [
             //     'id' => $raw['id'],
@@ -400,6 +400,7 @@ class InitialDatabaseHelper
             //     'content' => $raw['content'],
             // ];
             // array_push($temp, $question);
+
             }
 
         return $temp;
@@ -435,7 +436,7 @@ class InitialDatabaseHelper
         $randomIndex = array_rand($difficultyLevels);
         return $difficultyLevels[$randomIndex];
     }
-    private static function selectRandomAccessbilityStatus(): int
+    private static function selectRandomAccessabilityStatus(): int
     {
         $accessibilityStatuses = [0, 1, 2];
         $randomIndex = array_rand($accessibilityStatuses);
@@ -456,7 +457,7 @@ class InitialDatabaseHelper
     private static function saveQuestionChoices(Question $question, $choices)
     {
         foreach ($choices as $choice) {
-            $question =  $question->choices()->create([
+            $question->choices()->create([
                 'content' => $choice['content'],
                 'status' => ($choice['isCorrect']) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value
             ]);

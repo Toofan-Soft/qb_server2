@@ -176,7 +176,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-editable', [QuestionController::class, 'retrieveEditableQuestion']);
         Route::get('retrieve-list', [QuestionController::class, 'retrieveQuestions']);
         Route::put('submit', [QuestionController::class, 'submitQuestionReviewRequest']);
-        Route::put('accept', [QuestionController::class, 'acceptQuestion']);
+        Route::get('accept', [QuestionController::class, 'acceptQuestion']);
         Route::put('reject', [QuestionController::class, 'rejectQuestion']);
     });
 

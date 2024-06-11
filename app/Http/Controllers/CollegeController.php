@@ -44,6 +44,7 @@ class CollegeController extends Controller
         ]);
 
        return ResponseHelper::success();
+       
     }
 
     public function modifyCollege (Request $request)

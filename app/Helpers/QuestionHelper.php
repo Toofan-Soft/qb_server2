@@ -29,16 +29,20 @@ class QuestionHelper
         foreach ($algorithmData as $choice) {
             $choice['isCorrect'] = ($choice->isCorrect === ChoiceStatusEnum::CORRECT_ANSWER->value) ? true : false;
         }
-        $questionChoicesCombination = (new GenerateQuestionChoicesCombination())->execute($algorithmData);
-
-        // add question Choices Combination
-        foreach ($questionChoicesCombination as $choiceCombination) {
-            $question->question_choices_combinations()->create([
-                'combination_choices' => $choiceCombination
-            ]);
-        }
-
-        // return ResponseHelper::success();
+        // return $algorithmData;
+        // try {
+            $questionChoicesCombination = (new GenerateQuestionChoicesCombination())->execute($algorithmData);
+            return $questionChoicesCombination;
+            // add question Choices Combination
+            // foreach ($questionChoicesCombination as $choiceCombination) {
+            //     $question->question_choices_combinations()->create([
+            //         'combination_choices' => $choiceCombination
+            //     ]);
+            // }
+            // return true;
+        // } catch (\Throwable $th) {
+        //     return $th->getMessage();
+        // }
     }
 
     /**
