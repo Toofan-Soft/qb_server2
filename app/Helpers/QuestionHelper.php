@@ -29,8 +29,19 @@ class QuestionHelper
         foreach ($algorithmData as $choice) {
             $choice['isCorrect'] = ($choice->isCorrect === ChoiceStatusEnum::CORRECT_ANSWER->value) ? true : false;
         }
+        
         $questionChoicesCombination = (new GenerateQuestionChoicesCombination())->execute($algorithmData);
 
+        // Check if $questionChoicesCombination is a string and convert to array
+        if (is_string($questionChoicesCombination)) {
+            $questionChoicesCombination = json_decode($questionChoicesCombination, true);
+        }
+        
+        // Validate that $questionChoicesCombination is an array
+        if (!is_array($questionChoicesCombination)) {
+            throw new \Exception('Expected an array of combinations');
+        }
+        
         // add question Choices Combination
         foreach ($questionChoicesCombination as $choiceCombination) {
             $question->question_choices_combinations()->create([
@@ -38,7 +49,7 @@ class QuestionHelper
             ]);
         }
 
-        // return ResponseHelper::success();
+        return ResponseHelper::success();
     }
 
     /**

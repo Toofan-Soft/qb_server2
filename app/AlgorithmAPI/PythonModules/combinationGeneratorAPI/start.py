@@ -1,7 +1,6 @@
 import json
 import sys
 
-
 from generator import generate, Combination, Choice
 
 

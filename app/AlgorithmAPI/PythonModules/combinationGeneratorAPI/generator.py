@@ -1,6 +1,5 @@
-
 class Choice:
-    def _init_(self, id, is_correct):
+    def __init__(self, id, is_correct):
         self.id = id
         self.is_correct = is_correct
 
@@ -8,14 +7,13 @@ class Choice:
     def from_json(cls, data):
         return cls(data["id"], data["isCorrect"])
 
-
 class Combination:
-    def _init_(self, choices):
+    def __init__(self, choices):
         self.choices = choices
 
     class Choice:
         class Basic:
-            def _init_(self, id, is_correct):
+            def __init__(self, id, is_correct):
                 self.id = id
                 self.is_correct = is_correct
 
@@ -26,7 +24,7 @@ class Combination:
                 }
 
         class Compound:
-            def _init_(self, ids, is_correct):
+            def __init__(self, ids, is_correct):
                 self.ids = ids
                 self.is_correct = is_correct
 
