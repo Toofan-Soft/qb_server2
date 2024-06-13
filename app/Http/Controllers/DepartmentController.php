@@ -34,15 +34,15 @@ class DepartmentController extends Controller
             'arabic_name' => $request->arabic_name,
             'english_name' => $request->english_name,
             'levels_count' => $request->levels_count ,
-            // 'description' => $request->description?? null,
-            // 'logo_url' => ImageHelper::uploadImage($request->logo)
+            'description' => $request->description?? null,
+            'logo_url' => ImageHelper::uploadImage($request->logo)
         ]);
        return ResponseHelper::success();
     }
 
     public function modifyDepartment(Request $request)
     {
-        if( ValidateHelper::validateData($request, $this->rules($request))){
+        if(ValidateHelper::validateData($request, $this->rules($request))){
             return  ResponseHelper::clientError(401);
         }
 

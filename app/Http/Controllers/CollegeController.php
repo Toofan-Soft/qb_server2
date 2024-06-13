@@ -30,20 +30,24 @@ class CollegeController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
-        College::create([
-            'arabic_name' => $request->arabic_name,
-            'english_name' => $request->english_name,
-            'phone' => $request->phone ?? null,
-            'email' => $request->email ?? null,
-            'description' => $request->description ?? null,
-            'facebook' => $request->facebook ?? null,
-            'youtube' => $request->youtube ?? null,
-            'x_platform' => $request->x_platform ?? null,
-            'telegram' => $request->telegram ?? null,
-            'logo_url' => ImageHelper::uploadImage($request->logo)
-        ]);
-
-        return ResponseHelper::success();
+        try {
+            College::create([
+                'arabic_name' => $request->arabic_name,
+                'english_name' => $request->english_name,
+                'phone' => $request->phone ?? null,
+                'email' => $request->email ?? null,
+                'description' => $request->description ?? null,
+                'facebook' => $request->facebook ?? null,
+                'youtube' => $request->youtube ?? null,
+                'x_platform' => $request->x_platform ?? null,
+                'telegram' => $request->telegram ?? null,
+                'logo_url' => ImageHelper::uploadImage($request->logo)
+            ]);
+            return ResponseHelper::success();
+            
+        } catch (\Throwable $th) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyCollege(Request $request)
@@ -52,31 +56,37 @@ class CollegeController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
+        try {
+            $college = College::findOrFail($request->id);
+            $college->update([
+                'arabic_name' => $request->arabic_name ?? $college->arabic_name,
+                'english_name' => $request->english_name ?? $college->english_name,
+                'phone' => $request->phone ??  $college->phone,
+                'email' => $request->email ?? $college->email,
+                'description' => $request->description ?? $college->description,
+                'youtube' => $request->youtube ?? $college->youtube,
+                'facebook' => $request->facebook ?? $college->facebook,
+                'x_platform' => $request->x_platform ?? $college->x_platform,
+                'telegram' => $request->telegram ?? $college->telegram,
+                'logo_url' => ImageHelper::updateImage($request->logo, $college->logo_url)
+            ]);
+            // event(new FireEvent($college));
+            return ResponseHelper::success();
+        } catch (\Throwable $th) {
+            return ResponseHelper::serverError();
+        }
 
-        $college = College::findOrFail($request->id);
-        $college->update([
-            'arabic_name' => $request->arabic_name ?? $college->arabic_name,
-            'english_name' => $request->english_name ?? $college->english_name,
-            'phone' => $request->phone ??  $college->phone,
-            'email' => $request->email ?? $college->email,
-            'description' => $request->description ?? $college->description,
-            'youtube' => $request->youtube ?? $college->youtube,
-            'facebook' => $request->facebook ?? $college->facebook,
-            'x_platform' => $request->x_platform ?? $college->x_platform,
-            'telegram' => $request->telegram ?? $college->telegram,
-            'logo_url' => ImageHelper::updateImage($request->logo, $college->logo_url)
-        ]);
-
-        // event(new FireEvent($college));
-
-        return ResponseHelper::success();
     }
 
 
     public function deleteCollege(Request $request)
     {
-        $college = College::findOrFail($request->id);
-        return DeleteHelper::deleteModel($college);
+        try {
+            $college = College::findOrFail($request->id);
+            return DeleteHelper::deleteModel($college);
+        } catch (\Throwable $th) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveColleges()

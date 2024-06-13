@@ -32,13 +32,14 @@ class AddHelper
                    $updatedAttributes[$fileKey] = $filePath; // Update attribute with file path
                }
            }
+           
            if ($related_id) {
                // Create model with relationship
                try {
                    $parentModel = $model::findOrFail($related_id);
                    $parentModel->$relationShip()->create($updatedAttributes);
                } catch (ModelNotFoundException $e) {
-                return  ResponseHelper::clientError(401);
+                return  ResponseHelper::serverError();
                }
            } else {
                // Create model without relationship

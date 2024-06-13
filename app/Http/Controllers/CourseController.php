@@ -8,6 +8,7 @@ use App\Helpers\GetHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
+use App\Helpers\ResponseHelper;
 use App\Http\Requests\CourseRequest;
 use Illuminate\Support\Facades\Validator;
 
@@ -28,21 +29,21 @@ class CourseController extends Controller
 
     public function deleteCourse (Request $request)
     {
-        $course = Course::findeOrFail( $request->id);
+        $course = Course::findOrFail( $request->id);
         return DeleteHelper::deleteModel($course);
     }
 
-    public function retrieveCourses(Request $request)
+    public function retrieveCourses()
     {
-        $attributes = ['id', 'arabic_name', 'english_name'];
-        return GetHelper::retrieveModels(Course::class, $attributes, null);
+        // $attributes = ['id', 'arabic_name', 'english_name'];
+        return GetHelper::retrieveModels(Course::class);
     }
 
     public function retrieveEditableCourse(Request $request)
     {
         $attributes = ['arabic_name', 'english_name'];
         $conditionAttribute = ['id', $request->id];
-        return GetHelper::retrieveModels(Course::class, $attributes, $conditionAttribute);
+        return GetHelper::retrieveModel(Course::class, $attributes, $conditionAttribute);
     }
 
     public function rules(Request $request): array
