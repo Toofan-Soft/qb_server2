@@ -29,14 +29,13 @@ class DepartmentController extends Controller
         }
 
         // Gate::authorize('create', Department::class);
-
         $college = College::findOrFail($request->college_id);
         $college->departments()->create([
             'arabic_name' => $request->arabic_name,
             'english_name' => $request->english_name,
             'levels_count' => $request->levels_count ,
-            'description' => $request->description?? null,
-            'logo_url' => ImageHelper::uploadImage($request->logo)
+            // 'description' => $request->description?? null,
+            // 'logo_url' => ImageHelper::uploadImage($request->logo)
         ]);
        return ResponseHelper::success();
     }
@@ -47,7 +46,7 @@ class DepartmentController extends Controller
             return  ResponseHelper::clientError(401);
         }
 
-        Gate::authorize('update', Department::class);
+        // Gate::authorize('update', Department::class);
 
         $department = Department::findOrFail($request->id);
         $department->update([
@@ -63,7 +62,7 @@ class DepartmentController extends Controller
 
     public function deleteDepartment(Request $request)
     {
-        Gate::authorize('delete', Department::class);
+        // Gate::authorize('delete', Department::class);
         $department = Department::findOrFail($request->id);
         return DeleteHelper::deleteModel($department);
     }

@@ -34,11 +34,11 @@ class GetHelper
      * return:
      */
 
-    public static function retrieveModels($model, $attributes = null, $conditionAttribute = [], $enumReplacements = null, $columnReplacements = null)
+    public static function retrieveModels($model, $attributes = null, $conditionAttributes = [], $enumReplacements = null, $columnReplacements = null)
     {
         $query = $model::query();
         $rows = null;
-        if (empty($conditionAttribute)) {
+        if (empty($conditionAttributes)) {
             if (empty($attributes)) {
                 $rows = $model::all();
             } else {
@@ -47,16 +47,16 @@ class GetHelper
         } else {
             if (empty($attributes)) {
 
-                $query = $query->where(function ($query) use ($conditionAttribute) {
-                    foreach ($conditionAttribute as $column => $value) {
+                $query = $query->where(function ($query) use ($conditionAttributes) {
+                    foreach ($conditionAttributes as $column => $value) {
                         $query->where($column, '=', $value);
                     }
                 });
                 $rows = $query->get();
             } else {
 
-                $query = $query->where(function ($query) use ($conditionAttribute) {
-                    foreach ($conditionAttribute as $column => $value) {
+                $query = $query->where(function ($query) use ($conditionAttributes) {
+                    foreach ($conditionAttributes as $column => $value) {
                         $query->where($column, '=', $value);
                     }
                 });
@@ -70,6 +70,8 @@ class GetHelper
                 $row->logo_url = asset($row->logo_url);
             } elseif (isset($row->image_url)) {
                 $row->image_url = asset($row->image_url);
+            } elseif (isset($row->attachmetn_url)) {
+                $row->attachmetn_url = asset($row->attachmetn_url);
             }
         }
 
@@ -88,55 +90,54 @@ class GetHelper
     }
 
 
-    public static function retrieveModel($model, $attributes = null, $conditionAttribute = [], $enumReplacements = null, $columnReplacements = null)
+    public static function retrieveModel($model, $attributes = null, $conditionAttributes = [], $enumReplacements = null, $columnReplacements = null)
     {
         $query = $model::query();
-        $rows = null;
-        if (empty($conditionAttribute)) {
+        $row = null;
+        if (empty($conditionAttributes)) {
             if (empty($attributes)) {
-                $rows = $model::all();
+                $row = $model::all();
             } else {
-                $rows = $model::all($attributes);
+                $row = $model::all($attributes);
             }
         } else {
             if (empty($attributes)) {
 
-                $query = $query->where(function ($query) use ($conditionAttribute) {
-                    foreach ($conditionAttribute as $column => $value) {
+                $query = $query->where(function ($query) use ($conditionAttributes) {
+                    foreach ($conditionAttributes as $column => $value) {
                         $query->where($column, '=', $value);
                     }
                 });
-                $rows = $query->first();
+                $row = $query->first();
             } else {
 
-                $query = $query->where(function ($query) use ($conditionAttribute) {
-                    foreach ($conditionAttribute as $column => $value) {
+                $query = $query->where(function ($query) use ($conditionAttributes) {
+                    foreach ($conditionAttributes as $column => $value) {
                         $query->where($column, '=', $value);
                     }
                 });
 
-                $rows = $query->first($attributes);
+                $row = $query->first($attributes);
             }
         }
 
-        foreach ($rows as $row) {
-            if (isset($row->logo_url)) {
-                $row->logo_url = asset($row->logo_url);
-            } elseif (isset($row->image_url)) {
-                $row->image_url = asset($row->image_url);
-            }
+        if (isset($row->logo_url)) {
+            $row->logo_url = asset($row->logo_url);
+        } elseif (isset($row->image_url)) {
+            $row->image_url = asset($row->image_url);
+        } elseif (isset($row->attachmetn_url)) {
+            $row->attachmetn_url = asset($row->attachmetn_url);
         }
 
         if ($enumReplacements) {
-            $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
+            $row = ProcessDataHelper::enumsConvertIdToName($row, $enumReplacements);
         }
 
         if ($columnReplacements) {
-            $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
+            $row = ProcessDataHelper::columnConvertIdToName($row, $columnReplacements);
         }
 
 
-        return ResponseHelper::successWithData($rows);
-        
+        return ResponseHelper::successWithData($row);
     }
 }
