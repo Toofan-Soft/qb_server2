@@ -27,7 +27,7 @@ class CollegeController extends Controller
 
     public function addCollege(Request $request)
     {
-        if( ValidateHelper::validateData($request, $this->rules($request))){
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
         College::create([
@@ -35,33 +35,32 @@ class CollegeController extends Controller
             'english_name' => $request->english_name,
             'phone' => $request->phone ?? null,
             'email' => $request->email ?? null,
-            'description' => $request->description?? null,
+            'description' => $request->description ?? null,
             'facebook' => $request->facebook ?? null,
-            'youtube' => $request->youtube?? null,
+            'youtube' => $request->youtube ?? null,
             'x_platform' => $request->x_platform ?? null,
             'telegram' => $request->telegram ?? null,
             'logo_url' => ImageHelper::uploadImage($request->logo)
         ]);
 
-       return ResponseHelper::success();
-       
+        return ResponseHelper::success();
     }
 
-    public function modifyCollege (Request $request)
+    public function modifyCollege(Request $request)
     {
 
-        if(ValidateHelper::validateData($request, $this->rules($request))){
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
 
         $college = College::findOrFail($request->id);
         $college->update([
-            'arabic_name' => $request->arabic_name ?? $college->arabic_name ,
+            'arabic_name' => $request->arabic_name ?? $college->arabic_name,
             'english_name' => $request->english_name ?? $college->english_name,
             'phone' => $request->phone ??  $college->phone,
             'email' => $request->email ?? $college->email,
-            'description' => $request->description?? $college->description,
-            'youtube' => $request->youtube?? $college->youtube,
+            'description' => $request->description ?? $college->description,
+            'youtube' => $request->youtube ?? $college->youtube,
             'facebook' => $request->facebook ?? $college->facebook,
             'x_platform' => $request->x_platform ?? $college->x_platform,
             'telegram' => $request->telegram ?? $college->telegram,
@@ -70,24 +69,24 @@ class CollegeController extends Controller
 
         // event(new FireEvent($college));
 
-      return ResponseHelper::success();
+        return ResponseHelper::success();
     }
 
 
-    public function deleteCollege (Request $request)
+    public function deleteCollege(Request $request)
     {
-        $college = College::findOrFail( $request->id);
+        $college = College::findOrFail($request->id);
         return DeleteHelper::deleteModel($college);
     }
 
-    public function retrieveColleges ()
+    public function retrieveColleges()
     {
         $attributes = ['id', 'arabic_name', 'english_name', 'phone', 'email', 'logo_url'];
         return GetHelper::retrieveModels(College::class, $attributes);
     }
-    public function retrieveBasicCollegesInfo ()
+    public function retrieveBasicCollegesInfo()
     {
-        $attributes = ['id', 'arabic_name as name','logo_url'];
+        $attributes = ['id', 'arabic_name as name', 'logo_url'];
         return GetHelper::retrieveModels(College::class, $attributes);
     }
 
@@ -119,37 +118,36 @@ class CollegeController extends Controller
 
 
 
-    // $result = DB::table('course_parts')
-    // ->join('courses', 'course_parts.course_id', '=', 'courses.id')
-    // ->join('department_courses', 'courses.id', '=', 'department_courses.course_id')
-    // ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-    // ->select('course_parts.part_id as part_name',
-    //     'courses.arabic_name as course_name')
-    // ->when($request->status, function ($query) use ($request){
-    //     return $query->where('course_parts.status', '=', $request->status);
-    // })
-    // ->when($request->status === null , function ($query) {
-    //     return $query->selectRaw('department_courses.semester as semester_name'); // follow when
-    // })
-    // ->where('course_parts.course_id', '=', $request->id)
-    // ->get();
+        // $result = DB::table('course_parts')
+        // ->join('courses', 'course_parts.course_id', '=', 'courses.id')
+        // ->join('department_courses', 'courses.id', '=', 'department_courses.course_id')
+        // ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+        // ->select('course_parts.part_id as part_name',
+        //     'courses.arabic_name as course_name')
+        // ->when($request->status, function ($query) use ($request){
+        //     return $query->where('course_parts.status', '=', $request->status);
+        // })
+        // ->when($request->status === null , function ($query) {
+        //     return $query->selectRaw('department_courses.semester as semester_name'); // follow when
+        // })
+        // ->where('course_parts.course_id', '=', $request->id)
+        // ->get();
 
 
-    // // this for merge
-    // $college = array_merge($college->toArray(),  $departments->toArray());
-   // $college = College::find($request->id);
-    // $departments = $college->departments()->get();
+        // // this for merge
+        // $college = array_merge($college->toArray(),  $departments->toArray());
+        // $college = College::find($request->id);
+        // $departments = $college->departments()->get();
 
-    //$college = ImageHelper::addCompleteDomainToMediaUrls($college);
+        //$college = ImageHelper::addCompleteDomainToMediaUrls($college);
 
         //return response()->json(['data' => User::all()  ], 200);
         // $college = College::with(['departments:id,arabic_name as name,college_id'])->find($request->id); // لازم العمود حق العلاقه يكون ضمن البيانات المحددة
-////////////////////
+        ////////////////////
 
-        $attributes = [ 'arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
+        $attributes = ['arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
         $conditionAttribute = ['id' => $request->id];
         return GetHelper::retrieveModel(College::class, $attributes, $conditionAttribute);
-
     }
 
 
@@ -175,6 +173,4 @@ class CollegeController extends Controller
         }
         return $rules;
     }
-
-
 }
