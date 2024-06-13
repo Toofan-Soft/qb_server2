@@ -33,6 +33,7 @@ class InitialDatabaseController extends Controller
         // InitialDatabaseHelper::courses();
         // InitialDatabaseHelper::chapters();
         // InitialDatabaseHelper::topics();
+        
         $temp = InitialDatabaseHelper::questions();
         return ResponseHelper::successWithData($temp);
         return ResponseHelper::success();

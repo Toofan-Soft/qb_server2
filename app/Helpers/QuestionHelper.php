@@ -4,16 +4,11 @@ namespace App\Helpers;
 
 use App\Models\Choice;
 use App\Models\Question;
-use App\Models\RealExam;
-use Illuminate\Http\Request;
-use GuzzleHttp\Psr7\Response;
 use App\Enums\ChoiceStatusEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Models\TrueFalseQuestion;
-use Illuminate\Http\UploadedFile;
 use App\Enums\TrueFalseAnswerEnum;
-use Illuminate\Support\Facades\Storage;
-use App\Models\QuestionChoiceCombination;
+use App\Models\QuestionChoicesCombination;
 use App\AlgorithmAPI\GenerateQuestionChoicesCombination;
 
 class QuestionHelper
@@ -32,24 +27,29 @@ class QuestionHelper
         
         $questionChoicesCombination = (new GenerateQuestionChoicesCombination())->execute($algorithmData);
 
-        // Check if $questionChoicesCombination is a string and convert to array
-        if (is_string($questionChoicesCombination)) {
-            $questionChoicesCombination = json_decode($questionChoicesCombination, true);
-        }
-        
-        // Validate that $questionChoicesCombination is an array
-        if (!is_array($questionChoicesCombination)) {
-            throw new \Exception('Expected an array of combinations');
-        }
-        
-        // add question Choices Combination
-        foreach ($questionChoicesCombination as $choiceCombination) {
-            $question->question_choices_combinations()->create([
-                'combination_choices' => $choiceCombination
-            ]);
-        }
+        // // add question Choices Combination
+        // foreach ($questionChoicesCombination as $choiceCombination) {
+        //     $question->question_choices_combinations()->create([
+        //         'combination_choices' => $choiceCombination
+        //     ]);
+        // }
 
-        return ResponseHelper::success();
+        try {
+            // $questionChoicesCombination = (new GenerateQuestionChoicesCombination())->execute($algorithmData);
+            // add question Choices Combination
+            $i = 1;
+            foreach ($questionChoicesCombination as $choiceCombination) {
+                $question->question_choices_combinations()->create([
+                    'combination_id' => $i,
+                    'combination_choices' => $choiceCombination
+                ]);
+                $i++;
+            }
+            // return ResponseHelper::success();
+            return true;
+        } catch (\Throwable $th) {
+            return $th->getMessage();
+        }
     }
 
     /**
@@ -71,7 +71,7 @@ class QuestionHelper
     private static function retrieveCombinationChoices($questionId, $combinationId)
     {
         /// id, content, attachment_url, is_true
-        $combinationChoices = QuestionChoiceCombination::where('question_id', $questionId)
+        $combinationChoices = QuestionChoicesCombination::where('question_id', $questionId)
             ->where('combination_id', $combinationId)
             ->first(['combination_choices']);
 
@@ -101,7 +101,7 @@ class QuestionHelper
 
     private static function retrieveStudentExamCombinationChoices($questionId, $combinationId){
     /// id, content, attachment_url
-    $combinationChoices = QuestionChoiceCombination::where('question_id', '=', $questionId)
+    $combinationChoices = QuestionChoicesCombination::where('question_id', '=', $questionId)
                           ->where('combination_id', '=', $combinationId)
                           ->get(['combination_choices']);
     // convert combinationChoices from string to list, ','

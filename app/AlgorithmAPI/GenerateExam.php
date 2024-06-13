@@ -16,31 +16,29 @@ class GenerateExam
      */
     public function execute($data)
     {
+        $jsonData = json_encode($data);
+        $methodName = 'generate';
+        $process = new Process([
+            'E:\Applications\Python\Python312\python.exe',
+            base_path() . '\app\AlgorithmAPI\PythonModules\examGeneratorAPI\start.py',
+            $methodName,
+            $jsonData
+        ]);
 
-    $jsonData = json_encode($data);
-    $methodName = 'generate';
-    $process = new Process([
-        'C:\Users\Nasser\AppData\Local\Programs\Python\Python39\python.exe',
-        base_path() . 'App\AlgorithmAPI\PythonModules\examGeneratorAPI\start.py',
-        $methodName,
-        $jsonData
-    ]);
+        $process->setEnv([
+            'SYSTEMROOT' => getenv('SYSTEMROOT'),
+            'PATH' => getenv('PATH')
+        ]);
 
-    $process->setEnv([
-        'SYSTEMROOT' => getenv('SYSTEMROOT'),
-        'PATH' => getenv('PATH')
-    ]);
+        $process->run();
 
-    $process->run();
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
 
-    if (!$process->isSuccessful()) {
-        throw new ProcessFailedException($process);
-    }
-
-    // $updatedArray = json_decode($process->getOutput(), true);
-    $resultData = json_decode($process->getOutput());
-    return $resultData;
-
+        // $updatedArray = json_decode($process->getOutput(), true);
+        $resultData = json_decode($process->getOutput());
+        return $resultData;
     }
 }
 

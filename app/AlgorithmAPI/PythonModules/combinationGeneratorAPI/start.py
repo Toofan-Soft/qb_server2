@@ -8,13 +8,14 @@ def combine(json_data):
     choices = []
     for item in json_data:
         choices.append(Choice.from_json(item))
-    return json.dumps(generate(choices), ensure_ascii=False, indent=2)
+    # return json.dumps(generate(choices), ensure_ascii=False, indent=2)
+    return generate(choices)
 
 
 def uncombine(value):
     combination = Combination.uncombine(value)
     return json.dumps([choice.to_dict() for choice in combination.choices], indent=2)
-
+    
 
 def main():
     if len(sys.argv) != 3:

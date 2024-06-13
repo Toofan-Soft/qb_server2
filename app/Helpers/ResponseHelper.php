@@ -32,7 +32,7 @@ class ResponseHelper
         return response()->json(['token' => $data], $number);
     }
 
-    public static function successWithTokenAndUserType($token, $userType ,$number = 202){
+    public static function successWithTokenAndUserType($token, $userType ,$number = 203){
         return response()->json(['token' => $token , 'user_type_id' => $userType], $number);
     }
 

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('question_choice_combinations', function (Blueprint $table) {
-            $table->unsignedBigInteger('combination_id');
+        Schema::create('question_choices_combinations', function (Blueprint $table) {
+            $table->unsignedBigInteger('combination_id')->autoIncrement();
             // $table->unsignedBigInteger('combination_id')->autoIncrement();  // Add ->autoIncrement() for auto-incrementing ID
             // يحتاج الي جعلة يتزايد بشكل تلقائي لكل سؤال على حده، بحيث يبدا من 1 لكل سؤال 
             

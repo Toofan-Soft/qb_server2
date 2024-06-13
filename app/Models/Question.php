@@ -47,7 +47,7 @@ class Question extends Model
         return $this->BelongsTo(Topic::class);
     }
     public function question_choices_combinations() : HasMany {
-        return $this->HasMany(QuestionChoiceCombination::class);
+        return $this->HasMany(QuestionChoicesCombination::class);
     }
 
     public function true_false_question() : HasOne {

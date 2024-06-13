@@ -7,12 +7,17 @@ use App\Models\Course;
 use App\Models\Chapter;
 use App\Models\College;
 use App\Models\Question;
+use App\Models\RealExam;
 use App\Models\Department;
+use App\Models\OnlineExam;
 use App\Enums\LanguageEnum;
+use App\Enums\ExamStatusEnum;
 use App\Enums\CoursePartsEnum;
 use App\Enums\LevelsCountEnum;
 use App\Enums\ChoiceStatusEnum;
+use App\Enums\QuestionStatusEnum;
 use App\Enums\QuestionTypeEnum;
+use App\Enums\RealExamTypeEnum;
 use TheSeer\Tokenizer\Exception;
 
 class InitialDatabaseHelper
@@ -363,17 +368,19 @@ class InitialDatabaseHelper
         $temp = [];
        
             foreach ($raws as $raw) {
-                $topic = Topic::findOrFail(self::selectRandomTopic());
+                // $topic = Topic::findOrFail(self::selectRandomTopic());
+                $topic = Topic::findOrFail(4);
                 // return $topic;
                 $question = $topic->questions()->create([
                     'type' => QuestionTypeEnum::MULTIPLE_CHOICE->value, 
-                    'difficulty_level' => 2.12,//self::selectRandomDifficultyLevel(), 
-                    'accessbility_status' => 1,//self::selectRandomAccessbilityStatus(), 
+                    'difficulty_level' =>self::selectRandomDifficultyLevel(), 
+                    'accessability_status' => self::selectRandomAccessabilityStatus(), 
                     'language' => LanguageEnum::ARABIC->value, 
-                    'estimated_answer_time' => 180,//self::selectRandomEstimatedAnswerTime(), 
+                    'estimated_answer_time' => self::selectRandomEstimatedAnswerTime(), 
                     'content' => $raw['content'], 
                     'attachment' => null,
                     'title' => null,
+                    'status' => 2,
                 ]);
 
                 // $question = Question::create([
@@ -386,8 +393,8 @@ class InitialDatabaseHelper
                 //     'content' => $raw['content'], 
                 // ]);
 
-                return $question;
-                // self::saveQuestionChoices($question, $raw['choices']);
+                // return $question;
+                self::saveQuestionChoices($question, $raw['choices']);
 
             // $question = [
             //     'id' => $raw['id'],
@@ -400,9 +407,75 @@ class InitialDatabaseHelper
             //     'content' => $raw['content'],
             // ];
             // array_push($temp, $question);
+
             }
 
         return $temp;
+    }
+    
+    public static function online_exam()
+    {
+        $exams = [
+            [
+                'type' => 1,
+                'exam_type' => 1,
+                'datetime' => now(),
+                'duration' => 1,
+                
+                'language' => 1,
+                'difficulty_level' => 50.0,
+
+                'forms_count' => 1,
+                'form_configuration_method' => 1,
+                'form_name_method' => 1,
+                
+                'conduct_method' => 1,
+                'datetime_notification_datetime' => now(),
+                'result_notification_datetime' => now(),
+                'status' => 1,
+
+                'questions_types' => [
+                    [
+                        'type' => 1,
+                        'questions_count' => 10,
+                        'question_score' => 1,
+                    ]
+                ]
+            ],
+        ];
+
+        foreach ($exams as $exam) {
+            $realExam = RealExam::create([
+                'type' => $exam['type_id'],
+                'datetime' => $exam['datetime'],
+                'duration' => $exam['duration'],
+                'language' => $exam['language'],
+                'note' => $exam['special_note'] ?? null,
+                'difficulty_level' => $exam['difficulty_level'],
+                'forms_count' => $exam['forms_count'],
+                'form_configuration_method' => $exam['form_configuration_method'],
+                'form_name_method' => $exam['form_name_method'],
+                'exam_type' => RealExamTypeEnum::ONLINE->value,
+                'course_lecturer_id' => 1
+            ]);
+
+            OnlineExam::create([
+                'conduct_method' => $exam['conduct_method'],
+                'exam_datetime_notification_datetime' => $exam['exam_datetime_notification_datetime'],
+                'result_notification_datetime'  => $exam['result_notification_datetime'],
+                'proctor_id' => $exam['proctor_id'] ?? null,
+                'status' => ExamStatusEnum::ACTIVE->value,
+                'id' => $realExam->id,
+            ]);
+
+            foreach ($exam['questions_types'] as $question_type) {
+                $realExam->real_exam_question_types()->create([
+                    'question_type' => $question_type['type'],
+                    'questions_count' => $question_type['questions_count'],
+                    'question_score' => $question_type['question_score'],
+                ]);
+            }
+        }
     }
 
     private static function ReadDataFromJson()
@@ -435,7 +508,7 @@ class InitialDatabaseHelper
         $randomIndex = array_rand($difficultyLevels);
         return $difficultyLevels[$randomIndex];
     }
-    private static function selectRandomAccessbilityStatus(): int
+    private static function selectRandomAccessabilityStatus(): int
     {
         $accessibilityStatuses = [0, 1, 2];
         $randomIndex = array_rand($accessibilityStatuses);
@@ -456,7 +529,7 @@ class InitialDatabaseHelper
     private static function saveQuestionChoices(Question $question, $choices)
     {
         foreach ($choices as $choice) {
-            $question =  $question->choices()->create([
+            $question->choices()->create([
                 'content' => $choice['content'],
                 'status' => ($choice['isCorrect']) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value
             ]);
