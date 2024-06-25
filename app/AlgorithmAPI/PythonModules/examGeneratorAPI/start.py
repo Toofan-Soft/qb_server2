@@ -1,9 +1,10 @@
 import json
+import sys
 
 from generator import generate_exam
 
 
-def     (json_data):
+def generate(json_data):
     """
     Generate an exam based on the given JSON data.
     Parameters:
@@ -34,7 +35,31 @@ def     (json_data):
     estimated_time = json_data["estimated_time"]
 
     result = generate_exam(questions, forms_count, question_types_and_questions_count, difficulty_level, estimated_time)
-    return json.dumps(result, ensure_ascii=False, indent=2)
+    # return json.dumps(result, ensure_ascii=False, indent=2)
+    return result
+
+
+def main():
+    if len(sys.argv) != 3:
+        print("Usage: python example.py <method_name> <json_data>")
+        sys.exit(1)
+
+    method_name = sys.argv[1]
+    json_data = sys.argv[2]
+    data = json.loads(json_data)
+
+    if method_name == 'generate':
+        result = generate(data)
+    else:
+        print(f"Unknown method: {method_name}")
+        sys.exit(1)
+
+    # Output result as JSON
+    print(json.dumps(result))
+
+
+if __name__ == "__main__":
+    main()
 
 
 # json_data = {

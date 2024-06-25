@@ -186,7 +186,7 @@ class DepartmentCourseController extends Controller
             $departmentCourses['department_courses'] = $semestersCourses;
         }
 
-        return ResponseHelper::successWithData($departmentCourses);
+        return ResponseHelper::successWithData([$departmentCourses]);
         // if we optimized that :
         // $departmentCourses = DepartmentCourse::with([
         //     'semester:number,name as semester_name', // Eager load semester with renamed attribute

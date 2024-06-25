@@ -30,6 +30,7 @@ class CollegeController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
+
         College::create([
             'arabic_name' => $request->arabic_name,
             'english_name' => $request->english_name,
@@ -45,7 +46,7 @@ class CollegeController extends Controller
 
         return ResponseHelper::success();
     }
-
+    
     public function modifyCollege(Request $request)
     {
 

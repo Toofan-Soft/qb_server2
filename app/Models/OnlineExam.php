@@ -2,10 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\ExamStatusEnum;
-use App\Enums\OnlineExamStateEnum;
-use App\Enums\ExamConductMethodEnum;
-use App\Enums\ExamProcedureMethodEnum;
+use App\Helpers\DatetimeHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -39,9 +36,14 @@ class OnlineExam extends Model
     }
 
 
-    public function setExamDatetimeNotificationDatetimeAttribute($value)
+    // public function setExamDatetimeNotificationDatetimeAttribute($value) // NSR
+    // {
+    //     $this->attributes['exam_datetime_notification_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
+    // }
+
+    public function setExamDatetimeNotificationDatetimeAttribute($value) // M7D
     {
-        $this->attributes['exam_datetime_notification_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
+        $this->attributes['exam_datetime_notification_datetime'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
     }
 
 
@@ -51,9 +53,14 @@ class OnlineExam extends Model
     }
 
     
-    public function setResultNotificationDatetimeAttribute($value)
+    // public function setResultNotificationDatetimeAttribute($value) // NSR
+    // {
+    //     $this->attributes['result_notification_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
+    // }
+
+    public function setResultNotificationDatetimeAttribute($value) // M7D
     {
-        $this->attributes['result_notification_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
+        $this->attributes['result_notification_datetime'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
     }
 
     public function student_online_exams() : HasMany {

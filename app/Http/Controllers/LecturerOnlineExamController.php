@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Form;
-use App\Models\User;
 use App\Models\Topic;
 use App\Models\Employee;
 use App\Models\RealExam;
 use App\Enums\LevelsEnum;
-use App\Helpers\AddHelper;
 use App\Models\OnlineExam;
 use App\Enums\ExamTypeEnum;
 use App\Enums\LanguageEnum;
@@ -16,20 +13,16 @@ use App\Enums\SemesterEnum;
 use App\Helpers\ExamHelper;
 use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
-use App\Helpers\DeleteHelper;
 use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\DatetimeHelper;
-use App\Helpers\QuestionHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
-use App\Helpers\OnlinExamHelper;
 use App\Enums\FormNameMethodEnum;
 use App\Enums\QuestionStatusEnum;
-use App\Helpers\EnumReplacement1;
 use App\AlgorithmAPI\GenerateExam;
 use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
@@ -45,19 +38,17 @@ use App\Models\Question;
 class LecturerOnlineExamController extends Controller
 {
     public function addOnlineExam(Request $request)
-    {        
+    {
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError(401);
         }
 
         $algorithmData = $this->getAlgorithmData($request);
-        // return ResponseHelper::successWithData($algorithmData);
 
         $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
 
-        return ResponseHelper::successWithData($examFormsQuestions);
-
-        if ($examFormsQuestions->data) { // modify to use has function
+        // if ($examFormsQuestions->data) { // modify to use has function
+        if ($examFormsQuestions) { // modify to use has function
             // $user = User::findOrFail(auth()->user()->id);
 
             // $employee = Employee::where('user_id',  $user->id)->first();
@@ -100,19 +91,17 @@ class LecturerOnlineExamController extends Controller
             }
 
             //////////add Topics of exam
-
             foreach ($examFormsQuestions as $questionsIds) {
                 $formQuestions = $this->getQuestionsChoicesCombinations($questionsIds);
                 $form = $realExam->forms()->create();
                 foreach ($formQuestions as $question) {
                     $form->form_questions()->create([
-                        'question_id' => $question->question_id,
-                        'combination_id' => $question->combination_id ?? null,
+                        'question_id' => $question['question_id'],
+                        'combination_id' => $question['combination_id'] ?? null,
                     ]);
                 }
             }
             ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
-
 
             return ResponseHelper::successWithData($realExam->id);
         } else {
@@ -178,14 +167,20 @@ class LecturerOnlineExamController extends Controller
             ->where('department_course_parts.id', '=', $request->department_course_part_id)
             ->get();
 
-        if (!$request->status_id && !$request->type_id) {
+        // if (!$request->status_id && !$request->type_id) {
+        //     array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
+        //     array_push($enumReplacements,  new EnumReplacement('status_name', ExamStatusEnum::class));
+        // } elseif ($request->status_id && !$request->type_id) {
+        //     array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
+        // } else {
+        //     array_push($enumReplacements,  new EnumReplacement('status_name', ExamStatusEnum::class));
+        // }
 
-            array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
+        if (!$request->status_id) {
             array_push($enumReplacements,  new EnumReplacement('status_name', ExamStatusEnum::class));
-        } elseif ($request->status_id && !$request->type_id) {
+        }
+        if (!$request->type_id) {
             array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
-        } else {
-            array_push($enumReplacements,  new EnumReplacement('status_name', ExamStatusEnum::class));
         }
 
         $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, $enumReplacements);
@@ -278,6 +273,16 @@ class LecturerOnlineExamController extends Controller
         $questionTypes = ProcessDataHelper::enumsConvertIdToName($questionTypes, [
             new EnumReplacement('type_name', QuestionTypeEnum::class),
         ]);
+
+        $questionTypes = $questionTypes->map(function ($type) {
+            return [
+                'type_name' => $type->type_name,
+                'questions_count' => $type->questions_count,
+                'question_score' => (float) $type->question_score,
+            ];
+        })
+        ->toArray();
+
         //*** make unset to : 'department_id', 'course_id', 'college_id', 'course_lecturer_id'
         $departmentCourse = $departmentCourse->toArray();
         unset($departmentCourse['department_id']);
@@ -300,6 +305,8 @@ class LecturerOnlineExamController extends Controller
             $course->toArray();
 
         $realExam['questionTypes'] = $questionTypes;
+
+        $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
 
         return ResponseHelper::successWithData($realExam);
     }

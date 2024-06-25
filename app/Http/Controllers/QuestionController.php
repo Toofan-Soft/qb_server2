@@ -2,20 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Algorithm\QuestionChoices;
 use App\Models\Topic;
 use App\Models\Choice;
-use App\Models\College;
 use App\Models\Question;
-use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Enums\LanguageEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
-use App\Helpers\ModifyHelper;
-use App\Enums\CoursePartsEnum;
-use App\Enums\LevelsCountEnum;
 use App\Enums\ChoiceStatusEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Helpers\QuestionHelper;

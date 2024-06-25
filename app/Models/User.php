@@ -4,9 +4,6 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use Illuminate\Support\Str;
-use App\Enums\OwnerTypeEnum;
-use App\Enums\UserStatusEnum;
 use App\Traits\Uuids;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Notifications\Notifiable;

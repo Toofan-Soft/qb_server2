@@ -2,14 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\ExamTypeEnum;
-use App\Enums\FormNameEnum;
-use App\Enums\LanguageEnum;
-use App\Enums\RealExamTypeEnum;
-use App\Enums\FormNameMethodEnum;
-use App\Enums\ExamDifficultyLevelEnum;
+use App\Helpers\DatetimeHelper;
 use Illuminate\Database\Eloquent\Model;
-use App\Enums\FormConfigurationMethodEnum;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -47,12 +41,20 @@ class RealExam extends Model
 
     public function getDateTimeAttribute($value)
     {
-        return strtotime($value);
+        // return strtotime($value); // previous (NSR)
+        return date('Y-m-d H:i:s', strtotime($value)); // new (M7D)
     }
 
+    // previous (NSR)
+    // public function setDateTimeAttribute($value)
+    // {
+    //     $this->attributes['datetime'] = date('Y-m-d H:i:s', $value);
+    // }
+
+    // new (M7D)
     public function setDateTimeAttribute($value)
     {
-        $this->attributes['datetime'] = date('Y-m-d H:i:s', $value);
+        $this->attributes['datetime'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
     }
 
     public function course_lecturer() : BelongsTo {

@@ -12,6 +12,7 @@ use App\Enums\JobTypeEnum;
 use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
 use Illuminate\Http\Request;
+// use Ichtrojan\Otp\Models\Otp;
 use App\Helpers\ResponseHelper;
 use App\Enums\QualificationEnum;
 use App\Helpers\EnumReplacement;
@@ -83,7 +84,6 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
-
         $owner = null;
         $enumReplacements = [];
 
@@ -99,8 +99,7 @@ class UserController extends Controller
 
         }else{
             $attributes = ['arabic_name', 'english_name' , 'phone', 'image_url', 'specialization',
-            'qualification as qualification_name', 'job_type as job_type_name'
-        ];
+            'qualification as qualification_name', 'job_type as job_type_name'];
             $owner = Employee::where('user_id', $user->id)->first($attributes);
             array_push($enumReplacements, new EnumReplacement('qualification_name', QualificationEnum::class));
             array_push($enumReplacements, new EnumReplacement('job_type_name', JobTypeEnum::class));
