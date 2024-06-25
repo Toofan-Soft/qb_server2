@@ -128,7 +128,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('modify', [CourseController::class, 'modifyCourse']);
         Route::delete('delete', [CourseController::class, 'deleteCourse']);
         Route::get('retrieve-editable', [CourseController::class, 'retrieveEditableCourse']);
-        Route::get('retrieve-editable', [CourseController::class, 'retrieveEditableCourse']); //http://127.0.0.1:8000/api/colleges/1
+        // Route::get('retrieve-editable', [CourseController::class, 'retrieveEditableCourse']); //http://127.0.0.1:8000/api/colleges/1
         Route::get('retrieve-list', [CourseController::class, 'retrieveCourses']);
     });
 
