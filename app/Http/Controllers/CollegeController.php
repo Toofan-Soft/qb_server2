@@ -31,20 +31,20 @@ class CollegeController extends Controller
             return  ResponseHelper::clientError(401);
         }
 
-        College::create([
-            'arabic_name' => $request->arabic_name,
-            'english_name' => $request->english_name,
-            'phone' => $request->phone ?? null,
-            'email' => $request->email ?? null,
-            'description' => $request->description ?? null,
-            'facebook' => $request->facebook ?? null,
-            'youtube' => $request->youtube ?? null,
-            'x_platform' => $request->x_platform ?? null,
-            'telegram' => $request->telegram ?? null,
-            'logo_url' => ImageHelper::uploadImage($request->logo)
-        ]);
+        // College::create([
+        //     'arabic_name' => $request->arabic_name,
+        //     'english_name' => $request->english_name,
+        //     'phone' => $request->phone ?? null,
+        //     'email' => $request->email ?? null,
+        //     'description' => $request->description ?? null,
+        //     'facebook' => $request->facebook ?? null,
+        //     'youtube' => $request->youtube ?? null,
+        //     'x_platform' => $request->x_platform ?? null,
+        //     'telegram' => $request->telegram ?? null,
+        //     'logo_url' => ImageHelper::uploadImage($request->logo)
+        // ]);
 
-        return ResponseHelper::success();
+        // return ResponseHelper::success();
         try {
             College::create([
                 'arabic_name' => $request->arabic_name,
