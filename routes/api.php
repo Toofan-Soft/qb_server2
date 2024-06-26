@@ -61,7 +61,7 @@ use App\Http\Controllers\DepartmentCoursePartController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
-
+use Illuminate\Support\Facades\DB;
 
 Route::post('user/register', [GuestController::class, 'addGuest']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);
@@ -529,7 +529,15 @@ Route::get('execute-python', function () {
     return $process->getOutput();
 });
 
-// Route::get('test', function () {
-//  return auth()->user()->first();
-// });
+Route::get('test', function () {
+ return DB::table('true_false_questions')
+//  ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
+//  ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
+//  ->join('students', 'course_students.student_id', '=', 'students.id')
+//  ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'gender as gender_name', 'image_url')
+//  ->where('departments.id', '=', 1)
+//  ->where('department_courses.level', '=', 1)
+//  ->distinct()
+ ->get();
+});
 

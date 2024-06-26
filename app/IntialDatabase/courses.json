@@ -1,5 +1,9 @@
 [
     {
+        "arabic_name": "لغة انجليزية",
+        "english_name": "English Language"
+    },
+    {
         "arabic_name": "ذكاء صناعي",
         "english_name": "Artificial Intelligent"
     },
@@ -14,5 +18,9 @@
     {
         "arabic_name": "معالجة صور رقمية", 
         "english_name": "Digtal Image Processing"
+    },
+    {
+        "arabic_name": "تشريح", 
+        "english_name": "Anatomy"
     }
 ]

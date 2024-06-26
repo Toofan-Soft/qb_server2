@@ -21,20 +21,24 @@ class GuestController extends Controller
         // if (ValidateHelper::validateData($request, $this->rules($request))) {
         //     return  ResponseHelper::clientError(401);
         // }
+        // return ResponseHelper::successWithData(ValidateHelper::validateData($request, $this->rules($request)));
+
         if ($x = ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError1($x);
         }
+        
         $guest =  Guest::create([
             'name' => $request->name,
             'gender' =>  $request->gender_id,
             'phone' => $request->phone ?? null,
             'image_url' => ImageHelper::uploadImage($request->image) ,
         ]);
-
+        
         //  $response = UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password);
         //  return ResponseHelper::successWithToken($response);
 
-
+        return ResponseHelper::successWithData(UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password));
+        
         if(!UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password)) {
             return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
         }

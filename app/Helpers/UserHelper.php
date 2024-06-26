@@ -53,7 +53,7 @@ class UserHelper
             $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
             array_push($roles, RoleEnum::LECTURER->value);
         }
-
+        
         foreach ($roles as $role) {
             $user->user_roles()->create([
                 'role_id' => $role,

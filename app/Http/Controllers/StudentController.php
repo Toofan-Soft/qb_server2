@@ -38,9 +38,10 @@ class StudentController extends Controller
 
     public function addStudent(Request $request)
     {
-        if ($v=ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError1($v);
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError1(401);
         }
+
         $student =  Student::create([
             'academic_id' => $request->academic_id,
             'arabic_name' =>  $request->arabic_name,

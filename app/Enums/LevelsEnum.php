@@ -27,5 +27,43 @@ enum LevelsEnum: int {
         };
     }
 
+    public static function getValuesByLevesCount($levelsCount): array {
+
+       $levels = [
+        [
+           'id' => LevelsEnum::FIRST,
+           'name' => 'الاول',
+       ],
+        [
+           'id' => LevelsEnum::SECOND,
+           'name' => 'الثاني',
+       ],
+        [
+           'id' => LevelsEnum::THIRD,
+           'name' => 'الثالث',
+       ],
+        [
+           'id' => LevelsEnum::FORTH,
+           'name' => 'الرابع',
+       ],
+        [
+           'id' => LevelsEnum::FIFTH,
+           'name' => 'الخامس',
+       ],
+        [
+           'id' => LevelsEnum::SIXTH,
+           'name' => 'السادس',
+       ],
+        [
+           'id' => LevelsEnum::SEVENTH,
+           'name' => 'السابع',
+       ]
+        ];
+        $temp = [];
+       for ($i=0; $i < $levelsCount; $i++) { 
+        array_push($temp, $levels[$i]);
+       }
+       return $temp;
+    }
 
 }

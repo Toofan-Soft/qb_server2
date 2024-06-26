@@ -45,28 +45,27 @@ class QuestionController extends Controller
                 'title' => $request->title ?? null,
                 'attachment' => ImageHelper::uploadImage($request->attachment),
             ]);
+            if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
+                $question->true_false_question()->create([
+                    'answer' => ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
+                ]);
+            }
+            // else{
+            //     if ($request->has('choices')) {
+            //         foreach ($request->choices as $choice) {
+            //             $question->choice()->create([
+            //                 'content' => $choice['content'],
+            //                 'attachment' => $choice['attachment'] ?? null,
+            //                 'status' => $choice['is_true'] ,
+            //             ]);
+            //         }
+            //     }
+            // }
+            return ResponseHelper::success();
         } catch (\Throwable $th) {
-            return  ResponseHelper::successWithData($th->getMessage());
+            // return  ResponseHelper::successWithData($th->getMessage());
+            return ResponseHelper::serverError();
         }
-
-
-        // if ($question->type === QuestionTypeEnum::TRUE_FALSE->value) {
-        //     $question->true_false_question()->create([
-        //         'answer' => ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
-        //     ]);
-        // }
-        // // else{
-        // //     if ($request->has('choices')) {
-        // //         foreach ($request->choices as $choice) {
-        // //             $question->choice()->create([
-        // //                 'content' => $choice['content'],
-        // //                 'attachment' => $choice['attachment'] ?? null,
-        // //                 'status' => $choice['is_true'] ,
-        // //             ]);
-        // //         }
-        // //     }
-        // // }
-        return ResponseHelper::success();
     }
 
     public function modifyQuestion(Request $request, Question $question)
@@ -85,7 +84,7 @@ class QuestionController extends Controller
             'attachment' => ImageHelper::updateImage($request->attachment, $question->attachment),
         ]);
 
-        if ($question->type === QuestionTypeEnum::TRUE_FALSE->value) {
+        if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
             if ($request->has('is_true')) {
                 $question->true_false_question()->update([
                     'answer' => ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
@@ -97,10 +96,12 @@ class QuestionController extends Controller
 
     public function deleteQuestion(Request $request)
     {
-        $question = Question::findeOrFail($request->id);
-        $question->question_usages()->delete();
+        $question = Question::findOrFail($request->id);
+        if(intval($question->status) === QuestionStatusEnum::ACCEPTED->value){
+            $question->question_usages()->delete();
+        }
 
-        if ($question->type === TrueFalseAnswerEnum::TRUE->value) {
+        if (intval($question->type) === TrueFalseAnswerEnum::TRUE->value) {
             $question->true_false_question()->delete();
         } else {
             QuestionChoicesCombination::where('question_id', '=', $question->id)->delete();
@@ -109,7 +110,7 @@ class QuestionController extends Controller
         $question->delete();
         return ResponseHelper::success();
 
-        //    $question = Question::findeOrFail( $request->id);
+        //    $question = Question::findOrFail( $request->id);
 
         //    if($question->type === TrueFalseAnswerEnum::TRUE->value ){
         //    return DeleteHelper::deleteModel($question->true_false_question());
@@ -153,16 +154,16 @@ class QuestionController extends Controller
     {
         //
         $attributes = [
-            'type', 'difficulty_level as difficulty_level_name', 'status',
+            'id', 'type', 'difficulty_level as difficulty_level_name', 'status',
             'accessability_status as accessibility_status_name',
             'language as language_name', 'estimated_answer_time', 'content',
             'attachment as attachment_url', 'title'
         ];
         $question = Question::findOrFail($request->id, $attributes);
-
-        if ($question->type === QuestionTypeEnum::TRUE_FALSE->value) {
-            $trueFalseQuestion = $question->true_false_question()->get(['answer']);
-            if ($trueFalseQuestion->answer === TrueFalseAnswerEnum::TRUE->value) {
+                
+        if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
+            $trueFalseQuestion = $question->true_false_question()->first(['answer']);
+            if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
                 $question['is_true'] = true;
             } else {
                 $question['is_true'] = false;
@@ -170,7 +171,7 @@ class QuestionController extends Controller
         } else {
             $choices = $question->choices()->get(['id', 'content', 'attachment as attachment_url', 'status as is_true']);
             foreach ($choices as $choice) {
-                if ($choice->is_true === ChoiceStatusEnum::CORRECT_ANSWER->value) {
+                if (intval($choice->is_true) === ChoiceStatusEnum::CORRECT_ANSWER->value) {
                     $choice['is_true'] = true;
                 } else {
                     $choice['is_true'] = false;
@@ -179,6 +180,7 @@ class QuestionController extends Controller
             $question['choices'] = $choices;
         }
         unset($question['type']);
+        unset($question['id']);
         $status = [];
 
         if (intval($question->status) === QuestionStatusEnum::NEW->value) {
@@ -247,10 +249,11 @@ class QuestionController extends Controller
         $this->modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
 
         $question = Question::findOrFail($request->id);
-        // $question->question_usage()->create();
+        $question->question_usage()->create();
 
         if (intval($question->type) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
-            return ResponseHelper::successWithData(QuestionHelper::generateQuestionChoicesCombination($question));
+            // return ResponseHelper::successWithData(QuestionHelper::generateQuestionChoicesCombination($question));
+            QuestionHelper::generateQuestionChoicesCombination($question);
         }
 
         return ResponseHelper::success();
@@ -281,6 +284,7 @@ class QuestionController extends Controller
             'title' => 'nullable|string',
             'type_id' => ['required', new Enum(QuestionTypeEnum::class)], // Assuming QuestionTypeEnum holds valid values
             // 'difficulty_level_id' => 'required|float',
+            'difficulty_level_id' => 'required',
             'status' => new Enum(QuestionStatusEnum::class), // Assuming QuestionStatusEnum holds valid values
             'accessability_status_id' => ['required', new Enum(AccessibilityStatusEnum::class)], // Assuming AccessibilityStatusEnum holds valid values
             'estimated_answer_time' => 'required|integer',
