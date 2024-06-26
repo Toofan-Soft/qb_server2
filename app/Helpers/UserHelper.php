@@ -31,10 +31,10 @@ class UserHelper
 
         $user = User::create([
             'email' => $email,
-            'password' => ($password) ?  bcrypt($password) : $generatedToken,
+            'password' => ($password) ? bcrypt($password) : $generatedToken,
             'status' => UserStatusEnum::ACTIVATED->value,
             'owner_type' => $ownerTypeId,
-            'email_verified_at' =>($ownerTypeId === OwnerTypeEnum::GUEST->value) ? null: now(),
+            // 'email_verified_at' =>($ownerTypeId === OwnerTypeEnum::GUEST->value) ? null: now(),
         ]);
 
         $owner = null;

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
-use App\Models\Guest;
 use Ichtrojan\Otp\Otp;
+use App\Models\Guest;
 use App\Models\Student;
 use App\Models\Employee;
 use App\Enums\GenderEnum;
@@ -24,27 +25,67 @@ use App\Notifications\ResetPasswordNotificationVerification;
 
 class UserController extends Controller
 {
+    private $otp;
 
-    private $otp ;
     public function __construct(){
-        $this->otp=new Otp();
+        $this->otp = new Otp();
     }
 
     public function verifyAccount(Request $request)
     {
-        $otp2 = $this->otp->validate($request->email, $request->code);
-        // $otp2 = $this->otp->validate($request->code);
+        $otp2 = $this->otp->validate($request->code);
 
         if(!$otp2->status){
             return ResponseHelper::clientError(401);
         }
-        $user = User::where('email',$otp2->email)->first();
-        $user->update(['email_verified_at' => now()] );
 
-        $token =  $user->createToken('quesionbanklaravelapi')->accessToken;
-        return ResponseHelper::successWithToken($token);
-        // return ResponseHelper::success();
+        $user = User::where('email', $otp2->email)->first();
+        
+        $user->update(['email_verified_at' => now()]);
+
+        return ResponseHelper::success();
     }
+
+    // public function customValidate(string $code)
+    // {
+    //     $otp = Otp::where('token', $code)->first();
+
+    //     if ($otp) {
+    //         if ($otp->valid) {
+    //             $now = Carbon::now();
+    //             $validity = $otp->created_at->addMinutes($otp->validity);
+
+    //             $otp->update(['valid' => false]);
+
+    //             if (strtotime($validity) < strtotime($now)) {
+    //                 return (object)[
+    //                     'status' => false,
+    //                     'message' => 'OTP Expired'
+    //                 ];
+    //             }
+
+    //             $otp->update(['valid' => false]);
+
+    //             return (object)[
+    //                 'status' => true,
+    //                 'message' => 'OTP is valid',
+    //                 'email' => $otp->identifier
+    //             ];
+    //         }
+
+    //         $otp->update(['valid' => false]);
+
+    //         return (object)[
+    //             'status' => false,
+    //             'message' => 'OTP is not valid'
+    //         ];
+    //     } else {
+    //         return (object)[
+    //             'status' => false,
+    //             'message' => 'OTP does not exist'
+    //         ];
+    //     }
+    // }
 
     public function login(Request $request)
     {
@@ -56,18 +97,22 @@ class UserController extends Controller
 
         if ($validation->fails()) {
             return ResponseHelper::clientError(401);
-          }
+        }
 
         if (auth()->attempt($input)) {
             $user = Auth::user();
 
-            if($user->email_verified_at !== null){
+            // return $user;
+
+            if($user->email_verified_at !== false) {
                 $token =  $user->createToken('quesionbanklaravelapi')->accessToken;
                 return ResponseHelper::successWithTokenAndUserType($token, $user->owner_type);
+            } else {
+                return ResponseHelper::clientError(401);
             }
         } else {
             return ResponseHelper::clientError(401);
-          }
+        }
     }
 
     public function logout(Request $request)
@@ -87,7 +132,7 @@ class UserController extends Controller
         $enumReplacements = [];
 
         if(intval($user->owner_type) === OwnerTypeEnum::GUEST->value){
-            $attributes = ['name', 'phone', 'gender as gender_name','image_url'];
+            $attributes = ['name', 'phone', 'gender as gender_name', 'image_url'];
             $owner = Guest::where('user_id', $user->id)->first($attributes);
             array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
 

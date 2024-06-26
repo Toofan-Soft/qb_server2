@@ -42,10 +42,10 @@ class User extends Authenticatable
         return strtotime($value);
     }
 
-    public function setEmailVerifiedAtAttribute($value)
-    {
-        $this->attributes['email_verified_at'] = date('Y-m-d H:i:s', $value);
-    }
+    // public function setEmailVerifiedAtAttribute($value)
+    // {
+    //     $this->attributes['email_verified_at'] = date('Y-m-d H:i:s', $value);
+    // }
     
     public function user_roles() : HasMany {
         return $this->HasMany(UserRole::class);
