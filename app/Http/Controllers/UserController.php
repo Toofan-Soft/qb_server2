@@ -33,8 +33,8 @@ class UserController extends Controller
 
     public function verifyAccount(Request $request)
     {
-        // $otp2 = $this->otp->validate($request->email, $request->code);
-        $otp2 = $this->otp->validate($request->code);
+        $otp2 = $this->otp->validate($request->email, $request->code);
+        // $otp2 = $this->otp->validate($request->code);
 
         if(!$otp2->status){
             return ResponseHelper::clientError(401);

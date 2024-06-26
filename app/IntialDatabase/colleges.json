@@ -4,5 +4,11 @@
         "english_name": "Engineering and Infromation Technology", 
         "phone": 778313999,
         "email": "engineering@gmail.com"
+    },
+    {
+        "arabic_name": "الطب",
+        "english_name": "Medical", 
+        "phone": 778313999,
+        "email": "medical@gmail.com"
     }
 ]

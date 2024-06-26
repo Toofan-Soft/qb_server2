@@ -1,0 +1,36 @@
+[
+    {
+        "course_id": 1,
+        "part_id": 0,
+        "description": "this description for course part, that show the content of the part"
+    },
+
+    {
+        "course_id": 2,
+        "part_id": 0,
+        "description": "this description for course part, that show the content of the part"
+    },
+    {
+        "course_id": 2,
+        "part_id": 1,
+        "description": "this description for course part, that show the content of the part"
+    },
+
+    {
+        "course_id": 3,
+        "part_id": 0,
+        "description": "this description for course part, that show the content of the part"
+    },
+    {
+        "course_id": 3,
+        "part_id": 1,
+        "description": "this description for course part, that show the content of the part"
+    },
+    
+    {
+        "course_id": 4,
+        "part_id": 0,
+        "description": "this description for course part, that show the content of the part"
+    }
+    
+]

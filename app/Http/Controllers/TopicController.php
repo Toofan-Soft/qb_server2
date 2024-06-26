@@ -9,6 +9,8 @@ use App\Helpers\GetHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
+use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 
 class TopicController extends Controller
 {
@@ -17,14 +19,24 @@ class TopicController extends Controller
         return AddHelper::addModel($request, Chapter::class,  $this->rules($request), 'topics', $request->chapter_id);
     }
 
-    public function modifyTopic(Request $request, Topic $topic)
+    public function modifyTopic(Request $request)
     {
-        return ModifyHelper::modifyModel($request, $topic,  $this->rules($request));
+        // return ModifyHelper::modifyModel($request, Topic::class,  $this->rules($request));
+        if( ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
+        }
+        $topic = Topic::findOrFail($request->id);
+        $topic->update([
+            'arabic_title' => $request->arabic_title ?? $topic->arabic_title,
+            'english_title' =>$request->english_title ?? $topic->english_title,
+            'description' => $request->description ??  $topic->description,
+        ]);
+       return ResponseHelper::success();
     }
 
     public function deleteTopic(Request $request)
     {
-        $topic = Topic::findeOrFail( $request->id);
+        $topic = Topic::findOrFail( $request->id);
        return DeleteHelper::deleteModel($topic);
     }
 

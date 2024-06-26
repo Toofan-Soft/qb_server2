@@ -16,5 +16,29 @@
         "arabic_name": "اختبارات القبول",
         "english_name": "Acceptance Exams", 
         "levels_count": 2
+    },
+    {
+        "college_id": 2,
+        "arabic_name": "اختبارات القبول",
+        "english_name": "Acceptance Exams", 
+        "levels_count": 2
+    },
+    {
+        "college_id": 2,
+        "arabic_name": "طب اسنان",
+        "english_name": "Dentist", 
+        "levels_count": 5
+    },
+    {
+        "college_id": 2,
+        "arabic_name": "طب بشري",
+        "english_name": "Medicine", 
+        "levels_count": 7
+    },
+    {
+        "college_id": 2,
+        "arabic_name": "صيدلة",
+        "english_name": "Pharmacy", 
+        "levels_count": 5
     }
 ]

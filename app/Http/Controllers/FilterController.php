@@ -159,19 +159,9 @@ class FilterController extends Controller
     {
         $attributes = ['level as name'];
         $department = Department::findOrFail($request->department_id);
-        $departmentLevels = $department->department_courses()->first($attributes);
-
-        $id = $departmentLevels['name'];
-        $enumReplacements = [
-            new EnumReplacement('name', LevelsEnum::class),
-        ];
-        $departmentLevels = ProcessDataHelper::enumsConvertIdToName($departmentLevels, $enumReplacements);
-
-        $data = [
-            'id' => $id,
-            'name' => $departmentLevels->name,
-        ];
-        return ResponseHelper::successWithData([$data]);
+        // $departmentLevels = $department->department_courses()->first($attributes);
+        $levelsCount = $department->levels_count;
+        return ResponseHelper::successWithData(LevelsEnum::getValuesByLevesCount($levelsCount));
     }
 
     public function retrieveDepartmentCourses(Request $request)

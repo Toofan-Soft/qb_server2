@@ -22,6 +22,7 @@ class AddHelper
     public static $filePath = null;
     public static function addModel(Request $request, $model, $rules, $relationShip = null, $related_id = null )
     {
+        // return ResponseHelper::successWithData(ValidateHelper::validateData($request,$rules));
         if(ValidateHelper::validateData($request,$rules)){
             return  ResponseHelper::clientError(401);
         }
