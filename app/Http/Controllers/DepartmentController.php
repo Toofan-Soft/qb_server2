@@ -33,7 +33,7 @@ class DepartmentController extends Controller
         $college->departments()->create([
             'arabic_name' => $request->arabic_name,
             'english_name' => $request->english_name,
-            'levels_count' => $request->levels_count ,
+            'levels_count' => $request->levels_count,
             'description' => $request->description?? null,
             'logo_url' => ImageHelper::uploadImage($request->logo)
         ]);

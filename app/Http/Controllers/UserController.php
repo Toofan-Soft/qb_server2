@@ -12,7 +12,6 @@ use App\Enums\JobTypeEnum;
 use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
 use Illuminate\Http\Request;
-// use Ichtrojan\Otp\Models\Otp;
 use App\Helpers\ResponseHelper;
 use App\Enums\QualificationEnum;
 use App\Helpers\EnumReplacement;

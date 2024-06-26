@@ -48,14 +48,18 @@ class PaperExamController extends Controller
         }
 
         $algorithmData = $this->getAlgorithmData($request);
+
         $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
 
-        if ($examFormsQuestions->data) { // modify to use has function
+        // if ($examFormsQuestions->data) { // modify to use has function
+        if ($examFormsQuestions) { // modify to use has function
 
-            $user = User::findOrFail(auth()->user()->id);
-            $employee = Employee::where('user_id',  $user->id )->first(); //6fb56ec0-76b9-3cc1-8367-0e2a5f65451d
+            // $user = User::findOrFail(auth()->user()->id);
+            // $employee = Employee::where('user_id',  $user->id )->first(); //6fb56ec0-76b9-3cc1-8367-0e2a5f65451d
+            
             $courseLecturer = CourseLecturer::where('department_course_part_id', $request->department_course_part_id)
-                ->where('lecturer_id', $employee->id)
+                ->where('lecturer_id', '=', 7)
+                // ->where('lecturer_id', $employee->id)
                 // ->where('academic_year', now()->format('Y'))
                 ->first();
 
@@ -72,7 +76,7 @@ class PaperExamController extends Controller
                 'exam_type' => RealExamTypeEnum::PAPER->value,
             ]);
 
-        $paperExam =  PaperExam::create([
+        $paperExam = PaperExam::create([
             'id' => $realExam->id,
             'course_lecturer_name' => $request->lecturer_name ?? $employee->arabic_name,
         ]);
@@ -101,8 +105,8 @@ class PaperExamController extends Controller
                 $form = $realExam->forms()->create();
                 foreach ($formQuestions as $question) {
                     $form->form_questions()->create([
-                        'question_id' => $question->question_id,
-                        'combination_id' => $question->combination_id?? null,
+                        'question_id' => $question['question_id'],
+                        'combination_id' => $question['combination_id'] ?? null,
                     ]);
                 }
             }
@@ -140,7 +144,7 @@ class PaperExamController extends Controller
     {
         // يجب الاخذ بالاعتبار انه سيتم التعامل مع اختبارات تنتمي الي اعوام سابقة
 
-        $employee = Employee::where('user_id', '=', auth()->user()->id)->first();
+        // $employee = Employee::where('user_id', '=', auth()->user()->id)->first();
         $paperExams = [];
 
         $enumReplacements  = [];
@@ -157,7 +161,8 @@ class PaperExamController extends Controller
                 )
                 ->where('department_course_parts.id', '=', $request->department_course_part_id)
                 ->where('real_exams.type', '=', $request->type_id)
-                ->where('course_lecturers.lecturer_id', '=', $employee->id)
+                // ->where('course_lecturers.lecturer_id', '=', $employee->id)
+                ->where('course_lecturers.lecturer_id', '=', 7)
                 ->get();
 
         } else {
@@ -173,7 +178,8 @@ class PaperExamController extends Controller
                     'paper_exams.course_lecturer_name as lecturer_name'
                 )
                 ->where('department_course_parts.id', '=', $request->department_course_part_id)
-                ->where('course_lecturers.lecturer_id', '=', $employee->id)
+                // ->where('course_lecturers.lecturer_id', '=', $employee->id)
+                ->where('course_lecturers.lecturer_id', '=', 7)
                 ->get();
             array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
         }
@@ -546,18 +552,37 @@ class PaperExamController extends Controller
 
     private function getAlgorithmData($request)
     {
+        $types = [];
+        foreach ($request->questions_types as $type) 
+        {
+            $t = [
+                'id' => intval($type['type_id']),
+                'count' => intval($type['questions_count'])
+            ];
+
+            array_push($types, $t);
+        }
+
         // دالة مشتركة للاختبار الحقيقي والورقي
         $algorithmData = [
             'estimated_time' => $request->duration,
             'difficulty_level' => $request->difficulty_level_id,
             'forms_count' => ($request->form_configuration_method_id === FormConfigurationMethodEnum::DIFFERENT_FORMS->value)? $request->forms_count : 1,
-            'question_types_and_questions_count' => [
-                'id' => $request->questions_types['type_id'],
-                'count' => $request->questions_types['questions_count']
-            ],
+            'question_types_and_questions_count' => $types
+            // 'question_types_and_questions_count' => [
+            //     'id' => $request->questions_types['type_id'],
+            //     'count' => $request->questions_types['questions_count']
+            // ],
         ];
 
-        $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
+        // $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
+
+        $questionTypesIds = [];
+        foreach ($request->questions_types as $type) 
+        {
+            array_push($questionTypesIds, $type['type_id']);
+        }
+
         $accessabilityStatusIds = [
             AccessibilityStatusEnum::REALEXAM->value,
             AccessibilityStatusEnum::PRACTICE_REALEXAM->value,
@@ -576,35 +601,46 @@ class PaperExamController extends Controller
                 'question_usages.online_exam_selection_times_count',
                 'question_usages.practice_exam_selection_times_count',
                 'question_usages.paper_exam_selection_times_count',
+                'questions.topic_id',
                 'topics.id as topic_id',
             )
             ->where('questions.status', '=', QuestionStatusEnum::ACCEPTED->value)
             ->where('questions.language', '=', $request->language_id)
             ->whereIn('questions.accessability_status', $accessabilityStatusIds)
             ->whereIn('questions.type', $questionTypesIds)
-            ->whereIn('topics.id', $request->topicsIds)
+            ->whereIn('questions.topic_id', $request->topics_ids)
+            // ->whereIn('topics.id', $request->topicsIds)
             ->get();
-            foreach ($questions as $question) {
-                // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
+        
+        foreach ($questions as $question) {
+            // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
 
-                $question['last_selection'] = DatetimeHelper::convertSecondsToDays(
-                    DatetimeHelper::getDifferenceInSeconds(now(), $question->online_exam_last_selection_datetime) + 
-                    DatetimeHelper::getDifferenceInSeconds(now(), $question->practice_exam_last_selection_datetime) + 
-                    DatetimeHelper::getDifferenceInSeconds(now(), $question->paper_exam_last_selection_datetime)
-                    ) / 3;
-                $question['selection_times'] = (
-                    $question->online_exam_selection_times_count + 
-                    $question->practice_exam_selection_times_count + 
-                    $question->paper_exam_selection_times_count
-            ) / 3;
+            $question->type_id = intval($question->type_id);
+            $question->difficulty_level = floatval($question->difficulty_level);
+
+            $question->last_selection = 3;
+            $question->selection_times = 2;
+
+            // $question['last_selection'] = DatetimeHelper::convertSecondsToDays(
+            //     DatetimeHelper::getDifferenceInSeconds(now(), $question->online_exam_last_selection_datetime) + 
+            //     DatetimeHelper::getDifferenceInSeconds(now(), $question->practice_exam_last_selection_datetime) + 
+            //     DatetimeHelper::getDifferenceInSeconds(now(), $question->paper_exam_last_selection_datetime)
+            //     ) / 3;
+            // $question['selection_times'] = (
+            //     $question->online_exam_selection_times_count + 
+            //     $question->practice_exam_selection_times_count + 
+            //     $question->paper_exam_selection_times_count
+            // ) / 3;
             // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة 
-            unset($question['online_exam_last_selection_datetime']);
-            unset($question['practice_exam_last_selection_datetime']);
-            unset($question['paper_exam_last_selection_datetime']);
-            unset($question['online_exam_selection_times_count']);
-            unset($question['practice_exam_selection_times_count']);
-            unset($question['paper_exam_selection_times_count']);
-            }
+            
+            unset($question->online_exam_last_selection_datetime);
+            unset($question->practice_exam_last_selection_datetime);
+            unset($question->paper_exam_last_selection_datetime);
+            unset($question->online_exam_selection_times_count);
+            unset($question->practice_exam_selection_times_count);
+            unset($question->paper_exam_selection_times_count);
+        }
+
         $algorithmData['questions'] = $questions;
         return $algorithmData;
     }

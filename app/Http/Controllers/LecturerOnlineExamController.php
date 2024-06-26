@@ -44,6 +44,7 @@ class LecturerOnlineExamController extends Controller
         }
 
         $algorithmData = $this->getAlgorithmData($request);
+        return $algorithmData;
 
         $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
 
@@ -404,7 +405,6 @@ class LecturerOnlineExamController extends Controller
             // ],
         ];
 
-
         $questionTypesIds = [];
         foreach ($request->questions_types as $type) 
         {
@@ -431,7 +431,7 @@ class LecturerOnlineExamController extends Controller
                 'question_usages.practice_exam_selection_times_count',
                 'question_usages.paper_exam_selection_times_count',
                 'questions.topic_id',
-                // 'topics.id as topic_id',
+                'topics.id as topic_id',
             )
             ->where('questions.status', '=', QuestionStatusEnum::ACCEPTED->value)
             ->where('questions.language', '=', $request->language_id)

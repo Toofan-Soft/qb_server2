@@ -73,26 +73,30 @@ Route::put('change-password-after-account-recovery', [UserController::class, 'ch
 // Route::get('logout',[UserController::class,'logout']);
 // Route::put('change-password',[UserController::class,'changePassword']);
 
+// Route::post('paper-exam/add', [PaperExamController::class, 'addPaperExam']);
+// Route::get('paper-exam/retrieve-list', [PaperExamController::class, 'retrievePaperExams1']);
+
 Route::middleware('auth:api')->group(function () {
     // Route::post('email_verification', [EmailVerificationController::class, 'email_verification']);
     // Route::get('email_verification', [EmailVerificationController::class, 'sendEmailVerification']);
     // Route::put('change-password', [UserController::class, 'changePassword']);
 
     //lecturer onlineExam
-    Route::post('lecturer-online-exam/add', [LecturerOnlineExamController::class, 'addOnlineExam']);
+    // Route::post('lecturer-online-exam/add', [LecturerOnlineExamController::class, 'addOnlineExam']);
 
     //paper exam
-    Route::post('paper-exam/add', [PaperExamController::class, 'addPaperExam']);
-    Route::get('paper-exam/retrieve-list', [PaperExamController::class, 'retrievePaperExams']);
-    Route::get('paper-exam/retrieve-android-list', [PaperExamController::class, 'retrievePaperExamsAndroid']);
+    // Route::post('paper-exam/add', [PaperExamController::class, 'addPaperExam']);
+    // Route::get('paper-exam/retrieve-list', [PaperExamController::class, 'retrievePaperExams1']);
+    // Route::get('paper-exam/retrieve-android-list', [PaperExamController::class, 'retrievePaperExamsAndroid']);
 
     //practice-exam
-    Route::post('practice-exam/add', [PracticeExamController::class, 'addPracticeExam']);
-    Route::get('practice-exam/retrieve-list', [PracticeExamController::class, 'retrievePractiseExams']);
+    // Route::post('practice-exam/add', [PracticeExamController::class, 'addPracticeExam']);
+    // Route::get('practice-exam/retrieve-list', [PracticeExamController::class, 'retrievePractiseExams']);
 
     // user
     Route::get('user/retrieve-profile', [UserController::class, 'retrieveProfile']);
-     });///
+
+});///
 
     //univercity
     Route::prefix('university/')->group(function () {
@@ -353,13 +357,13 @@ Route::middleware('auth:api')->group(function () {
 
     //paper exam
     Route::prefix('paper-exam/')->group(function () {
-        // Route::post('add', [PaperExamController::class, 'addPaperExam']);
+        Route::post('add', [PaperExamController::class, 'addPaperExam']);
         Route::put('modify', [PaperExamController::class, 'modifyPaperExam']);
         Route::put('change-status', [PaperExamController::class, 'modifyPaperExam']);
         Route::delete('delete', [PaperExamController::class, 'deletePaperExam']);
         Route::get('retrieve', [PaperExamController::class, 'retrievePaperExam']);
         Route::get('retrieve-editable', [PaperExamController::class, 'retrieveEditablePaperExam']);
-        // Route::get('retrieve-list', [PaperExamController::class, 'retrievePaperExams']);
+        Route::get('retrieve-list', [PaperExamController::class, 'retrievePaperExams']);
         // Route::get('retrieve-android-list', [PaperExamController::class, 'retrievePaperExamsAndroid']);
         Route::get('retrieve-chapter-list', [PaperExamController::class, 'retrievePaperExamChapters']);
         Route::get('retrieve-chapter-topic-list', [PaperExamController::class, 'retrievePaperExamChapterTopics']);

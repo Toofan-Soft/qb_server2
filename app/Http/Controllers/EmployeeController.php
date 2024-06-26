@@ -122,14 +122,14 @@ class EmployeeController extends Controller
             new ColumnReplacement('email', 'email', User::class)
           ];
 
-          return GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements);
+          return GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements);
     }
 
     public function retrieveEditableEmployee(Request $request)
     {
         $attributes = ['arabic_name','english_name', 'gender as gender_id', 'phone', 'job_type as job_type_id', 'specialization', 'qualification as qualification_id', 'image_url'];
         $conditionAttribute = ['id' => $request->id];
-          return GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute);
+          return GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute);
     }
 
     public function rules(Request $request): array

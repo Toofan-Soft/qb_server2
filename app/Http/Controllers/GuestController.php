@@ -37,10 +37,10 @@ class GuestController extends Controller
 
         if(!UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password)) {
             return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
-          }
-         return ResponseHelper::success();
-
         }
+        
+        return ResponseHelper::success();
+    }
 
     public function modifyGuest (Request $request)
     {
