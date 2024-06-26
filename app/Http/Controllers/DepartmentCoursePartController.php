@@ -17,14 +17,14 @@ class DepartmentCoursePartController extends Controller
 {
     public function addDepartmentCoursePart(Request $request)
     {
-        if(ValidateHelper::validateData($request, $this->rules($request))){
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
         DepartmentCoursePart::create([
             'department_course_id' => $request->department_course_id,
             'course_part_id' => $request->course_part_id,
             'score' => $request->score ?? null,
-            'lectures_count' => $request->lectures_count ?? null ,
+            'lectures_count' => $request->lectures_count ?? null,
             'lecture_duration' => $request->lecture_duration ?? null,
             'note' => $request->note ?? null,
         ]);

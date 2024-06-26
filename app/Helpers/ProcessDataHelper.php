@@ -67,7 +67,7 @@ public static function enumsConvertIdToName($data, $enumReplacements)
             // if (isset($item[$enumReplacement->columnName]) && is_numeric($item[$enumReplacement->columnName])) {
                 // if (property_exists($item, $enumReplacement->columnName) && is_numeric($item->{$enumReplacement->columnName})) {
                 // $item->{$enumReplacement->columnName} = $enumReplacement->enumClass::getNameByNumber($item->{$enumReplacement->columnName});
-                $item->{$enumReplacement->columnName} =  EnumTraits::getNameByNumber($item->{$enumReplacement->columnName}, $enumReplacement->enumClass);
+                $item->{$enumReplacement->columnName} =  EnumTraits::getNameByNumber(intval($item->{$enumReplacement->columnName}), $enumReplacement->enumClass);
             // }
         }
     }
@@ -128,7 +128,7 @@ public static function columnConvertIdToName($data, $columnReplacements) {
             foreach ($columnReplacements as $columnReplacement) {
                 $model = $columnReplacement->model;
                 $identifier = is_array($item) ? $item[$columnReplacement->columnName] : $item->{$columnReplacement->columnName};
-                $row = $model::find($identifier, [$columnReplacement->modelColumnName]);
+                $row = $model::findOrFail($identifier, [$columnReplacement->modelColumnName]);
 
                 if ($row && isset($row->{$columnReplacement->modelColumnName})) {
                     if (is_array($item)) {
