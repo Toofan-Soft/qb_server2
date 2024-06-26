@@ -190,7 +190,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('add', [QuestionChoiceController::class, 'addQuestionChoice']);
         Route::put('modify', [QuestionChoiceController::class, 'modifyQuestionChoice']);
         Route::delete('delete', [QuestionChoiceController::class, 'deleteQuestionChoice']);
-        Route::get('retrieve', [QuestionChoiceController::class, 'retrieveQuestionChoice']);
+        // Route::get('retrieve', [QuestionChoiceController::class, 'retrieveQuestionChoice']);
         Route::get('retrieve-editable', [QuestionChoiceController::class, 'retrieveEditableQuestionChoice']);
     });
 

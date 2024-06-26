@@ -129,17 +129,17 @@ class QuestionController extends Controller
             'topic_id' => $request->topic_id,
         ];
         $enumReplacements  = [];
-        if ($request->status_id && !$request->type_id) {
+        if ($request->has('status_id') && !$request->has('type_id')) {
             array_push($attributes, 'type as type_name');
             $conditionAttribute['status'] =  $request->status_id;
             array_push($enumReplacements,  new EnumReplacement('type_name', QuestionTypeEnum::class));
         }
-        if (!$request->status_id && $request->type_id) {
-            array_push($attributes, 'status as status_name ');
+        if (!$request->has('status_id') && $request->has('type_id')) {
+            array_push($attributes, 'status as status_name');
             $conditionAttribute['type'] =  $request->type_id;
             array_push($enumReplacements,  new EnumReplacement('status_name', QuestionStatusEnum::class));
         }
-        if (!$request->status_id && !$request->type_id) {
+        if (!$request->has('status_id') && !$request->has('type_id')) {
             array_push($attributes, 'status as status_name');
             array_push($attributes, 'type as type_name');
             array_push($enumReplacements,  new EnumReplacement('status_name', QuestionStatusEnum::class));
@@ -148,7 +148,6 @@ class QuestionController extends Controller
 
         return GetHelper::retrieveModels(Question::class, $attributes, $conditionAttribute, $enumReplacements);
     }
-
 
     public function retrieveQuestion(Request $request)
     {

@@ -28,7 +28,7 @@ class DepartmentCourseController extends Controller
 {
     public function addDepartmentCourse(Request $request)
     {
-        if (   ValidateHelper::validateData($request, $this->rules($request))) {
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
 
@@ -39,8 +39,6 @@ class DepartmentCourseController extends Controller
             'semester' => $request->semester_id,
         ]);
         return ResponseHelper::success();
-
-        // return AddHelper::addModel($request, Department::class,  $this->rules($request), 'department_courses', $request->department_id);
     }
 
     public function modifyDepartmentCourse(Request $request)
@@ -76,26 +74,6 @@ class DepartmentCourseController extends Controller
         ];
 
         return GetHelper::retrieveModels(DepartmentCourse::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacement);
-
-        // foreach ($departmentCourses as $departmentCourse ) {
-        //     $departmentCourse['course_name'] = Course::where('id', $departmentCourse->course_id)->get(['arabic_name']);
-        //     $departmentCourse['level_name'] = LevelsEnum::getNameByNumber($departmentCourse->level);
-        //     $departmentCourse['semester_name'] = SemesterEnum::getNameByNumber($departmentCourse->semester);
-        //     unset($departmentCourse['course_id']);
-        //     unset($departmentCourse['level']);
-        //     unset($departmentCourse['semester']);
-        // }
-        // return $departmentCourses;
-
-        //we optimized the code by this :
-        // $department = Department::with([
-        //     'department_courses:id,course_id,level,semester',
-        //     'department_courses.course:id,arabic_name', // Eager load related course with arabic_name
-        //     'department_courses.level:number,name as level_name', // Eager load level with renamed attribute
-        //     'department_courses.semester:number,name as semester_name', // Eager load semester with renamed attribute
-        // ])->find($request->department_id);
-
-        // // No need to modify $departmentCourses, data is already available through eager loading
 
         // // Optional: Return only necessary attributes (using map)
         // return $department->department_courses->map(function ($departmentCourse) {
@@ -213,36 +191,49 @@ class DepartmentCourseController extends Controller
 
     public function retrieveDepartmentCourse(Request $request)
     {
-        $departmentCourse = DepartmentCourse::findOrFail($request->id, ['level as level_name', 'semester as semester_name']); //updated successfull
-        $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
-            new EnumReplacement('level_name', LevelsEnum::class),
-            new EnumReplacement('semester_name', SemesterEnum::class)
-        ]);
-        $course = $departmentCourse->course()->get(['arabic_name as course_name']);
-        $department = $departmentCourse->department()->get(['arabic_name as department_name']);
-        $college = $department->college()->get(['arabic_name as college_name']);
+        $departmentCourse = DepartmentCourse::findOrFail($request->id); //updated successfull
+        $course = $departmentCourse->course()->first(['arabic_name']);
+        $department = $departmentCourse->department()->first(['college_id', 'arabic_name']);
+        $college = $department->college()->first(['arabic_name']);
         $departmentCourseParts = $departmentCourse->department_course_parts()->get([
-            'id', 'course_part_id as name', 'score', 'lectures_count', 'lecture_duration', 'notes'
+            'id', 'course_part_id as name', 'score', 'lectures_count', 'lecture_duration', 'note'
         ]);
+
+        $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
+            new EnumReplacement('level', LevelsEnum::class),
+            new EnumReplacement('semester', SemesterEnum::class)
+        ]);
+
         $departmentCourseParts = ProcessDataHelper::columnConvertIdToName(
             $departmentCourseParts,
-            new ColumnReplacement('name', 'part_id', CoursePart::class)
+            [
+                new ColumnReplacement('name', 'part_id', CoursePart::class)
+            ]
         );
+
         $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName(
             $departmentCourseParts,
-            new EnumReplacement('name', CoursePartsEnum::class)
+            [
+                new EnumReplacement('name', CoursePartsEnum::class)
+            ]
         );
+        $data = [
+            'level_name' => $departmentCourse->level,
+            'semester_name' => $departmentCourse->semester,
+            'course_name' => $course->arabic_name,
+            'department_name' => $department->arabic_name,
+            'college_name' => $college->arabic_name,
+            'department_course_parts' => $departmentCourseParts
+        ];
 
-        array_merge($departmentCourse->toArray(), $course->toArray(), $department->toArray(), $college->toArray());
-        $departmentCourse['department_course_parts'] = $departmentCourseParts;
-
-        return ResponseHelper::successWithData($departmentCourse);
+        return ResponseHelper::successWithData($data);
     }
 
 
     public function retrieveEditableDepartmentCourse(Request $request)
     {
-        $departmentCourse = DepartmentCourse::findOrFail($request->id, ['level as level_id', 'semester as semester_id']); //updated successfull
+        $attributes = ['level as level_id', 'semester as semester_id'];
+        $departmentCourse = DepartmentCourse::findOrFail($request->id, $attributes); //updated successfull
         return ResponseHelper::successWithData($departmentCourse);
     }
 
