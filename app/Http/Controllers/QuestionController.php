@@ -28,7 +28,6 @@ class QuestionController extends Controller
 {
     public function addQuestion(Request $request)
     {
-
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
@@ -37,8 +36,10 @@ class QuestionController extends Controller
             $topic = Topic::findOrFail($request->topic_id);
             $question =  $topic->questions()->create([
                 'type' => $request->type_id,
-                'difficulty_level' => $request->difficulty_level_id,
-                'accessability_status' => $request->accessability_status_id,
+                // 'difficulty_level' => $request->difficulty_level_id,
+                'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id),
+                // 'accessability_status' => $request->accessability_status_id,
+                'accessability_status' => $request->accessibility_status_id,
                 'language' => $request->language_id,
                 'estimated_answer_time' => $request->estimated_answer_time,
                 'content' => $request->content,
@@ -285,7 +286,8 @@ class QuestionController extends Controller
             // 'difficulty_level_id' => 'required|float',
             'difficulty_level_id' => 'required',
             'status' => new Enum(QuestionStatusEnum::class), // Assuming QuestionStatusEnum holds valid values
-            'accessability_status_id' => ['required', new Enum(AccessibilityStatusEnum::class)], // Assuming AccessibilityStatusEnum holds valid values
+            // 'accessability_status_id' => ['required', new Enum(AccessibilityStatusEnum::class)], // Assuming AccessibilityStatusEnum holds valid values
+            'accessibility_status_id' => ['required', new Enum(AccessibilityStatusEnum::class)], // Assuming AccessibilityStatusEnum holds valid values
             'estimated_answer_time' => 'required|integer',
             'language_id' => ['required', new Enum(LanguageEnum::class)],
             'is_true' => 'nullable',

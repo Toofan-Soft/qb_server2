@@ -11,6 +11,7 @@ use App\Models\CoursePart;
 use App\Models\Department;
 use App\Traits\EnumTraits;
 use App\Enums\SemesterEnum;
+use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
@@ -49,8 +50,8 @@ class DepartmentCourseController extends Controller
 
         $departmentCourse = DepartmentCourse::findOrFail($request->id);
         $departmentCourse->update([
-            'level' => $request->level_id  ??  $departmentCourse->level,
-            'semester' => $request->semester_id  ??  $departmentCourse->semester,
+            'level' => $request->level_id ?? $departmentCourse->level,
+            'semester' => $request->semester_id ?? $departmentCourse->semester,
         ]);
         return ResponseHelper::success();
     }
@@ -195,10 +196,13 @@ class DepartmentCourseController extends Controller
         $course = $departmentCourse->course()->first(['arabic_name']);
         $department = $departmentCourse->department()->first(['college_id', 'arabic_name']);
         $college = $department->college()->first(['arabic_name']);
+
         $departmentCourseParts = $departmentCourse->department_course_parts()->get([
             'id', 'course_part_id as name', 'score', 'lectures_count', 'lecture_duration', 'note'
         ]);
 
+        // $departmentCourseParts = NullHelper::filter($departmentCourseParts);
+        
         $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
             new EnumReplacement('level', LevelsEnum::class),
             new EnumReplacement('semester', SemesterEnum::class)
@@ -211,19 +215,13 @@ class DepartmentCourseController extends Controller
             ]
         );
 
-        $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName(
-            $departmentCourseParts,
-            [
-                new EnumReplacement('name', CoursePartsEnum::class)
-            ]
-        );
         $data = [
+            'college_name' => $college->arabic_name,
+            'department_name' => $department->arabic_name,
             'level_name' => $departmentCourse->level,
             'semester_name' => $departmentCourse->semester,
             'course_name' => $course->arabic_name,
-            'department_name' => $department->arabic_name,
-            'college_name' => $college->arabic_name,
-            'department_course_parts' => $departmentCourseParts
+            'course_parts' => $departmentCourseParts
         ];
 
         return ResponseHelper::successWithData($data);
