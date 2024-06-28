@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\GenderEnum;
+use App\Helpers\DatetimeHelper;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,12 +27,14 @@ class Student extends Model
 
     public function getBirthdateAttribute($value)
     {
-        return strtotime($value);
+        // $date = date('Y-m-d H:i:s', strtotime($value)); // new (M7D)
+        return DatetimeHelper::convertTimestampToMilliseconds($value);
     }
     
     public function setBirthdateAttribute($value)
     {
-        $this->attributes['birthdate'] = date('Y-m-d H:i:s', $value);
+        // $this->attributes['birthdate'] = date('Y-m-d H:i:s', $value);
+        $this->attributes['birthdate'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
     }
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
@@ -39,7 +42,7 @@ class Student extends Model
         // 'birthdate' => 'datetime',
     ];
 
-    public function student_courses() : HasMany {
+    public function course_students() : HasMany {
         return $this->HasMany(CourseStudent::class);
     }
 

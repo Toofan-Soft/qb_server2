@@ -58,7 +58,7 @@ class DepartmentCourseController extends Controller
 
     public function deleteDepartmentCourse(Request  $request)
     {
-        $departmentCourse = DepartmentCourse::findeOrFail($request->id);
+        $departmentCourse = DepartmentCourse::findOrFail($request->id);
         return DeleteHelper::deleteModel($departmentCourse);
     }
 
@@ -149,7 +149,6 @@ class DepartmentCourseController extends Controller
         foreach ($semesters as $semester) {
             $departmentCourses = [
                 'id' => $semester['semester'],
-                // 'name' => SemesterEnum::getNameByNumber($semester->semester)
                 'name' =>  EnumTraits::getNameByNumber($semester->semester, SemesterEnum::class)
             ];
             $semestersCourses = DepartmentCourse::where('department_id', $request->department_id)
@@ -202,11 +201,12 @@ class DepartmentCourseController extends Controller
         ]);
 
         // $departmentCourseParts = NullHelper::filter($departmentCourseParts);
-        
+
         $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
             new EnumReplacement('level', LevelsEnum::class),
             new EnumReplacement('semester', SemesterEnum::class)
         ]);
+
 
         $departmentCourseParts = ProcessDataHelper::columnConvertIdToName(
             $departmentCourseParts,
@@ -214,6 +214,11 @@ class DepartmentCourseController extends Controller
                 new ColumnReplacement('name', 'part_id', CoursePart::class)
             ]
         );
+
+        // $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName($departmentCourseParts, [
+        //     new EnumReplacement('name', CoursePartsEnum::class)
+        // ]);
+
 
         $data = [
             'college_name' => $college->arabic_name,

@@ -60,7 +60,7 @@ class UserHelper
             ]);
         }
 
-        $user->notify(new EmaiVerificationNotification($generatedToken));
+        // $user->notify(new EmaiVerificationNotification($generatedToken));
 
         // if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
         //     $token = $user->createToken('quesionbanklaravelapi')->accessToken;
