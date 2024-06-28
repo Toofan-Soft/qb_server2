@@ -126,15 +126,17 @@ public static function columnConvertIdToName($data, $columnReplacements) {
     foreach ($dataToProcess as $item) {
         if (is_object($item) || is_array($item)) {
             foreach ($columnReplacements as $columnReplacement) {
-                $model = $columnReplacement->model;
                 $identifier = is_array($item) ? $item[$columnReplacement->columnName] : $item->{$columnReplacement->columnName};
-                $row = $model::findOrFail($identifier, [$columnReplacement->modelColumnName]);
-
-                if ($row && isset($row->{$columnReplacement->modelColumnName})) {
-                    if (is_array($item)) {
-                        $item[$columnReplacement->columnName] = $row->{$columnReplacement->modelColumnName};
-                    } else {
-                        $item->{$columnReplacement->columnName} = $row->{$columnReplacement->modelColumnName};
+                if($identifier != null){
+                    $model = $columnReplacement->model;
+                    $row = $model::findOrFail($identifier, [$columnReplacement->modelColumnName]);
+    
+                    if ($row && isset($row->{$columnReplacement->modelColumnName})) {
+                        if (is_array($item)) {
+                            $item[$columnReplacement->columnName] = $row->{$columnReplacement->modelColumnName};
+                        } else {
+                            $item->{$columnReplacement->columnName} = $row->{$columnReplacement->modelColumnName};
+                        }
                     }
                 }
             }

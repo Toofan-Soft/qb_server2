@@ -42,13 +42,10 @@ class DepartmentCoursePartChapterTopicController extends Controller
     public function deleteDepartmentCoursePartTopics(Request $request)
     {
         try {
-            // $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
-            // $departmenCoursePart->department_course_part_topics()
-            // ->whereIn('topic_id', $request->topics_ids)->delete();
-
-            foreach ($request->topics_ids as $topic_id) {
-                DepartmentCoursePartTopic::findOrFail([$topic_id, $request->department_course_part_id])->delete();
-            }
+            $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
+            $departmenCoursePart->department_course_part_topics()
+            ->whereIn('topic_id', $request->topics_ids)->delete();
+            
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -106,27 +103,28 @@ class DepartmentCoursePartChapterTopicController extends Controller
             ->groupBy('chapters.id')
             ->get();
         // departmenCoursePartChapters : [id, count]
-
+        
         foreach ($coursePartChapters as $coursePartChapter) {
-            $isNon = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->count() === 0;
-            $isFull = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->count() === $coursePartChapter->topics_count;
+            $departmenCoursePartChapter = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first();
+            $isNon = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first()->count === 0;
+            $isFull = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first()->count === $coursePartChapter->topics_count;
             $isHalf = !$isNon && !$isFull;
-
+            
             $coursePartChapter['selection_status'] = [
                 'is_non' => $isNon,
                 'is_full' => $isFull,
                 'is_half' => $isHalf
             ];
+            unset($coursePartChapter['topics_count']);
         }
-
         return ResponseHelper::successWithData($coursePartChapters);
     }
 
     public function retrieveAvailableDepartmentCoursePartTopics(Request $request)
     {
         ////////////////////
-        $departmenCoursePart = DepartmentCoursePart::find($request->department_course_part_id);
-        $chapter = Chapter::find($request->chapter_id);
+        $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
+        $chapter = Chapter::findOrFail($request->chapter_id);
         $chapterTopics = $chapter->topics()->get(['id', 'arabic_title', 'english_title']);
 
         $departmenCoursePartChapterTopics = DB::table('department_course_parts')
@@ -137,8 +135,10 @@ class DepartmentCoursePartChapterTopicController extends Controller
             ->where('topics.chapter_id', '=', $request->chapter_id)
             ->get();
 
+            // return ResponseHelper::successWithData($departmenCoursePartChapterTopics);
+
         foreach ($chapterTopics as $chapterTopic) {
-            $chapterTopic['is_selected'] = ($departmenCoursePartChapterTopics->where('id', '=', $chapterTopic->id)) ? true : false;
+            $chapterTopic['is_selected'] = ($departmenCoursePartChapterTopics->where('id', $chapterTopic->id)->count() ===1) ? true : false;
         }
         return ResponseHelper::successWithData($chapterTopics);
     }

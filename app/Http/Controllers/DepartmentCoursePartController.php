@@ -39,7 +39,7 @@ class DepartmentCoursePartController extends Controller
 
     public function deleteDepartmentCoursePart(Request $request)
     {
-        $departmentCoursePart = DepartmentCoursePart::findeOrFail($request->id);
+        $departmentCoursePart = DepartmentCoursePart::findOrFail($request->id);
         return DeleteHelper::deleteModel($departmentCoursePart);
     }
 
