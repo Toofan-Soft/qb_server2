@@ -68,6 +68,7 @@ class FilterController extends Controller
 
     public function retrieveLecturerColleges()
     {
+        return auth()->user()->id;
         $lecturer = Employee::findOrFail(auth()->user()->id);
         if ($lecturer) {
             $lecturerColleges =  DB::table('course_lecturers')
@@ -157,11 +158,13 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLevels(Request $request)
     {
-        $attributes = ['level as name'];
-        $department = Department::findOrFail($request->department_id);
-        // $departmentLevels = $department->department_courses()->first($attributes);
-        $levelsCount = $department->levels_count;
-        return ResponseHelper::successWithData(LevelsEnum::getValuesByLevesCount($levelsCount));
+        $attributes = ['levels_count'];
+        
+        $levelsCount = Department::findOrFail($request->department_id, $attributes)['levels_count'];
+
+        $levels = LevelsEnum::getLevelsTo($levelsCount);
+
+        return ResponseHelper::successWithData($levels);
     }
 
     public function retrieveDepartmentCourses(Request $request)
@@ -183,35 +186,32 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLevelCourses(Request $request)
     {
-        // if ($request->department_id && $request->level_id) {
-        //     $departmentCourses =  DB::table('departments')
-        //         ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
-        //         ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-        //         ->select('department_courses.id', 'courses.arabic_name as name')
-        //         ->where('departments.id', '=', $request->department_id)
-        //         ->where('department_courses.level', '=', $request->level_id)
-        //         ->get();
-        //     return ResponseHelper::successWithData($departmentCourses);
-
         if ($request->department_id && $request->level_id) {
-            // Fetch department with related department courses and courses
-            $departmentCourses = Department::with(['department_courses.course'])
-                ->where('id', $request->department_id)
-                ->whereHas('department_courses', function($query) use ($request) {
-                    $query->where('level', $request->level_id);
-                })
-                ->first();
+            // // Fetch department with related department courses and courses
+            // $departmentCourses = Department::where('id', $request->department_id)
+            // ->with(['department_courses' => function($query) use ($request) {
+            //     $query->where('level', $request->level_id)
+            //             ->with('course');
+            // }])
+            // ->first();
 
-            // Extract the required information
-            $data = $departmentCourses->department_courses->map(function($departmentCourse) {
-                return [
-                    'id' => $departmentCourse->id,
-                    'name' => $departmentCourse->course->arabic_name,
-                ];
-            });
+            // // Extract the required information
+            //  $data = $departmentCourses->department_courses->map(function($departmentCourse) {
+            //     return [
+            //         'id' => $departmentCourse->id,
+            //         'name' => $departmentCourse->course->arabic_name,
+            //     ];
+            // });
 
-            return ResponseHelper::successWithData($data);
+            $departmentCourses =  DB::table('departments')
+                ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
+                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+                ->select('department_courses.id', 'courses.arabic_name as name')
+                ->where('departments.id', '=', $request->department_id)
+                ->where('department_courses.level', '=', $request->level_id)
+                ->get();
 
+            return ResponseHelper::successWithData($departmentCourses);
         } else {
             return ResponseHelper::clientError(401);
             // return response()->json(['error_message' => 'department_id or level_id is empty'], 401);
@@ -239,14 +239,13 @@ class FilterController extends Controller
     public function retrieveDepartmentCourseParts(Request $request)
     {
         if ($request->department_course_id) {
-            $departmentCourseParts =  DB::table('department_courses')
-                ->join('department_course_parts', 'department_courses.id', '=', 'department_course_parts.department_course_id')
+            $departmentCourseParts =  DB::table('department_course_parts')
                 ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
                 ->select(
                     'department_course_parts.id',
                     'course_parts.part_id as name'
                 )
-                ->where('department_courses.id', '=', $request->department_course_id)
+                ->where('department_course_parts.department_course_id', '=', $request->department_course_id)
                 ->get();
 
             $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName($departmentCourseParts, [
@@ -450,7 +449,8 @@ class FilterController extends Controller
 
     public function retrieveRoles(Request $request)
     {
-        ///////////////
+        $roles = RoleEnum::getOwnerRoles($request->owner_type_id);
+        return ResponseHelper::successWithData($roles);
     }
 
     public function retrieveProctors()

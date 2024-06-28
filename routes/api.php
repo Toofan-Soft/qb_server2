@@ -456,7 +456,7 @@ Route::prefix('filter/')->group(function () {
     Route::get('retrieve-department-level-list', [FilterController::class, 'retrieveDepartmentLevels']);
     Route::get('retrieve-department-course-list', [FilterController::class, 'retrieveDepartmentCourses']);
     Route::get('retrieve-department-level-course-list', [FilterController::class, 'retrieveDepartmentLevelCourses']);
-    Route::get('retrieve-department-level-semester-course-list', [FilterController::class, '']);
+    Route::get('retrieve-department-level-semester-course-list', [FilterController::class, 'retrieveDepartmentLevelSemesterCourses']);
     Route::get('retrieve-department-course-part-list', [FilterController::class, 'retrieveDepartmentCourseParts']);
     Route::get('retrieve-department-lecturer-course-list', [FilterController::class, 'retrieveDepartmentLecturerCourses']);
     Route::get('retrieve-department-lecturer-current-course-list', [FilterController::class, 'retrieveDepartmentLecturerCurrentCourses']);

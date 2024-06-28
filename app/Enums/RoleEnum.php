@@ -31,6 +31,34 @@ enum RoleEnum: int {
         };
     }
 
+    public static function getOwnerRoles(int $ownerTypeId): array {
+        $rolesIds = match ($ownerTypeId) {
+            OwnerTypeEnum::GUEST->value => [RoleEnum::GUEST->value],
+            OwnerTypeEnum::STUDENT->value => [RoleEnum::STUDENT->value],
+            OwnerTypeEnum::LECTURER->value => [
+                RoleEnum::LECTURER->value,
+                RoleEnum::QUESTION_ENTRY->value,
+                RoleEnum::QUESTION_REVIEWER->value,
+                RoleEnum::SYSTEM_ADMINISTRATOR->value,
+                RoleEnum::DATA_ENTRY->value,
+                RoleEnum::PROCTOR->value
+            ],
+            OwnerTypeEnum::EMPLOYEE->value => [
+                RoleEnum::QUESTION_ENTRY->value,
+                RoleEnum::QUESTION_REVIEWER->value,
+                RoleEnum::SYSTEM_ADMINISTRATOR->value,
+                RoleEnum::DATA_ENTRY->value,
+                RoleEnum::PROCTOR->value
+            ]
+        };
+        
+        $roles = collect(EnumTraits::getEnum(RoleEnum::class));
+        
+        $filteredRoles = $roles->filter(function ($role) use ($rolesIds) {
+            return in_array($role['id'], $rolesIds);
+        })->values()->toArray();
 
+        return $filteredRoles;
+    }
 }
 
