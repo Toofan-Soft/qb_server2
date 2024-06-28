@@ -95,6 +95,7 @@ Route::middleware('auth:api')->group(function () {
 
     // user
     Route::get('user/retrieve-profile', [UserController::class, 'retrieveProfile']);
+    Route::get('filter/retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
 
 });///
 
@@ -448,7 +449,7 @@ Route::prefix('filter/')->group(function () {
     Route::get('retrieve-chapter-list', [FilterController::class, 'retrieveChapters']);
     Route::get('retrieve-topic-list', [FilterController::class, 'retrieveTopics']);
     Route::get('retrieve-college-list', [FilterController::class, 'retrieveColleges']);
-    Route::get('retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
+    // Route::get('retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
     Route::get('retrieve-lecturer-current-college-list', [FilterController::class, 'retrieveLecturerCurrentColleges']);
     Route::get('retrieve-department-list', [FilterController::class, 'retrieveDepartments']);
     Route::get('retrieve-lecturer-department-list', [FilterController::class, 'retrieveLecturerDepartments']);

@@ -131,17 +131,17 @@ class UserController extends Controller
         $owner = null;
         $enumReplacements = [];
 
-        if(intval($user->owner_type) === OwnerTypeEnum::GUEST->value){
+        if (intval($user->owner_type) === OwnerTypeEnum::GUEST->value) {
             $attributes = ['name', 'phone', 'gender as gender_name', 'image_url'];
             $owner = Guest::where('user_id', $user->id)->first($attributes);
             array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
 
-        }elseif(intval($user->owner_type) === OwnerTypeEnum::STUDENT->value){
+        } elseif (intval($user->owner_type) === OwnerTypeEnum::STUDENT->value) {
             $attributes = ['arabic_name', 'english_name' , 'phone', 'birthdate', 'gender as gender_name','image_url'];
             $owner = Student::where('user_id', $user->id)->first($attributes);
             array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
 
-        }else{
+        } else {
             $attributes = ['arabic_name', 'english_name' , 'phone', 'image_url', 'specialization',
             'qualification as qualification_name', 'job_type as job_type_name'];
             $owner = Employee::where('user_id', $user->id)->first($attributes);

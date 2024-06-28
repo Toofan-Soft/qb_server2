@@ -68,8 +68,9 @@ class FilterController extends Controller
 
     public function retrieveLecturerColleges()
     {
-        return auth()->user()->id;
-        $lecturer = Employee::findOrFail(auth()->user()->id);
+        $user = auth()->user();
+        $lecturer = Employee::where('user_id', $user->id)->first();
+
         if ($lecturer) {
             $lecturerColleges =  DB::table('course_lecturers')
                 ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
@@ -80,6 +81,7 @@ class FilterController extends Controller
                 ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
                 ->distinct()
                 ->get();
+            
             return ResponseHelper::successWithData($lecturerColleges);
         } else {
             return ResponseHelper::clientError(402);
@@ -89,7 +91,9 @@ class FilterController extends Controller
 
     public function retrieveLecturerCurrentColleges()
     {
-        $lecturer = Employee::findOrFail(auth()->user()->id);
+        $user = auth()->user();
+        $lecturer = Employee::where('user_id', $user->id)->first();
+
         if ($lecturer) {
             $lecturerColleges =  DB::table('course_lecturers')
                 ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
@@ -101,6 +105,7 @@ class FilterController extends Controller
                 ->where('course_lecturers.academic_year', '=', now()->format('Y'))
                 ->distinct()
                 ->get();
+
             return ResponseHelper::successWithData($lecturerColleges);
         } else {
             return ResponseHelper::clientError(402);
@@ -117,7 +122,9 @@ class FilterController extends Controller
 
     public function retrieveLecturerDepartments(Request $request)
     {
-        $lecturer = Employee::findOrFail(auth()->user()->id);
+        $user = auth()->user();
+        $lecturer = Employee::where('user_id', $user->id)->first();
+
         if ($lecturer) {
             $lecturerDepartments =  DB::table('course_lecturers')
                 ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
@@ -137,7 +144,9 @@ class FilterController extends Controller
 
     public function retrieveLecturerCurrentDepartments(Request $request)
     {
-        $lecturer = Employee::findOrFail(auth()->user()->id);
+        $user = auth()->user();
+        $lecturer = Employee::where('user_id', $user->id)->first();
+
         if ($lecturer) {
             $lecturerDepartments =  DB::table('course_lecturers')
                 ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
@@ -260,7 +269,11 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLecturerCourses(Request $request)
     {
-        $lecturer = Employee::findOrFail(auth()->user()->id);
+        $user = auth()->user();
+        $lecturer = Employee::where('user_id', $user->id)->first();
+
+        // $lecturer = Employee::findOrFail(auth()->user()->id);
+
         if ($lecturer) {
             $departmentLecturerCourses =  DB::table('course_lecturers')
                 ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
@@ -282,7 +295,11 @@ class FilterController extends Controller
     }
     public function retrieveDepartmentLecturerCurrentCourses(Request $request)
     {
-        $lecturer = Employee::findOrFail(auth()->user()->id);
+        $user = auth()->user();
+        $lecturer = Employee::where('user_id', $user->id)->first();
+
+        // $lecturer = Employee::findOrFail(auth()->user()->id);
+
         if ($lecturer) {
             $departmentLecturerCourses =  DB::table('course_lecturers')
                 ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
@@ -306,7 +323,11 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLecturerCourseParts(Request $request)
     {
-        $lecturer = Employee::findOrFail(auth()->user()->id);
+        $user = auth()->user();
+        $lecturer = Employee::where('user_id', $user->id)->first();
+
+        // $lecturer = Employee::findOrFail(auth()->user()->id);
+
         if ($lecturer) {
             $departmentLecturerCourseParts =  DB::table('course_lecturers')
                 ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
@@ -334,7 +355,11 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLecturerCurrentCourseParts(Request $request)
     {
-        $lecturer = Employee::findOrFail(auth()->user()->id);
+        $user = auth()->user();
+        $lecturer = Employee::where('user_id', $user->id)->first();
+
+        // $lecturer = Employee::findOrFail(auth()->user()->id);
+
         if ($lecturer) {
             $departmentLecturerCourseParts =  DB::table('course_lecturers')
                 ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
