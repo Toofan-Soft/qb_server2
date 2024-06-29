@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\CoursePartsEnum;
-use App\Enums\CourseStatusEnum;
 use App\Models\User;
 use  App\Models\Student;
 use App\Enums\GenderEnum;
+use App\Enums\LevelsEnum;
 use App\Helpers\GetHelper;
 use App\Helpers\UserHelper;
 use \Illuminate\Support\Str;
@@ -15,7 +14,11 @@ use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
+use App\Models\CourseStudent;
+use App\Enums\CoursePartsEnum;
 use App\Enums\StudentTypeEnum;
+use App\Enums\CourseStatusEnum;
+use App\Helpers\DatetimeHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Enums\QualificationEnum;
@@ -29,8 +32,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
-use App\Enums\LevelsEnum;
-use App\Models\CourseStudent;
 use  Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
@@ -134,41 +135,76 @@ class StudentController extends Controller
         return ResponseHelper::successWithData($students);
     }
 
+    
+
     public function retrieveStudent(Request $request)
     {
-        $student =  DB::table('students')
-            ->join('course_students', 'students.id', '=', 'course_students.student_id')
-            ->join('department_courses', 'course_students.department_course_id', '=', 'department_courses.id')
-            ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-            ->join('colleges', 'departments.college_id', '=', 'colleges.id')
-            ->select(
-                'students.academic_id',
-                'students.arabic_name',
-                'students.english_name',
-                'students.gender as gender_name',
-                'students.user_id as email',
-                'students.image_url',
-                'students.birthdate',
-                'students.phone',
-                'departments.arabic_name as department_name',
-                'colleges.arabic_name as college_name'
-            )
-            ->where('students.id', '=', $request->id)
-            ->first();
+        $student = Student::where('id', $request->id)
+            ->firstOrFail();
 
+        $studentData = [
+            'academic_id' => $student->academic_id,
+            'arabic_name' => $student->arabic_name,
+            'english_name' => $student->english_name,
+            'gender_name' => $student->gender,
+            'email' => $student->user->email,
+            'image_url' => $student->image_url,
+            'birthdate' => $student->birthdate,
+            'phone' => $student->phone,
+            'department_name' => $student->course_students->first()->department_course->department->arabic_name,
+            'college_name' => $student->course_students->first()->department_course->department->college->arabic_name,
+        ];
+
+        $studentData['level_name'] = $this->getStudentDepartmentAndLevel($request->id)->level_id;
+
+        // Enum replacements
         $enumReplacements = [
             new EnumReplacement('gender_name', GenderEnum::class),
             new EnumReplacement('level_name', LevelsEnum::class),
         ];
-        $columnReplacements = [
-            new ColumnReplacement('email', 'email', User::class)
-        ];
-        $student->level_name = ($this->getStudentDepartmentAndLevel($request->id))->level_id;
-        $student = ProcessDataHelper::enumsConvertIdToName($student, $enumReplacements);
-        $student = ProcessDataHelper::columnConvertIdToName($student, $columnReplacements);
 
-        return ResponseHelper::successWithData($student);
+        $studentData = ProcessDataHelper::enumsConvertIdToName((object) $studentData, $enumReplacements);
+        
+        return ResponseHelper::successWithData($studentData);
     }
+    
+    // public function retrieveStudent1(Request $request)
+    // {
+    //     $student =  DB::table('students')
+    //         ->join('course_students', 'students.id', '=', 'course_students.student_id')
+    //         ->join('department_courses', 'course_students.department_course_id', '=', 'department_courses.id')
+    //         ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+    //         ->join('colleges', 'departments.college_id', '=', 'colleges.id')
+    //         ->select(
+    //             'students.academic_id',
+    //             'students.arabic_name',
+    //             'students.english_name',
+    //             'students.gender as gender_name',
+    //             'students.user_id as email',
+    //             'students.image_url',
+    //             'students.birthdate',
+    //             'students.phone',
+    //             'departments.arabic_name as department_name',
+    //             'colleges.arabic_name as college_name'
+    //         )
+    //         ->where('students.id', '=', $request->id)
+    //         ->first();
+        
+    //     $student->birthdate = DatetimeHelper::convertTimestampToMilliseconds($student->birthdate);
+        
+    //     $enumReplacements = [
+    //         new EnumReplacement('gender_name', GenderEnum::class),
+    //         new EnumReplacement('level_name', LevelsEnum::class),
+    //     ];
+    //     $columnReplacements = [
+    //         new ColumnReplacement('email', 'email', User::class)
+    //     ];
+    //     $student->level_name = ($this->getStudentDepartmentAndLevel($request->id))->level_id;
+    //     $student = ProcessDataHelper::enumsConvertIdToName($student, $enumReplacements);
+    //     $student = ProcessDataHelper::columnConvertIdToName($student, $columnReplacements);
+
+    //     return ResponseHelper::successWithData($student);
+    // }
 
     public function retrieveEditableStudent(Request $request)
     {

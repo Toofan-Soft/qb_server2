@@ -34,29 +34,35 @@ enum ExamDifficultyLevelEnum: int {
     //     };
     // }
 
+    public static function fromFloat(float $value): float {
+        if ($value >= 0.8 && $value <= 1.0) {
+            return self::VERY_DIFFICULT->value;
+        } elseif ($value >= 0.6 && $value < 0.8) {
+            return self::DIFFICULT->value;
+        } elseif ($value >= 0.4 && $value < 0.6) {
+            return self::MODERATE->value;
+        } elseif ($value >= 0.2 && $value < 0.4) {
+            return self::EASY->value;
+        } elseif ($value >= 0.0 && $value < 0.2) {
+            return self::VERYEASY->value;
+        } else {
+            throw new InvalidArgumentException('Invalid enum value provided');
+        }
+    }
+
     public static function toFloat(int $value): float {
-        // if ($value == ExamDifficultyLevelEnum::VERY_DIFFICULT) {
-        if ($value == 0) {
+        if ($value == self::VERY_DIFFICULT->value) {
             return 0.9;
-        } else if ($value == 1) {
+        } else if ($value == self::DIFFICULT->value) {
             return 0.7;
-        } else if ($value == 2) {
+        } else if ($value == self::MODERATE->value) {
             return 0.5;
-        } else if ($value == 3) {
+        } else if ($value == self::EASY->value) {
             return 0.3;
-        } else if ($value == 4) {
+        } else if ($value == self::VERYEASY->value) {
             return 0.1;
         } else {
             throw new InvalidArgumentException('Invalid enum value provided');
         }
-        
-        // return match ($value) {
-        //     ExamDifficultyLevelEnum::VERY_DIFFICULT => 0.9,
-        //     ExamDifficultyLevelEnum::DIFFICULT => 0.7,
-        //     ExamDifficultyLevelEnum::MODERATE => 0.5,
-        //     ExamDifficultyLevelEnum::EASY => 0.3,
-        //     ExamDifficultyLevelEnum::VERYEASY => 0.1,
-        //     default => throw new InvalidArgumentException('Invalid enum value provided')
-        // };
     }
 }

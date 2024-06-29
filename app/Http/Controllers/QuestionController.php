@@ -76,7 +76,7 @@ class QuestionController extends Controller
         }
         $question = Question::findOrFail($request->id);
         $question->update([
-            'difficulty_level' => $request->difficulty_level_id ?? $question->difficulty_level,
+            'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id) ?? $question->difficulty_level,
             'accessbility_status' => $request->accessability_status_id ?? $question->accessability_status,
             'language' => $request->language_id ?? $question->language,
             'estimated_answer_time' => $request->estimated_answer_time ?? $question->estimated_answer_time,
@@ -88,7 +88,7 @@ class QuestionController extends Controller
         if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
             if ($request->has('is_true')) {
                 $question->true_false_question()->update([
-                    'answer' => ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
+                    'answer' => ($request->is_true === true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
                 ]);
             }
         }
@@ -129,21 +129,20 @@ class QuestionController extends Controller
         $conditionAttribute = [
             'topic_id' => $request->topic_id,
         ];
+
         $enumReplacements  = [];
-        if ($request->has('status_id') && !$request->has('type_id')) {
-            array_push($attributes, 'type as type_name');
+
+        if ($request->has('status_id')) {
             $conditionAttribute['status'] =  $request->status_id;
-            array_push($enumReplacements,  new EnumReplacement('type_name', QuestionTypeEnum::class));
-        }
-        if (!$request->has('status_id') && $request->has('type_id')) {
+        } else {
             array_push($attributes, 'status as status_name');
+            array_push($enumReplacements,  new EnumReplacement('status_name', QuestionStatusEnum::class));
+        }
+
+        if ($request->has('type_id')) {
             $conditionAttribute['type'] =  $request->type_id;
-            array_push($enumReplacements,  new EnumReplacement('status_name', QuestionStatusEnum::class));
-        }
-        if (!$request->has('status_id') && !$request->has('type_id')) {
-            array_push($attributes, 'status as status_name');
+        } else {
             array_push($attributes, 'type as type_name');
-            array_push($enumReplacements,  new EnumReplacement('status_name', QuestionStatusEnum::class));
             array_push($enumReplacements,  new EnumReplacement('type_name', QuestionTypeEnum::class));
         }
 
@@ -152,7 +151,6 @@ class QuestionController extends Controller
 
     public function retrieveQuestion(Request $request)
     {
-        //
         $attributes = [
             'id', 'type', 'difficulty_level as difficulty_level_name', 'status',
             'accessability_status as accessibility_status_name',
@@ -163,6 +161,7 @@ class QuestionController extends Controller
                 
         if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
             $trueFalseQuestion = $question->true_false_question()->first(['answer']);
+            
             if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
                 $question['is_true'] = true;
             } else {
@@ -181,6 +180,7 @@ class QuestionController extends Controller
         }
         unset($question['type']);
         unset($question['id']);
+
         $status = [];
 
         if (intval($question->status) === QuestionStatusEnum::NEW->value) {
@@ -204,6 +204,9 @@ class QuestionController extends Controller
                 'is_request' => true,
             ];
         }
+
+        $question->difficulty_level_name = ExamDifficultyLevelEnum::fromFloat($question->difficulty_level_name);
+        
         $enumReplacements = [
             new EnumReplacement('difficulty_level_name', ExamDifficultyLevelEnum::class),
             new EnumReplacement('accessibility_status_name', AccessibilityStatusEnum::class),
@@ -215,11 +218,11 @@ class QuestionController extends Controller
 
         return ResponseHelper::successWithData($question);
     }
-
+    
     public function retrieveEditableQuestion(Request $request)
     {
         $attributes = [
-            'type', 'difficulty_level as difficulty_level_id',
+            'id', 'type', 'difficulty_level as difficulty_level_id',
             'accessability_status as accessibility_status_id',
             'language as language_id', 'estimated_answer_time', 'content',
             'attachment as attachment_url', 'title'
@@ -227,7 +230,8 @@ class QuestionController extends Controller
         $question = Question::findOrFail($request->id, $attributes);
 
         if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
-            $trueFalseQuestion = $question->true_false_question()->get();
+            $trueFalseQuestion = $question->true_false_question()->get(['answer'])->first();
+
             if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
                 $question['is_true'] = true;
             } else {
@@ -235,6 +239,7 @@ class QuestionController extends Controller
             }
         }
         unset($question['type']);
+        unset($question['id']);
         return ResponseHelper::successWithData($question);
     }
 

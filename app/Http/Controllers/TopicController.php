@@ -64,7 +64,7 @@ class TopicController extends Controller
     {
         $attributes = ['arabic_title', 'english_title', 'description'];
         $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
+        return GetHelper::retrieveModel(Topic::class, $attributes, $conditionAttribute);
 
     }
     public function retrieveTopicDescription(Request $request)

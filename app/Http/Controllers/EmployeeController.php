@@ -6,9 +6,11 @@ use App\Models\User;
 use App\Models\Employee;
 use App\Enums\GenderEnum;
 use App\Enums\JobTypeEnum;
-use App\Enums\OwnerTypeEnum;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Helpers\NullHelper;
+use App\Helpers\UserHelper;
+use App\Enums\OwnerTypeEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
@@ -18,9 +20,9 @@ use App\Helpers\ValidateHelper;
 use App\Enums\QualificationEnum;
 use App\Helpers\EnumReplacement;
 use App\Helpers\EnumReplacement1;
+use Illuminate\Http\JsonResponse;
 use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
-use App\Helpers\UserHelper;
 use Illuminate\Validation\Rules\Enum;
 
 class EmployeeController extends Controller
@@ -94,7 +96,7 @@ class EmployeeController extends Controller
 
     public function retrieveEmployees(Request $request)
     {
-        $attributes = ['id', 'arabic_name', 'gender as gender_name', 'phone', 'user_id as email', 'qualification as qualification_name', 'image_url'];
+        $attributes = ['id', 'arabic_name as name', 'gender as gender_name', 'phone', 'user_id as email', 'qualification as qualification_name', 'image_url'];
         $conditionAttribute = ['job_type' => $request->job_type_id];
         $enumReplacements = [
             new EnumReplacement('gender_name', GenderEnum::class),
@@ -104,9 +106,13 @@ class EmployeeController extends Controller
         $columnReplacements = [
             new ColumnReplacement('email', 'email', User::class)
         ];
+        
+        $data = GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements)
+            ->getData(true)['data'];
+                
+        $data = NullHelper::filter($data);
 
-        return GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements);
-        // return GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute, $enumReplacements);
+        return ResponseHelper::successWithData($data);
     }
 
     public function retrieveEmployee(Request $request)
@@ -122,14 +128,26 @@ class EmployeeController extends Controller
             new ColumnReplacement('email', 'email', User::class)
         ];
 
-        return GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements);
+        $data = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements)
+            ->getData(true)['data'];
+        
+        $data = NullHelper::filter($data);
+
+        return ResponseHelper::successWithData($data);
     }
 
     public function retrieveEditableEmployee(Request $request)
     {
         $attributes = ['arabic_name', 'english_name', 'gender as gender_id', 'phone', 'job_type as job_type_id', 'specialization', 'qualification as qualification_id', 'image_url'];
         $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute);
+        // return GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute);
+
+        $data = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute)
+            ->getData(true)['data'];
+            
+        $data = NullHelper::filter($data);
+
+        return ResponseHelper::successWithData($data);
     }
 
     public function rules(Request $request): array

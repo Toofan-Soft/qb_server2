@@ -53,7 +53,7 @@ class CourseStudentController extends Controller
         return ResponseHelper::success();
     }
 
-    public function modifyCourseStudent(Request $request)
+    public function modifyCourseStudent1(Request $request)
     {
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
