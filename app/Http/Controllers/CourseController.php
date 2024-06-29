@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
 use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 use App\Http\Requests\CourseRequest;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +18,16 @@ class CourseController extends Controller
 
     public function addCourse(Request $request)
     {
-      return AddHelper::addModel($request, Course::class,  $this->rules($request));
+        if( ValidateHelper::validateData($request, $this->rules($request))){
+            return  ResponseHelper::clientError(401);
+        }
+
+        $course = Course::create([
+            'arabic_name' => $request->arabic_name,
+            'english_name' => $request->english_name
+        ]);
+
+       return ResponseHelper::successWithData(['id' => $course->id]);
     }
 
     public function modifyCourse (Request $request)

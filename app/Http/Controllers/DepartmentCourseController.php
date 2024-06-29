@@ -33,13 +33,13 @@ class DepartmentCourseController extends Controller
             return  ResponseHelper::clientError(401);
         }
 
-        DepartmentCourse::create([
+        $departmentCourse= DepartmentCourse::create([
             'department_id' => $request->department_id,
             'course_id' => $request->course_id,
             'level' => $request->level_id,
             'semester' => $request->semester_id,
         ]);
-        return ResponseHelper::success();
+        return ResponseHelper::successWithData(['id' => $departmentCourse->id]);
     }
 
     public function modifyDepartmentCourse(Request $request)

@@ -2,35 +2,41 @@
     {
         "course_id": 1,
         "part_id": 0,
-        "description": "this description for course part, that show the content of the part"
+        "description": "this description for course part, that show the content of the part",
+        "comment": " id = 1"
     },
 
     {
         "course_id": 2,
         "part_id": 0,
-        "description": "this description for course part, that show the content of the part"
+        "description": "this description for course part, that show the content of the part",
+        "comment": " id = 2"
     },
     {
         "course_id": 2,
         "part_id": 1,
-        "description": "this description for course part, that show the content of the part"
+        "description": "this description for course part, that show the content of the part",
+        "comment": " id = 3"
     },
 
     {
         "course_id": 3,
         "part_id": 0,
-        "description": "this description for course part, that show the content of the part"
+        "description": "this description for course part, that show the content of the part",
+        "comment": " id = 4"
     },
     {
         "course_id": 3,
         "part_id": 1,
-        "description": "this description for course part, that show the content of the part"
+        "description": "this description for course part, that show the content of the part",
+        "comment": " id = 5"
     },
     
     {
         "course_id": 4,
         "part_id": 0,
-        "description": "this description for course part, that show the content of the part"
+        "description": "this description for course part, that show the content of the part",
+        "comment": " id = 6"
     }
     
 ]

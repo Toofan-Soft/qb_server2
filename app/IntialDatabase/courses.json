@@ -1,26 +1,32 @@
 [
     {
         "arabic_name": "لغة انجليزية",
-        "english_name": "English Language"
+        "english_name": "English Language",
+        "comment": " id = 1"
     },
     {
         "arabic_name": "ذكاء صناعي",
-        "english_name": "Artificial Intelligent"
+        "english_name": "Artificial Intelligent",
+        "comment": " id = 2"
     },
     {
         "arabic_name": "شبكات عصبية",
-        "english_name": "Neural Network"
+        "english_name": "Neural Network",
+        "comment": " id = 3"
     },
     {
         "arabic_name": "لغة انجليزية اختبار قبول",
-        "english_name": "english language for acceptance exam"
+        "english_name": "english language for acceptance exam",
+        "comment": " id = 4"
     },
     {
         "arabic_name": "معالجة صور رقمية", 
-        "english_name": "Digtal Image Processing"
+        "english_name": "Digtal Image Processing",
+        "comment": " id = 5"
     },
     {
         "arabic_name": "تشريح", 
-        "english_name": "Anatomy"
+        "english_name": "Anatomy",
+        "comment": " id = 6"
     }
 ]

@@ -20,7 +20,7 @@ class DepartmentCoursePartController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
-        DepartmentCoursePart::create([
+        $departmentCoursePart = DepartmentCoursePart::create([
             'department_course_id' => $request->department_course_id,
             'course_part_id' => $request->course_part_id,
             'score' => $request->score ?? null,
@@ -28,7 +28,7 @@ class DepartmentCoursePartController extends Controller
             'lecture_duration' => $request->lecture_duration ?? null,
             'note' => $request->note ?? null,
         ]);
-        return ResponseHelper::success();
+        return ResponseHelper::successWithData(['id' => $departmentCoursePart->id]);
     }
 
     public function modifyDepartmentCoursePart(Request $request)

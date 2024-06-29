@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\RoleEnum;
 use App\Models\User;
 use App\Models\Department;
 use App\Enums\UserRoleEnum;
@@ -9,6 +10,11 @@ use Illuminate\Auth\Access\Response;
 
 class DepartmentPolicy
 {
+    // public function add() : bool {
+    //     $user = auth()->user();
+    //     $userRoles = $user->user_roles;
+    //     return true;
+    // }
     /**
      * Determine whether the user can view any models.
      */

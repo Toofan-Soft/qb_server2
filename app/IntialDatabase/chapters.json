@@ -1,90 +1,52 @@
 [
     {
-        "course_part_id": 1,
         "arabic_title": "الفصل 1",
-        "english_title": "Chapter 1", 
+        "english_title": "Chapter 1",
         "description": "this description for chapter, that show the content of the chapter"
     },
     {
-        "course_part_id": 1,
         "arabic_title": "الفصل 2",
-        "english_title": "Chapter 2", 
+        "english_title": "Chapter 2",
         "description": "this description for chapter, that show the content of the chapter"
     },
     {
-        "course_part_id": 1,
         "arabic_title": "الفصل 3",
-        "english_title": "Chapter 3", 
+        "english_title": "Chapter 3",
         "description": "this description for chapter, that show the content of the chapter"
     },
     {
-        "course_part_id": 1,
         "arabic_title": "الفصل 4",
-        "english_title": "Chapter 4", 
+        "english_title": "Chapter 4",
         "description": "this description for chapter, that show the content of the chapter"
     },
     {
-        "course_part_id": 1,
         "arabic_title": "الفصل 5",
-        "english_title": "Chapter 5", 
+        "english_title": "Chapter 5",
         "description": "this description for chapter, that show the content of the chapter"
     },
     {
-        "course_part_id": 1,
         "arabic_title": "الفصل 6",
-        "english_title": "Chapter 6", 
+        "english_title": "Chapter 6",
         "description": "this description for chapter, that show the content of the chapter"
     },
     {
-        "course_part_id": 1,
         "arabic_title": "الفصل 7",
-        "english_title": "Chapter 7", 
-        "description": "this description for chapter, that show the content of the chapter"
-    },
-
-    
-    {
-        "course_part_id": 2,
-        "arabic_title": "الفصل 1",
-        "english_title": "Chapter 1", 
+        "english_title": "Chapter 7",
         "description": "this description for chapter, that show the content of the chapter"
     },
     {
-        "course_part_id": 2,
-        "arabic_title": "الفصل 2",
-        "english_title": "Chapter 2", 
+        "arabic_title": "الفصل 8",
+        "english_title": "Chapter 8",
         "description": "this description for chapter, that show the content of the chapter"
     },
     {
-        "course_part_id": 2,
-        "arabic_title": "الفصل 3",
-        "english_title": "Chapter 3", 
+        "arabic_title": "الفصل 9",
+        "english_title": "Chapter 9",
         "description": "this description for chapter, that show the content of the chapter"
     },
     {
-        "course_part_id": 2,
-        "arabic_title": "الفصل 4",
-        "english_title": "Chapter 4", 
-        "description": "this description for chapter, that show the content of the chapter"
-    },
-    {
-        "course_part_id": 2,
-        "arabic_title": "الفصل 5",
-        "english_title": "Chapter 5", 
-        "description": "this description for chapter, that show the content of the chapter"
-    },
-    {
-        "course_part_id": 2,
-        "arabic_title": "الفصل 6",
-        "english_title": "Chapter 6", 
-        "description": "this description for chapter, that show the content of the chapter"
-    },
-    {
-        "course_part_id": 2,
-        "arabic_title": "الفصل 7",
-        "english_title": "Chapter 7", 
+        "arabic_title": "الفصل 10",
+        "english_title": "Chapter 10",
         "description": "this description for chapter, that show the content of the chapter"
     }
-    
-    
 ]
