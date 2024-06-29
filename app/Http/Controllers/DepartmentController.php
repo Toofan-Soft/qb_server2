@@ -28,7 +28,7 @@ class DepartmentController extends Controller
             return  ResponseHelper::clientError(401);
         }
 
-        // Gate::authorize('create', Department::class);
+        Gate::authorize('create', Department::class);
         $college = College::findOrFail($request->college_id);
         $college->departments()->create([
             'arabic_name' => $request->arabic_name,
