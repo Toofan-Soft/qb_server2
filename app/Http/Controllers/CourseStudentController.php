@@ -59,11 +59,12 @@ class CourseStudentController extends Controller
             return  ResponseHelper::clientError(401);
         }
         $courseStudent = CourseStudent::where('department_course_id', '=', $request->department_course_id)
-        ->where('student_id', '=', $request->student_id)->first();
-        // return ResponseHelper::successWithData($courseStudent);
+        ->where('student_id', '=', $request->student_id);
+
         $courseStudent->update([
             'academic_year' => $request->academic_year
         ]);
+
         return ResponseHelper::success();
     }
 
@@ -73,7 +74,8 @@ class CourseStudentController extends Controller
             return  ResponseHelper::clientError(401);
         }
         $courseStudent = CourseStudent::where('department_course_id', '=', $request->department_course_id)
-            ->where('student_id', '=', $request->student_id)->first();
+            ->where('student_id', '=', $request->student_id);
+
         $courseStudent->update([
             'status' => CourseStudentStatusEnum::PASSED->value,
         ]);
@@ -86,46 +88,44 @@ class CourseStudentController extends Controller
             return  ResponseHelper::clientError(401);
         }
         $courseStudent = CourseStudent::where('department_course_id', '=', $request->department_course_id)
-            ->where('student_id', '=', $request->student_id)->first();
-        if ($courseStudent->status ===  CourseStudentStatusEnum::ACTIVE->value) {
+            ->where('student_id', '=', $request->student_id);
+
+        if (intval($courseStudent->first()->status) ===  CourseStudentStatusEnum::ACTIVE->value) {
             $courseStudent->update([
                 'status' => CourseStudentStatusEnum::SUSPENDED->value,
             ]);
             return ResponseHelper::success();
         } else {
-            return ResponseHelper::clientError('student status not active');
+            return ResponseHelper::clientError(401);
         }
     }
 
     public function deleteCourseStudent(Request $request)
     {
-        if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
-        }
         $courseStudent = CourseStudent::where('department_course_id', '=', $request->department_course_id)
-            ->where('student_id', '=', $request->student_id)->first();
-        if ($courseStudent->status ===  CourseStudentStatusEnum::ACTIVE->value) {
+            ->where('student_id', '=', $request->student_id);
+        if (intval($courseStudent->first()->status) ===  CourseStudentStatusEnum::ACTIVE->value) {
             return DeleteHelper::deleteModel($courseStudent);
         } else {
-            return ResponseHelper::clientError('student status not active');
+            return ResponseHelper::clientError(401);
+            // return ResponseHelper::clientError('student status not active');
         }
     }
 
     public function retrieveCourseStudents(Request $request)
     {
-        $courseStudents = DB::table('department_courses')
-            ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
+        $courseStudents = DB::table('course_students')
+            // ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
             ->join('students', 'course_students.student_id', '=', 'students.id')
             ->select(
-                'course_students.id as department_name',  // note : course_students not have id as primary key
                 'students.id',
                 'students.academic_id',
                 'students.image_url',
                 'students.arabic_name as name'
             )
-            ->Where('department_courses.id ', '=', $request->department_course_id)
-            ->Where('course_students.academic_year ', '=', $request->academic_year)
-            ->when($request->status_id === null, function ($query) {
+            ->Where('course_students.department_course_id', '=', $request->department_course_id)
+            ->Where('course_students.academic_year', '=', $request->academic_year)
+            ->when(is_null($request->status_id), function ($query) {
                 return  $query->selectRaw('course_students.status as status_name');
             })
             ->when($request->status_id, function ($query) use ($request) {
@@ -133,35 +133,31 @@ class CourseStudentController extends Controller
             })
             ->get();
 
-        if ($courseStudents->has(['status_name'])) {
+            if (is_null($request->status_id)) {
             $courseStudents = ProcessDataHelper::enumsConvertIdToName($courseStudents, [new EnumReplacement('status_name', CourseStudentStatusEnum::class)]);
         }
-
         return ResponseHelper::successWithData($courseStudents);
     }
 
-
-
     public function retrieveUnlinkCourceStudents(Request $request)
     {
+        // هذا المتطلب ناقص ، ويتحاج الي ان يتم ايضا التركيز على المستوى الذي يدرس فيه الطالب واستثناء الطلاب الذين في مستويات اقل
+        
         $department = DepartmentCourse::findOrFail($request->department_course_id, ['department_id']);
-        $departmentStudents = [];
-        $departmentCourseStudents = [];
+        $departmentStudents = [];// كل الطلاب الذين يدرسون في القسم الذي ينتمي اليه مقرر القسم المطلوب
+        $departmentCourseStudents = []; // كل الطلاب الذين يدرسون او قد درسو مقرر القسم المطلوب
         $departmentStudents = DB::table('departments')
-            ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
-            ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
-            ->join('students', 'course_students.student_id', '=', 'students.id')
-            ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'students.image_url')
-            ->where('departments.id', '=', $department->department_id)
-            ->distinct()
-            ->get();
+        ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
+        ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
+        ->join('students', 'course_students.student_id', '=', 'students.id')
+        ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'students.image_url')
+        ->where('departments.id', '=', $department->department_id)
+        ->distinct()
+        ->get();
 
-        $departmentCourseStudents = DB::table('department_courses')
-            ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
-            ->select('course_students.student_id')
-            ->where('department_courses.id', '=', $request->department_course_id)
-            ->distinct()
-            ->get();
+        $departmentCourseStudents = CourseStudent::where('department_course_id', '=', $request->department_course_id)
+        ->get(['student_id']);
+
         $unlinkCourseStudents = $departmentStudents->whereNotIn('id', $departmentCourseStudents->pluck('student_id'));
 
         return ResponseHelper::successWithData($unlinkCourseStudents);
