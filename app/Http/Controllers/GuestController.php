@@ -40,7 +40,8 @@ class GuestController extends Controller
         // return ResponseHelper::successWithData(UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password));
         
         if(!UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password)) {
-            return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
+            return ResponseHelper::serverError();
+            // return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
         }
         
         return ResponseHelper::success();
@@ -54,7 +55,7 @@ class GuestController extends Controller
         }
 
         $guest = Guest::where('user_id', auth()->user()->id)->first();
-        return Guest::all();
+        // return Guest::all();
         $guest->update([
             'name' => $request->name ??  $guest->name ,
             'phone' => $request->phone ?? $guest->phone ,

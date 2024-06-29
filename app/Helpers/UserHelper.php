@@ -25,49 +25,59 @@ class UserHelper
     public static function addUser($email, $ownerTypeId, $ownerId, $password = null, $roles = [])
     {
         // make the function recieve كائن من المالك (طالب، موظف، زائر) بدل رقم المالك
-
         // add user status by default
-        $generatedToken = self::generateAlphanumericToken(8);
 
-        $user = User::create([
-            'email' => $email,
-            'password' => ($password) ? bcrypt($password) : $generatedToken,
-            'status' => UserStatusEnum::ACTIVATED->value,
-            'owner_type' => $ownerTypeId,
-            // 'email_verified_at' =>($ownerTypeId === OwnerTypeEnum::GUEST->value) ? null: now(),
-        ]);
+        $roles = $roles ?? [];
+        // لضمان ان هذا المتغير يبقى من نوع مصفوفة في حاله لم يتم تمريره او تمرير قيمته بفارغ
 
-        $owner = null;
-        if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
-            $owner = Guest::findOrFail($ownerId)->update(['user_id' => $user->id]);
-            array_push($roles, RoleEnum::GUEST->value);
-        } elseif ($ownerTypeId === OwnerTypeEnum::STUDENT->value) {
-            $owner = Student::findOrFail($ownerId)->update(['user_id' => $user->id]);
-            array_push($roles, RoleEnum::STUDENT->value);
-        } elseif ($ownerTypeId === OwnerTypeEnum::LECTURER->value) {
-            $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
-            array_push($roles, RoleEnum::LECTURER->value);
-        } elseif ($ownerTypeId === OwnerTypeEnum::EMPLOYEE->value) {
-            $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
-        } else {
-            $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
-            array_push($roles, RoleEnum::LECTURER->value);
-        }
-        
-        foreach ($roles as $role) {
-            $user->user_roles()->create([
-                'role_id' => $role,
+        DB::beginTransaction();
+        try {
+            $generatedToken = self::generateAlphanumericToken(8);
+
+            $user = User::create([
+                'email' => $email,
+                'password' => ($password) ? bcrypt($password) : $generatedToken,
+                'status' => UserStatusEnum::ACTIVATED->value,
+                'owner_type' => $ownerTypeId,
+                // 'email_verified_at' =>($ownerTypeId === OwnerTypeEnum::GUEST->value) ? null: now(),
             ]);
-        }
 
-        $user->notify(new EmaiVerificationNotification($generatedToken));
+            $owner = null;
+            if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
+                $owner = Guest::findOrFail($ownerId)->update(['user_id' => $user->id]);
+                array_push($roles, RoleEnum::GUEST->value);
+            } elseif ($ownerTypeId === OwnerTypeEnum::STUDENT->value) {
+                $owner = Student::findOrFail($ownerId)->update(['user_id' => $user->id]);
+                array_push($roles, RoleEnum::STUDENT->value);
+            } elseif ($ownerTypeId === OwnerTypeEnum::LECTURER->value) {
+                $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
+                array_push($roles, RoleEnum::LECTURER->value);
+            } elseif ($ownerTypeId === OwnerTypeEnum::EMPLOYEE->value) {
+                $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
+            } else {
+                $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
+                array_push($roles, RoleEnum::LECTURER->value);
+            }
 
-        // if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
-        //     $token = $user->createToken('quesionbanklaravelapi')->accessToken;
-        //     return $token;
-        // } else {
+            foreach ($roles as $role) {
+                $user->user_roles()->create([
+                    'role_id' => $role,
+                ]);
+            }
+
+            // $user->notify(new EmaiVerificationNotification($generatedToken));
+
+            // if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
+            //     $token = $user->createToken('quesionbanklaravelapi')->accessToken;
+            //     return $token;
+            // } else {
+                DB::commit();
             return true;
-        // }
+            // }
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return false;
+        }
     }
 
     public static function addUserRoles(User $user, $roles = [])
@@ -92,7 +102,7 @@ class UserHelper
                 [
                     'id' => RoleEnum::GUEST->value,
                     // 'name' =>RoleEnum::getNameByNumber(RoleEnum::GUEST->value),
-                    'name' =>EnumTraits::getNameByNumber(RoleEnum::GUEST->value, RoleEnum::class),
+                    'name' => EnumTraits::getNameByNumber(RoleEnum::GUEST->value, RoleEnum::class),
                     'is_mandatory' => true
                 ]
             ];
@@ -101,7 +111,7 @@ class UserHelper
                 [
                     'id' => RoleEnum::STUDENT->value,
                     // 'name' =>RoleEnum::getNameByNumber(RoleEnum::STUDENT->value),
-                    'name' =>EnumTraits::getNameByNumber(RoleEnum::STUDENT->value, RoleEnum::class),
+                    'name' => EnumTraits::getNameByNumber(RoleEnum::STUDENT->value, RoleEnum::class),
                     'is_mandatory' => true
                 ]
             ];
@@ -110,19 +120,19 @@ class UserHelper
                 [
                     'id' => RoleEnum::LECTURER->value,
                     // 'name' =>RoleEnum::getNameByNumber(RoleEnum::LECTURER->value),
-                    'name' =>EnumTraits::getNameByNumber(RoleEnum::LECTURER->value, RoleEnum::class),
+                    'name' => EnumTraits::getNameByNumber(RoleEnum::LECTURER->value, RoleEnum::class),
                     'is_mandatory' => true
                 ],
                 [
                     'id' => RoleEnum::QUESTION_ENTRY->value,
                     // 'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_ENTRY->value),
-                    'name' =>EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
+                    'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
                     'is_mandatory' => false
                 ],
                 [
                     'id' => RoleEnum::PROCTOR->value,
                     // 'name' =>RoleEnum::getNameByNumber(RoleEnum::PROCTOR->value),
-                    'name' =>EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
+                    'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
                     'is_mandatory' => false
                 ]
             ];
@@ -131,31 +141,31 @@ class UserHelper
                 [
                     'id' => RoleEnum::QUESTION_REVIEWER->value,
                     // 'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value),
-                    'name' =>EnumTraits::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value, RoleEnum::class),
+                    'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value, RoleEnum::class),
                     'is_mandatory' => false
                 ],
                 [
                     'id' => RoleEnum::QUESTION_ENTRY->value,
                     // 'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_ENTRY->value),
-                    'name' =>EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
+                    'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
                     'is_mandatory' => false
                 ],
                 [
                     'id' => RoleEnum::PROCTOR->value,
                     // 'name' =>RoleEnum::getNameByNumber(RoleEnum::PROCTOR->value),
-                    'name' =>EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
+                    'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
                     'is_mandatory' => false
                 ],
                 [
                     'id' => RoleEnum::SYSTEM_ADMINISTRATOR->value,
                     // 'name' =>RoleEnum::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value),
-                    'name' =>EnumTraits::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value, RoleEnum::class),
+                    'name' => EnumTraits::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value, RoleEnum::class),
                     'is_mandatory' => false
                 ],
                 [
                     'id' => RoleEnum::DATA_ENTRY->value,
                     // 'name' =>RoleEnum::getNameByNumber(RoleEnum::DATA_ENTRY->value),
-                    'name' =>EnumTraits::getNameByNumber(RoleEnum::DATA_ENTRY->value, RoleEnum::class),
+                    'name' => EnumTraits::getNameByNumber(RoleEnum::DATA_ENTRY->value, RoleEnum::class),
                     'is_mandatory' => false
                 ]
             ];
@@ -169,5 +179,4 @@ class UserHelper
         $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
         return substr(str_shuffle($characters), 0, $length);
     }
-
 }
