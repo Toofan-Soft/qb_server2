@@ -34,4 +34,9 @@ class ValidateHelper
         //     }
         // }
     }
+
+    public static function validatePolicy($roles = []) : bool {
+
+        return true;        
+    }
 }

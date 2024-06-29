@@ -5,9 +5,9 @@ namespace App\Policies;
 use App\Enums\RoleEnum;
 use App\Helpers\ValidateHelper;
 
-class DepartmentPolicy
+class UniversityPolicy
 {
-    public function add(): bool
+    public function configure(): bool
     {
         $correctRoles = [
             RoleEnum::DATA_ENTRY->value,
@@ -24,29 +24,14 @@ class DepartmentPolicy
         ];
         return ValidateHelper::validatePolicy($correctRoles);
     }
-
-    public function delete(): bool
-    {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
-    }
     /////////////
     public function retrieve(): bool
     {
         $correctRoles = [];
         return ValidateHelper::validatePolicy($correctRoles);
     }
-    //////////////
-    public function retrieveList(): bool
-    {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
-    }
     ///////////////
-    public function retrieveBasicInfoList(): bool
+    public function retrieveBasicInfo(): bool
     {
         $correctRoles = [];
         return ValidateHelper::validatePolicy($correctRoles);

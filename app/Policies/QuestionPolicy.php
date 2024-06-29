@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Enums\RoleEnum;
 use App\Helpers\ValidateHelper;
 
-class DepartmentPolicy
+class QuestionPolicy
 {
     public function add(): bool
     {
@@ -24,6 +24,24 @@ class DepartmentPolicy
         ];
         return ValidateHelper::validatePolicy($correctRoles);
     }
+    ///////////////
+    public function submit(): bool
+    {
+        $correctRoles = [];
+        return ValidateHelper::validatePolicy($correctRoles);
+    }
+    ///////////////
+    public function accept(): bool
+    {
+        $correctRoles = [];
+        return ValidateHelper::validatePolicy($correctRoles);
+    }
+    ///////////////
+    public function reject(): bool
+    {
+        $correctRoles = [];
+        return ValidateHelper::validatePolicy($correctRoles);
+    }
 
     public function delete(): bool
     {
@@ -39,14 +57,14 @@ class DepartmentPolicy
         $correctRoles = [];
         return ValidateHelper::validatePolicy($correctRoles);
     }
-    //////////////
-    public function retrieveList(): bool
+    ////////////
+    public function retrieveEditable(): bool
     {
         $correctRoles = [];
         return ValidateHelper::validatePolicy($correctRoles);
     }
-    ///////////////
-    public function retrieveBasicInfoList(): bool
+    //////////////
+    public function retrieveList(): bool
     {
         $correctRoles = [];
         return ValidateHelper::validatePolicy($correctRoles);

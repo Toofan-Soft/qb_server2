@@ -176,13 +176,13 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('question/')->group(function () {
         Route::post('add', [QuestionController::class, 'addQuestion']);
         Route::put('modify', [QuestionController::class, 'modifyQuestion']);
+        Route::put('submit', [QuestionController::class, 'submitQuestionReviewRequest']);
+        Route::put('accept', [QuestionController::class, 'acceptQuestion']);
+        Route::put('reject', [QuestionController::class, 'rejectQuestion']);
         Route::delete('delete', [QuestionController::class, 'deleteQuestion']);
         Route::get('retrieve', [QuestionController::class, 'retrieveQuestion']);
         Route::get('retrieve-editable', [QuestionController::class, 'retrieveEditableQuestion']);
         Route::get('retrieve-list', [QuestionController::class, 'retrieveQuestions']);
-        Route::put('submit', [QuestionController::class, 'submitQuestionReviewRequest']);
-        Route::put('accept', [QuestionController::class, 'acceptQuestion']);
-        Route::put('reject', [QuestionController::class, 'rejectQuestion']);
     });
 
 
@@ -269,12 +269,12 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('course-student/')->group(function () {
         Route::post('add-list', [CourseStudentController::class, 'addCourseStudents']);
         Route::put('modify', [CourseStudentController::class, 'modifyCourseStudent']);
+        Route::put('pass', [CourseStudentController::class, 'passCourseStudent']);
+        Route::put('suspend', [CourseStudentController::class, 'suspendCourseStudent']);
         Route::delete('delete', [CourseStudentController::class, 'deleteCourseStudent']);
         Route::get('retrieve-editable', [CourseStudentController::class, 'retrieveEditableCourseStudent']);
         Route::get('retrieve-list', [CourseStudentController::class, 'retrieveCourseStudents']);
         Route::get('retrieve-unlink-list', [CourseStudentController::class, 'retrieveUnlinkCourceStudents']);
-        Route::put('pass', [CourseStudentController::class, 'passCourseStudent']);
-        Route::put('suspend', [CourseStudentController::class, 'suspendCourseStudent']);
     });
 
 

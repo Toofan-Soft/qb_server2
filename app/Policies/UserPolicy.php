@@ -5,9 +5,9 @@ namespace App\Policies;
 use App\Enums\RoleEnum;
 use App\Helpers\ValidateHelper;
 
-class DepartmentPolicy
+class UserPolicy
 {
-    public function add(): bool
+    public function verify(): bool
     {
         $correctRoles = [
             RoleEnum::DATA_ENTRY->value,
@@ -16,7 +16,7 @@ class DepartmentPolicy
         return ValidateHelper::validatePolicy($correctRoles);
     }
 
-    public function modify(): bool
+    public function login(): bool
     {
         $correctRoles = [
             RoleEnum::DATA_ENTRY->value,
@@ -25,7 +25,7 @@ class DepartmentPolicy
         return ValidateHelper::validatePolicy($correctRoles);
     }
 
-    public function delete(): bool
+    public function logout(): bool
     {
         $correctRoles = [
             RoleEnum::DATA_ENTRY->value,
@@ -34,19 +34,25 @@ class DepartmentPolicy
         return ValidateHelper::validatePolicy($correctRoles);
     }
     /////////////
-    public function retrieve(): bool
+    public function changePassword(): bool
     {
         $correctRoles = [];
         return ValidateHelper::validatePolicy($correctRoles);
     }
     //////////////
-    public function retrieveList(): bool
+    public function requestAccountReovery(): bool
     {
         $correctRoles = [];
         return ValidateHelper::validatePolicy($correctRoles);
     }
-    ///////////////
-    public function retrieveBasicInfoList(): bool
+    //////////////
+    public function changePasswordAfterAccountReovery(): bool
+    {
+        $correctRoles = [];
+        return ValidateHelper::validatePolicy($correctRoles);
+    }
+    //////////////
+    public function retrieveProfile(): bool
     {
         $correctRoles = [];
         return ValidateHelper::validatePolicy($correctRoles);

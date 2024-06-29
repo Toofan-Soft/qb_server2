@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Enums\RoleEnum;
 use App\Helpers\ValidateHelper;
 
-class DepartmentPolicy
+class QuestionChoicePolicy
 {
     public function add(): bool
     {
@@ -33,20 +33,8 @@ class DepartmentPolicy
         ];
         return ValidateHelper::validatePolicy($correctRoles);
     }
-    /////////////
-    public function retrieve(): bool
-    {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
-    }
-    //////////////
-    public function retrieveList(): bool
-    {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
-    }
-    ///////////////
-    public function retrieveBasicInfoList(): bool
+    ////////////
+    public function retrieveEditable(): bool
     {
         $correctRoles = [];
         return ValidateHelper::validatePolicy($correctRoles);

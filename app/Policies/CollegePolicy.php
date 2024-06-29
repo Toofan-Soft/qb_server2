@@ -2,66 +2,53 @@
 
 namespace App\Policies;
 
-use App\Enums\UserRoleEnum;
-use App\Models\College;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Enums\RoleEnum;
+use App\Helpers\ValidateHelper;
 
 class CollegePolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    public function add(): bool
     {
-        //
+        $correctRoles = [
+            RoleEnum::DATA_ENTRY->value,
+            RoleEnum::SYSTEM_ADMINISTRATOR->value
+        ];
+        return ValidateHelper::validatePolicy($correctRoles);
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, College $college): bool
+    public function modify(): bool
     {
-        //
+        $correctRoles = [
+            RoleEnum::DATA_ENTRY->value,
+            RoleEnum::SYSTEM_ADMINISTRATOR->value
+        ];
+        return ValidateHelper::validatePolicy($correctRoles);
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function delete(): bool
     {
-        return ((int)auth()->user()->user_roles->first()->role_id === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
+        $correctRoles = [
+            RoleEnum::DATA_ENTRY->value,
+            RoleEnum::SYSTEM_ADMINISTRATOR->value
+        ];
+        return ValidateHelper::validatePolicy($correctRoles);
     }
-
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, College $college): bool
+    /////////////
+    public function retrieve(): bool
     {
-        return ((int)auth()->user()->user_roles->first()->role_id === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
+        $correctRoles = [];
+        return ValidateHelper::validatePolicy($correctRoles);
     }
-
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, College $college): bool
+    //////////////
+    public function retrieveList(): bool
     {
-        return ((int)auth()->user()->user_roles->first()->role_id === UserRoleEnum::SYSTEM_ADMINISTRATOR->value) ? true : false;
+        $correctRoles = [];
+        return ValidateHelper::validatePolicy($correctRoles);
     }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, College $college): bool
+    ///////////////
+    public function retrieveBasicInfoList(): bool
     {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, College $college): bool
-    {
-        //
+        $correctRoles = [];
+        return ValidateHelper::validatePolicy($correctRoles);
     }
 }
