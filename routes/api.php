@@ -95,9 +95,9 @@ Route::middleware('auth:api')->group(function () {
 
     // user
     Route::get('user/retrieve-profile', [UserController::class, 'retrieveProfile']);
-    Route::get('filter/retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
+    // Route::get('filter/retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
 
-});///
+// });///
 
     //univercity
     Route::prefix('university/')->group(function () {
@@ -427,7 +427,7 @@ Route::prefix('enum/')->group(function () {
     Route::get('retrieve-semester-list', [EnumsController::class, 'retrieveSemesters']);
     Route::get('retrieve-job-type-list', [EnumsController::class, 'retrieveJobTypes']);
     Route::get('retrieve-qualification-list', [EnumsController::class, 'retrieveQualifications']);
-    Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
+    // Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
     Route::get('retrieve-course-student-status-list', [EnumsController::class, 'retrieveCourseStudentStatus']);
     Route::get('retrieve-owner-type-list', [EnumsController::class, 'retrieveOwnerTypes']);
     Route::get('retrieve-user-status-list', [EnumsController::class, 'retrieveUserStatus']);
@@ -449,7 +449,7 @@ Route::prefix('filter/')->group(function () {
     Route::get('retrieve-chapter-list', [FilterController::class, 'retrieveChapters']);
     Route::get('retrieve-topic-list', [FilterController::class, 'retrieveTopics']);
     Route::get('retrieve-college-list', [FilterController::class, 'retrieveColleges']);
-    // Route::get('retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
+    Route::get('retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
     Route::get('retrieve-lecturer-current-college-list', [FilterController::class, 'retrieveLecturerCurrentColleges']);
     Route::get('retrieve-department-list', [FilterController::class, 'retrieveDepartments']);
     Route::get('retrieve-lecturer-department-list', [FilterController::class, 'retrieveLecturerDepartments']);
@@ -471,6 +471,22 @@ Route::prefix('filter/')->group(function () {
     Route::get('retrieve-role-list', [FilterController::class, 'retrieveRoles']);
     Route::get('retrieve-proctor-list', [FilterController::class, 'retrieveProctors']);
 });
+
+
+});///
+
+
+
+
+//enum
+Route::prefix('enum/')->group(function () {
+    Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
+});
+
+
+
+
+
 
 
  // test initial data
