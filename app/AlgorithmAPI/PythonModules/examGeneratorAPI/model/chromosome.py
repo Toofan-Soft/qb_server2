@@ -55,8 +55,11 @@ class Chromosome:
 
         final_answer_time_prob = 1 - abs(0.5 - chromosome_probs.p_at / et)  # 0.5 is e_ratio
 
-        final_topic_prob = (-sum(((counter / count) * math.log(counter / count))
-                                 for (ch, counter) in chromosome_probs.p_ch if counter != 0)) / math.log(topics_count())
+        # final_topic_prob = (-sum(((counter / count) * math.log(counter / count))
+                                #  for (ch, counter) in chromosome_probs.p_ch if counter != 0)) / math.log(topics_count())
+
+        final_topic_prob = 1.0 if topics_count() == 1 else (-sum(((counter / count) * math.log(counter / count))
+                            for (ch, counter) in chromosome_probs.p_ch if counter != 0)) / math.log(topics_count())
 
         probs = [
             final_difficulty_level_prob,

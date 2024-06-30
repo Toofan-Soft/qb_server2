@@ -55,24 +55,48 @@ class ProcessDataHelper
 // }
 
 
-//handle single object or array of objects:
+// //handle single object or array of objects:
+// public static function enumsConvertIdToName($data, $enumReplacements)
+// {
+//     // Check if $data is an array or a single object
+//     $isArray = is_array($data) || $data instanceof Traversable;
+
+//     $dataToProcess = $isArray ? $data : [$data];
+//     foreach ($dataToProcess as $item) {
+//         foreach ($enumReplacements as $enumReplacement) {
+//             // if (isset($item[$enumReplacement->columnName]) && is_numeric($item[$enumReplacement->columnName])) {
+//                 // if (property_exists($item, $enumReplacement->columnName) && is_numeric($item->{$enumReplacement->columnName})) {
+//                 // $item->{$enumReplacement->columnName} = $enumReplacement->enumClass::getNameByNumber($item->{$enumReplacement->columnName});
+//                 $item->{$enumReplacement->columnName} =  EnumTraits::getNameByNumber(intval($item->{$enumReplacement->columnName}), $enumReplacement->enumClass);
+//             // }
+//         }
+//     }
+//     // If $data was a single object, return the modified object
+//     return $isArray ? $dataToProcess : $dataToProcess[0];
+// }
+
 public static function enumsConvertIdToName($data, $enumReplacements)
 {
     // Check if $data is an array or a single object
     $isArray = is_array($data) || $data instanceof Traversable;
-
     $dataToProcess = $isArray ? $data : [$data];
+
+    $newData = [];
+
     foreach ($dataToProcess as $item) {
         foreach ($enumReplacements as $enumReplacement) {
-            // if (isset($item[$enumReplacement->columnName]) && is_numeric($item[$enumReplacement->columnName])) {
-                // if (property_exists($item, $enumReplacement->columnName) && is_numeric($item->{$enumReplacement->columnName})) {
-                // $item->{$enumReplacement->columnName} = $enumReplacement->enumClass::getNameByNumber($item->{$enumReplacement->columnName});
-                $item->{$enumReplacement->columnName} =  EnumTraits::getNameByNumber(intval($item->{$enumReplacement->columnName}), $enumReplacement->enumClass);
-            // }
+            if (is_array($item)) {
+                $item[$enumReplacement->columnName] = EnumTraits::getNameByNumber(intval($item[$enumReplacement->columnName]), $enumReplacement->enumClass);
+            } else {
+                $item->{$enumReplacement->columnName} = EnumTraits::getNameByNumber(intval($item->{$enumReplacement->columnName}), $enumReplacement->enumClass);
+            }
+            $newData[] = $item; // Add the processed item to the new array
         }
     }
+    unset($item); // Unset the reference to avoid potential bugs
+
     // If $data was a single object, return the modified object
-    return $isArray ? $dataToProcess : $dataToProcess[0];
+    return $isArray ? $newData : $newData[0];
 }
 
 // public static function columnConvertIdToName($data, $columnReplacements)

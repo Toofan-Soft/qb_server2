@@ -149,7 +149,6 @@ class ExamHelper
 
     public static function retrieveRealExamChapters($realExamId)
     {
-
         $realExamChapters = DB::table('real_exams')
             ->join('forms', 'real_exams.id', '=', 'forms.real_exam_id')
             ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
@@ -329,6 +328,8 @@ class ExamHelper
                 ->get();
 
             $questions = QuestionHelper::retrieveQuestionsAnswer($questions, $type->type_name);
+            // return $questions;
+
             // $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
             $formQuestions[EnumTraits::getNameByNumber($type->type_name, QuestionTypeEnum::class)] = $questions;
         }

@@ -340,10 +340,12 @@ class FilterController extends Controller
                 ->where('department_courses.id', '=', $request->department_course_id)
                 ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
                 ->get();
-
+            
             $departmentLecturerCourseParts = ProcessDataHelper::enumsConvertIdToName(
                 $departmentLecturerCourseParts,
-                new EnumReplacement('name', CoursePartsEnum::class)
+                [
+                    new EnumReplacement('name', CoursePartsEnum::class)
+                ]
             );
 
             return ResponseHelper::successWithData($departmentLecturerCourseParts);

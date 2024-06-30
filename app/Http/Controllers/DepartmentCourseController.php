@@ -141,7 +141,6 @@ class DepartmentCourseController extends Controller
 
     public function retrieveDepartmentLevelCourses(Request $request)
     {
-
         $semesters = DepartmentCourse::where('department_id', $request->department_id)
             ->where('level', $request->level_id)->get(['semester']);
         $departmentCourses = [];
@@ -154,14 +153,14 @@ class DepartmentCourseController extends Controller
             $semestersCourses = DepartmentCourse::where('department_id', $request->department_id)
                 ->where('level', $request->level_id)
                 ->where('semester', $semester->semester)
-                ->get(['id', 'course_id as course_name']);
+                ->get(['id', 'course_id as name']);
 
             $columnReplacement = [
-                new ColumnReplacement('course_name', 'arabic_name', Course::class),
+                new ColumnReplacement('name', 'arabic_name', Course::class),
             ];
 
             $semestersCourses = ProcessDataHelper::columnConvertIdToName($semestersCourses, $columnReplacement);
-            $departmentCourses['department_courses'] = $semestersCourses;
+            $departmentCourses['courses'] = $semestersCourses;
         }
 
         return ResponseHelper::successWithData([$departmentCourses]);
@@ -215,9 +214,16 @@ class DepartmentCourseController extends Controller
             ]
         );
 
-        // $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName($departmentCourseParts, [
-        //     new EnumReplacement('name', CoursePartsEnum::class)
-        // ]);
+        // return $departmentCourseParts;
+
+        $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName(
+            $departmentCourseParts,
+            [
+                new EnumReplacement('name', CoursePartsEnum::class)
+            ]
+        );
+
+        return $departmentCourseParts;
 
 
         $data = [

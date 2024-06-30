@@ -74,6 +74,8 @@ class QuestionHelper
         $combinationChoices = QuestionChoicesCombination::where('question_id', $questionId)
             ->where('combination_id', $combinationId)
             ->first(['combination_choices']);
+        
+        // return $combinationChoices;
 
         $combinationChoicesAsList = array_map('intval', str_split($combinationChoices->combination_choices));
         $choices = [];
