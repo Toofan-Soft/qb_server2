@@ -33,6 +33,7 @@ trait EnumTraits
                 return $language === 'ar' ? $case->getArabicName() : $case->getEnglishName();
             }
         }
+        return 'null';
         return null;
     }
 

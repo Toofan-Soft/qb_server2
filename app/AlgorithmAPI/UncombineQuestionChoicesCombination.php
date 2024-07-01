@@ -13,8 +13,8 @@ class UncombineQuestionChoicesCombination
     $jsonData = json_encode($data);
     $methodName = 'uncombine';
     $process = new Process([
-        'C:\Users\Nasser\AppData\Local\Programs\Python\Python39\python.exe',
-        base_path() . 'App\AlgorithmAPI\PythonModules\combinationGeneratorAPI\start.py',
+        'E:\Applications\Python\Python312\python.exe',
+        base_path() . '\app\AlgorithmAPI\PythonModules\combinationGeneratorAPI\start.py',
         $methodName,
         $jsonData
     ]);

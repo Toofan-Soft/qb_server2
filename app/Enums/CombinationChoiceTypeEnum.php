@@ -14,9 +14,9 @@ enum CombinationChoiceTypeEnum: int {
     // يتم تحديد الجمل التي سيتم عرضها باللغة العربية والانجليزية 
     public function getValues(): array {
         return match ($this) {
-            self::ALL => [-1, '', ''],
-            self::NOTHING => [-2, '', ''],
-            self::MIX => [-3, '', ''],
+            self::ALL => [-1, 'ALL', 'الكل'],
+            self::NOTHING => [-2, 'NOTHING', 'لا شيء'],
+            self::MIX => [-3, 'MIX', 'خليط'],
         };
     }
 

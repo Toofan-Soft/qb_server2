@@ -14,7 +14,8 @@ def combine(json_data):
 
 def uncombine(value):
     combination = Combination.uncombine(value)
-    return json.dumps([choice.to_dict() for choice in combination.choices], indent=2)
+    return [choice.to_dict() for choice in combination.choices]
+    # return json.dumps([choice.to_dict() for choice in combination.choices], indent=2)
     
 
 def main():

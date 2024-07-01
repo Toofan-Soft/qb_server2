@@ -249,6 +249,41 @@ class QuestionController extends Controller
         return ResponseHelper::success();
     }
     
+    // public function acceptQuestion(Request $request)
+    // {
+    //     $questionsIds = Question::whereIn('topic_id', [3, 4])
+    //         ->where('type', '=', QuestionTypeEnum::MULTIPLE_CHOICE->value)
+    //         ->whereRaw('(SELECT count(*) FROM public.choices WHERE question_id = questions.id) = 8')
+    //         ->get(['id'])
+    //         ->map(function ($question) {
+    //             return $question->id;
+    //         })->toArray();
+
+    //     $counter = 0;
+
+    //     foreach ($questionsIds as $id) {
+    //         // Perform some action for each id.
+    //         // For example, let's log each id for demonstration.
+    //         // return $id;
+
+    //         $this->modifyQuestionStatus($id, QuestionStatusEnum::ACCEPTED->value);
+
+    //         $question = Question::findOrFail($id);
+    //         $question->question_usage()->create();
+
+    //         if (intval($question->type) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
+    //             // return ResponseHelper::successWithData(QuestionHelper::generateQuestionChoicesCombination($question));
+    //             QuestionHelper::generateQuestionChoicesCombination($question);
+
+    //             $counter = $counter + 1;
+    //         }
+    //         // You can add any other logic you want to execute for each id here.
+    //     }
+        
+    //     return $counter;
+    //     return ResponseHelper::success();
+    // }
+
     public function acceptQuestion(Request $request)
     {
         $this->modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);

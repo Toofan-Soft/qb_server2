@@ -2,11 +2,10 @@
 
 namespace App\Helpers;
 
-use App\AlgorithmAPI\UncombineQuestionChoicesCombination;
-use App\Enums\CombinationChoiceTypeEnum;
 use stdClass;
 use Traversable;
 use App\Models\Form;
+use App\Models\Choice;
 use App\Models\Student;
 use App\Models\Question;
 use App\Models\RealExam;
@@ -31,11 +30,13 @@ use Illuminate\Support\Facades\DB;
 use App\Enums\ExamConductMethodEnum;
 use App\Models\RealExamQuestionType;
 use Illuminate\Support\Facades\Storage;
+use App\Enums\CombinationChoiceTypeEnum;
 use App\Models\QuestionChoiceCombination;
 use App\Enums\FormConfigurationMethodEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
-use App\Models\Choice;
+use App\Models\QuestionChoicesCombination;
 use Illuminate\Database\Eloquent\Collection;
+use App\AlgorithmAPI\UncombineQuestionChoicesCombination;
 
 class ExamHelper
 {
@@ -328,7 +329,7 @@ class ExamHelper
                 ->get();
 
             $questions = QuestionHelper::retrieveQuestionsAnswer($questions, $type->type_name);
-            // return $questions;
+            return $questions;
 
             // $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
             $formQuestions[EnumTraits::getNameByNumber($type->type_name, QuestionTypeEnum::class)] = $questions;
@@ -366,6 +367,9 @@ class ExamHelper
     {
         $result = null;
         $choices = self::uncombinateCombination($qeustionId, $combinationId);
+
+        // return $choices;
+
         if($withChoiceId && $withAnswer){
             $result = self::retrieveCombinationChoicesWithIdAndAnswer($choices);
         }elseif($withChoiceId && !$withAnswer){
@@ -380,8 +384,10 @@ class ExamHelper
 
     private static function uncombinateCombination($qeustionId, $combinationId)
     {
-        $combinationChoices = QuestionChoiceCombination::where('combination_id', '=', $combinationId)
-        ->where('question_id', '=', $qeustionId)->first(['combination_choices']);
+        $combinationChoices = QuestionChoicesCombination::where('combination_id', '=', $combinationId)
+            ->where('question_id', '=', $qeustionId)
+            ->first(['combination_choices'])['combination_choices'];
+
         $choices = (new UncombineQuestionChoicesCombination())->execute($combinationChoices);
         
         return $choices;
@@ -466,14 +472,13 @@ class ExamHelper
         $result = [];
         foreach ($choices as $choice) {
             $temp = [];
-            if($choice->ids){
+            if (property_exists($choice, 'ids')) {
                 $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
             }else{
                 if($choice->id == -1){
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
                 }elseif($choice->id == -2){
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
-                    
                 }else{
                     $temp = Choice::findOrFail($choice->id)->first(['content', 'attachment as attachment_url']);
                 }

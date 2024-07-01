@@ -79,8 +79,13 @@ public static function enumsConvertIdToName($data, $enumReplacements)
 {
     // Check if $data is an array or a single object
     $isArray = is_array($data) || $data instanceof Traversable;
-    $dataToProcess = $isArray ? $data : [$data];
 
+    if (empty($enumReplacements)) {
+        return $data;
+    }
+
+    $dataToProcess = $isArray ? $data : [$data];
+    
     $newData = [];
 
     foreach ($dataToProcess as $item) {
