@@ -20,34 +20,52 @@ class DepartmentCoursePartController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
-        $departmentCoursePart = DepartmentCoursePart::create([
-            'department_course_id' => $request->department_course_id,
-            'course_part_id' => $request->course_part_id,
-            'score' => $request->score ?? null,
-            'lectures_count' => $request->lectures_count ?? null,
-            'lecture_duration' => $request->lecture_duration ?? null,
-            'note' => $request->note ?? null,
-        ]);
-        return ResponseHelper::successWithData(['id' => $departmentCoursePart->id]);
+        try {
+            $departmentCoursePart = DepartmentCoursePart::create([
+                'department_course_id' => $request->department_course_id,
+                'course_part_id' => $request->course_part_id,
+                'score' => $request->score ?? null,
+                'lectures_count' => $request->lectures_count ?? null,
+                'lecture_duration' => $request->lecture_duration ?? null,
+                'note' => $request->note ?? null,
+            ]);
+            return ResponseHelper::successWithData(['id' => $departmentCoursePart->id]);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyDepartmentCoursePart(Request $request)
     {
-        $departmentCoursePart = DepartmentCoursePart::findOrFail($request->id);
-        return ModifyHelper::modifyModel($request, $departmentCoursePart,  $this->rules($request));
+        try {
+            $departmentCoursePart = DepartmentCoursePart::findOrFail($request->id);
+            return ModifyHelper::modifyModel($request, $departmentCoursePart,  $this->rules($request));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function deleteDepartmentCoursePart(Request $request)
     {
-        $departmentCoursePart = DepartmentCoursePart::findOrFail($request->id);
-        return DeleteHelper::deleteModel($departmentCoursePart);
+        try {
+            $departmentCoursePart = DepartmentCoursePart::findOrFail($request->id);
+            $departmentCoursePart->delete();
+            // return DeleteHelper::deleteModel($departmentCoursePart);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveEditableDepartmentCoursePart(Request $request)
     {
         $attributes = ['score', 'lectures_count', 'lecture_duration', 'note'];
-        $departmentCourse = DepartmentCoursePart::findOrFail($request->id, $attributes); // edited
-        return ResponseHelper::successWithData($departmentCourse);
+        try {
+            $departmentCourse = DepartmentCoursePart::findOrFail($request->id, $attributes); // edited
+            return ResponseHelper::successWithData($departmentCourse);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function rules(Request $request): array

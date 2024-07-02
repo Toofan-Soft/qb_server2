@@ -7,60 +7,49 @@ use App\Helpers\ValidateHelper;
 
 class ChapterPolicy
 {
-    public function add(): bool
+    private static $validRoles = [
+        RoleEnum::SYSTEM_ADMINISTRATOR,
+        RoleEnum::DATA_ENTRY,
+        RoleEnum::QUESTION_ENTRY
+    ];
+
+    public function addChapter(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function modify(): bool
+    public function modifyChapter(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function delete(): bool
+    public function deleteChapter(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    /////////////
-    public function retrieve(): bool
+    
+    public function retrieveChapter(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    //////////////
-    public function retrieveEditable(): bool
+    
+    public function retrieveEditableChapter(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    //////////////
-    public function retrieveDescription(): bool
+    
+    public function retrieveChapterDescription(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    //////////////
-    public function retrieveList(): bool
+    
+    public function retrieveChapters(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    ///////////////
-    public function retrieveAvailableList(): bool
+    
+    public function retrieveAvailableChapters(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 }

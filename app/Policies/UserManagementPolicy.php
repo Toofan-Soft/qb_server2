@@ -7,57 +7,42 @@ use App\Helpers\ValidateHelper;
 
 class UserManagementPolicy
 {
-    public function add(): bool
+    private static $validRoles = [
+        RoleEnum::SYSTEM_ADMINISTRATOR
+    ];
+
+    public function addUser(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function modifyRoleList(): bool
+    public function modifyUserRoles(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function changeStatus(): bool
+    public function changeUserStatus(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function delete(): bool
+    public function deleteUser(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    /////////////
-    public function retrieve(): bool
+    
+    public function retrieveUser(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    //////////////
-    public function retrieveList(): bool
+    
+    public function retrieveUsers(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    ///////////////
-    public function retrieveOwnerRoleList(): bool
+    
+    public function retrieveOwnerRoles(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 }

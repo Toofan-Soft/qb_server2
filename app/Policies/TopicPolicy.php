@@ -7,54 +7,44 @@ use App\Helpers\ValidateHelper;
 
 class TopicPolicy
 {
-    public function add(): bool
+    private static $validRoles = [
+        RoleEnum::SYSTEM_ADMINISTRATOR,
+        RoleEnum::DATA_ENTRY,
+        RoleEnum::QUESTION_ENTRY
+    ];
+
+    public function addTopic(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function modify(): bool
+    public function modifyTopic(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function delete(): bool
+    public function deleteTopic(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    /////////////
-    public function retrieve(): bool
+    
+    public function retrieveTopic(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    //////////////
-    public function retrieveDescription(): bool
+    
+    public function retrieveTopicDescription(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    //////////////
-    public function retrieveList(): bool
+    
+    public function retrieveTopics(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    ///////////////
-    public function retrieveAvailableList(): bool
+    
+    public function retrieveAvailableTopics(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 }

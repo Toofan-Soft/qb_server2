@@ -32,14 +32,17 @@ class DepartmentCourseController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
-
-        $departmentCourse= DepartmentCourse::create([
-            'department_id' => $request->department_id,
-            'course_id' => $request->course_id,
-            'level' => $request->level_id,
-            'semester' => $request->semester_id,
-        ]);
-        return ResponseHelper::successWithData(['id' => $departmentCourse->id]);
+        try {
+            $departmentCourse = DepartmentCourse::create([
+                'department_id' => $request->department_id,
+                'course_id' => $request->course_id,
+                'level' => $request->level_id,
+                'semester' => $request->semester_id,
+            ]);
+            return ResponseHelper::successWithData(['id' => $departmentCourse->id]);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyDepartmentCourse(Request $request)
@@ -47,19 +50,28 @@ class DepartmentCourseController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
-
-        $departmentCourse = DepartmentCourse::findOrFail($request->id);
-        $departmentCourse->update([
-            'level' => $request->level_id ?? $departmentCourse->level,
-            'semester' => $request->semester_id ?? $departmentCourse->semester,
-        ]);
-        return ResponseHelper::success();
+        try {
+            $departmentCourse = DepartmentCourse::findOrFail($request->id);
+            $departmentCourse->update([
+                'level' => $request->level_id ?? $departmentCourse->level,
+                'semester' => $request->semester_id ?? $departmentCourse->semester,
+            ]);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function deleteDepartmentCourse(Request  $request)
     {
-        $departmentCourse = DepartmentCourse::findOrFail($request->id);
-        return DeleteHelper::deleteModel($departmentCourse);
+        try {
+            $departmentCourse = DepartmentCourse::findOrFail($request->id);
+            $departmentCourse->delete();
+            // return DeleteHelper::deleteModel($departmentCourse);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveDepartmentCourses(Request $request)
@@ -73,8 +85,11 @@ class DepartmentCourseController extends Controller
         $columnReplacement = [
             new ColumnReplacement('course_name', 'arabic_name', Course::class),
         ];
-
-        return GetHelper::retrieveModels(DepartmentCourse::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacement);
+        try {
+            return GetHelper::retrieveModels(DepartmentCourse::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacement);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
 
         // // Optional: Return only necessary attributes (using map)
         // return $department->department_courses->map(function ($departmentCourse) {
@@ -92,28 +107,32 @@ class DepartmentCourseController extends Controller
     ////// **** NEED TO GOIN BETWEEN MORE THAN ONEW
     public function retrieveCourseDepartments(Request $request)
     {
-        $coursesDepartments =  DB::table('courses')
-            ->join('department_courses', 'courses.id', '=', 'department_courses.course_id')
-            ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-            ->join('colleges', 'departments.college_id', '=', 'colleges.id')
-            ->select(
-                'department_courses.id as department_course_id ',
-                'department_courses.level as level_name',
-                'semester as semester_name',
-                'departments.arabic_name as department_name',
-                'colleges.arabic_name as college_name'
-            )
-            ->where('courses.id', '=', $request->course_id)
-            ->get();
+        try {
+            $coursesDepartments =  DB::table('courses')
+                ->join('department_courses', 'courses.id', '=', 'department_courses.course_id')
+                ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+                ->join('colleges', 'departments.college_id', '=', 'colleges.id')
+                ->select(
+                    'department_courses.id as department_course_id ',
+                    'department_courses.level as level_name',
+                    'semester as semester_name',
+                    'departments.arabic_name as department_name',
+                    'colleges.arabic_name as college_name'
+                )
+                ->where('courses.id', '=', $request->course_id)
+                ->get();
 
-        $enumReplacements = [
-            new EnumReplacement('level_name', LevelsEnum::class),
-            new EnumReplacement('semester_name', SemesterEnum::class),
-        ];
+            $enumReplacements = [
+                new EnumReplacement('level_name', LevelsEnum::class),
+                new EnumReplacement('semester_name', SemesterEnum::class),
+            ];
 
-        $coursesDepartments = ProcessDataHelper::enumsConvertIdToName($coursesDepartments, $enumReplacements);
+            $coursesDepartments = ProcessDataHelper::enumsConvertIdToName($coursesDepartments, $enumReplacements);
 
-        return ResponseHelper::successWithData($coursesDepartments);
+            return ResponseHelper::successWithData($coursesDepartments);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
 
         //we can optimize to this :
         // $course = Course::with([
@@ -141,29 +160,35 @@ class DepartmentCourseController extends Controller
 
     public function retrieveDepartmentLevelCourses(Request $request)
     {
-        $semesters = DepartmentCourse::where('department_id', $request->department_id)
-            ->where('level', $request->level_id)->get(['semester']);
-        $departmentCourses = [];
+        try {
+            return ResponseHelper::success();
+            $semesters = DepartmentCourse::where('department_id', $request->department_id)
+                ->where('level', $request->level_id)->get(['semester']);
+            $departmentCourses = [];
 
-        foreach ($semesters as $semester) {
-            $departmentCourses = [
-                'id' => $semester['semester'],
-                'name' =>  EnumTraits::getNameByNumber($semester->semester, SemesterEnum::class)
-            ];
-            $semestersCourses = DepartmentCourse::where('department_id', $request->department_id)
-                ->where('level', $request->level_id)
-                ->where('semester', $semester->semester)
-                ->get(['id', 'course_id as name']);
+            foreach ($semesters as $semester) {
+                $departmentCourses = [
+                    'id' => $semester['semester'],
+                    'name' =>  EnumTraits::getNameByNumber($semester->semester, SemesterEnum::class)
+                ];
+                $semestersCourses = DepartmentCourse::where('department_id', $request->department_id)
+                    ->where('level', $request->level_id)
+                    ->where('semester', $semester->semester)
+                    ->get(['id', 'course_id as name']);
 
-            $columnReplacement = [
-                new ColumnReplacement('name', 'arabic_name', Course::class),
-            ];
+                $columnReplacement = [
+                    new ColumnReplacement('name', 'arabic_name', Course::class),
+                ];
 
-            $semestersCourses = ProcessDataHelper::columnConvertIdToName($semestersCourses, $columnReplacement);
-            $departmentCourses['courses'] = $semestersCourses;
+                $semestersCourses = ProcessDataHelper::columnConvertIdToName($semestersCourses, $columnReplacement);
+                $departmentCourses['courses'] = $semestersCourses;
+            }
+
+            return ResponseHelper::successWithData([$departmentCourses]);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
 
-        return ResponseHelper::successWithData([$departmentCourses]);
         // if we optimized that :
         // $departmentCourses = DepartmentCourse::with([
         //     'semester:number,name as semester_name', // Eager load semester with renamed attribute
@@ -190,60 +215,63 @@ class DepartmentCourseController extends Controller
 
     public function retrieveDepartmentCourse(Request $request)
     {
-        $departmentCourse = DepartmentCourse::findOrFail($request->id); //updated successfull
-        $course = $departmentCourse->course()->first(['arabic_name']);
-        $department = $departmentCourse->department()->first(['college_id', 'arabic_name']);
-        $college = $department->college()->first(['arabic_name']);
+        try {
+            return ResponseHelper::success();
+            $departmentCourse = DepartmentCourse::findOrFail($request->id); //updated successfull
+            $course = $departmentCourse->course()->first(['arabic_name']);
+            $department = $departmentCourse->department()->first(['college_id', 'arabic_name']);
+            $college = $department->college()->first(['arabic_name']);
 
-        $departmentCourseParts = $departmentCourse->department_course_parts()->get([
-            'id', 'course_part_id as name', 'score', 'lectures_count', 'lecture_duration', 'note'
-        ]);
+            $departmentCourseParts = $departmentCourse->department_course_parts()->get([
+                'id', 'course_part_id as name', 'score', 'lectures_count', 'lecture_duration', 'note'
+            ]);
 
-        // $departmentCourseParts = NullHelper::filter($departmentCourseParts);
+            // $departmentCourseParts = NullHelper::filter($departmentCourseParts);
 
-        $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
-            new EnumReplacement('level', LevelsEnum::class),
-            new EnumReplacement('semester', SemesterEnum::class)
-        ]);
-
-
-        $departmentCourseParts = ProcessDataHelper::columnConvertIdToName(
-            $departmentCourseParts,
-            [
-                new ColumnReplacement('name', 'part_id', CoursePart::class)
-            ]
-        );
-
-        // return $departmentCourseParts;
-
-        $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName(
-            $departmentCourseParts,
-            [
-                new EnumReplacement('name', CoursePartsEnum::class)
-            ]
-        );
-
-        return $departmentCourseParts;
+            $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
+                new EnumReplacement('level', LevelsEnum::class),
+                new EnumReplacement('semester', SemesterEnum::class)
+            ]);
 
 
-        $data = [
-            'college_name' => $college->arabic_name,
-            'department_name' => $department->arabic_name,
-            'level_name' => $departmentCourse->level,
-            'semester_name' => $departmentCourse->semester,
-            'course_name' => $course->arabic_name,
-            'course_parts' => $departmentCourseParts
-        ];
+            $departmentCourseParts = ProcessDataHelper::columnConvertIdToName(
+                $departmentCourseParts,
+                [
+                    new ColumnReplacement('name', 'part_id', CoursePart::class)
+                ]
+            );
 
-        return ResponseHelper::successWithData($data);
+            $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName(
+                $departmentCourseParts,
+                [
+                    new EnumReplacement('name', CoursePartsEnum::class)
+                ]
+            );
+
+            $data = [
+                'college_name' => $college->arabic_name,
+                'department_name' => $department->arabic_name,
+                'level_name' => $departmentCourse->level,
+                'semester_name' => $departmentCourse->semester,
+                'course_name' => $course->arabic_name,
+                'course_parts' => $departmentCourseParts
+            ];
+
+            return ResponseHelper::successWithData($data);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
-
 
     public function retrieveEditableDepartmentCourse(Request $request)
     {
         $attributes = ['level as level_id', 'semester as semester_id'];
-        $departmentCourse = DepartmentCourse::findOrFail($request->id, $attributes); //updated successfull
-        return ResponseHelper::successWithData($departmentCourse);
+        try {
+            $departmentCourse = DepartmentCourse::findOrFail($request->id, $attributes); //updated successfull
+            return ResponseHelper::successWithData($departmentCourse);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function rules(Request $request): array

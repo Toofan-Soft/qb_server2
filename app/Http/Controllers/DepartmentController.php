@@ -28,16 +28,20 @@ class DepartmentController extends Controller
             return  ResponseHelper::clientError(401);
         }
 
-        Gate::authorize('create', Department::class);
-        $college = College::findOrFail($request->college_id);
-        $college->departments()->create([
-            'arabic_name' => $request->arabic_name,
-            'english_name' => $request->english_name,
-            'levels_count' => $request->levels_count,
-            'description' => $request->description?? null,
-            'logo_url' => ImageHelper::uploadImage($request->logo)
-        ]);
-       return ResponseHelper::success();
+        // Gate::authorize('create', Department::class);
+        try {
+            $college = College::findOrFail($request->college_id);
+            $college->departments()->create([
+                'arabic_name' => $request->arabic_name,
+                'english_name' => $request->english_name,
+                'levels_count' => $request->levels_count,
+                'description' => $request->description?? null,
+                'logo_url' => ImageHelper::uploadImage($request->logo)
+            ]);
+           return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyDepartment(Request $request)
@@ -47,31 +51,43 @@ class DepartmentController extends Controller
         }
 
         // Gate::authorize('update', Department::class);
-
-        $department = Department::findOrFail($request->id);
-        $department->update([
-            'arabic_name' => $request->arabic_name ?? $department->arabic_name,
-            'english_name' => $request->english_name ?? $department->english_name,
-            'levels_count' => $request->levels_count ?? $department->levels_count,
-            'description' => $request->description?? $department->description,
-            'logo_url' => ImageHelper::updateImage($request->logo, $department->logo_url)
-        ]);
-       return ResponseHelper::success();
-
+        try {
+            $department = Department::findOrFail($request->id);
+            $department->update([
+                'arabic_name' => $request->arabic_name ?? $department->arabic_name,
+                'english_name' => $request->english_name ?? $department->english_name,
+                'levels_count' => $request->levels_count ?? $department->levels_count,
+                'description' => $request->description?? $department->description,
+                'logo_url' => ImageHelper::updateImage($request->logo, $department->logo_url)
+            ]);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function deleteDepartment(Request $request)
     {
         // Gate::authorize('delete', Department::class);
-        $department = Department::findOrFail($request->id);
-        return DeleteHelper::deleteModel($department);
+        try {
+            $department = Department::findOrFail($request->id);
+            $department->delete();
+            // return DeleteHelper::deleteModel($department);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveDepartments(Request $request)
     {
         $attributes = ['id', 'arabic_name', 'english_name', 'levels_count', 'logo_url'];
         $conditionAttribute = ['college_id' => $request->college_id];
-        return GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
+        try {
+            return GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
 
@@ -79,7 +95,11 @@ class DepartmentController extends Controller
     {
         $attributes = ['id', 'arabic_name as name', 'logo_url'];
         $conditionAttribute = ['college_id' => $request->college_id];
-        return GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
+        try {
+            return GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
 
@@ -87,7 +107,11 @@ class DepartmentController extends Controller
     {
         $attributes = ['arabic_name', 'english_name', 'levels_count', 'logo_url', 'description'];
         $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModel(Department::class, $attributes, $conditionAttribute);
+        try {
+            return GetHelper::retrieveModel(Department::class, $attributes, $conditionAttribute);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
 

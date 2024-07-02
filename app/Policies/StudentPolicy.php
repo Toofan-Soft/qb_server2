@@ -7,48 +7,38 @@ use App\Helpers\ValidateHelper;
 
 class StudentPolicy
 {
-    public function add(): bool
+    private static $validRoles = [
+        RoleEnum::SYSTEM_ADMINISTRATOR,
+        RoleEnum::DATA_ENTRY
+    ];
+
+    public function addStudent(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function modify(): bool
+    public function modifyStudent(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function delete(): bool
+    public function deleteStudent(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    /////////////
-    public function retrieve(): bool
+    
+    public function retrieveStudent(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    //////////////
-    public function retrieveEditable(): bool
+    
+    public function retrieveEditableStudent(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    //////////////
-    public function retrieveList(): bool
+    
+    public function retrieveStudents(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 }

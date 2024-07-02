@@ -7,36 +7,40 @@ use App\Helpers\ValidateHelper;
 
 class QuestionChoicePolicy
 {
-    public function add(): bool
+    public function addQuestionChoice(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
+        $validRoles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::QUESTION_ENTRY
         ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function modify(): bool
+    public function modifyQuestionChoice(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
+        $validRoles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::QUESTION_ENTRY
         ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function delete(): bool
+    public function deleteQuestionChoice(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
+        $validRoles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::QUESTION_ENTRY,
+            RoleEnum::QUESTION_REVIEWER
         ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy($validRoles);
     }
-    ////////////
-    public function retrieveEditable(): bool
+    
+    public function retrieveEditableQuestionChoice(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        $validRoles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::QUESTION_ENTRY
+        ];
+        return ValidateHelper::validatePolicy($validRoles);
     }
 }

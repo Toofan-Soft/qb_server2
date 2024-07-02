@@ -7,33 +7,28 @@ use App\Helpers\ValidateHelper;
 
 class UniversityPolicy
 {
-    public function configure(): bool
+    private static $validRoles = [
+        RoleEnum::SYSTEM_ADMINISTRATOR,
+        RoleEnum::DATA_ENTRY
+    ];
+
+    public function configureUniversityData(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function modify(): bool
+    public function modifyUniversityData(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    /////////////
-    public function retrieve(): bool
+
+    public function retrieveUniversityInfo(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    ///////////////
-    public function retrieveBasicInfo(): bool
+    
+    public function retrieveBasicUniversityInfo(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 }

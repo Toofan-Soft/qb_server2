@@ -5,39 +5,39 @@ namespace App\Policies;
 use App\Enums\RoleEnum;
 use App\Helpers\ValidateHelper;
 
-class CollegePolicy
+class DepartmentCoursePartChapterTopicPolicy
 {
     private static $validRoles = [
         RoleEnum::SYSTEM_ADMINISTRATOR,
         RoleEnum::DATA_ENTRY
     ];
 
-    public function addCollege(): bool
+    public function addDepartmentCoursePartTopics(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function modifyCollege(): bool
+    public function deleteDepartmentCoursePartTopics(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function deleteCollege(): bool
+    public function retrieveDepartmentCoursePartChapters(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-
-    public function retrieveCollege(): bool
+    
+    public function retrieveDepartmentCoursePartChapterTopics(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-
-    public function retrieveColleges(): bool
+    
+    public function retrieveAvailableDepartmentCoursePartChapters(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-
-    public function retrieveBasicCollegesInfo(): bool
+    
+    public function retrieveAvailableDepartmentCoursePartTopics(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
