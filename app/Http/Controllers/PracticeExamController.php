@@ -189,7 +189,7 @@ class PracticeExamController extends Controller
         $examQuestions = PracticeExamQuestion::where('practice_exam_id', '=', $examId)->get();
 
         foreach ($examQuestions as $examQuestion) {
-            $question = $examQuestion->question()->first(['content', 'attachment as attachment_url']);
+            $question = $examQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
 
             if ($examQuestion->combination_id) {
                 if ($withAnswer) {

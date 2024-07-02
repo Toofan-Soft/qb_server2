@@ -40,18 +40,14 @@ use App\Enums\StudentOnlineExamStatusEnum;
 
 class StudentOnlinExamController extends Controller
 {
-
-
-
     public function retrieveOnlineExams(Request $request)
     {
-        $student = Student::where('user_id', auth()->user()->id)->first();
+        $studentId = Student::where('user_id', auth()->user()->id)->first();
         $onlineExams =[];
         if(intval($request->status_id) === OnlineExamTakingStatusEnum::COMPLETE->value){
-            $onlineExams = $this->retrieveCompleteStudentOnlineExams($student->id);
-
-        }else{
-            $onlineExams = $this->retrieveIncompleteStudentOnlineExams($student->id);
+            $onlineExams = $this->retrieveCompleteStudentOnlineExams($studentId);
+        } else {
+            $onlineExams = $this->retrieveIncompleteStudentOnlineExams($studentId);
         }
         return ResponseHelper::successWithData($onlineExams);
     }
@@ -209,8 +205,8 @@ class StudentOnlinExamController extends Controller
         $onlineExams =  DB::table('student_online_exams')
             ->join('online_exams', 'student_online_exams.online_exam_id', '=', 'online_exams.id')
             ->join('real_exams', 'online_exams.id', '=', 'real_exams.id')
-            ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
-            ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
+            ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
+            ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
             ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
             ->join('courses', 'department_courses.course_id', '=', 'courses.id')
             ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
@@ -298,8 +294,8 @@ class StudentOnlinExamController extends Controller
         $onlineExams =  DB::table('student_online_exams')
             ->join('online_exams', 'student_online_exams.online_exam_id', '=', 'online_exams.id')
             ->join('real_exams', 'online_exams.id', '=', 'real_exams.id')
-            ->join('course_lucturers', 'real_exams.course_lucturer_id', '=', 'course_lucturers.id')
-            ->join('department_course_parts', 'course_lucturers.department_course_part_id', '=', 'department_course_parts.id')
+            ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
+            ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
             ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
             ->join('courses', 'department_courses.course_id', '=', 'courses.id')
             ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
@@ -312,6 +308,9 @@ class StudentOnlinExamController extends Controller
             ->where('student_online_exams.student_id', '=', $studentId)
             ->where('student_online_exams.status', '!=', StudentOnlineExamStatusEnum::COMPLETE->value)
             ->get();
+
+        return $onlineExams;
+
         $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
 
         return $onlineExams;
