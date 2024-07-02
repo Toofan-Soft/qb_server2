@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Form;
 use App\Models\User;
 use App\Models\Topic;
+use App\Helpers\Param;
 use App\Models\Employee;
 use App\Models\Question;
 use App\Models\RealExam;
@@ -15,7 +16,7 @@ use App\Enums\LanguageEnum;
 use App\Enums\SemesterEnum;
 use App\Helpers\ExamHelper;
 use App\Helpers\NullHelper;
-use App\Helpers\Param;
+use App\Helpers\ParamHelper;
 use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
 use App\Enums\CoursePartsEnum;
@@ -43,8 +44,6 @@ class LecturerOnlineExamController extends Controller
 {
     public function addOnlineExam(Request $request)
     {
-        // $request->topics_ids = [3];
-        
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError(402);
         }
@@ -52,18 +51,15 @@ class LecturerOnlineExamController extends Controller
         $algorithmData = $this->getAlgorithmData($request);
 
         $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
-        // return $examFormsQuestions;
 
         if ($examFormsQuestions) { // modify to use has function
-            $user = User::findOrFail(auth()->user()->id);
-        
-            $employee = Employee::where('user_id',  $user->id)->first();
+            $employee = Employee::where('user_id',  auth()->user()->id)->first();
 
             $courseLecturer = CourseLecturer::where('department_course_part_id', '=', $request->department_course_part_id)
                 ->where('lecturer_id', $employee->id)
                 ->where('academic_year', now()->format('Y'))
                 ->first();
-                        
+            
             $realExam = $courseLecturer->real_exams()->create([
                 'type' => $request->type_id,
                 'datetime' => $request->datetime,
@@ -115,34 +111,6 @@ class LecturerOnlineExamController extends Controller
         }
     }
 
-    private function getParams1($parent, $properties)
-    {
-        $params = [];
-
-        foreach ($properties as $property) {
-            if ($parent->has($property)) {
-                // $params[] = ['key' => $property, 'value' => $parent->{$property}];
-                // $params[] = [$property => $parent->{$property}];
-                $params[$property] = $parent->{$property};
-            }
-        }
-
-        return $params;
-    }
-
-    private function getParams($parent, $properties)
-    {
-        $params = [];
-
-        foreach ($properties as $property) {
-            if ($parent->has($property->from)) {
-                $params[$property->to] = $parent->{$property->from};
-            }
-        }
-
-        return $params;
-    }
-
     public function modifyOnlineExam(Request $request)
     {
         // $realExam = RealExam::findOrFail($request->id);
@@ -161,7 +129,7 @@ class LecturerOnlineExamController extends Controller
         //     'proctor_id' => $request->proctor_id ?? $onlinExam->proctor_id,
         // ]);
 
-        $params = self::getParams(
+        $params = ParamHelper::getParams(
             $request,
             [
                 new Param('type_id', 'type'),
@@ -174,7 +142,7 @@ class LecturerOnlineExamController extends Controller
         RealExam::findOrFail($request->id)
             ->update($params);
 
-        $params = self::getParams(
+        $params = ParamHelper::getParams(
             $request,
             [
                 new Param('conduct_method_id', 'conduct_method'),
@@ -212,10 +180,10 @@ class LecturerOnlineExamController extends Controller
                 'real_exams.datetime',
                 'real_exams.forms_count'
             )
-            ->when($request->status_id, function ($query) use ($request) {
+            ->when(isset($request->status_id), function ($query) use ($request) {
                 return $query->where('online_exams.status', '=', $request->status_id);
             })
-            ->when($request->type_id, function ($query) use ($request) {
+            ->when(isset($request->type_id), function ($query) use ($request) {
                 return $query->where('real_exams.type', '=', $request->type_id);
             })
             ->when($request->type_id === null, function ($query) use ($request) {
@@ -274,13 +242,13 @@ class LecturerOnlineExamController extends Controller
                 'real_exams.type as type_name',
                 'online_exams.status as status_name',
             )
-            ->when($request->department_course_part_id, function ($query) use ($request) {
+            ->when(isset($request->department_course_part_id), function ($query) use ($request) {
                 return $query->where('department_course_parts.id', '=', $request->department_course_part_id);
             })
-            ->when($request->status_id, function ($query) use ($request) {
+            ->when(isset($request->status_id), function ($query) use ($request) {
                 return $query->where('online_exams.status', '=', $request->stsatus_id);
             })
-            ->when($request->type_id, function ($query) use ($request) {
+            ->when(isset($request->type_id), function ($query) use ($request) {
                 return $query->where('real_exams.type', '=', $request->type_id);
             })
             ->where('course_lecturers.lecturer_id', '=', $lecturer_id)
@@ -354,17 +322,6 @@ class LecturerOnlineExamController extends Controller
         $questionTypes = ProcessDataHelper::enumsConvertIdToName($questionTypes, [
             new EnumReplacement('type_name', QuestionTypeEnum::class),
         ]);
-
-        // return $questionTypes;
-
-        // $questionTypes = $questionTypes->map(function ($type) {
-        //     return [
-        //         'type_name' => $type->type_name,
-        //         'questions_count' => $type->questions_count,
-        //         'question_score' => (float) $type->question_score,
-        //     ];
-        // })
-        // ->toArray();
 
         $questionTypes = collect($questionTypes)->map(function ($type) {
             return [
@@ -473,38 +430,39 @@ class LecturerOnlineExamController extends Controller
     {
         return self::getFormQuestions($request->form_id, false);
 
-        return ExamHelper::retrieveRealExamFormQuestions($request->form_id);
+        // return ExamHelper::retrieveRealExamFormQuestions($request->form_id);
         
-        $onlineExamFormQuestions = ExamHelper::retrieveRealExamFormQuestions($request->form_id);
-        return ResponseHelper::successWithData($onlineExamFormQuestions);
+        // $onlineExamFormQuestions = ExamHelper::retrieveRealExamFormQuestions($request->form_id);
+        // return ResponseHelper::successWithData($onlineExamFormQuestions);
     }
 
-    private function getFormQuestions($formId, bool $withAnsweredMirror)
+    private function getFormQuestions ($formId, bool $withAnsweredMirror)
     {
         // return form questoin as [content, attachment, is_true, choices[content, attachment, is_true]]
         $questions = [];
         $form = Form::findOrFail($formId);
-        $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
 
+        $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
+        
         foreach ($formQuestions as $formQuestion) {
             $question = $formQuestion->question()->first(['content', 'attachment as attachment_url']);
-        if($formQuestion->combination_id){
-            if($withAnsweredMirror){
-                $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, true);
-            }else{
-                $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
-            }
-        }else{
-            if($withAnsweredMirror){
-                $trueFalseQuestion = TrueFalseQuestion::findOrFail($formQuestion->question_id)->first(['answer']);
-                if(intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value){
-                    $question['is_true'] = true;
-                }else{
-                    $question['is_true'] = false;
+            if ($formQuestion->combination_id) {
+                if ($withAnsweredMirror) {
+                    $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, true);
+                } else {
+                    $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
+                }
+            } else {
+                if ($withAnsweredMirror) {
+                    $trueFalseQuestion = TrueFalseQuestion::findOrFail($formQuestion->question_id)->first(['answer']);
+                    if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
+                        $question['is_true'] = true;
+                    } else {
+                        $question['is_true'] = false;
+                    }
                 }
             }
-            }
-        array_push($questions, $question);
+            array_push($questions, $question);
         }
             
         return $questions;
@@ -534,8 +492,6 @@ class LecturerOnlineExamController extends Controller
 
     private function getAlgorithmData($request)
     {
-        // return $request->questions_types;
-
         $types = [];
         foreach ($request->questions_types as $type) 
         {
@@ -672,9 +628,6 @@ class LecturerOnlineExamController extends Controller
         
         $selectedIndex = array_rand($qestionChoicesCombinationsIds);
         return $qestionChoicesCombinationsIds[$selectedIndex];
-
-        // $selectedIndex = array_rand($qestionChoicesCombinations->combination_id);
-        // return $qestionChoicesCombinations->combination_id[$selectedIndex];
     }
 
     public function rules(Request $request): array

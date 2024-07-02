@@ -95,8 +95,8 @@ public static function enumsConvertIdToName($data, $enumReplacements)
             } else {
                 $item->{$enumReplacement->columnName} = EnumTraits::getNameByNumber(intval($item->{$enumReplacement->columnName}), $enumReplacement->enumClass);
             }
-            $newData[] = $item; // Add the processed item to the new array
         }
+        $newData[] = $item; // Add the processed item to the new array
     }
     unset($item); // Unset the reference to avoid potential bugs
 

@@ -3,12 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Helpers\Param;
 use App\Models\Question;
 use App\Enums\LevelsEnum;
 use App\Models\PaperExam;
 use App\Enums\LanguageEnum;
 use App\Enums\SemesterEnum;
 use App\Helpers\ExamHelper;
+use App\Helpers\NullHelper;
+use App\Helpers\ParamHelper;
 use App\Models\PracticeExam;
 use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
@@ -38,18 +41,20 @@ class PracticeExamController extends Controller
 {
     public function addPracticeExam(Request $request)
     {
-        if ( ValidateHelper::validateData($request, $this->rules($request))) {
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
 
         $algorithmData = $this->getAlgorithmData($request);
-        $examQuestions = (new GenerateExam())->execute($algorithmData);
 
-        if ($examQuestions->data) { // modify to use has function
+        $examQuestions = (new GenerateExam())->execute($algorithmData);
+        
+        if ($examQuestions) { // modify to use has function
 
             $user = User::findOrFail(auth()->user()->id);
 
-            $practiceExam = $user->practise_exams()->create([
+            // return $user;
+            $practiceExam = $user->practice_exams()->create([
                 'department_course_part_id' => $request->department_course_part_id,
                 'title' => $request->title ?? null,
                 'language' => $request->language_id,
@@ -71,29 +76,36 @@ class PracticeExamController extends Controller
             //////////add Topics of exam
 
             $examQuestions = $this->getQuestionsChoicesCombinations($examQuestions[0]);
-            foreach ($examQuestions as $examQuestion) {
+            foreach ($examQuestions as $question) {
                 $practiceExam->practice_exam_question()->create([
-                    'question_id' => $examQuestion->question_id,
-                    'combination_id' => $examQuestion->combination_id ?? null,
+                    'question_id' => $question['question_id'],
+                    'combination_id' => $question['combination_id'] ?? null,
                 ]);
             }
             ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
 
-            return ResponseHelper::successWithData($practiceExam->id);
+            return ResponseHelper::successWithData(['id' => $practiceExam->id]);
         } else {
             return ResponseHelper::serverError();
         }
     }
 
-    public function modifyPractiseExam(Request $request)
+    public function modifyPracticeExam(Request $request)
     {
-        $practiseExam = PracticeExam::findOrFail($request->id);
-        $practiseExam->update([
-            'title' => $request->title ?? null
-        ]);
+        $params = ParamHelper::getParams(
+            $request,
+            [
+                new Param('title'),
+            ]
+        );
+
+        PracticeExam::findOrFail($request->id)
+            ->update($params);
+
+        return ResponseHelper::success();
     }
 
-    public function deletePractiseExam(Request $request)
+    public function deletePracticeExam(Request $request)
     {
         // حذف الاختبارات المعلقة فقط
         return DeleteHelper::deleteModel($request->id);
@@ -102,6 +114,7 @@ class PracticeExamController extends Controller
     public function retrievePracticeExams(Request $request)
     {
         $userId = auth()->user()->id;
+
         $practiceExams =  DB::table('practice_exams')
             ->join('department_course_parts', 'practice_exams.department_course_part_id', '=', 'department_course_parts.id')
             ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
@@ -114,87 +127,118 @@ class PracticeExamController extends Controller
                 'practice_exams.title',
                 // practice_exams.datetime,
             )
+            ->when(isset($request->status_id), function ($query) use ($request) {
+                return  $query ->where('practice_exams.status', '=', $request->status_id);
+            })
             ->when($request->status_id === null, function ($query)  {
                 return  $query ->selectRaw('practice_exams.status as status_name');
-             })
-
-            ->when($request->status_id , function ($query) use ($request) {
-                return  $query ->where('practice_exams.status', '=', $request->status_id);
-             })
-             ->where('practice_exams.department_course_part_id', '=', $request->department_course_part_id)
-             ->where('practice_exams.user_id', '=', $userId)
+            })
+            ->where('practice_exams.department_course_part_id', '=', $request->department_course_part_id)
+            ->where('practice_exams.user_id', '=', $userId)
             ->get();
-            $enumReplacement = [
-                new EnumReplacement('course_part_name', CoursePartsEnum::class),
-            ];
-            if($request->status_id === null){
-                array_push($enumReplacement, new EnumReplacement('status_name', ExamStatusEnum::class));
-            }
-        $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, $enumReplacement );
+        
+
+        $enumReplacement = [
+            new EnumReplacement('course_part_name', CoursePartsEnum::class),
+        ];
+
+        if (!isset($request->type_id)) {
+            array_push($enumReplacement, new EnumReplacement('status_name', ExamStatusEnum::class));
+        }
+
+        $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, $enumReplacement);
+
         foreach ($practiceExams as $practiceExam) {
             $examResult = $this->retrievePracticeExamResult($practiceExam->id);
+
             $practiceExam->score_rate = $examResult['score_rate'];
             $practiceExam->appreciation = $examResult['appreciation'];
         }
 
+        $practiceExams = NullHelper::filter($practiceExams);
+
         return ResponseHelper::successWithData($practiceExams);
     }
 
-    public function retrievePractiseExamsAndroid(Request $request)
+    public function retrievePracticeExamsAndroid(Request $request)
     {
         $user = User::findOrFail(auth()->user()->id)->first();
-        $practiseExams = [];
+        $practiceExams = [];
         // هذه معقد، يجب ان يتم توحيد البيانات المراد ارجاعها مع الدالة السابق حتى تتسهل
         if ($request->department_course_part_id) {
         }
-        return $practiseExams;
+        return $practiceExams;
     }
 
-    public function retrievePractiseExamsQuestions(Request $request) // *** stay not complete
+    public function retrievePracticeExamQuestions(Request $request) // *** stay not complete
     {
-        $practiseExamQuestions = [];
+        $exam = PracticeExam::findOrFail($request->exam_id);
 
-        foreach ($practiseExamQuestions as $practiseExamQuestion) {
-            $questions = DB::table('practice_exams')
-                ->join('practise_exam_questions', 'practice_exams.id', '=', 'practice_exam_questions.practice_exam_id')
-                ->join('questions', 'practice_exam_questions.question_id', '=', 'questions.id')
-                ->select(
-                    'questions.id ',
-                    'questions.type as type_name ',
-                    'questions.content',
-                    'questions.attachment_url',
-                    'form_questions.combination_id',
-                )
-                ->where('practice_exams.id', '=', $request->exam_id)
-                ->get();
-            // $questions = QuestionHelper::retrieveQuestionsAnswer($questions, $type->type_name);
-            // $examQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
+        $is_complete = ($exam->is_complete === ExamStatusEnum::COMPLETE->value) ? true : false;
+
+        $questions = self::getQuestions($request->exam_id, $is_complete);
+
+        return ResponseHelper::successWithData($questions);
+    }
+
+    private function getQuestions($examId, $withAnswer=false)
+    {
+        // return questoin as [content, attachment, is_true, choices[content, attachment, is_true]]
+        $questions = [];
+        
+        $examQuestions = PracticeExamQuestion::where('practice_exam_id', '=', $examId)->get();
+
+        foreach ($examQuestions as $examQuestion) {
+            $question = $examQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
+
+            if ($examQuestion->combination_id) {
+                if ($withAnswer) {
+                    $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, false, true);
+                } else {
+                    $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, false, false);
+                }
+            } else {
+                if ($withAnswer) {
+                    $trueFalseQuestion = TrueFalseQuestion::findOrFail($formQuestion->question_id)->first(['answer']);
+                    if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
+                        $question['is_true'] = true;
+                    } else {
+                        $question['is_true'] = false;
+                    }
+                }
+            }
+            array_push($questions, $question);
         }
-        return $practiseExamQuestions;
+            
+        return $questions;
     }
 
-    public function retrievePractiseExamsResult(Request $request)
+    public function retrievePracticeExamsResult(Request $request)
     {
-        $practiseExam = PracticeExam::findOrFail($request->id);
-        if ($practiseExam->status === ExamStatusEnum::COMPLETE->value) {
+        $practiceExam = PracticeExam::findOrFail($request->id);
+        if ($practiceExam->status === ExamStatusEnum::COMPLETE->value) {
             //time spent, question average answer time, appreciation, score rate, correct answer count, incorrect answer count
 
         }
         return [];
     }
 
-    public function retrievePractiseExam(Request $request)
+    public function retrievePracticeExam(Request $request)
     {
-        $practiseExam = PracticeExam::findOrFail($request->id, [
+        $practiceExam = PracticeExam::findOrFail($request->id, [
             // 'datetime'
             'id','title', 'duration', 'language as language_name',
             'conduct_method as is_mandatory_question_sequence', 'status as is_complete','department_course_part_id'
         ]);
-        $practiseExam = ProcessDataHelper::enumsConvertIdToName($practiseExam, [
+
+        $practiceExam = ProcessDataHelper::enumsConvertIdToName($practiceExam, [
             new EnumReplacement('language_name', LanguageEnum::class)
         ]);
 
-        $departmentCoursePart = DepartmentCoursePart::findOrFail($practiseExam->department_course_part_id);
+        $practiceExam->is_complete = ($practiceExam->is_complete === ExamStatusEnum::COMPLETE->value) ? true : false;
+        $practiceExam->is_mandatory_question_sequence = ($practiceExam->is_mandatory_question_sequence === ExamConductMethodEnum::MANDATORY->value) ? true : false;
+
+        $departmentCoursePart = DepartmentCoursePart::findOrFail($practiceExam->department_course_part_id);
 
         $coursePart = $departmentCoursePart->course_part()->first(['part_id as course_part_name']);
         $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
@@ -213,7 +257,6 @@ class PracticeExamController extends Controller
 
         $course = $departmentCourse->course()->first(['arabic_name as course_name']);
 
-
         $departmentCourse = $departmentCourse->toArray();
         unset($departmentCourse['department_id']);
         unset($departmentCourse['course_id']);
@@ -221,27 +264,31 @@ class PracticeExamController extends Controller
         $department = $department->toArray();
         unset($department['college_id']);
 
-        $practiseExam = $practiseExam->toArray();
-        unset($practiseExam['department_course_part_id']);
+        $practiceExam = $practiceExam->toArray();
+        unset($practiceExam['department_course_part_id']);
 
-        $practiseExam = $practiseExam +
+        $practiceExam = $practiceExam +
             $coursePart->toArray() +
             $departmentCourse +
             $department +
             $college->toArray() +
             $course->toArray();
-
-        return ResponseHelper::successWithData($practiseExam);
+        
+        $practiceExam = NullHelper::filter($practiceExam);
+        
+        return ResponseHelper::successWithData($practiceExam);
     }
 
-    public function retrieveEditablePractiseExam(Request $request)
+    public function retrieveEditablePracticeExam(Request $request)
     {
-        $practiseExam = PracticeExam::findOrFail($request->id, ['title']);
+        $practiceExam = PracticeExam::findOrFail($request->id, ['title']);
 
-        return ResponseHelper::successWithData($practiseExam);
+        // $practiceExam = NullHelper::filter($practiceExam);
+
+        return ResponseHelper::successWithData($practiceExam);
     }
 
-    public function savePractiseExamQuestionAnswer(Request $request)
+    public function savePracticeExamQuestionAnswer(Request $request)
     {
         $questionType = Question::findOrFail($request->question_id, ['type']);
 
@@ -253,10 +300,10 @@ class PracticeExamController extends Controller
             $answerId =  intval($request->choice_id );
         }
 
-        $practiseExamQuestion = PracticeExamQuestion::where('practice_exam_id', $request->exam_id)
+        $practiceExamQuestion = PracticeExamQuestion::where('practice_exam_id', $request->exam_id)
                                                      ->where('question_id', $request->question_id)
                                                      ->first();
-        $practiseExamQuestion->update([
+        $practiceExamQuestion->update([
             'answer' =>  $answerId,
             'answer_duration' => $request->answer_duration ?? null,
         ]);
@@ -264,25 +311,25 @@ class PracticeExamController extends Controller
         return ResponseHelper::success();
     }
 
-    public function finishPractiseExam(Request $request)
+    public function finishPracticeExam(Request $request)
     {
-        $practiseExam = PracticeExam::findOrFail($request->id);
-        $practiseExam->update([
+        $practiceExam = PracticeExam::findOrFail($request->id);
+        $practiceExam->update([
             'status' => ExamStatusEnum::COMPLETE->value,
             // 'end_datetime' => now(),
         ]);
         return ResponseHelper::success();
     }
 
-    public function suspendPractiseExam(Request $request)
+    public function suspendPracticeExam(Request $request)
     {
-        $practiseExam = PracticeExam::findOrFail($request->id);
+        $practiceExam = PracticeExam::findOrFail($request->id);
 
-        if (intval($practiseExam->status) === ExamStatusEnum::ACTIVE->value) {
-            $practiseExam->update([
+        if (intval($practiceExam->status) === ExamStatusEnum::ACTIVE->value) {
+            $practiceExam->update([
                 'status' => ExamStatusEnum::SUSPENDED->value,
             ]);
-            return $practiseExam;
+            return $practiceExam;
             return ResponseHelper::success();
         } else {
             return abort(404);
@@ -292,20 +339,41 @@ class PracticeExamController extends Controller
 
     private function getAlgorithmData($request)
     {
+        $types = [];
+        foreach ($request->questions_types as $type) 
+        {
+            $t = [
+                'id' => intval($type['type_id']),
+                'count' => intval($type['questions_count'])
+            ];
+
+            array_push($types, $t);
+        }
+
         // دالة مشتركة للاختبار الالكتروني والورقي
         $algorithmData = [
-            'estimated_time' => $request->duration,
-            'difficulty_level' => $request->difficulty_level_id,
-            'forms_count' => 1,
-            'question_types_and_questions_count' => [
-                'id' => $request->questions_types['type_id'],
-                'count' => $request->questions_types['questions_count']
-            ],
+            'estimated_time' => intval($request->duration),
+            // 'difficulty_level' => floatval($request->difficulty_level_id),
+            'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id),
+            'forms_count' => ($request->form_configuration_method_id === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) ? $request->forms_count : 1,
+            'question_types_and_questions_count' => $types
+            // 'question_types_and_questions_count' => [
+            //     // 'id' => $request->questions_types['type_id'],
+            //     // 'count' => $request->questions_types['questions_count']
+            //     'id' => $request->questions_types->type_id,
+            //     'count' => $request->questions_types->questions_count
+            // ],
         ];
 
-        $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
+        $questionTypesIds = [];
+        foreach ($request->questions_types as $type) 
+        {
+            array_push($questionTypesIds, $type['type_id']);
+        }
+
+        // $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
         $accessabilityStatusIds = [
-            AccessibilityStatusEnum::PRACTICE_EXAM->value,
+            AccessibilityStatusEnum::REALEXAM->value,
             AccessibilityStatusEnum::PRACTICE_REALEXAM->value,
         ];
         $questions =  DB::table('questions')
@@ -322,35 +390,50 @@ class PracticeExamController extends Controller
                 'question_usages.online_exam_selection_times_count',
                 'question_usages.practice_exam_selection_times_count',
                 'question_usages.paper_exam_selection_times_count',
+                'questions.topic_id',
                 'topics.id as topic_id',
             )
             ->where('questions.status', '=', QuestionStatusEnum::ACCEPTED->value)
             ->where('questions.language', '=', $request->language_id)
             ->whereIn('questions.accessability_status', $accessabilityStatusIds)
             ->whereIn('questions.type', $questionTypesIds)
-            ->whereIn('topics.id', $request->topicsIds)
-            ->get();
-            foreach ($questions as $question) {
-                // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
+            ->whereIn('questions.topic_id', $request->topics_ids)
+            // ->whereIn('topics.id', $request->topics_ids)
+            // ->whereIn('topics.id', [3])
+            ->get()
+            ->toArray();
+                
+        foreach ($questions as $question) {
+            // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
 
-                $question['last_selection'] = DatetimeHelper::convertSecondsToDays(
-                    DatetimeHelper::getDifferenceInSeconds(now(), $question->online_exam_last_selection_datetime) + 
-                    DatetimeHelper::getDifferenceInSeconds(now(), $question->practice_exam_last_selection_datetime) + 
-                    DatetimeHelper::getDifferenceInSeconds(now(), $question->paper_exam_last_selection_datetime)
-                    ) / 3;
-                $question['selection_times'] = (
-                    $question->online_exam_selection_times_count + 
-                    $question->practice_exam_selection_times_count + 
-                    $question->paper_exam_selection_times_count
-            ) / 3;
+            $question->type_id = intval($question->type_id);
+            $question->difficulty_level = floatval($question->difficulty_level);
+
+            // $selections = [1, 2, 3, 4, 5];
+            // $randomIndex = array_rand($selections);
+            // $question['last_selection'] = $selections[$randomIndex];
+            $question->last_selection = 3;
+            // $question['last_selection'] = DatetimeHelper::convertSecondsToDays(
+            //     DatetimeHelper::getDifferenceInSeconds(now(), $question->online_exam_last_selection_datetime) +
+            //         DatetimeHelper::getDifferenceInSeconds(now(), $question->practice_exam_last_selection_datetime) +
+            //         DatetimeHelper::getDifferenceInSeconds(now(), $question->paper_exam_last_selection_datetime)
+            // ) / 3;
+
+            $question->selection_times = 2;
+            // $question['selection_times'] = (
+            //     $question->online_exam_selection_times_count +
+            //     $question->practice_exam_selection_times_count +
+            //     $question->paper_exam_selection_times_count
+            // ) / 3;
             // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة 
-            unset($question['online_exam_last_selection_datetime']);
-            unset($question['practice_exam_last_selection_datetime']);
-            unset($question['paper_exam_last_selection_datetime']);
-            unset($question['online_exam_selection_times_count']);
-            unset($question['practice_exam_selection_times_count']);
-            unset($question['paper_exam_selection_times_count']);
-            }
+            unset($question->online_exam_last_selection_datetime);
+            unset($question->practice_exam_last_selection_datetime);
+            unset($question->paper_exam_last_selection_datetime);
+            unset($question->online_exam_selection_times_count);
+            unset($question->practice_exam_selection_times_count);
+            unset($question->paper_exam_selection_times_count);
+        }
+
         $algorithmData['questions'] = $questions;
         return $algorithmData;
     }
@@ -359,19 +442,21 @@ class PracticeExamController extends Controller
     {
         // يفضل ان يتم عملها مشترك ليتم استخداما في الاختبار الورقي والتجريبي
         // تقوم هذه الدالة باختيار توزيعة الاختيارات للاسئلة من نوع اختيار من متعدد
-       /**
-        * steps of function
-        *   اختيار الاسئلة التي نوعها اختيار من متعدد
-        *   اختيار احد التوزيعات التي يمتلكها السؤال بشكل عشوائي
-        *   يتم اضافة رقم التوزيعة المختارة الي السؤال
-        */
+        /**
+         * steps of function
+         *   اختيار الاسئلة التي نوعها اختيار من متعدد
+         *   اختيار احد التوزيعات التي يمتلكها السؤال بشكل عشوائي
+         *   يتم اضافة رقم التوزيعة المختارة الي السؤال
+         */
         $formQuestions = [];
         foreach ($questionsIds as $questionId) {
             $question = Question::findOrFail($questionId);
             $combination_id = null;
-            if($question->type === QuestionTypeEnum::MULTIPLE_CHOICE->value){
+
+            if ($question->type == QuestionTypeEnum::MULTIPLE_CHOICE->value) {
                 $combination_id = $this->selectQuestionsChoicesCombination($question);
             }
+
             array_push($formQuestions, [
                 'question_id' => $questionId,
                 'combination_id' => $combination_id
@@ -382,11 +467,15 @@ class PracticeExamController extends Controller
 
     private function selectQuestionsChoicesCombination(Question $question): int
     {
-        $qestioChoicesCombinations = $question->question_choices_combinations()->get(['combination_id']);
-        $selectedIndex = array_rand($qestioChoicesCombinations->combination_id);
-        return $qestioChoicesCombinations->combination_id[$selectedIndex];
+        $qestionChoicesCombinationsIds = $question->question_choices_combinations()
+            ->get(['combination_id'])
+            ->map(function ($qestionChoicesCombination) {
+                return $qestionChoicesCombination->combination_id;
+            })->toArray();
+        
+        $selectedIndex = array_rand($qestionChoicesCombinationsIds);
+        return $qestionChoicesCombinationsIds[$selectedIndex];
     }
-
 
     private function retrievePracticeExamResult($practiceExamId)
     {
@@ -398,7 +487,8 @@ class PracticeExamController extends Controller
 
         $StudentScore = 0;
         foreach ($examQuestions as $examQuestion) {
-            $question = Question::findOrFail($examQuestion->questoin_id);
+            $question = Question::findOrFail($examQuestion->question_id);
+
             if(intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value){
                 if(ExamHelper::checkTrueFalseQuestionAnswer($question, $examQuestion->answer)){
                     $StudentScore ++;
