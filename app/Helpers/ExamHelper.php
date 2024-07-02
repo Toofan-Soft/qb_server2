@@ -186,7 +186,14 @@ class ExamHelper
     {
         $realExam = RealExam::findOrFail($realExamId);
         $forms = $realExam->forms()->get(['id']);
+        // return $forms;
+
         $formsNames = self::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count);
+
+        $formsNames1 = collect($formsNames);
+        return $formsNames1;
+        return $realExam->forms_count;
+
         if (intval($realExam->form_configuration_methode) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
             $i = 0;
             foreach ($forms as $form) {
@@ -398,7 +405,7 @@ class ExamHelper
         $result = [];
         foreach ($choices as $choice) {
             $temp = [];
-            if($choice->ids){
+            if (property_exists($choice, 'ids')) {
                 $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
                 $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
             }else{
@@ -424,7 +431,7 @@ class ExamHelper
         $result = [];
         foreach ($choices as $choice) {
             $temp = [];
-            if($choice->ids){
+            if (property_exists($choice, 'ids')) {
                 $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
                 $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
             }else{
@@ -449,7 +456,7 @@ class ExamHelper
         $result = [];
         foreach ($choices as $choice) {
             $temp = [];
-            if($choice->ids){
+            if (property_exists($choice, 'ids')) {
                 $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
             }else{
                 if($choice->id == -1){

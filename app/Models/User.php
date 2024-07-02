@@ -59,7 +59,7 @@ class User extends Authenticatable
         return $this->HasOne(Employee::class);
     }
 
-    public function practise_exams() : HasMany {
+    public function practice_exams() : HasMany {
         return $this->HasMany(PracticeExam::class);
     }
     public function guest() : HasOne {

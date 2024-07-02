@@ -365,7 +365,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve', [PaperExamController::class, 'retrievePaperExam']);
         Route::get('retrieve-editable', [PaperExamController::class, 'retrieveEditablePaperExam']);
         Route::get('retrieve-list', [PaperExamController::class, 'retrievePaperExams']);
-        // Route::get('retrieve-android-list', [PaperExamController::class, 'retrievePaperExamsAndroid']);
+        Route::get('retrieve-android-list', [PaperExamController::class, 'retrievePaperExamsAndroid']);
         Route::get('retrieve-chapter-list', [PaperExamController::class, 'retrievePaperExamChapters']);
         Route::get('retrieve-chapter-topic-list', [PaperExamController::class, 'retrievePaperExamChapterTopics']);
         Route::get('retrieve-form-list', [PaperExamController::class, 'retrievePaperExamForms']);
@@ -378,18 +378,18 @@ Route::middleware('auth:api')->group(function () {
 
     //practice exam
     Route::prefix('practice-exam/')->group(function () {
-        // Route::post('add', [PracticeExamController::class, 'addPracticeExam']);
+        Route::post('add', [PracticeExamController::class, 'addPracticeExam']);
         Route::put('modify', [PracticeExamController::class, 'modifyPracticeExam']);
-        Route::put('finish', [PracticeExamController::class, 'finishPractiseExam']);
-        Route::put('save-question-answer', [PracticeExamController::class, 'savePractiseExamQuestionAnswer']);
-        Route::put('suspend', [PracticeExamController::class, 'suspendPractiseExam']);
+        Route::put('finish', [PracticeExamController::class, 'finishPracticeExam']);
+        Route::put('save-question-answer', [PracticeExamController::class, 'savePracticeExamQuestionAnswer']);
+        Route::put('suspend', [PracticeExamController::class, 'suspendPracticeExam']);
         Route::delete('delete', [PracticeExamController::class, 'deletePracticeExam']);
-        Route::get('retrieve', [PracticeExamController::class, 'retrievePractiseExam']);
+        Route::get('retrieve', [PracticeExamController::class, 'retrievePracticeExam']);
         Route::get('retrieve-editable', [PracticeExamController::class, 'retrieveEditablePracticeExam']);
         Route::get('retrieve-result', [PracticeExamController::class, 'retrieveEditablePracticeExam']);
-        // Route::get('retrieve-list', [PracticeExamController::class, 'retrievePractiseExams']);
+        Route::get('retrieve-list', [PracticeExamController::class, 'retrievePracticeExams']);
         Route::get('retrieve-android-list', [PracticeExamController::class, 'retrievePracticeExams']);
-        Route::get('retrieve-question-list', [PracticeExamController::class, 'retrievePracticeExams']);
+        Route::get('retrieve-question-list', [PracticeExamController::class, 'retrievePracticeExamQuestions']);
     });
 
     /// for test just
