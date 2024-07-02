@@ -8,6 +8,7 @@ use App\Helpers\GetHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
+use App\Helpers\NullHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Models\DepartmentCourse;
@@ -62,6 +63,7 @@ class DepartmentCoursePartController extends Controller
         $attributes = ['score', 'lectures_count', 'lecture_duration', 'note'];
         try {
             $departmentCourse = DepartmentCoursePart::findOrFail($request->id, $attributes); // edited
+            $departmentCourse = NullHelper::filter($departmentCourse);
             return ResponseHelper::successWithData($departmentCourse);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

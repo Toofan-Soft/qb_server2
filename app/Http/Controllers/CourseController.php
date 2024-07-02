@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
@@ -61,7 +62,8 @@ class CourseController extends Controller
     {
         // $attributes = ['id', 'arabic_name', 'english_name'];
         try {
-            return GetHelper::retrieveModels(Course::class);
+            $courses = GetHelper::retrieveModels(Course::class);
+            return ResponseHelper::successWithData($courses);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -72,7 +74,8 @@ class CourseController extends Controller
         $attributes = ['arabic_name', 'english_name'];
         $conditionAttribute = ['id' => $request->id];
         try {
-            return GetHelper::retrieveModel(Course::class, $attributes, $conditionAttribute);
+            $course = GetHelper::retrieveModel(Course::class, $attributes, $conditionAttribute);
+            return ResponseHelper::successWithData($course);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }

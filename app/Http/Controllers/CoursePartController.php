@@ -7,6 +7,7 @@ use App\Models\College;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Models\CoursePart;
+use App\Helpers\NullHelper;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
@@ -80,7 +81,9 @@ class CoursePartController extends Controller
             new EnumReplacement('status_name', CourseStatusEnum::class),
         ];
         try {
-            return GetHelper::retrieveModels(CoursePart::class, $attributes, $conditionAttribute, $enumReplacements);
+            $courseParts = GetHelper::retrieveModels(CoursePart::class, $attributes, $conditionAttribute, $enumReplacements);
+            $courseParts = NullHelper::filter($courseParts);
+            return ResponseHelper::successWithData($courseParts);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -92,7 +95,9 @@ class CoursePartController extends Controller
         $attributes = ['status as status_id', 'description'];
         $conditionAttribute = ['id' => $request->id];
         try {
-            return GetHelper::retrieveModel(CoursePart::class, $attributes, $conditionAttribute);
+            $coursePart = GetHelper::retrieveModel(CoursePart::class, $attributes, $conditionAttribute);
+            $coursePart = NullHelper::filter($coursePart);
+            return ResponseHelper::successWithData($coursePart);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }

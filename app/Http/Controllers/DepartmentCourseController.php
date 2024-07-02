@@ -86,7 +86,8 @@ class DepartmentCourseController extends Controller
             new ColumnReplacement('course_name', 'arabic_name', Course::class),
         ];
         try {
-            return GetHelper::retrieveModels(DepartmentCourse::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacement);
+            $departmentCourses = GetHelper::retrieveModels(DepartmentCourse::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacement);
+            return ResponseHelper::successWithData($departmentCourses);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -226,7 +227,7 @@ class DepartmentCourseController extends Controller
                 'id', 'course_part_id as name', 'score', 'lectures_count', 'lecture_duration', 'note'
             ]);
 
-            // $departmentCourseParts = NullHelper::filter($departmentCourseParts);
+            $departmentCourseParts = NullHelper::filter($departmentCourseParts);
 
             $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
                 new EnumReplacement('level', LevelsEnum::class),

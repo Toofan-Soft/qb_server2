@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
+use App\Helpers\NullHelper;
 use  Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
@@ -151,6 +152,7 @@ class StudentController extends Controller
                 new EnumReplacement('gender_name', GenderEnum::class),
             ];
             $students =  ProcessDataHelper::enumsConvertIdToName($students, $enumReplacements);
+            $students = NullHelper::filter($students);
             return ResponseHelper::successWithData($students);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -176,7 +178,7 @@ class StudentController extends Controller
                 'department_name' => $student->course_students->first()->department_course->department->arabic_name,
                 'college_name' => $student->course_students->first()->department_course->department->college->arabic_name,
             ];
-
+            $studentData = NullHelper::filter($studentData);
             $studentData['level_name'] = $this->getStudentDepartmentAndLevel($request->id)->level_id;
 
             // Enum replacements
@@ -236,6 +238,7 @@ class StudentController extends Controller
         $attributes = ['academic_id', 'arabic_name', 'english_name', 'gender as gender_id', 'phone', 'birthdate', 'image_url'];
         try {
             $student = Student::findOrFail($request->id, $attributes);
+            $student = NullHelper::filter($student);
             $studnetDepartmentAndLevel = $this->getStudentDepartmentAndLevel($request->id);
             if ($studnetDepartmentAndLevel !==  null) {
                 $student['level_id'] = $studnetDepartmentAndLevel->level_id;

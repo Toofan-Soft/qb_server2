@@ -15,6 +15,7 @@ use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
 use App\Helpers\EnumReplacement1;
+use App\Helpers\NullHelper;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -134,7 +135,7 @@ class UserManagementController extends Controller
                     new EnumReplacement('status_name', UserStatusEnum::class)
                 ]
             );
-
+            $users = NullHelper::filter($users);
             return ResponseHelper::successWithData($users);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -162,7 +163,7 @@ class UserManagementController extends Controller
             }
 
             $ownerData = $userData->$ownerTable()->get([$nameColumn, 'image_url']);
-
+            $ownerData = NullHelper::filter($ownerData);
             $currentUserRoles = $userData->user_roles()->pluck('role_id')->toArray();
             $userRoles = UserHelper::retrieveOwnerRoles($userData->owner_type_name);
             $resultRoles = [];

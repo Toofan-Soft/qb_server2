@@ -8,6 +8,7 @@ use App\Models\College;
 use App\Events\FireEvent;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Helpers\NullHelper;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
@@ -95,9 +96,13 @@ class CollegeController extends Controller
 
     public function retrieveColleges()
     {
+        Gate::authorize('addCollege', CollegeController::class);
+
         $attributes = ['id', 'arabic_name', 'english_name', 'phone', 'email', 'logo_url'];
         try {
-            return GetHelper::retrieveModels(College::class, $attributes);
+            $colleges = GetHelper::retrieveModels(College::class, $attributes);
+            $colleges = NullHelper::filter($colleges);
+            return ResponseHelper::successWithData($colleges);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -106,7 +111,9 @@ class CollegeController extends Controller
     {
         $attributes = ['id', 'arabic_name as name', 'logo_url'];
         try {
-            return GetHelper::retrieveModels(College::class, $attributes);
+            $colleges = GetHelper::retrieveModels(College::class, $attributes);
+            $colleges = NullHelper::filter($colleges);
+            return ResponseHelper::successWithData($colleges);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -118,7 +125,9 @@ class CollegeController extends Controller
         $attributes = ['arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
         $conditionAttribute = ['id' => $request->id];
         try {
-            return GetHelper::retrieveModel(College::class, $attributes, $conditionAttribute);
+            $college = GetHelper::retrieveModel(College::class, $attributes, $conditionAttribute);
+            $college = NullHelper::filter($college);
+            return ResponseHelper::successWithData($college);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -128,8 +137,8 @@ class CollegeController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            'arabic_name' => 'required|string|max:255',
-            'english_name' => 'required|string|max:255',
+            'arabic_name' => 'required|string|unique:colleges,arabic_name|max:255',
+            'english_name' => 'required|string|unique:colleges,english_name|max:255',
             'logo' =>  'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust max size as needed
             'description' => 'nullable|string',
             'phone' => 'nullable|string|unique:colleges,phone',

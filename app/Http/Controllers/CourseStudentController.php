@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
+use App\Helpers\NullHelper;
 
 class CourseStudentController extends Controller
 {
@@ -164,6 +165,7 @@ class CourseStudentController extends Controller
             if (is_null($request->status_id)) {
                 $courseStudents = ProcessDataHelper::enumsConvertIdToName($courseStudents, [new EnumReplacement('status_name', CourseStudentStatusEnum::class)]);
             }
+            $courseStudents = NullHelper::filter($courseStudents);
             return ResponseHelper::successWithData($courseStudents);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -190,7 +192,7 @@ class CourseStudentController extends Controller
                 ->get(['student_id']);
 
             $unlinkCourseStudents = $departmentStudents->whereNotIn('id', $departmentCourseStudents->pluck('student_id'));
-
+            $unlinkCourseStudents = NullHelper::filter($unlinkCourseStudents);
             return ResponseHelper::successWithData($unlinkCourseStudents);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -245,7 +247,7 @@ class CourseStudentController extends Controller
             'student_id' => 'nullable|exists:students,id',
             'students_ids'                => 'required|array|min:1',
             'students_ids.*'              => 'required|integer|exists:students,id',
-            'status' => ['nullable', new Enum(CourseStudentStatusEnum::class)], // Assuming CourseStudentStatusEnum holds valid values
+            // 'status' => ['nullable', new Enum(CourseStudentStatusEnum::class)], // Assuming CourseStudentStatusEnum holds valid values
             // 'academic_year' => 'required|integer',
         ];
 

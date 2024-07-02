@@ -26,7 +26,7 @@ class Question extends Model
         'type',
         'difficulty_level',
         'status',
-        'accessability_status',
+        'accessibility_status',
         'estimated_answer_time',
         'language',
         'topic_id',

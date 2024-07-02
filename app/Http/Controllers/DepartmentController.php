@@ -6,6 +6,7 @@ use App\Models\College;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Models\Department;
+use App\Helpers\NullHelper;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
@@ -84,7 +85,9 @@ class DepartmentController extends Controller
         $attributes = ['id', 'arabic_name', 'english_name', 'levels_count', 'logo_url'];
         $conditionAttribute = ['college_id' => $request->college_id];
         try {
-            return GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
+            $departments = GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
+            $departments = NullHelper::filter($departments);
+            return ResponseHelper::successWithData($departments);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -96,7 +99,9 @@ class DepartmentController extends Controller
         $attributes = ['id', 'arabic_name as name', 'logo_url'];
         $conditionAttribute = ['college_id' => $request->college_id];
         try {
-            return GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
+            $departments = GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
+            $departments = NullHelper::filter($departments);
+            return ResponseHelper::successWithData($departments);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -108,7 +113,9 @@ class DepartmentController extends Controller
         $attributes = ['arabic_name', 'english_name', 'levels_count', 'logo_url', 'description'];
         $conditionAttribute = ['id' => $request->id];
         try {
-            return GetHelper::retrieveModel(Department::class, $attributes, $conditionAttribute);
+            $department = GetHelper::retrieveModel(Department::class, $attributes, $conditionAttribute);
+            $department = NullHelper::filter($department);
+            return ResponseHelper::successWithData($department);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -118,12 +125,13 @@ class DepartmentController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            'arabic_name' => 'required|string|max:255',
-            'english_name' => 'required|string|max:255',
+            'arabic_name' => 'required|string|unique:departments,arabic_name|max:255',
+            'english_name' => 'required|string|unique:departments,english_name|max:255',
             'logo' =>  'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'levels_count' =>  ['required', new Enum(LevelsCountEnum::class)],
             'description' => 'nullable|string',
-            'college_id' => 'required',
+            'college_id' => 'required|exists:colleges,id',
+
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

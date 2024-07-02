@@ -18,6 +18,7 @@ use App\Helpers\ValidateHelper;
 use App\Enums\QualificationEnum;
 use App\Helpers\EnumReplacement;
 use App\Helpers\ColumnReplacement;
+use App\Helpers\NullHelper;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -170,7 +171,7 @@ class CourseLecturerController extends Controller
             ];
             $courseLecturer = ProcessDataHelper::enumsConvertIdToName($courseLecturer, $enumReplacements);
             $courseLecturer = ProcessDataHelper::columnConvertIdToName($courseLecturer, $columnReplacements);
-
+            $courseLecturer = NullHelper::filter($courseLecturer);
             return ResponseHelper::successWithData($courseLecturer);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

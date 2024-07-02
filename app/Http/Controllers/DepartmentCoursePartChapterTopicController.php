@@ -96,8 +96,6 @@ class DepartmentCoursePartChapterTopicController extends Controller
     public function retrieveAvailableDepartmentCoursePartChapters(Request $request)
     {
         try {
-            return ResponseHelper::success();
-            ////////////////////
             $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
             $coursePart = CoursePart::findOrFail($departmenCoursePart->course_part_id);
             $coursePartChapters = $coursePart->chapters()->where('status', ChapterStatusEnum::AVAILABLE->value)->get(['id', 'arabic_title', 'english_title']);

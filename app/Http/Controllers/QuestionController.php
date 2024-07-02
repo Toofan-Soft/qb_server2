@@ -7,6 +7,7 @@ use App\Models\Choice;
 use App\Models\Question;
 use App\Helpers\GetHelper;
 use App\Enums\LanguageEnum;
+use App\Helpers\NullHelper;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Enums\ChoiceStatusEnum;
@@ -39,8 +40,8 @@ class QuestionController extends Controller
                 'type' => $request->type_id,
                 // 'difficulty_level' => $request->difficulty_level_id,
                 'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id),
-                // 'accessability_status' => $request->accessability_status_id,
-                'accessability_status' => $request->accessibility_status_id,
+                'accessibility_status' => $request->accessibility_status_id,
+                // 'accessability_status' => $request->accessibility_status_id,
                 'language' => $request->language_id,
                 'estimated_answer_time' => $request->estimated_answer_time,
                 'content' => $request->content,
@@ -81,7 +82,8 @@ class QuestionController extends Controller
             $question = Question::findOrFail($request->id);
             $question->update([
                 'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id) ?? $question->difficulty_level,
-                'accessbility_status' => $request->accessability_status_id ?? $question->accessability_status,
+                'accessibility_status' => $request->accessibility_status_id ?? $question->accessibility_status,
+                // 'accessability_status' => $request->accessibility_status_id ?? $question->accessability_status,
                 'language' => $request->language_id ?? $question->language,
                 'estimated_answer_time' => $request->estimated_answer_time ?? $question->estimated_answer_time,
                 'content' => $request->content ?? $question->content,
@@ -151,7 +153,8 @@ class QuestionController extends Controller
             array_push($enumReplacements,  new EnumReplacement('type_name', QuestionTypeEnum::class));
         }
         try {
-            return GetHelper::retrieveModels(Question::class, $attributes, $conditionAttribute, $enumReplacements);
+            $questions = GetHelper::retrieveModels(Question::class, $attributes, $conditionAttribute, $enumReplacements);
+            return ResponseHelper::successWithData($questions);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -161,7 +164,7 @@ class QuestionController extends Controller
     {
         $attributes = [
             'id', 'type', 'difficulty_level as difficulty_level_name', 'status',
-            'accessability_status as accessibility_status_name',
+            'accessibility_status as accessibility_status_name',
             'language as language_name', 'estimated_answer_time', 'content',
             'attachment as attachment_url', 'title'
         ];
@@ -189,7 +192,8 @@ class QuestionController extends Controller
             }
             unset($question['type']);
             unset($question['id']);
-
+            
+            $question = NullHelper::filter($question);
             $status = [];
 
             if (intval($question->status) === QuestionStatusEnum::NEW->value) {
@@ -235,7 +239,7 @@ class QuestionController extends Controller
     {
         $attributes = [
             'id', 'type', 'difficulty_level as difficulty_level_id',
-            'accessability_status as accessibility_status_id',
+            'accessibility_status as accessibility_status_id',
             'language as language_id', 'estimated_answer_time', 'content',
             'attachment as attachment_url', 'title'
         ];
@@ -253,6 +257,7 @@ class QuestionController extends Controller
             }
             unset($question['type']);
             unset($question['id']);
+            $question = NullHelper::filter($question);
             return ResponseHelper::successWithData($question);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

@@ -7,6 +7,7 @@ use App\Models\Quesion;
 use App\Models\Question;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Helpers\NullHelper;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
@@ -110,6 +111,7 @@ class QuestionChoiceController extends Controller
             } else {
                 $choice['is_true'] = false;
             }
+            $choice = NullHelper::filter($choice);
             return ResponseHelper::successWithData($choice);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -129,7 +131,7 @@ class QuestionChoiceController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            'question_id' => 'required|exists:topics,id',
+            'question_id' => 'required|exists:questions,id',
             'content' => 'required|string',
             'attachment' => 'nullable|string',
             'is_true' => 'required',

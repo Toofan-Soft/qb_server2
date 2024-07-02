@@ -119,12 +119,11 @@ class EmployeeController extends Controller
             new ColumnReplacement('email', 'email', User::class)
         ];
         try {
-            $data = GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements)
-                ->getData(true)['data'];
+            $employees = GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements);
     
-            $data = NullHelper::filter($data);
+            $employees = NullHelper::filter($employees);
     
-            return ResponseHelper::successWithData($data);
+            return ResponseHelper::successWithData($employees);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -143,11 +142,10 @@ class EmployeeController extends Controller
             new ColumnReplacement('email', 'email', User::class)
         ];
         try {
-            $data = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements)
-                ->getData(true)['data'];
+            $employee = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements);
     
-            $data = NullHelper::filter($data);
-            return ResponseHelper::successWithData($data);
+            $employee = NullHelper::filter($employee);
+            return ResponseHelper::successWithData($employee);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -157,14 +155,12 @@ class EmployeeController extends Controller
     {
         $attributes = ['arabic_name', 'english_name', 'gender as gender_id', 'phone', 'job_type as job_type_id', 'specialization', 'qualification as qualification_id', 'image_url'];
         $conditionAttribute = ['id' => $request->id];
-        // return GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute);
         try {
-            $data = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute)
-                ->getData(true)['data'];
+            $employee = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute);
     
-            $data = NullHelper::filter($data);
+            $employee = NullHelper::filter($employee);
     
-            return ResponseHelper::successWithData($data);
+            return ResponseHelper::successWithData($employee);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
