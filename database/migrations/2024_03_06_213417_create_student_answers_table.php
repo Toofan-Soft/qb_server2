@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('student_id')
             ->references('id')
             ->on('students')
-            ->onDelete('cascade');
+            ->onDelete('restrict');
             
             // $table->foreign('question_id')
             // ->references('question_id')
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->foreign(['question_id', 'form_id'])
             ->references(['question_id', 'form_id'])
             ->on('form_questions')
-            ->onDelete('cascade');
+            ->onDelete('restrict');
             
             $table->primary(['student_id','question_id', 'form_id']);
 

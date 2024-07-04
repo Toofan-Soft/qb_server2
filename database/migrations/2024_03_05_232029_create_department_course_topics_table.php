@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreign('topic_id')
             ->references('id')
             ->on('topics')
-            ->onDelete('cascade');
+            ->onDelete('restrict');
             
             $table->primary(['department_course_part_id', 'topic_id']);
         });

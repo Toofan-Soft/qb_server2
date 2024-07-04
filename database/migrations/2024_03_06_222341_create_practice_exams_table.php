@@ -31,13 +31,13 @@ return new class extends Migration
             $table->foreign('department_course_part_id')
             ->references('id')
             ->on('department_course_parts')
-            ->onDelete('cascade');
+            ->onDelete('restrict');
             
             $table->uuid('user_id');
             $table->foreign('user_id')
                 ->references('id')
                 ->on('users')
-                ->onDelete('cascade');
+                ->onDelete('restrict');
         });
     }
 

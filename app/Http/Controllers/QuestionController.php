@@ -276,6 +276,7 @@ class QuestionController extends Controller
 
     public function acceptQuestion(Request $request)
     {
+
         DB::beginTransaction();
         try {
             $this->modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);

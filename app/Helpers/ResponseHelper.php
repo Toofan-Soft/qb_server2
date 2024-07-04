@@ -15,6 +15,10 @@ class ResponseHelper
     public static function serverError( $number = 500){
         return response()->json(null, $number);
     }
+    public static function serverError1($m, $number = 501){
+        return response()->json(['message'=> $m], $number);
+    }
+    
     public static function clientError($number = 400){
         return response()->json(null, $number);
     }

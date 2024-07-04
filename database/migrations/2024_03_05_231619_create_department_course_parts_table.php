@@ -17,20 +17,20 @@ return new class extends Migration
             $table->integer('score')->nullable();
             $table->integer('lectures_count')->nullable();
             $table->bigInteger('lecture_duration')->nullable();
-            
+
             // Define composite foreign key constraint
             $table->unsignedBigInteger('course_part_id');
             $table->foreign('course_part_id')
-            ->references('id') // Reference both primary key columns
-            ->on('course_parts')
-            ->onDelete('cascade');
-            
+                ->references('id') // Reference both primary key columns
+                ->on('course_parts')
+                ->onDelete('restrict');
+
             $table->unsignedBigInteger('department_course_id');
             $table->foreign('department_course_id')
                 ->references('id')
                 ->on('department_courses')
-                ->onDelete('cascade');
-
+                ->onDelete('restrict');
+            $table->unique(['department_course_id', 'course_part_id']);
         });
     }
 

@@ -290,7 +290,7 @@ Route::middleware('auth:api')->group(function () {
 
 
 
-    //user management
+    // user management
     Route::prefix('user-management/')->group(function () {
         Route::post('add', [UserManagementController::class, 'addUser']);
         Route::put('modify-role-list', [UserManagementController::class, 'modifyUserRoles']);
@@ -475,8 +475,15 @@ Route::prefix('filter/')->group(function () {
 
 });///
 
-
-
+//for test with out need to login 
+Route::prefix('test/')->group(function () {
+    Route::post('add', [UserManagementController::class, 'addUser']);
+    Route::put('modify', [QuestionController::class, 'acceptQuestion']);
+    // Route::put('change-status', [UserManagementController::class, 'changeUserStatus']);
+    // Route::delete('delete', [UserManagementController::class, 'deleteUser']);
+    Route::get('retrieve', [UserManagementController::class, 'retrieveUser']);
+    Route::get('retrieve-list', [UserManagementController::class, 'retrieveUsers']);
+});
 
 //enum
 Route::prefix('enum/')->group(function () {

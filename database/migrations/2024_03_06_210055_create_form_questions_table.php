@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreign('question_id')
             ->references('id')
             ->on('questions')
-            ->onDelete('cascade');
+            ->onDelete('restrict');
             
             $table->unsignedBigInteger('form_id');
             $table->foreign('form_id')

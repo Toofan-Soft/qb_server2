@@ -27,7 +27,7 @@ return new class extends Migration
             $table->foreign('question_id')
             ->references('id')
             ->on('questions')
-            ->onDelete('cascade');
+            ->onDelete('restrict');
             
             $table->primary(['practice_exam_id','question_id']);
         });
