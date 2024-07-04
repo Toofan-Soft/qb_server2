@@ -29,7 +29,7 @@ return new class extends Migration
             $table->float('difficulty_level') ;
             $table->enum('status',QuestionStatusEnum::values())->default(QuestionStatusEnum::NEW->value);
             $table->enum('accessibility_status',AccessibilityStatusEnum::values());
-            $table->bigInteger('estimated_answer_time');
+            $table->integer('estimated_answer_time');
             $table->enum('language',LanguageEnum::values()); // default ??
             $table->unsignedBigInteger('topic_id');
 

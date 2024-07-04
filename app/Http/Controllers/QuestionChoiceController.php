@@ -28,6 +28,7 @@ class QuestionChoiceController extends Controller
 
     public function addQuestionChoice(Request $request)
     {
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }

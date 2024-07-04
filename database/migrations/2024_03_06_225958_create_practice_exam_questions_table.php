@@ -15,7 +15,7 @@ return new class extends Migration
             $table->unsignedBigInteger('combination_id')->nullable();
             // In (select combination_id from question_choices_combination b where b.question_id = question_id)
             $table->integer('answer')->nullable();
-            $table->bigInteger('answer_duration')->nullable();
+            $table->integer('answer_duration')->nullable();
             
             $table->unsignedBigInteger('practice_exam_id');
             $table->foreign('practice_exam_id')

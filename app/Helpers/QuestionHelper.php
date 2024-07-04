@@ -24,7 +24,6 @@ class QuestionHelper
         foreach ($algorithmData as $choice) {
             $choice['isCorrect'] = ($choice->isCorrect === ChoiceStatusEnum::CORRECT_ANSWER->value) ? true : false;
         }
-        
         $questionChoicesCombination = (new GenerateQuestionChoicesCombination())->execute($algorithmData);
 
         // // add question Choices Combination
@@ -33,22 +32,22 @@ class QuestionHelper
         //         'combination_choices' => $choiceCombination
         //     ]);
         // }
-
         try {
             // $questionChoicesCombination = (new GenerateQuestionChoicesCombination())->execute($algorithmData);
             // add question Choices Combination
-            $i = 1;
+            // $i = 1;
             foreach ($questionChoicesCombination as $choiceCombination) {
                 $question->question_choices_combinations()->create([
-                    'combination_id' => $i,
+                    // 'combination_id' => $i,
                     'combination_choices' => $choiceCombination
                 ]);
-                $i++;
+                // $i++;
             }
             // return ResponseHelper::success();
             return true;
-        } catch (\Throwable $th) {
-            return $th->getMessage();
+        } catch (\Exception $e) {
+            return $e->getMessage();
+            // throw $e;
         }
     }
 
