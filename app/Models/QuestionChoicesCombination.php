@@ -28,5 +28,18 @@ class QuestionChoicesCombination extends Model
     public function question() : BelongsTo {
         return $this->BelongsTo(Question::class);
     }
+    
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            // $model->combination_id = self::where('question_id', $model->question_id)->max('combination_id') + 1;
+             // Get the maximum combination_id for the given question_id
+             $maxCombinationId = self::where('question_id', $model->question_id)->max('combination_id');
+             // If there is no record, maxCombinationId will be null, so we set it to 1
+             $model->combination_id = $maxCombinationId ? $maxCombinationId + 1 : 1;
+        });
+    }
 
 }

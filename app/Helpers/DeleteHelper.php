@@ -15,12 +15,9 @@ class DeleteHelper
     {
         try {
             $deleteCount = $model->delete();
-            if ($deleteCount) {
-                return ResponseHelper::success();
-            } else {
-                return ResponseHelper::serverError(500);
-            }
+            // return ResponseHelper::success();
         } catch (\Exception $e) {
+            // throw $e;
             return ResponseHelper::serverError();
         }
     }

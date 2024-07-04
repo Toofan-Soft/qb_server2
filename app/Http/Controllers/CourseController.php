@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
@@ -21,39 +22,63 @@ class CourseController extends Controller
         if( ValidateHelper::validateData($request, $this->rules($request))){
             return  ResponseHelper::clientError(401);
         }
-
-        $course = Course::create([
-            'arabic_name' => $request->arabic_name,
-            'english_name' => $request->english_name
-        ]);
-
-       return ResponseHelper::successWithData(['id' => $course->id]);
+        try {
+            $course = Course::create([
+                'arabic_name' => $request->arabic_name,
+                'english_name' => $request->english_name
+            ]);
+    
+           return ResponseHelper::successWithData(['id' => $course->id]);
+            
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyCourse (Request $request)
     {
-        $course = Course::findOrFail($request->id);
-        return ModifyHelper::modifyModel($request, $course,  $this->rules($request));
+        try {
+            $course = Course::findOrFail($request->id);
+            return ModifyHelper::modifyModel($request, $course,  $this->rules($request));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
 
     public function deleteCourse (Request $request)
     {
-        $course = Course::findOrFail( $request->id);
-        return DeleteHelper::deleteModel($course);
+        try {
+            $course = Course::findOrFail( $request->id);
+            $course->delete();
+            // return DeleteHelper::deleteModel($course);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveCourses()
     {
         // $attributes = ['id', 'arabic_name', 'english_name'];
-        return GetHelper::retrieveModels(Course::class);
+        try {
+            $courses = GetHelper::retrieveModels(Course::class);
+            return ResponseHelper::successWithData($courses);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveEditableCourse(Request $request)
     {
         $attributes = ['arabic_name', 'english_name'];
         $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModel(Course::class, $attributes, $conditionAttribute);
+        try {
+            $course = GetHelper::retrieveModel(Course::class, $attributes, $conditionAttribute);
+            return ResponseHelper::successWithData($course);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function rules(Request $request): array

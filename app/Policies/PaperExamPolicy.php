@@ -5,88 +5,108 @@ namespace App\Policies;
 use App\Enums\RoleEnum;
 use App\Helpers\ValidateHelper;
 
-class QuestionPolicy
+class PaperExamPolicy
 {
-    public function addQuestion(): bool
+    public function addPaperExam(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
+            RoleEnum::LECTURER
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function modifyQuestion(): bool
+    public function modifyPaperExam(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
+            RoleEnum::LECTURER
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function submitQuestionReviewRequest(): bool
+    public function deletePaperExam(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
+            RoleEnum::LECTURER
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function acceptQuestion(): bool
+    public function retrievePaperExam(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_REVIEWER
+            RoleEnum::LECTURER
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function rejectQuestion(): bool
+    public function retrieveEditablePaperExam(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_REVIEWER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
-    }
-
-    public function deleteQuestion(): bool
-    {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY,
-            RoleEnum::QUESTION_REVIEWER
+            RoleEnum::LECTURER
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
     
-    public function retrieveQuestion(): bool
+    public function retrievePaperExams(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY,
-            RoleEnum::QUESTION_REVIEWER
+            RoleEnum::LECTURER
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
     
-    public function retrieveEditableQuestion(): bool
+    public function retrievePaperExamsAndroid(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
+            RoleEnum::LECTURER
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function retrieveQuestions(): bool
+    public function retrievePaperExamChapters(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY,
-            RoleEnum::QUESTION_REVIEWER
+            RoleEnum::LECTURER
+        ];
+        return ValidateHelper::validatePolicy($validRoles);
+    }
+    public function retrievePaperExamChapterTopics(): bool
+    {
+        $validRoles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::LECTURER
+        ];
+        return ValidateHelper::validatePolicy($validRoles);
+    }
+    public function retrievePaperExamForms(): bool
+    {
+        $validRoles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::LECTURER
+        ];
+        return ValidateHelper::validatePolicy($validRoles);
+    }
+    public function retrievePaperExamFormQuestions(): bool
+    {
+        $validRoles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::LECTURER
+        ];
+        return ValidateHelper::validatePolicy($validRoles);
+    }
+    public function exportPaperExamToPDF(): bool
+    {
+        $validRoles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::LECTURER
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }

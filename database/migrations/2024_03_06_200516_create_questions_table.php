@@ -28,7 +28,7 @@ return new class extends Migration
             $table->enum('type',QuestionTypeEnum::values());
             $table->float('difficulty_level') ;
             $table->enum('status',QuestionStatusEnum::values())->default(QuestionStatusEnum::NEW->value);
-            $table->enum('accessability_status',AccessibilityStatusEnum::values());
+            $table->enum('accessibility_status',AccessibilityStatusEnum::values());
             $table->bigInteger('estimated_answer_time');
             $table->enum('language',LanguageEnum::values()); // default ??
             $table->unsignedBigInteger('topic_id');
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->foreign('topic_id')
             ->references('id')
             ->on('topics')
-            ->onDelete('cascade');
+            ->onDelete('restrict');
 
 
         });

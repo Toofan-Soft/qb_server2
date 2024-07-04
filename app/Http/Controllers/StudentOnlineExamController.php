@@ -42,7 +42,7 @@ use App\Enums\OnlineExamTakingStatusEnum;
 use App\Enums\FormConfigurationMethodEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
 
-class StudentOnlinExamController extends Controller
+class StudentOnlineExamController extends Controller
 {
     public function retrieveOnlineExams(Request $request)
     {

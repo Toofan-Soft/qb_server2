@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreign('chapter_id')
             ->references('id')
             ->on('chapters')
-            ->onDelete('cascade');
+            ->onDelete('restrict');
 
         });
     }

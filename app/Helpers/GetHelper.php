@@ -87,6 +87,7 @@ class GetHelper
         //     return ResponseHelper::successWithData($rows->first());
         //   }
         return ResponseHelper::successWithData($rows);
+        // return $rows;
     }
 
 
@@ -138,5 +139,6 @@ class GetHelper
         }
         
         return ResponseHelper::successWithData($row);
+        // return $row;
     }
 }

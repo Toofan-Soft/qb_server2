@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('description')->nullable() ;
             // foreign key
             $table->unsignedBigInteger('college_id');
-            $table->foreign('college_id')->references('id')->on('colleges') ->onDelete('cascade');
+            $table->foreign('college_id')->references('id')->on('colleges') ->onDelete('restrict');
         });
     }
 

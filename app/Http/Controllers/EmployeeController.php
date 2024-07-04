@@ -23,6 +23,7 @@ use App\Helpers\EnumReplacement1;
 use Illuminate\Http\JsonResponse;
 use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Enum;
 
 class EmployeeController extends Controller
@@ -32,39 +33,41 @@ class EmployeeController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
+        try {
+            $employee =  Employee::create([
+                'arabic_name' =>  $request->arabic_name,
+                'english_name' =>  $request->english_name,
+                'phone' => $request->phone ?? null,
+                'image_url' => ImageHelper::uploadImage($request->image),
+                'job_type' => $request->job_type_id,
+                'qualification' =>  $request->qualification_id,
+                'specialization' =>  $request->specialization ?? null,
+                'gender' =>  $request->gender_id,
+            ]);
 
-        $employee =  Employee::create([
-            'arabic_name' =>  $request->arabic_name,
-            'english_name' =>  $request->english_name,
-            'phone' => $request->phone ?? null,
-            'image_url' => ImageHelper::uploadImage($request->image),
-            'job_type' => $request->job_type_id,
-            'qualification' =>  $request->qualification_id,
-            'specialization' =>  $request->specialization ?? null,
-            'gender' =>  $request->gender_id,
-        ]);
+            if ($request->email) {
+                if (intval($employee->job_type) === JobTypeEnum::EMPLOYEE->value) {
+                    $ownerTypeId = OwnerTypeEnum::EMPLOYEE->value;
+                } elseif (intval($employee->job_type) === JobTypeEnum::LECTURER->value) {
+                    $ownerTypeId = OwnerTypeEnum::LECTURER->value;
+                } else {
+                    // $ownerTypeId = -1;
+                    $ownerTypeId = OwnerTypeEnum::LECTURER->value;
+                }
 
-        if ($request->email) {
-            if (intval($employee->job_type) === JobTypeEnum::EMPLOYEE->value) {
-                $ownerTypeId = OwnerTypeEnum::EMPLOYEE->value;
-            } elseif (intval($employee->job_type) === JobTypeEnum::LECTURER->value) {
-                $ownerTypeId = OwnerTypeEnum::LECTURER->value;
-            } else {
-                // $ownerTypeId = -1;
-                $ownerTypeId = OwnerTypeEnum::LECTURER->value;
+                if (!UserHelper::addUser($request->email, $ownerTypeId, $employee->id)) {
+                    //  return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
+                    return ResponseHelper::serverError(401);
+                }
+
+                //!!!!!!!!!!** this two lines only for test , then will delete them
+                // $response = UserHelper::addUser($request->email, $ownerTypeId, $employee->id);
+                // return ResponseHelper::successWithToken($response);
             }
-
-            if (!UserHelper::addUser($request->email, $ownerTypeId, $employee->id)) {
-                //  return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
-                return ResponseHelper::serverError(401);
-            }
-
-            //!!!!!!!!!!** this two lines only for test , then will delete them
-            // $response = UserHelper::addUser($request->email, $ownerTypeId, $employee->id);
-            // return ResponseHelper::successWithToken($response);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
-
-        return ResponseHelper::success();
     }
 
     public function modifyEmployee(Request $request)
@@ -72,26 +75,35 @@ class EmployeeController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
-        $employee = Employee::findOrFail($request->id);
+        try {
+            $employee = Employee::findOrFail($request->id);
 
-        $employee->update([
-            'arabic_name' =>  $request->arabic_name ?? $employee->arabic_name,
-            'english_name' =>  $request->english_name ?? $employee->english_name,
-            'phone' => $request->phone ?? $employee->phone,
-            'image_url' => ImageHelper::updateImage($request->image, $employee->image_url),
-            'job_type' => $request->job_type_id ?? $employee->job_type,
-            'qualification' =>  $request->qualification_id ?? $employee->qualification,
-            'specialization' =>  $request->specialization ?? $employee->specialization,
-            'gender' =>  $request->gender_id ?? $employee->gender,
-        ]);
-
-        return ResponseHelper::success();
+            $employee->update([
+                'arabic_name' =>  $request->arabic_name ?? $employee->arabic_name,
+                'english_name' =>  $request->english_name ?? $employee->english_name,
+                'phone' => $request->phone ?? $employee->phone,
+                'image_url' => ImageHelper::updateImage($request->image, $employee->image_url),
+                'job_type' => $request->job_type_id ?? $employee->job_type,
+                'qualification' =>  $request->qualification_id ?? $employee->qualification,
+                'specialization' =>  $request->specialization ?? $employee->specialization,
+                'gender' =>  $request->gender_id ?? $employee->gender,
+            ]);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function deleteEmployee(Request $request)
     {
-        $employee = Employee::findOrFail($request->id);
-        return DeleteHelper::deleteModel($employee);
+        try {
+            $employee = Employee::findOrFail($request->id);
+            $employee->delete();
+            // return DeleteHelper::deleteModel($employee);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveEmployees(Request $request)
@@ -106,13 +118,15 @@ class EmployeeController extends Controller
         $columnReplacements = [
             new ColumnReplacement('email', 'email', User::class)
         ];
-        
-        $data = GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements)
-            ->getData(true)['data'];
-                
-        $data = NullHelper::filter($data);
-
-        return ResponseHelper::successWithData($data);
+        try {
+            $employees = GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements);
+    
+            $employees = NullHelper::filter($employees);
+    
+            return ResponseHelper::successWithData($employees);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveEmployee(Request $request)
@@ -127,27 +141,29 @@ class EmployeeController extends Controller
         $columnReplacements = [
             new ColumnReplacement('email', 'email', User::class)
         ];
-
-        $data = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements)
-            ->getData(true)['data'];
-        
-        $data = NullHelper::filter($data);
-
-        return ResponseHelper::successWithData($data);
+        try {
+            $employee = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements);
+    
+            $employee = NullHelper::filter($employee);
+            return ResponseHelper::successWithData($employee);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveEditableEmployee(Request $request)
     {
         $attributes = ['arabic_name', 'english_name', 'gender as gender_id', 'phone', 'job_type as job_type_id', 'specialization', 'qualification as qualification_id', 'image_url'];
         $conditionAttribute = ['id' => $request->id];
-        // return GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute);
-
-        $data = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute)
-            ->getData(true)['data'];
-            
-        $data = NullHelper::filter($data);
-
-        return ResponseHelper::successWithData($data);
+        try {
+            $employee = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute);
+    
+            $employee = NullHelper::filter($employee);
+    
+            return ResponseHelper::successWithData($employee);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function rules(Request $request): array

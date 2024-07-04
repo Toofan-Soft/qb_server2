@@ -6,6 +6,7 @@ use App\Models\Chapter;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Models\CoursePart;
+use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
@@ -21,39 +22,58 @@ class ChapterController extends Controller
 {
     public function addChapter(Request $request)
     {
-        return AddHelper::addModel($request, CoursePart::class,  $this->rules($request), 'chapters', $request->course_part_id);
+        try {
+            return AddHelper::addModel($request, CoursePart::class,  $this->rules($request), 'chapters', $request->course_part_id);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyChapter(Request $request)
     {
-        if( ValidateHelper::validateData($request, $this->rules($request))){
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
-        $chapter = Chapter::findOrFail($request->id);
-        $chapter->update([
-            'arabic_title' => $request->arabic_title ?? $chapter->arabic_title,
-            'english_title' =>$request->english_title ?? $chapter->english_title,
-            'status' => $request->status_id ?? $chapter->status,
-            'description' => $request->description ??  $chapter->description,
-        ]);
-       return ResponseHelper::success();
+        try {
+            $chapter = Chapter::findOrFail($request->id);
+            $chapter->update([
+                'arabic_title' => $request->arabic_title ?? $chapter->arabic_title,
+                'english_title' => $request->english_title ?? $chapter->english_title,
+                'status' => $request->status_id ?? $chapter->status,
+                'description' => $request->description ??  $chapter->description,
+            ]);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function deleteChapter(Request $request)
     {
-        $chapter = Chapter::findOrFail( $request->id);
-       return DeleteHelper::deleteModel($chapter);
+        try {
+            $chapter = Chapter::findOrFail($request->id);
+            $chapter->delete();
+            //    return DeleteHelper::deleteModel($chapter);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveChapters(Request $request)
     {
         $attributes = ['id', 'arabic_title', 'english_title', 'status as status_name', 'description'];
-        $conditionAttribute = ['course_part_id'=> $request->course_part_id];
+        $conditionAttribute = ['course_part_id' => $request->course_part_id];
         $enumReplacements = [
             new EnumReplacement('status_name', ChapterStatusEnum::class),
-          ];
-        return GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute, $enumReplacements );
-
+        ];
+        try {
+            $chapters = GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute, $enumReplacements);
+            $chapters = NullHelper::filter($chapters);
+            return ResponseHelper::successWithData($chapters);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveAvailableChapters(Request $request)
@@ -63,7 +83,12 @@ class ChapterController extends Controller
             'course_part_id' => $request->course_part_id,
             'status' => ChapterStatusEnum::AVAILABLE->value,
         ];
-        return GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute);
+        try {
+            $chapters = GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute);
+            return ResponseHelper::successWithData($chapters);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveChapter(Request $request)
@@ -73,23 +98,39 @@ class ChapterController extends Controller
         $enumReplacements = [
             new EnumReplacement('status_name', ChapterStatusEnum::class),
         ];
-        return GetHelper::retrieveModel(Chapter::class, $attributes, $conditionAttribute, $enumReplacements);
+        try {
+            $chapter = GetHelper::retrieveModel(Chapter::class, $attributes, $conditionAttribute, $enumReplacements);
+            $chapter = NullHelper::filter($chapter);
+            return ResponseHelper::successWithData($chapter);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveEditableChapter(Request $request)
     {
         $attributes = ['arabic_title', 'english_title', 'status as status_id', 'description'];
         $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModel(Chapter::class, $attributes, $conditionAttribute);
-
+        try {
+            $chapter = GetHelper::retrieveModel(Chapter::class, $attributes, $conditionAttribute);
+            $chapter = NullHelper::filter($chapter);
+            return ResponseHelper::successWithData($chapter);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveChapterDescription(Request $request)
     {
         $attributes = ['description'];
         $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModel(Chapter::class, $attributes, $conditionAttribute);
-
+        try {
+            $chapter = GetHelper::retrieveModel(Chapter::class, $attributes, $conditionAttribute);
+            $chapter = NullHelper::filter($chapter);
+            return ResponseHelper::successWithData($chapter);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
 
@@ -98,7 +139,7 @@ class ChapterController extends Controller
         $rules = [
             'arabic_title' => 'required|string|max:255',
             'english_title' => 'required|string|max:255',
-            'status_id' =>[ new Enum (ChapterStatusEnum::class)],
+            'status_id' => [new Enum(ChapterStatusEnum::class)],
             'description' => 'nullable|string',
             'course_part_id' => 'required|exists:course_parts,id',
         ];

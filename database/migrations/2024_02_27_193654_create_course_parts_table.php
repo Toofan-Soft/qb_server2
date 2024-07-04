@@ -18,16 +18,16 @@ return new class extends Migration
             $table->id();
 
             $table->unsignedBigInteger('course_id'); // Foreign key
-            $table->enum('part_id', CoursePartsEnum::values());  
+            $table->enum('part_id', CoursePartsEnum::values());
             $table->enum('status', CourseStatusEnum::values())->default(CourseStatusEnum::AVAILABLE->value);;
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
 
             $table->foreign('course_id')
                 ->references('id')
                 ->on('courses')
-                ->onDelete('cascade');
+                ->onDelete('restrict');
+            $table->unique(['course_id', 'part_id']);
         });
-
     }
 
     /**

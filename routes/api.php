@@ -24,6 +24,7 @@ use App\Enums\SemesterEnum;
 use App\Enums\UserRoleEnum;
 use Illuminate\Http\Request;
 // use App\Http\Controllers\Auth\UserController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\Process\Process;
 use App\Http\Controllers\UserController;
@@ -47,12 +48,14 @@ use App\Http\Controllers\CourseStudentController;
 use App\Http\Controllers\UserManagmentController;
 use App\Http\Controllers\CourseLecturerController;
 use App\Http\Controllers\QuestionChoiceController;
+use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\InitialDatabaseController;
 use App\Http\Controllers\DepartmentCourseController;
 use App\Http\Controllers\FavoriteQuestionController;
 use App\Http\Controllers\ProctorOnlinExamController;
 use App\Http\Controllers\StudentOnlinExamController;
 use App\Http\Controllers\LecturerOnlinExamController;
+use App\Http\Controllers\StudentOnlineExamController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\LecturerOnlineExamController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
@@ -61,7 +64,6 @@ use App\Http\Controllers\DepartmentCoursePartController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
-use Illuminate\Support\Facades\DB;
 
 Route::post('user/register', [GuestController::class, 'addGuest']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);
@@ -288,15 +290,15 @@ Route::middleware('auth:api')->group(function () {
 
 
 
-    //user management
+    // user management
     Route::prefix('user-management/')->group(function () {
-        Route::post('add', [UserManagmentController::class, 'addUser']);
-        Route::put('modify-role-list', [UserManagmentController::class, 'modifyUserRoles']);
-        Route::put('change-status', [UserManagmentController::class, 'changeUserStatus']);
-        Route::delete('delete', [UserManagmentController::class, 'deleteUser']);
-        Route::get('retrieve', [UserManagmentController::class, 'retrieveUser']);
-        Route::get('retrieve-list', [UserManagmentController::class, 'retrieveUsers']);
-        Route::get('retrieve-owner-role-list', [UserManagmentController::class, 'retrieveOwnerRoles']);
+        Route::post('add', [UserManagementController::class, 'addUser']);
+        Route::put('modify-role-list', [UserManagementController::class, 'modifyUserRoles']);
+        Route::put('change-status', [UserManagementController::class, 'changeUserStatus']);
+        Route::delete('delete', [UserManagementController::class, 'deleteUser']);
+        Route::get('retrieve', [UserManagementController::class, 'retrieveUser']);
+        Route::get('retrieve-list', [UserManagementController::class, 'retrieveUsers']);
+        Route::get('retrieve-owner-role-list', [UserManagementController::class, 'retrieveOwnerRoles']);
     });
 
 
@@ -333,11 +335,11 @@ Route::middleware('auth:api')->group(function () {
 
     //student online exam
     Route::prefix('student-online-exam/')->group(function () {
-        Route::post('save-question-answer', [StudentOnlinExamController::class, 'saveOnlineExamQuestionAnswer']);
-        Route::put('finish', [StudentOnlinExamController::class, 'finishOnlineExam']);
-        Route::get('retrieve', [StudentOnlinExamController::class, 'retrieveOnlineExam']);
-        Route::get('retrieve-list', [StudentOnlinExamController::class, 'retrieveOnlineExams']);
-        Route::get('retrieve-question-list', [StudentOnlinExamController::class, 'retrieveOnlineExamQuestions']);
+        Route::post('save-question-answer', [StudentOnlineExamController::class, 'saveOnlineExamQuestionAnswer']);
+        Route::put('finish', [StudentOnlineExamController::class, 'finishOnlineExam']);
+        Route::get('retrieve', [StudentOnlineExamController::class, 'retrieveOnlineExam']);
+        Route::get('retrieve-list', [StudentOnlineExamController::class, 'retrieveOnlineExams']);
+        Route::get('retrieve-question-list', [StudentOnlineExamController::class, 'retrieveOnlineExamQuestions']);
     });
 
 
@@ -360,7 +362,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('paper-exam/')->group(function () {
         Route::post('add', [PaperExamController::class, 'addPaperExam']);
         Route::put('modify', [PaperExamController::class, 'modifyPaperExam']);
-        Route::put('change-status', [PaperExamController::class, 'modifyPaperExam']);
+        // Route::put('change-status', [PaperExamController::class, 'modifyPaperExam']);
         Route::delete('delete', [PaperExamController::class, 'deletePaperExam']);
         Route::get('retrieve', [PaperExamController::class, 'retrievePaperExam']);
         Route::get('retrieve-editable', [PaperExamController::class, 'retrieveEditablePaperExam']);
@@ -372,8 +374,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-form-question-list', [PaperExamController::class, 'retrievePaperExamFormQuestions']);
         Route::get('export', [PaperExamController::class, 'exportPaperExamToPDF']);
     });
-
-
 
 
     //practice exam
@@ -475,8 +475,15 @@ Route::prefix('filter/')->group(function () {
 
 });///
 
-
-
+//for test with out need to login 
+Route::prefix('test/')->group(function () {
+    Route::post('add', [UserManagementController::class, 'addUser']);
+    Route::put('modify', [QuestionController::class, 'acceptQuestion']);
+    // Route::put('change-status', [UserManagementController::class, 'changeUserStatus']);
+    // Route::delete('delete', [UserManagementController::class, 'deleteUser']);
+    Route::get('retrieve', [UserManagementController::class, 'retrieveUser']);
+    Route::get('retrieve-list', [UserManagementController::class, 'retrieveUsers']);
+});
 
 //enum
 Route::prefix('enum/')->group(function () {

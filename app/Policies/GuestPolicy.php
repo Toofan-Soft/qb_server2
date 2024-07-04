@@ -7,27 +7,22 @@ use App\Helpers\ValidateHelper;
 
 class GuestPolicy
 {
-    public function add(): bool
-    {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
-    }
+    private static $validRoles = [
+        RoleEnum::GUEST
+    ];
 
-    public function modify(): bool
+    // public function addGuest(): bool
+    // {
+    //     return ValidateHelper::validatePolicy(self::$validRoles);
+    // }
+
+    public function modifyGuest(): bool
     {
-        $correctRoles = [
-            RoleEnum::DATA_ENTRY->value,
-            RoleEnum::SYSTEM_ADMINISTRATOR->value
-        ];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    //////////////
-    public function retrieveEditable(): bool
+    
+    public function retrieveEditableGuestProfile(): bool
     {
-        $correctRoles = [];
-        return ValidateHelper::validatePolicy($correctRoles);
+        return ValidateHelper::validatePolicy(self::$validRoles);
     }
 }

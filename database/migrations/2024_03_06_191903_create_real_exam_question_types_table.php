@@ -24,7 +24,6 @@ return new class extends Migration
             ->onDelete('cascade');
 
             $table->primary(['real_exam_id', 'question_type']);
-            // $table->unique(['real_exam_id', 'question_type']);
         });
     }
 

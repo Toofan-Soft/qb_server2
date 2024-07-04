@@ -6,6 +6,7 @@ use App\Models\Topic;
 use App\Models\Chapter;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
@@ -16,7 +17,11 @@ class TopicController extends Controller
 {
     public function addTopic(Request $request)
     {
-        return AddHelper::addModel($request, Chapter::class,  $this->rules($request), 'topics', $request->chapter_id);
+        try {
+            return AddHelper::addModel($request, Chapter::class,  $this->rules($request), 'topics', $request->chapter_id);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyTopic(Request $request)
@@ -25,27 +30,42 @@ class TopicController extends Controller
         if( ValidateHelper::validateData($request, $this->rules($request))){
             return  ResponseHelper::clientError(401);
         }
-        $topic = Topic::findOrFail($request->id);
-        $topic->update([
-            'arabic_title' => $request->arabic_title ?? $topic->arabic_title,
-            'english_title' =>$request->english_title ?? $topic->english_title,
-            'description' => $request->description ??  $topic->description,
-        ]);
-       return ResponseHelper::success();
+        try {
+            $topic = Topic::findOrFail($request->id);
+            $topic->update([
+                'arabic_title' => $request->arabic_title ?? $topic->arabic_title,
+                'english_title' =>$request->english_title ?? $topic->english_title,
+                'description' => $request->description ??  $topic->description,
+            ]);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function deleteTopic(Request $request)
     {
-        $topic = Topic::findOrFail( $request->id);
-       return DeleteHelper::deleteModel($topic);
+        try {
+            $topic = Topic::findOrFail( $request->id);
+            $topic->delete();
+        //    return DeleteHelper::deleteModel($topic);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveTopics(Request $request)
     {
         $attributes = ['id', 'arabic_title', 'english_title', 'description'];
         $conditionAttribute = ['chapter_id' => $request->chapter_id];
-
-        return GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute );
+        try {
+            $topics = GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute );
+            $topics = NullHelper::filter($topics);
+            return ResponseHelper::successWithData($topics);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
 
     }
 
@@ -56,7 +76,12 @@ class TopicController extends Controller
         $conditionAttribute = [
             'chapter_id' => $request->chapter_id,
         ];
-        return GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
+        try {
+            $topics = GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
+            return ResponseHelper::successWithData($topics);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
 
@@ -64,14 +89,26 @@ class TopicController extends Controller
     {
         $attributes = ['arabic_title', 'english_title', 'description'];
         $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModel(Topic::class, $attributes, $conditionAttribute);
+        try {
+            $topic = GetHelper::retrieveModel(Topic::class, $attributes, $conditionAttribute);
+            $topic = NullHelper::filter($topic);
+            return ResponseHelper::successWithData($topic);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
 
     }
     public function retrieveTopicDescription(Request $request)
     {
         $attributes = ['description'];
         $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
+        try {
+            $topic = GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
+            $topic = NullHelper::filter($topic);
+            return ResponseHelper::successWithData($topic);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
 
     }
 
@@ -82,6 +119,7 @@ class TopicController extends Controller
             'arabic_title' => 'required|string|max:255',
             'english_title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'chapter_id' => 'required|exists:chapters,id'
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

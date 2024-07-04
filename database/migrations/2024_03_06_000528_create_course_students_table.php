@@ -20,13 +20,13 @@ return new class extends Migration
             $table->foreign('department_course_id')
             ->references('id')
             ->on('department_courses')
-            ->onDelete('cascade');
+            ->onDelete('restrict');
             
             $table->unsignedBigInteger('student_id');
             $table->foreign('student_id')
             ->references('id')
             ->on('students')
-            ->onDelete('cascade');
+            ->onDelete('restrict');
             
             $table->primary(['department_course_id', 'student_id']);
         });

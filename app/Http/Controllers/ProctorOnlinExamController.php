@@ -33,7 +33,7 @@ class ProctorOnlinExamController extends Controller
     public function retrieveOnlineExams()
     {
         $proctor = Employee::where('user_id', auth()->user()->id)->first();
-        
+
         $onlineExams = DB::table('online_exams')
             ->join('real_exams', 'online_exams.id', '=', 'real_exams.id')
             ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
@@ -62,8 +62,8 @@ class ProctorOnlinExamController extends Controller
 
     public function retrieveOnlineExam(Request $request)
     {
-        $realExam = RealExam::findOrFail($request->id ,[
-            'id','datetime', 'duration',
+        $realExam = RealExam::findOrFail($request->id, [
+            'id', 'datetime', 'duration',
             'type as type_name', 'note as special_note', 'course_lecturer_id'
         ]);
         $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
@@ -105,6 +105,7 @@ class ProctorOnlinExamController extends Controller
         unset($realExam['id']);
 
         $realExam =
+
                     $realExam  +
                     $lecturer->toArray() +
                     $coursePart->toArray() +
@@ -264,39 +265,39 @@ class ProctorOnlinExamController extends Controller
     //     return $students;
     // }
 
-    public function refreshOnlineExamStudents1(Request $request)
-    {
-        $onlineExam = OnlineExam::findOrFail($request->exam_id);
-        $onlineExamStudents = $onlineExam->student_online_exams()->get([
-            'student_id', 'start_datetime', 'end_datetime', 'status as status_name'
-        ]);// to array
+    // public function refreshOnlineExamStudents1(Request $request)
+    // {
+    //     $onlineExam = OnlineExam::findOrFail($request->exam_id);
+    //     $onlineExamStudents = $onlineExam->student_online_exams()->get([
+    //         'student_id', 'start_datetime', 'end_datetime', 'status as status_name'
+    //     ]); // to array
 
-        foreach ($onlineExamStudents as $onlineExamStudent) {
-            $onlineExamStudent['answered_questions_count'] = $this->getStudentAnsweredQuestionsCount($request->exam_id, $onlineExamStudent->student_id);
+    //     foreach ($onlineExamStudents as $onlineExamStudent) {
+    //         $onlineExamStudent['answered_questions_count'] = $this->getStudentAnsweredQuestionsCount($request->exam_id, $onlineExamStudent->student_id);
 
-            if(intval($onlineExamStudent->status_name ) === StudentOnlineExamStatusEnum::ACTIVE->value){
-                $onlineExamStudent['is_started'] = true;
-                $onlineExamStudent['is_suspended'] = false;
-                $onlineExamStudent['is_finished'] = false;
-            }elseif(intval($onlineExamStudent->status_name ) === StudentOnlineExamStatusEnum::SUSPENDED->value){
-                $onlineExamStudent['is_started'] = true;
-                $onlineExamStudent['is_suspended'] = true;
-                $onlineExamStudent['is_finished'] = false;
-            }elseif(intval($onlineExamStudent->status_name )  === StudentOnlineExamStatusEnum::COMPLETE->value){
-                $onlineExamStudent['is_started'] = true;
-                $onlineExamStudent['is_suspended'] = false;
-                $onlineExamStudent['is_finished'] = true;
-            }else{
-                $onlineExamStudent['is_started'] = true;
-                $onlineExamStudent['is_suspended'] = false;
-                $onlineExamStudent['is_finished'] = true;
-            }
-// الطلاب الذين لم يبدو الاختبار بعد يتم ارجاع المتغيرات بقية خطاء
-        }
+    //         if (intval($onlineExamStudent->status_name) === StudentOnlineExamStatusEnum::ACTIVE->value) {
+    //             $onlineExamStudent['is_started'] = true;
+    //             $onlineExamStudent['is_suspended'] = false;
+    //             $onlineExamStudent['is_finished'] = false;
+    //         } elseif (intval($onlineExamStudent->status_name) === StudentOnlineExamStatusEnum::SUSPENDED->value) {
+    //             $onlineExamStudent['is_started'] = true;
+    //             $onlineExamStudent['is_suspended'] = true;
+    //             $onlineExamStudent['is_finished'] = false;
+    //         } elseif (intval($onlineExamStudent->status_name)  === StudentOnlineExamStatusEnum::COMPLETE->value) {
+    //             $onlineExamStudent['is_started'] = true;
+    //             $onlineExamStudent['is_suspended'] = false;
+    //             $onlineExamStudent['is_finished'] = true;
+    //         } else {
+    //             $onlineExamStudent['is_started'] = true;
+    //             $onlineExamStudent['is_suspended'] = false;
+    //             $onlineExamStudent['is_finished'] = true;
+    //         }
+    //         // الطلاب الذين لم يبدو الاختبار بعد يتم ارجاع المتغيرات بقية خطاء
+    //     }
 
-        $onlineExamStudents = ProcessDataHelper::enumsConvertIdToName($onlineExamStudents, [new EnumReplacement('status_name', StudentOnlineExamStatusEnum::class)]);
-        return $onlineExamStudents;
-    }
+    //     $onlineExamStudents = ProcessDataHelper::enumsConvertIdToName($onlineExamStudents, [new EnumReplacement('status_name', StudentOnlineExamStatusEnum::class)]);
+    //     return $onlineExamStudents;
+    // }
 
 
     public function suspendStudentOnlineExam(Request $request)
@@ -320,38 +321,38 @@ class ProctorOnlinExamController extends Controller
     public function continueStudentOnlineExam(Request $request)
     {
         $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
-        ->where('student_id', $request->student_id)
-        ->first();
-
-    if ($studentOnlineExam && intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value) {
-        StudentOnlineExam::where('online_exam_id', $request->exam_id)
             ->where('student_id', $request->student_id)
-            ->update([
-                'status' => StudentOnlineExamStatusEnum::ACTIVE->value,
-            ]);
-        return ResponseHelper::success();
-    } else {
-        return abort(404);
-    }
+            ->first();
+
+        if ($studentOnlineExam && intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value) {
+            StudentOnlineExam::where('online_exam_id', $request->exam_id)
+                ->where('student_id', $request->student_id)
+                ->update([
+                    'status' => StudentOnlineExamStatusEnum::ACTIVE->value,
+                ]);
+            return ResponseHelper::success();
+        } else {
+            return abort(404);
+        }
     }
 
     public function finishStudentOnlineExam(Request $request)
     {
         $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
-        ->where('student_id', $request->student_id)
-        ->first();
-
-    if ($studentOnlineExam && intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::COMPLETE->value) {
-        StudentOnlineExam::where('online_exam_id', $request->exam_id)
             ->where('student_id', $request->student_id)
-            ->update([
-                'status' => StudentOnlineExamStatusEnum::CANCELED->value,
-                'end_datetime' => now()
-            ]);
-        return ResponseHelper::success();
-    } else {
-        return abort(404);
-    }
+            ->first();
+
+        if ($studentOnlineExam && intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::COMPLETE->value) {
+            StudentOnlineExam::where('online_exam_id', $request->exam_id)
+                ->where('student_id', $request->student_id)
+                ->update([
+                    'status' => StudentOnlineExamStatusEnum::CANCELED->value,
+                    'end_datetime' => now()
+                ]);
+            return ResponseHelper::success();
+        } else {
+            return abort(404);
+        }
     }
 
     // not complete
@@ -360,7 +361,7 @@ class ProctorOnlinExamController extends Controller
 
         $formId = 1; // يتم عمل دالة لمعرفة رقم النموذج حق الطالب، او جعل هذه الدالة تستقبل رقم النموذج
         $questionsCount = StudentAnswer::where('form_id', '=', $formId)
-        ->where('student_id', '=', $studentId)->count();
+            ->where('student_id', '=', $studentId)->count();
 
         return $questionsCount;
     }

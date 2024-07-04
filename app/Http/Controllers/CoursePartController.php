@@ -7,6 +7,7 @@ use App\Models\College;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Models\CoursePart;
+use App\Helpers\NullHelper;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
@@ -28,14 +29,17 @@ class CoursePartController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
-
-        $course = Course::findOrFail($request->course_id);
-        $course->course_parts()->create([
-            'part_id' => $request->course_part_id,
-            'description' => $request->description ?? null,
-        ]);
-
-        return ResponseHelper::success();
+        try {
+            $course = Course::findOrFail($request->course_id);
+            $course->course_parts()->create([
+                'part_id' => $request->course_part_id,
+                'description' => $request->description ?? null,
+            ]);
+    
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyCoursePart(Request $request)
@@ -43,19 +47,29 @@ class CoursePartController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
-        $coursePart = CoursePart::findOrFail($request->id);
-        $coursePart->update([
-            'status' => $request->status_id ?? $coursePart->status,
-            'description' => $request->description ??  $coursePart->description,
-        ]);
-        return ResponseHelper::success();
+        try {
+            $coursePart = CoursePart::findOrFail($request->id);
+            $coursePart->update([
+                'status' => $request->status_id ?? $coursePart->status,
+                'description' => $request->description ??  $coursePart->description,
+            ]);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
 
     public function deleteCoursePart(Request $request)
     {
-        $coursePart = CoursePart::findOrFail($request->id);
-        return DeleteHelper::deleteModel($coursePart);
+        try {
+            $coursePart = CoursePart::findOrFail($request->id);
+            $coursePart->delete();
+            // return DeleteHelper::deleteModel($coursePart);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveCourseParts(Request $request)
@@ -66,7 +80,13 @@ class CoursePartController extends Controller
             new EnumReplacement('name', CoursePartsEnum::class),
             new EnumReplacement('status_name', CourseStatusEnum::class),
         ];
-        return GetHelper::retrieveModels(CoursePart::class, $attributes, $conditionAttribute, $enumReplacements);
+        try {
+            $courseParts = GetHelper::retrieveModels(CoursePart::class, $attributes, $conditionAttribute, $enumReplacements);
+            $courseParts = NullHelper::filter($courseParts);
+            return ResponseHelper::successWithData($courseParts);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
 
@@ -74,7 +94,13 @@ class CoursePartController extends Controller
     {
         $attributes = ['status as status_id', 'description'];
         $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModel(CoursePart::class, $attributes, $conditionAttribute);
+        try {
+            $coursePart = GetHelper::retrieveModel(CoursePart::class, $attributes, $conditionAttribute);
+            $coursePart = NullHelper::filter($coursePart);
+            return ResponseHelper::successWithData($coursePart);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function rules(Request $request): array

@@ -5,89 +5,80 @@ namespace App\Policies;
 use App\Enums\RoleEnum;
 use App\Helpers\ValidateHelper;
 
-class QuestionPolicy
+class ProctorOnlineExamPolicy
 {
-    public function addQuestion(): bool
+    public function startStudentOnlineExam(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
+            RoleEnum::PROCTOR
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function modifyQuestion(): bool
+    public function suspendStudentOnlineExam(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
+            RoleEnum::PROCTOR
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function submitQuestionReviewRequest(): bool
+    public function continueStudentOnlineExam(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
+            RoleEnum::PROCTOR
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function acceptQuestion(): bool
+    public function finishStudentOnlineExam(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_REVIEWER
+            RoleEnum::PROCTOR
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function rejectQuestion(): bool
+    public function retrieveOnlineExam(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_REVIEWER
+            RoleEnum::PROCTOR
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function deleteQuestion(): bool
+    public function retrieveOnlineExams(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY,
-            RoleEnum::QUESTION_REVIEWER
+            RoleEnum::PROCTOR,
+            RoleEnum::PROCTOR
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
     
-    public function retrieveQuestion(): bool
+    public function retrieveOnlineExamStudents(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY,
-            RoleEnum::QUESTION_REVIEWER
+            RoleEnum::PROCTOR,
+            RoleEnum::PROCTOR
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
     
-    public function retrieveEditableQuestion(): bool
+    public function refreshOnlineExamStudents(): bool
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
+            RoleEnum::PROCTOR
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
 
-    public function retrieveQuestions(): bool
-    {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY,
-            RoleEnum::QUESTION_REVIEWER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
-    }
 }

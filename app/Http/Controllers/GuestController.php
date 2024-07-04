@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Helpers\ModifyHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Enum;
 
 class GuestController extends Controller
@@ -22,32 +23,38 @@ class GuestController extends Controller
         //     return  ResponseHelper::clientError(401);
         // }
         // return ResponseHelper::successWithData(ValidateHelper::validateData($request, $this->rules($request)));
-
+        // return 5;
         if ($x = ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError1($x);
         }
-        
-        $guest =  Guest::create([
-            'name' => $request->name,
-            'gender' =>  $request->gender_id,
-            'phone' => $request->phone ?? null,
-            'image_url' => ImageHelper::uploadImage($request->image) ,
-        ]);
-        
-        //  $response = UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password);
-        //  return ResponseHelper::successWithToken($response);
+        DB::beginTransaction();
+        try {
 
-        // return ResponseHelper::successWithData(UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password));
-        
-        if(!UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password)) {
+            $guest =  Guest::create([
+                'name' => $request->name,
+                'gender' =>  $request->gender_id,
+                'phone' => $request->phone ?? null,
+                'image_url' => ImageHelper::uploadImage($request->image),
+            ]);
+
+            //  $response = UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password);
+            //  return ResponseHelper::successWithToken($response);
+
+            return ResponseHelper::successWithData(UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password));
+
+            if (!UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password)) {
+                return ResponseHelper::serverError1("hellow");
+                // return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
+            }
+            DB::commit();
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            DB::rollBack();
             return ResponseHelper::serverError();
-            // return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
         }
-        
-        return ResponseHelper::success();
     }
 
-    public function modifyGuest (Request $request)
+    public function modifyGuest(Request $request)
     {
 
         if (ValidateHelper::validateData($request, $this->rules($request))) {
@@ -57,10 +64,10 @@ class GuestController extends Controller
         $guest = Guest::where('user_id', auth()->user()->id)->first();
         // return Guest::all();
         $guest->update([
-            'name' => $request->name ??  $guest->name ,
-            'phone' => $request->phone ?? $guest->phone ,
-            'gender' =>  $request->gender_id ??  $guest->gender ,
-            'image_url' => ImageHelper::updateImage($request->image,  $guest->image_url )
+            'name' => $request->name ??  $guest->name,
+            'phone' => $request->phone ?? $guest->phone,
+            'gender' =>  $request->gender_id ??  $guest->gender,
+            'image_url' => ImageHelper::updateImage($request->image,  $guest->image_url)
         ]);
         return ResponseHelper::success();
     }
@@ -80,7 +87,7 @@ class GuestController extends Controller
             'password' => 'required|min:8',
             'phone' => 'nullable|string|unique:guests,phone',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'gender_id' => ['required',new Enum(GenderEnum::class)], // Assuming GenderEnum holds valid values
+            'gender_id' => ['required', new Enum(GenderEnum::class)], // Assuming GenderEnum holds valid values
             //'user_id' => 'nullable|uuid|unique:users,id',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
@@ -91,9 +98,4 @@ class GuestController extends Controller
         }
         return $rules;
     }
-
-
-
-
 }
-
