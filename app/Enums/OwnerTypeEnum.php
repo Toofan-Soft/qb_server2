@@ -21,5 +21,18 @@ enum OwnerTypeEnum: INT {
         };
     }
 
+    public static function getAvailableValues() {
+        $types = EnumTraits::getEnum(OwnerTypeEnum::class);
+
+        $availableTypes = [];
+
+        foreach ($types as $type) {
+            if ($type['id'] !== OwnerTypeEnum::GUEST->value) {
+                $availableTypes[] = $type;
+            }
+        }
+
+        return $availableTypes;
+    }
 
 }

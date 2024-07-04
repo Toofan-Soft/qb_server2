@@ -102,9 +102,12 @@ class EnumsController extends Controller
         return ResponseHelper::successWithData(EnumTraits::getEnum(CourseStudentStatusEnum::class));
     }
 
-    public function  retrieveOwnerTypes    ()
+    public function  retrieveOwnerTypes()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(OwnerTypeEnum::class));
+        $types = OwnerTypeEnum::getAvailableValues();
+        return ResponseHelper::successWithData($types);
+
+        // return ResponseHelper::successWithData(EnumTraits::getEnum(OwnerTypeEnum::class));
     }
 
     public function  retrieveUserStatus     ()

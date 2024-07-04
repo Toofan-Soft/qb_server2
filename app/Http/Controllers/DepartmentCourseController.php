@@ -206,7 +206,6 @@ class DepartmentCourseController extends Controller
             new EnumReplacement('semester', SemesterEnum::class)
         ]);
 
-
         $departmentCourseParts = ProcessDataHelper::columnConvertIdToName(
             $departmentCourseParts,
             [
@@ -222,9 +221,6 @@ class DepartmentCourseController extends Controller
                 new EnumReplacement('name', CoursePartsEnum::class)
             ]
         );
-
-        return $departmentCourseParts;
-
 
         $data = [
             'college_name' => $college->arabic_name,

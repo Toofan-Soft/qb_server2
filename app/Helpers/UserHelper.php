@@ -136,7 +136,7 @@ class UserHelper
                     'is_mandatory' => false
                 ]
             ];
-        } else {
+        } elseif ($ownerTypeId === OwnerTypeEnum::EMPLOYEE->value) {
             $userRoles = [
                 [
                     'id' => RoleEnum::QUESTION_REVIEWER->value,

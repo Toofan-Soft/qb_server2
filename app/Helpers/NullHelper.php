@@ -129,10 +129,41 @@ class NullHelper
         return $filteredArray;
     }
 
+    // private static function filterObject($object)
+    // {
+    //     $array = (array) $object;
+    //     $filteredArray = self::filterArray($array);
+    //     return (object) $filteredArray;
+    // }
+
     private static function filterObject($object)
     {
-        $array = (array) $object;
-        $filteredArray = self::filterArray($array);
-        return (object) $filteredArray;
+        $filteredObject = new \stdClass();
+
+        $keys = [];
+        
+        foreach ($object as $key => $value) {
+
+            $keys[] = $key;
+
+            if ($key === 'attachment_url') {
+                return 9;
+            }
+            // return $key;
+            if (is_array($value)) {
+                $filteredValue = self::filterArray($value);
+            } elseif (is_object($value)) {
+                $filteredValue = self::filterObject($value);
+            } else {
+                $filteredValue = $value;
+            }
+
+            if (!is_null($filteredValue)) {
+                $filteredObject->$key = $filteredValue;
+            }
+        }
+
+        return $keys;
+        return $filteredObject;
     }
 }

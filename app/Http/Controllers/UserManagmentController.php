@@ -120,9 +120,10 @@ class UserManagmentController extends Controller
 
     public function retrieveUser(Request $request)
     {
-        $userData = User::findOrFail($request->id, 
-        ['id', 'email', 'status as status_name', 'owner_type as owner_type_name']
-    );
+        $userData = User::findOrFail(
+            $request->id,
+            ['id', 'email', 'status as status_name', 'owner_type as owner_type_name']
+        );
 
         $ownerTable = '';
         $nameColumn = 'arabic_name as name';

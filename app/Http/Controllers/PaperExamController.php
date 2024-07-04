@@ -343,15 +343,14 @@ class PaperExamController extends Controller
 
     public function retrievePaperExamForms(Request $request)
     {
-        return ExamHelper::retrieveRealExamForms($request->exam_id);
+        $forms = ExamHelper::retrieveRealExamForms($request->exam_id);
+        return ResponseHelper::successWithData($forms);
     }
 
     public function retrievePaperExamFormQuestions(Request $request)
     {
-        $questions = self::getFormQuestions($request->form_id, false);
-
+        $questions = ExamHelper::getFormQuestionsWithDetails($request->form_id, false, false, true);
         return ResponseHelper::successWithData($questions);
-        // return ExamHelper::retrieveRealExamFormQuestions($request->form_id);
     }
 
     public function exportPaperExamToPDF(Request $request)
@@ -467,7 +466,6 @@ class PaperExamController extends Controller
             $department +
             $college->toArray() +
             $course->toArray();
-
 
         $realExam['score'] = $totalScore;
         $realExam['university_name'] = $universityName;

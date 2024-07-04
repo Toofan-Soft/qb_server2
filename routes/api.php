@@ -386,9 +386,9 @@ Route::middleware('auth:api')->group(function () {
         Route::delete('delete', [PracticeExamController::class, 'deletePracticeExam']);
         Route::get('retrieve', [PracticeExamController::class, 'retrievePracticeExam']);
         Route::get('retrieve-editable', [PracticeExamController::class, 'retrieveEditablePracticeExam']);
-        Route::get('retrieve-result', [PracticeExamController::class, 'retrieveEditablePracticeExam']);
+        Route::get('retrieve-result', [PracticeExamController::class, 'retrievePracticeExamResult']);
         Route::get('retrieve-list', [PracticeExamController::class, 'retrievePracticeExams']);
-        Route::get('retrieve-android-list', [PracticeExamController::class, 'retrievePracticeExams']);
+        Route::get('retrieve-android-list', [PracticeExamController::class, 'retrievePracticeExamsAndroid']);
         Route::get('retrieve-question-list', [PracticeExamController::class, 'retrievePracticeExamQuestions']);
     });
 

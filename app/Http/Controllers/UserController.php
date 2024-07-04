@@ -142,11 +142,12 @@ class UserController extends Controller
             array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
 
         } else {
-            $attributes = ['arabic_name', 'english_name' , 'phone', 'image_url', 'specialization',
+            $attributes = ['arabic_name', 'english_name' , 'phone', 'gender as gender_name', 'image_url', 'specialization',
             'qualification as qualification_name', 'job_type as job_type_name'];
             $owner = Employee::where('user_id', $user->id)->first($attributes);
             array_push($enumReplacements, new EnumReplacement('qualification_name', QualificationEnum::class));
             array_push($enumReplacements, new EnumReplacement('job_type_name', JobTypeEnum::class));
+            array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
         }
 
         $owner = ProcessDataHelper::enumsConvertIdToName($owner, $enumReplacements);

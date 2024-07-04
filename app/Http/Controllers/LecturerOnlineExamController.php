@@ -420,7 +420,10 @@ class LecturerOnlineExamController extends Controller
 
     public function retrieveOnlineExamForms(Request $request)
     {
-        return ExamHelper::retrieveRealExamForms($request->exam_id);
+        // return LevelsEnum::values();
+        $forms = ExamHelper::retrieveRealExamForms($request->exam_id);
+        return ResponseHelper::successWithData($forms);
+
         // $onlineExamForms = ExamHelper::retrieveRealExamForms($request->exam_id);
         // return ResponseHelper::successWithData($onlineExamForms);
     }
@@ -428,44 +431,8 @@ class LecturerOnlineExamController extends Controller
 
     public function retrieveOnlineExamFormQuestions(Request $request)
     {
-        return self::getFormQuestions($request->form_id, false);
-
-        // return ExamHelper::retrieveRealExamFormQuestions($request->form_id);
-        
-        // $onlineExamFormQuestions = ExamHelper::retrieveRealExamFormQuestions($request->form_id);
-        // return ResponseHelper::successWithData($onlineExamFormQuestions);
-    }
-
-    private function getFormQuestions ($formId, bool $withAnsweredMirror)
-    {
-        // return form questoin as [content, attachment, is_true, choices[content, attachment, is_true]]
-        $questions = [];
-        $form = Form::findOrFail($formId);
-
-        $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
-        
-        foreach ($formQuestions as $formQuestion) {
-            $question = $formQuestion->question()->first(['content', 'attachment as attachment_url']);
-            if ($formQuestion->combination_id) {
-                if ($withAnsweredMirror) {
-                    $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, true);
-                } else {
-                    $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
-                }
-            } else {
-                if ($withAnsweredMirror) {
-                    $trueFalseQuestion = TrueFalseQuestion::findOrFail($formQuestion->question_id)->first(['answer']);
-                    if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
-                        $question['is_true'] = true;
-                    } else {
-                        $question['is_true'] = false;
-                    }
-                }
-            }
-            array_push($questions, $question);
-        }
-            
-        return $questions;
+        $questions = ExamHelper::getFormQuestionsWithDetails($request->form_id, false, false, true);
+        return ResponseHelper::successWithData($questions);
     }
 
     public function changeOnlineExamStatus(Request $request)

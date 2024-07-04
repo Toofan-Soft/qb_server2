@@ -15,11 +15,14 @@ use App\Enums\ExamTypeEnum;
 use App\Enums\LanguageEnum;
 use App\Enums\SemesterEnum;
 use App\Helpers\ExamHelper;
+use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
 use App\Models\StudentAnswer;
 use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
+use App\Enums\RealExamTypeEnum;
+use App\Helpers\DatetimeHelper;
 use App\Helpers\QuestionHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\EnumReplacement;
@@ -32,6 +35,7 @@ use Illuminate\Support\Facades\DB;
 use App\Enums\ExamConductMethodEnum;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Enum;
+use App\Enums\CourseStudentStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
 use Illuminate\Support\Facades\Storage;
 use App\Enums\OnlineExamTakingStatusEnum;
@@ -42,7 +46,7 @@ class StudentOnlinExamController extends Controller
 {
     public function retrieveOnlineExams(Request $request)
     {
-        $studentId = Student::where('user_id', auth()->user()->id)->first();
+        $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
         $onlineExams =[];
         if(intval($request->status_id) === OnlineExamTakingStatusEnum::COMPLETE->value){
             $onlineExams = $this->retrieveCompleteStudentOnlineExams($studentId);
@@ -52,22 +56,87 @@ class StudentOnlinExamController extends Controller
         return ResponseHelper::successWithData($onlineExams);
     }
 
-
     public function retrieveOnlineExam(Request $request)
     {
+        $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
+
+        $exam = DB::table('real_exams as res')
+            ->join('online_exams as oes', 'res.id', '=', 'oes.id')
+            ->join('course_lecturers as cl', 'res.course_lecturer_id', '=', 'cl.id')
+            ->join('employees as e', 'cl.lecturer_id', '=', 'e.id')
+            ->join('department_course_parts as dcp', 'cl.department_course_part_id', '=', 'dcp.id')
+            ->join('department_courses as dc', 'dcp.department_course_id', '=', 'dc.id')
+            ->join('departments as dep', 'dc.department_id', '=', 'dep.id')
+            ->join('colleges as col', 'dep.college_id', '=', 'col.id')
+            ->join('course_students as cs', 'dcp.department_course_id', '=', 'cs.department_course_id')
+            ->join('course_parts as cp', 'dcp.course_part_id', '=', 'cp.id')
+            ->join('courses as c', 'cp.course_id', '=', 'c.id')
+            ->where('res.id', $request->id)
+            ->where('res.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
+            // ->where('res.datetime', '>', now()) // Not-Taken
+            // ->where('oes.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
+            ->where('oes.exam_datetime_notification_datetime', '<=', now()) // VISIBLE
+            ->where('cs.student_id', $studentId)
+            // ->where('cs.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
+            // ->where('cs.academic_year', '=', date('Y')) // CURRENT YEAR
+            // ->where('cl.academic_year', '=', date('Y')) // CURRENT YEAR
+            ->select(
+                'col.arabic_name as college_name', 
+                'dep.arabic_name as department_name', 
+                'dc.level as level_name', 
+                'dc.semester as semester_name', 
+                'res.datetime', 
+                'res.type as type_name', 
+                'res.language as language_name', 
+                'res.note as special_note', 
+                'res.duration', 
+                DB::raw("CASE WHEN oes.conduct_method = '" . ExamConductMethodEnum::MANDATORY->value . "' THEN true ELSE false END as is_mandatory_question_sequence"),
+                'c.arabic_name as course_name', 
+                'cp.part_id as course_part_name',
+                'e.arabic_name as lecturer_name',
+                DB::raw("(SELECT SUM(questions_count * question_score) 
+                        FROM public.real_exam_question_types 
+                        WHERE real_exam_id = res.id) as total_score")
+            )
+            ->first();
+
+        $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+
+        $exam = ProcessDataHelper::enumsConvertIdToName(
+            $exam,
+            [
+                new EnumReplacement('level_name', LevelsEnum::class),
+                new EnumReplacement('semester_name', SemesterEnum::class),
+                new EnumReplacement('course_part_name', CoursePartsEnum::class),
+                new EnumReplacement('language_name', LanguageEnum::class),
+                new EnumReplacement('type_name', ExamTypeEnum::class)
+            ]
+        );
+
+        $exam = NullHelper::filter($exam);
+
+        return ResponseHelper::successWithData($exam);
+    }
+
+    public function retrieveOnlineExam1(Request $request)
+    {
         // تستخدم هذه الدالة لارجاع الاختبارات الغير مكتملة فقط
-        $studentonlinExam = StudentOnlineExam::where('online_exam_id',$request->id)->first();
+        $studentonlinExam = StudentOnlineExam::where('online_exam_id', $request->id)->first();
         $realExam = [];
 
-        $isComplete = ( intval($studentonlinExam->status) === StudentOnlineExamStatusEnum::COMPLETE->value)? true : false ;
-        if(!$isComplete ){
-            $realExam = RealExam::find($studentonlinExam->online_exam_id, ['id','language as language_name' ,
-            'datetime', 'duration', 'type as type_name', 'note as special_note' , 'course_lecturer_id' ]);
+        return $studentonlinExam;
+
+        $isComplete = (intval($studentonlinExam->status) === StudentOnlineExamStatusEnum::COMPLETE->value) ? true : false;
+
+        if (!$isComplete) {
+            $realExam = RealExam::find($studentonlinExam->online_exam_id, ['id', 'language as language_name',
+            'datetime', 'duration', 'type as type_name', 'note as special_note', 'course_lecturer_id']);
 
             $enumReplacement = [
                 new EnumReplacement('language_name', LanguageEnum::class),
                 new EnumReplacement('type_name', ExamTypeEnum::class),
             ];
+
             $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, $enumReplacement);
             $jsonData = Storage::disk('local')->get('generalNotes.json');// get notes from json file
             $general_note = json_decode($jsonData, true);
@@ -103,7 +172,8 @@ class StudentOnlinExamController extends Controller
 
             $realExam = $realExam->toArray();
             unset($realExam['course_lecturer_id']);
-    }
+        }
+
         $realExam =
             $realExam  +
             $onlineExam ->toArray()+
@@ -121,30 +191,57 @@ class StudentOnlinExamController extends Controller
     public function retrieveOnlineExamQuestions(Request $request)
     {
         $realExam = RealExam::findOrFail($request->id);
-        $form = self::selectStudentForm($realExam);
-        $formQuestions = [];
-        $queationsTypes = $form->real_exam()->real_exam_question_types()->get(['question_type as type_name']);
+        
+        // $formId = self::selectStudentForm($realExam)['id'];
+        $formId = self::selectStudentForm($realExam);
 
-        foreach ($queationsTypes as $type) {
-            $questions = DB::table('forms')
-            ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
-            ->join('questions', 'form_questions.question_id', '=', 'questions.id')
-            ->select(
-                'questions.id ',
-                'questions.content',
-                'questions.attachment_url',
-                'form_questions.combination_id',
-            )
-                ->where('forms.id', '=', $form->id)
-                ->where('questions.type', '=', $type)
-                ->get();
+        $questions = $this->getFormQuestions($formId);
 
-            $questions = QuestionHelper::retrieveStudentExamQuestions($questions, $type->type_name);
-            // $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
-            $formQuestions[ EnumTraits::getNameByNumber($type->type_name, QuestionTypeEnum::class)] = $questions;
+        return ResponseHelper::successWithData($questions);
+
+        // $formQuestions = [];
+
+        // $queationsTypes = $realExam->real_exam_question_types()->get(['question_type as type_name']);
+
+        // foreach ($queationsTypes as $type) {
+        //     $questions = DB::table('forms')
+        //         ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
+        //         ->join('questions', 'form_questions.question_id', '=', 'questions.id')
+        //         ->select(
+        //             'questions.id',
+        //             'questions.content',
+        //             'questions.attachment as attachment_url',
+        //             'form_questions.combination_id',
+        //         )
+        //         ->where('forms.id', '=', $formId)
+        //         ->where('questions.type', '=', $type->type_name)
+        //         ->get();
+
+        //     $questions = QuestionHelper::retrieveStudentExamQuestions($questions, $type->type_name);
+        //     // $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
+        //     $formQuestions[ EnumTraits::getNameByNumber($type->type_name, QuestionTypeEnum::class)] = $questions;
+        // }
+
+        // return ResponseHelper::successWithData($formQuestions);
+    }
+
+
+    private function getFormQuestions ($formId)
+    {
+        $questions = [];
+        $form = Form::findOrFail($formId);
+
+        $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
+        
+        foreach ($formQuestions as $formQuestion) {
+            $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
+            if ($formQuestion->combination_id) {
+                $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
+            }
+            array_push($questions, $question);
         }
-        return ResponseHelper::successWithData($formQuestions);
-
+            
+        return $questions;
     }
 
     public function finishOnlineExam(Request $request)
@@ -194,9 +291,14 @@ class StudentOnlinExamController extends Controller
 
     private static function selectStudentForm(RealExam $realExam) // need to test
     {
-        $examForms = $realExam->forms()->get(['id'])->toArray();
-        $selectedStudentForm = array_rand($examForms);
-        return $examForms[$selectedStudentForm];
+        $examFormsIds = $realExam->forms()->get(['id'])
+            ->map(function ($form) {
+                return $form->id;
+            })
+            ->toArray();
+
+        $selectedStudentFormId = array_rand($examFormsIds);
+        return $examFormsIds[$selectedStudentFormId];
     }
 
     // need to test
@@ -289,31 +391,56 @@ class StudentOnlinExamController extends Controller
         return $examScores;
     }
 
-    private static function retrieveIncompleteStudentOnlineExams($studentId)
+    private function retrieveIncompleteStudentOnlineExams($studentId)
     {
-        $onlineExams =  DB::table('student_online_exams')
-            ->join('online_exams', 'student_online_exams.online_exam_id', '=', 'online_exams.id')
-            ->join('real_exams', 'online_exams.id', '=', 'real_exams.id')
-            ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
-            ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
-            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+        // $onlineExams = DB::table('student_online_exams')
+        //     ->join('online_exams', 'student_online_exams.online_exam_id', '=', 'online_exams.id')
+        //     ->join('real_exams', 'online_exams.id', '=', 'real_exams.id')
+        //     ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
+        //     ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+        //     ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+        //     ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+        //     ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+        //     ->select(
+        //         'courses.arabic_name as course_name ',
+        //         'course_parts.part_id as course_part_name ',
+        //         'real_exams.id',
+        //         'real_exams.datetime',
+        //     )
+        //     ->where('student_online_exams.student_id', '=', $studentId)
+        //     ->where('student_online_exams.status', '!=', StudentOnlineExamStatusEnum::COMPLETE->value)
+        //     ->get();
+
+        $exams = DB::table('real_exams as res')
+            ->join('online_exams as oes', 'res.id', '=', 'oes.id')
+            ->join('course_lecturers as cl', 'res.course_lecturer_id', '=', 'cl.id')
+            ->join('department_course_parts as dcp', 'cl.department_course_part_id', '=', 'dcp.id')
+            ->join('course_students as cs', 'dcp.department_course_id', '=', 'cs.department_course_id')
+            ->join('course_parts as cp', 'dcp.course_part_id', '=', 'cp.id')
+            ->join('courses as c', 'cp.course_id', '=', 'c.id')
+            ->where('res.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
+            ->where('res.datetime', '>', now()) // Not-Taken
+            ->where('oes.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
+            ->where('oes.exam_datetime_notification_datetime', '<=', now()) // VISIBLE
+            ->where('cs.student_id', $studentId)
+            ->where('cs.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
+            ->where('cs.academic_year', '=', date('Y')) // CURRENT YEAR
+            ->where('cl.academic_year', '=', date('Y')) // CURRENT YEAR
             ->select(
-                'courses.arabic_name as course_name ',
-                'course_parts.part_id as course_part_name ',
-                'real_exams.id',
-                'real_exams.datetime',
-            )
-            ->where('student_online_exams.student_id', '=', $studentId)
-            ->where('student_online_exams.status', '!=', StudentOnlineExamStatusEnum::COMPLETE->value)
-            ->get();
-
-        return $onlineExams;
-
-        $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
-
-        return $onlineExams;
+                'res.id',
+                'res.datetime',
+                'c.arabic_name as course_name',
+                'cp.part_id as course_part_name'
+                )
+            ->get()
+            ->map(function ($exam) {
+                $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+                return $exam;
+            });
+        
+        $exams = ProcessDataHelper::enumsConvertIdToName($exams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
+        
+        return $exams;
     }
 
 }

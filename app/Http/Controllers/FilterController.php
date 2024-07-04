@@ -238,6 +238,7 @@ class FilterController extends Controller
                 ->where('department_courses.level', '=', $request->level_id)
                 ->where('department_courses.semester', '=', $request->semester_id)
                 ->get();
+                
             return ResponseHelper::successWithData($departmentCourses);
         } else {
             return ResponseHelper::clientError(401);

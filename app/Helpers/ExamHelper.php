@@ -185,26 +185,35 @@ class ExamHelper
     public static function retrieveRealExamForms($realExamId)
     {
         $realExam = RealExam::findOrFail($realExamId);
-        $forms = $realExam->forms()->get(['id']);
-        // return $forms;
+        // $forms = $realExam->forms()->get(['id']);
+        
+        $forms = [];
+
+        $formsIds = $realExam->forms()->get(['id'])
+            ->map(function ($form) {
+                return $form->id;
+            });
 
         $formsNames = self::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count);
-
-        $formsNames1 = collect($formsNames);
-        return $formsNames1;
-        return $realExam->forms_count;
-
-        if (intval($realExam->form_configuration_methode) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
+        
+        if (intval($realExam->form_configuration_method) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
             $i = 0;
-            foreach ($forms as $form) {
+            foreach ($formsIds as $formId) {
+                $form['id'] = $formId;
                 $form['name'] = $formsNames[$i++];
+                array_push($forms, $form);
             }
         } else {
-            $formId = $forms->id;
-            $forms = [];
-            foreach ($formsNames as $formName) {
-                $forms['id'] = $formId;
-                $forms['name'] = $formName;
+            if (count($formsIds) == 1) {
+                $formId = $formsIds->first();
+
+                foreach ($formsNames as $formName) {
+                    $form['id'] = $formId;
+                    $form['name'] = $formName;
+                    array_push($forms, $form);
+                }
+            } else {
+                // handle error..
             }
         }
         return $forms;
@@ -310,6 +319,82 @@ class ExamHelper
         return $englishLetters;
     }
 
+    public static function getFormQuestionsWithDetails($formId, bool $withQuestionId, bool $withChoiceId, bool $withAnswer)
+    {
+        $questions = [];
+        $form = Form::findOrFail($formId);
+
+        $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
+        
+        foreach ($formQuestions as $formQuestion) {
+            $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url', 'topic_id', 'type as type_name']);
+            
+            $topic = $question->topic()->first(['arabic_title', 'chapter_id']);
+
+            $chapter_title = $topic->chapter()->first()['arabic_title'];
+            $topic_title = $topic->arabic_title;
+            
+            $question->chapter_name = $chapter_title;
+            $question->topic_name = $topic_title;
+            
+            unset($question['topic_id']);
+
+            // $question = NullHelper::filter($question);
+
+            if ($formQuestion->combination_id) {
+                if ($withAnswer) {
+                    $question['choices'] = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, true);
+                } else {
+                    $question['choices'] = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, false);
+                }
+            } else {
+                if ($withAnswer) {
+                    $trueFalseQuestion = TrueFalseQuestion::findOrFail($formQuestion->question_id)->first(['answer']);
+                    if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
+                        $question['is_true'] = true;
+                    } else {
+                        $question['is_true'] = false;
+                    }
+                }
+            }
+
+            if (!$withQuestionId) {
+                unset($question['id']);
+            }
+
+            array_push($questions, $question);
+        }
+
+        $groupedQuestions = [];
+
+        foreach ($questions as $question) {
+            $typeName = $question['type_name'];
+            if (!isset($groupedQuestions[$typeName])) {
+                $groupedQuestions[$typeName] = [
+                    'type_name' => $typeName,
+                    'questions' => []
+                ];
+            }
+            
+            unset($question['type_name']);
+            
+            $groupedQuestions[$typeName]['questions'][] = $question;
+        }
+
+        $groupedQuestions = array_values($groupedQuestions);
+
+        $groupedQuestions = ProcessDataHelper::enumsConvertIdToName(
+            $groupedQuestions,
+            [
+                new EnumReplacement('type_name', QuestionTypeEnum::class)
+            ]
+        );
+
+        return $groupedQuestions;
+    }
+
+
+
     public static function retrieveRealExamFormQuestions($formId) //////////////////////*********** More condition needed
     {
         $form = Form::findOrFail($formId);
@@ -374,18 +459,55 @@ class ExamHelper
     {
         $result = null;
         $choices = self::uncombinateCombination($qeustionId, $combinationId);
+        
+        // 453, 454, 459, -2
 
         // return $choices;
+        
+        // if($withChoiceId && $withAnswer){
+        //     $result = self::retrieveCombinationChoicesWithIdAndAnswer($choices);
+        // }elseif($withChoiceId && !$withAnswer){
+        //     $result = self::retrieveCombinationChoicesWithId($choices);
+        // }elseif(!$withChoiceId && $withAnswer){
+        //     $result = self::retrieveCombinationChoicesWithAnswer($choices);
+        // }else{
+        //     $result = self::retrieveCombinationChoicesWithoutIdAndAnswer($choices);
+        // }
 
-        if($withChoiceId && $withAnswer){
-            $result = self::retrieveCombinationChoicesWithIdAndAnswer($choices);
-        }elseif($withChoiceId && !$withAnswer){
-            $result = self::retrieveCombinationChoicesWithId($choices);
-        }elseif(!$withChoiceId && $withAnswer){
-            $result = self::retrieveCombinationChoicesWithAnswer($choices);
-        }else{
-            $result = self::retrieveCombinationChoicesWithoutIdAndAnswer($choices);
+
+        $result = [];
+
+        foreach ($choices as $choice) {
+            $temp = [];
+
+            if (property_exists($choice, 'ids')) {
+                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
+
+                if ($withChoiceId) {
+                    $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
+                }
+            } else {
+                if ($choice->id == -1) {
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
+                } elseif ($choice->id == -2) {
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+                    
+                } else {
+                    $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
+                }
+
+                if ($withChoiceId) {
+                    $temp['id'] = $choice->id;
+                }
+            }
+
+            if ($withAnswer) {
+                $temp['is_true'] = $choice->isCorrect;
+            }
+
+            array_push($result, $temp);
         }
+
         return $result;
     }
 
@@ -465,7 +587,10 @@ class ExamHelper
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
                     
                 }else{
-                    $temp = Choice::findOrFail($choice->id)->first(['content', 'attachment as attachment_url']);
+                    // $temp = Choice::findOrFail($choice->id)->first(['content', 'attachment as attachment_url']); // threre's problem in pk (id)
+                    $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
+
+                    return $temp;
                 }
             }
             $temp['is_true'] = $choice->isCorrect;
