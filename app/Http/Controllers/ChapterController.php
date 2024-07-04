@@ -69,13 +69,15 @@ class ChapterController extends Controller
         ];
         try {
             $chapters = GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute, $enumReplacements);
+            
             $chapters = NullHelper::filter($chapters);
+
             return ResponseHelper::successWithData($chapters);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
     }
-
+    
     public function retrieveAvailableChapters(Request $request)
     {
         $attributes = ['id', 'arabic_title', 'english_title'];
@@ -100,7 +102,9 @@ class ChapterController extends Controller
         ];
         try {
             $chapter = GetHelper::retrieveModel(Chapter::class, $attributes, $conditionAttribute, $enumReplacements);
+
             $chapter = NullHelper::filter($chapter);
+            
             return ResponseHelper::successWithData($chapter);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

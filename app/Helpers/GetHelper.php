@@ -86,8 +86,8 @@ class GetHelper
         // if (count($rows) === 1) {
         //     return ResponseHelper::successWithData($rows->first());
         //   }
-        return ResponseHelper::successWithData($rows);
-        // return $rows;
+        // return ResponseHelper::successWithData($rows);
+        return $rows;
     }
 
 
@@ -138,7 +138,7 @@ class GetHelper
             $row = ProcessDataHelper::columnConvertIdToName($row, $columnReplacements);
         }
         
-        return ResponseHelper::successWithData($row);
-        // return $row;
+        // return ResponseHelper::successWithData($row);
+        return $row;
     }
 }

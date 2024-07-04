@@ -223,7 +223,7 @@ class ProctorOnlinExamController extends Controller
                 // $item->answered_questions_count = StudentAnswer::where('student_id', $item->id)
                 //     ->where('form_id', $soe->form_id)->count();
 
-                $item = ProcessDataHelper::ensoe($item, [new EnumReplacement('status_name', StudentOnlineExamStatusEnum::class)]);
+                $item = ProcessDataHelper::enumsConvertIdToName($item, [new EnumReplacement('status_name', StudentOnlineExamStatusEnum::class)]);
             }
 
             return $item;

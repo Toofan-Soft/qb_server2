@@ -129,41 +129,24 @@ class NullHelper
         return $filteredArray;
     }
 
-    // private static function filterObject($object)
-    // {
-    //     $array = (array) $object;
-    //     $filteredArray = self::filterArray($array);
-    //     return (object) $filteredArray;
-    // }
-
     private static function filterObject($object)
     {
-        $filteredObject = new \stdClass();
+        // $array = (array) $object;
+        // $array = $object->toArray();
+        // $filteredArray = self::filterArray($array);
+        // return (object) $filteredArray;
 
-        $keys = [];
-        
-        foreach ($object as $key => $value) {
+        $array = [];
 
-            $keys[] = $key;
-
-            if ($key === 'attachment_url') {
-                return 9;
-            }
-            // return $key;
-            if (is_array($value)) {
-                $filteredValue = self::filterArray($value);
-            } elseif (is_object($value)) {
-                $filteredValue = self::filterObject($value);
-            } else {
-                $filteredValue = $value;
-            }
-
-            if (!is_null($filteredValue)) {
-                $filteredObject->$key = $filteredValue;
-            }
+        if (method_exists($object, 'toArray')) {
+            // Handle Eloquent models
+            $array = $object->toArray();
+        } else {
+            // Handle stdClass objects and other objects
+            $array = (array) $object;
         }
 
-        return $keys;
-        return $filteredObject;
+        $filteredArray = self::filterArray($array);
+        return (object) $filteredArray;
     }
 }

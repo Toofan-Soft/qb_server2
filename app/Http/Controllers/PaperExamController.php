@@ -422,11 +422,11 @@ class PaperExamController extends Controller
             $totalScore += ($questionType->questions_count * $questionType->question_score);
         }
         // university name 
-        // $jsonData = Storage::disk('local')->get('university.json');
-        // $universityData = json_decode($jsonData, true);
-        // $universityName = [
-        //     'arabic_name' => $universityData['arabic_name'],
-        // ];
+        $jsonData = Storage::disk('local')->get('university.json');
+        $universityData = json_decode($jsonData, true);
+        $universityName = [
+            'arabic_name' => $universityData['arabic_name'],
+        ];
 
         // form and form questions 
         // as [formName, questions[], .....] or [formsName[name,...], questoins[]]
