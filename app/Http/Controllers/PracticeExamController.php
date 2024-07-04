@@ -25,6 +25,7 @@ use App\Helpers\EnumReplacement;
 use App\Helpers\OnlinExamHelper;
 use App\Enums\QuestionStatusEnum;
 use App\Helpers\EnumReplacement1;
+use App\Models\TrueFalseQuestion;
 use App\AlgorithmAPI\GenerateExam;
 use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
@@ -246,7 +247,7 @@ class PracticeExamController extends Controller
                 }
             } else {
                 if ($withAnswer) {
-                    $trueFalseQuestion = TrueFalseQuestion::findOrFail($formQuestion->question_id)->first(['answer']);
+                    $trueFalseQuestion = TrueFalseQuestion::findOrFail($examQuestion->question_id)->first(['answer']);
                     if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
                         $question['is_true'] = true;
                     } else {
