@@ -397,7 +397,7 @@ class LecturerOnlineExamController extends Controller
         $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
         $exam->datetime_notification_datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime_notification_datetime);
         $exam->result_notification_datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->result_notification_datetime);
-
+        
         $exam = NullHelper::filter($exam);
 
         return ResponseHelper::successWithData($exam);
