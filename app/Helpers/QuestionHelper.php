@@ -24,7 +24,6 @@ class QuestionHelper
         foreach ($algorithmData as $choice) {
             $choice['isCorrect'] = (intval($choice->isCorrect) === ChoiceStatusEnum::CORRECT_ANSWER->value) ? true : false;
         }
-        return $algorithmData;
         $questionChoicesCombination = (new GenerateQuestionChoicesCombination())->execute($algorithmData);
 
         // // add question Choices Combination
