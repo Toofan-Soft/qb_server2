@@ -287,7 +287,7 @@ class QuestionController extends Controller
             if (intval($question->type) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
                 QuestionHelper::generateQuestionChoicesCombination($question);
             }
-            
+
             DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
@@ -317,8 +317,7 @@ class QuestionController extends Controller
             throw $e;
         }
     }
-
-
+    
     public function rules(Request $request): array
     {
         $rules = [
