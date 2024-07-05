@@ -26,13 +26,10 @@ class Question extends Model
         'type',
         'difficulty_level',
         'status',
-        'accessibility_status',
+        'accessability_status',
         'estimated_answer_time',
         'language',
-        'topic_id',
-
-
-
+        'topic_id'
     ];
 
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم

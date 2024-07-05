@@ -12,7 +12,11 @@ class ParamHelper
 
     foreach ($properties as $property) {
         if ($parent->has($property->from)) {
-            $params[$property->to] = $parent->{$property->from};
+            if ($parent->{$property->from} === "null") {
+              $params[$property->to] = null;
+            } else {
+              $params[$property->to] = $parent->{$property->from};
+            }
         }
     }
 

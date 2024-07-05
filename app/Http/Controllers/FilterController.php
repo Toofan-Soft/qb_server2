@@ -63,7 +63,8 @@ class FilterController extends Controller
     public function retrieveColleges()
     {
         $attributes = ['id', 'arabic_name as name'];
-        return GetHelper::retrieveModels(College::class, $attributes, null);
+        $colleges = GetHelper::retrieveModels(College::class, $attributes, null);
+        return ResponseHelper::successWithData($colleges);
     }
 
     public function retrieveLecturerColleges()
@@ -135,6 +136,7 @@ class FilterController extends Controller
                 ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
                 ->distinct()
                 ->get();
+
             return ResponseHelper::successWithData($lecturerDepartments);
         } else {
             return ResponseHelper::clientError(402);
@@ -376,10 +378,12 @@ class FilterController extends Controller
                 ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
                 ->where('course_lecturers.academic_year', '=', now()->format('Y')) // سؤال العيال
                 ->get();
-
+            
             $departmentLecturerCourseParts = ProcessDataHelper::enumsConvertIdToName(
                 $departmentLecturerCourseParts,
-                new EnumReplacement('name', CoursePartsEnum::class)
+                [
+                    new EnumReplacement('name', CoursePartsEnum::class)
+                ]
             );
 
             return ResponseHelper::successWithData($departmentLecturerCourseParts);

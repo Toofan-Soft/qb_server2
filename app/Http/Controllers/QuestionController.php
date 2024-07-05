@@ -276,23 +276,25 @@ class QuestionController extends Controller
 
     public function acceptQuestion(Request $request)
     {
-
         DB::beginTransaction();
         try {
-            $this->modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
+            // $this->modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
 
             $question = Question::findOrFail($request->id);
-            $question->question_usage()->create();
+
+            // $question->question_usage()->create();
 
             if (intval($question->type) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
                 // return ResponseHelper::successWithData(QuestionHelper::generateQuestionChoicesCombination($question));
-                QuestionHelper::generateQuestionChoicesCombination($question);
+                // QuestionHelper::generateQuestionChoicesCombination($question);
+                return QuestionHelper::generateQuestionChoicesCombination($question);
+                // return QuestionHelper::generateQuestionChoicesCombination($question)->count();
             }
             DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
             DB::rollBack();
-            return ResponseHelper::serverError();
+            return ResponseHelper::serverError(400);
         }
     }
 

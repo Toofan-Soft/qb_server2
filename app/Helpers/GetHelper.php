@@ -87,7 +87,7 @@ class GetHelper
         //     return ResponseHelper::successWithData($rows->first());
         //   }
         // return ResponseHelper::successWithData($rows);
-        return $rows;
+        return $rows->toArray();
     }
 
 

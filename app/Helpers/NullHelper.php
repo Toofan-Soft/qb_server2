@@ -149,4 +149,59 @@ class NullHelper
         $filteredArray = self::filterArray($array);
         return (object) $filteredArray;
     }
+
+
+    public static function filter1($value)
+    {
+        if (is_array($value)) {
+            // return 5;
+            return self::filterArray1($value);
+        } elseif (is_object($value)) {
+            return self::filterObject1($value);
+        } else {
+            throw new \InvalidArgumentException("Value must be an array or object");
+        }
+    }
+    
+    private static function filterArray1(array $array)
+    {
+        $filteredArray = [];
+
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $filteredValue = self::filterArray1($value);
+            } elseif (is_object($value)) {
+                $filteredValue = self::filterObject1($value);
+            } else {
+                $filteredValue = $value;
+            }
+
+            if (!is_null($filteredValue)) {
+                $filteredArray[$key] = $filteredValue;
+            }
+        }
+
+        return $filteredArray;
+    }
+
+    private static function filterObject1($object)
+    {
+        // $array = (array) $object;
+        // $array = $object->toArray();
+        // $filteredArray = self::filterArray($array);
+        // return (object) $filteredArray;
+
+        $array = [];
+
+        if (method_exists($object, 'toArray')) {
+            // Handle Eloquent models
+            $array = $object->toArray();
+        } else {
+            // Handle stdClass objects and other objects
+            $array = (array) $object;
+        }
+
+        $filteredArray = self::filterArray($array);
+        return (object) $filteredArray;
+    }
 }

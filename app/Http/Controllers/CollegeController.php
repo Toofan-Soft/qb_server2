@@ -101,7 +101,9 @@ class CollegeController extends Controller
         $attributes = ['id', 'arabic_name', 'english_name', 'phone', 'email', 'logo_url'];
         try {
             $colleges = GetHelper::retrieveModels(College::class, $attributes);
-            $colleges = NullHelper::filter($colleges);
+            
+            $colleges = NullHelper::filter1($colleges);
+
             return ResponseHelper::successWithData($colleges);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

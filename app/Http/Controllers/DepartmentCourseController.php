@@ -162,13 +162,12 @@ class DepartmentCourseController extends Controller
     public function retrieveDepartmentLevelCourses(Request $request)
     {
         try {
-            return ResponseHelper::success();
             $semesters = DepartmentCourse::where('department_id', $request->department_id)
                 ->where('level', $request->level_id)->get(['semester']);
             $departmentCourses = [];
 
             foreach ($semesters as $semester) {
-                $departmentCourses = [
+                $departmentCourse = [
                     'id' => $semester['semester'],
                     'name' =>  EnumTraits::getNameByNumber($semester->semester, SemesterEnum::class)
                 ];
@@ -182,10 +181,12 @@ class DepartmentCourseController extends Controller
                 ];
 
                 $semestersCourses = ProcessDataHelper::columnConvertIdToName($semestersCourses, $columnReplacement);
-                $departmentCourses['courses'] = $semestersCourses;
+                $departmentCourse['courses'] = $semestersCourses;
+
+                $departmentCourses[] = $departmentCourse;
             }
 
-            return ResponseHelper::successWithData([$departmentCourses]);
+            return ResponseHelper::successWithData($departmentCourses);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
