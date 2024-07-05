@@ -25,6 +25,7 @@ use App\Enums\FormNameMethodEnum;
 use App\Helpers\EnumReplacement1;
 use App\Models\TrueFalseQuestion;
 use Illuminate\Http\UploadedFile;
+use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Enums\ExamConductMethodEnum;
@@ -47,8 +48,8 @@ class ExamHelper
     public static function deleteRealExam($realExamId)
     {
 
-        $realExam = RealExam::findOrFail($realExamId);
         try {
+            $realExam = RealExam::findOrFail($realExamId);
             $realExam->real_exam_question_types()->delete();
             $readExamForms = $realExam->forms();
             foreach ($readExamForms as $readExamForm) {
@@ -62,9 +63,9 @@ class ExamHelper
                 $realExam->online_exam()->delete();
             }
             $realExam->delete();
-            return ResponseHelper::success();
         } catch (\Exception $e) {
-            return ResponseHelper::serverError('An error occurred while deleting models.');
+            throw $e;
+            // return ResponseHelper::serverError('An error occurred while deleting models.');
         }
     }
     /**
@@ -150,33 +151,41 @@ class ExamHelper
 
     public static function retrieveRealExamChapters($realExamId)
     {
-        $realExamChapters = DB::table('real_exams')
-            ->join('forms', 'real_exams.id', '=', 'forms.real_exam_id')
-            ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
-            ->join('questions', 'form_questions.question_id', '=', 'questions.id')
-            ->join('topics', 'questions.topic_id', '=', 'topics.id')
-            ->join('chapters', 'topics.chapter_id', '=', 'chapters.id')
-            ->select('chapters.id', 'chapters.arabic_title as title')
-            ->where('real_exams.id', '=', $realExamId)
-            ->distinct()
-            ->get();
+        try {
+            $realExamChapters = DB::table('real_exams')
+                ->join('forms', 'real_exams.id', '=', 'forms.real_exam_id')
+                ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
+                ->join('questions', 'form_questions.question_id', '=', 'questions.id')
+                ->join('topics', 'questions.topic_id', '=', 'topics.id')
+                ->join('chapters', 'topics.chapter_id', '=', 'chapters.id')
+                ->select('chapters.id', 'chapters.arabic_title as title')
+                ->where('real_exams.id', '=', $realExamId)
+                ->distinct()
+                ->get();
 
-        return ResponseHelper::successWithData($realExamChapters);
+            return $realExamChapters;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public static function retrieveRealExamChapterTopics($realExamId, $chapterId)
     {
-        $realExamChapterTopics = DB::table('real_exams')
-            ->join('forms', 'real_exams.id', '=', 'forms.real_exam_id')
-            ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
-            ->join('questions', 'form_questions.question_id', '=', 'questions.id')
-            ->join('topics', 'questions.topic_id', '=', 'topics.id')
-            ->select('topics.arabic_title as title')
-            ->where('real_exams.id', '=', $realExamId)
-            ->where('topics.chapter_id', '=', $chapterId)
-            ->distinct()
-            ->get();
-        return ResponseHelper::successWithData($realExamChapterTopics);
+        try {
+            $realExamChapterTopics = DB::table('real_exams')
+                ->join('forms', 'real_exams.id', '=', 'forms.real_exam_id')
+                ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
+                ->join('questions', 'form_questions.question_id', '=', 'questions.id')
+                ->join('topics', 'questions.topic_id', '=', 'topics.id')
+                ->select('topics.arabic_title as title')
+                ->where('real_exams.id', '=', $realExamId)
+                ->where('topics.chapter_id', '=', $chapterId)
+                ->distinct()
+                ->get();
+            return $realExamChapterTopics;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     /**
@@ -184,39 +193,43 @@ class ExamHelper
      */
     public static function retrieveRealExamForms($realExamId)
     {
-        $realExam = RealExam::findOrFail($realExamId);
-        // $forms = $realExam->forms()->get(['id']);
-        
-        $forms = [];
+        try {
+            $realExam = RealExam::findOrFail($realExamId);
+            // $forms = $realExam->forms()->get(['id']);
 
-        $formsIds = $realExam->forms()->get(['id'])
-            ->map(function ($form) {
-                return $form->id;
-            });
+            $forms = [];
 
-        $formsNames = self::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count);
-        
-        if (intval($realExam->form_configuration_method) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
-            $i = 0;
-            foreach ($formsIds as $formId) {
-                $form['id'] = $formId;
-                $form['name'] = $formsNames[$i++];
-                array_push($forms, $form);
-            }
-        } else {
-            if (count($formsIds) == 1) {
-                $formId = $formsIds->first();
+            $formsIds = $realExam->forms()->get(['id'])
+                ->map(function ($form) {
+                    return $form->id;
+                });
 
-                foreach ($formsNames as $formName) {
+            $formsNames = self::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count);
+
+            if (intval($realExam->form_configuration_method) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
+                $i = 0;
+                foreach ($formsIds as $formId) {
                     $form['id'] = $formId;
-                    $form['name'] = $formName;
+                    $form['name'] = $formsNames[$i++];
                     array_push($forms, $form);
                 }
             } else {
-                // handle error..
+                if (count($formsIds) == 1) {
+                    $formId = $formsIds->first();
+
+                    foreach ($formsNames as $formName) {
+                        $form['id'] = $formId;
+                        $form['name'] = $formName;
+                        array_push($forms, $form);
+                    }
+                } else {
+                    // handle error..
+                }
             }
+            return $forms;
+        } catch (\Exception $e) {
+            throw $e;
         }
-        return $forms;
     }
 
     // need to test
@@ -325,21 +338,21 @@ class ExamHelper
         $form = Form::findOrFail($formId);
 
         $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
-        
+
         foreach ($formQuestions as $formQuestion) {
             $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url', 'topic_id', 'type as type_name']);
-            
+
             $topic = $question->topic()->first(['arabic_title', 'chapter_id']);
 
             $chapter_title = $topic->chapter()->first()['arabic_title'];
             $topic_title = $topic->arabic_title;
-            
+
             $question->chapter_name = $chapter_title;
             $question->topic_name = $topic_title;
-            
+
             unset($question['topic_id']);
 
-            // $question = NullHelper::filter($question);
+            $question = NullHelper::filter($question);
 
             if ($formQuestion->combination_id) {
                 if ($withAnswer) {
@@ -375,9 +388,9 @@ class ExamHelper
                     'questions' => []
                 ];
             }
-            
+
             unset($question['type_name']);
-            
+
             $groupedQuestions[$typeName]['questions'][] = $question;
         }
 
@@ -459,11 +472,11 @@ class ExamHelper
     {
         $result = null;
         $choices = self::uncombinateCombination($qeustionId, $combinationId);
-        
+
         // 453, 454, 459, -2
 
         // return $choices;
-        
+
         // if($withChoiceId && $withAnswer){
         //     $result = self::retrieveCombinationChoicesWithIdAndAnswer($choices);
         // }elseif($withChoiceId && !$withAnswer){
@@ -491,7 +504,6 @@ class ExamHelper
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
                 } elseif ($choice->id == -2) {
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
-                    
                 } else {
                     $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
                 }
@@ -518,10 +530,10 @@ class ExamHelper
             ->first(['combination_choices'])['combination_choices'];
 
         $choices = (new UncombineQuestionChoicesCombination())->execute($combinationChoices);
-        
+
         return $choices;
     }
-    
+
     private static function retrieveCombinationChoicesWithIdAndAnswer($choices)
     {
         $result = [];
@@ -530,15 +542,14 @@ class ExamHelper
             if (property_exists($choice, 'ids')) {
                 $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
                 $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
-            }else{
-                if($choice->id == -1){
+            } else {
+                if ($choice->id == -1) {
                     $temp['id'] = CombinationChoiceTypeEnum::ALL->value;
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
-                }elseif($choice->id == -2){
+                } elseif ($choice->id == -2) {
                     $temp['id'] = CombinationChoiceTypeEnum::NOTHING->value;
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
-                    
-                }else{
+                } else {
                     $temp = Choice::findOrFail($choice->id)->first(['id', 'content', 'attachment as attachment_url']);
                 }
             }
@@ -556,15 +567,14 @@ class ExamHelper
             if (property_exists($choice, 'ids')) {
                 $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
                 $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
-            }else{
-                if($choice->id == -1){
+            } else {
+                if ($choice->id == -1) {
                     $temp['id'] = CombinationChoiceTypeEnum::ALL->value;
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
-                }elseif($choice->id == -2){
+                } elseif ($choice->id == -2) {
                     $temp['id'] = CombinationChoiceTypeEnum::NOTHING->value;
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
-                    
-                }else{
+                } else {
                     $temp = Choice::findOrFail($choice->id)->first(['id', 'content', 'attachment as attachment_url']);
                 }
             }
@@ -580,13 +590,12 @@ class ExamHelper
             $temp = [];
             if (property_exists($choice, 'ids')) {
                 $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
-            }else{
-                if($choice->id == -1){
+            } else {
+                if ($choice->id == -1) {
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
-                }elseif($choice->id == -2){
+                } elseif ($choice->id == -2) {
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
-                    
-                }else{
+                } else {
                     // $temp = Choice::findOrFail($choice->id)->first(['content', 'attachment as attachment_url']); // threre's problem in pk (id)
                     $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
 
@@ -606,12 +615,12 @@ class ExamHelper
             $temp = [];
             if (property_exists($choice, 'ids')) {
                 $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
-            }else{
-                if($choice->id == -1){
+            } else {
+                if ($choice->id == -1) {
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
-                }elseif($choice->id == -2){
+                } elseif ($choice->id == -2) {
                     $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
-                }else{
+                } else {
                     $temp = Choice::findOrFail($choice->id)->first(['content', 'attachment as attachment_url']);
                 }
             }
@@ -619,5 +628,4 @@ class ExamHelper
         }
         return $result;
     }
-    
 }

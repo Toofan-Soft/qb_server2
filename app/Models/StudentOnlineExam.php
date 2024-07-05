@@ -12,6 +12,7 @@ class StudentOnlineExam extends Model
     use HasFactory;
     public $timestamps = false;
     public $incrementing = false;
+    protected $dateFormat = 'U';
     protected $primaryKey = ['student_id','online_exam_id'];
     protected $fillable = [
         'student_id',
@@ -27,25 +28,25 @@ class StudentOnlineExam extends Model
         // 'status' => StudentOnlineExamStatusEnum::class,
     ];
 
-    public function getStartDatetimeAttribute($value)
-    {
-        return $value ? strtotime($value) : null;
-    }
+    // public function getStartDatetimeAttribute($value)
+    // {
+    //     return $value ? strtotime($value) : null;
+    // }
 
-    public function setStartDatetimeAttribute($value)
-    {
-        $this->attributes['start_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
-    }
+    // public function setStartDatetimeAttribute($value)
+    // {
+    //     $this->attributes['start_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
+    // }
 
-    public function getEndDatetimeAttribute($value)
-    {
-        return $value ? strtotime($value) : null;
-    }
+    // public function getEndDatetimeAttribute($value)
+    // {
+    //     return $value ? strtotime($value) : null;
+    // }
 
-    public function setEndDatetimeAttribute($value)
-    {
-        $this->attributes['end_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
-    }
+    // public function setEndDatetimeAttribute($value)
+    // {
+    //     $this->attributes['end_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
+    // }
     public function student() : BelongsTo {
         return $this->BelongsTo(Student::class);
     }

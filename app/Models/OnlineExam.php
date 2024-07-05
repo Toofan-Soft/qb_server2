@@ -13,6 +13,7 @@ class OnlineExam extends Model
     use HasFactory;
     public $timestamps = false;
     public $incrementing = false;
+    protected $dateFormat = 'U';
     protected $fillable = [
         'id',
         'proctor_id',
@@ -30,10 +31,10 @@ class OnlineExam extends Model
         // 'status' => ExamStatusEnum::class,
     ];
 
-    public function getExamDatetimeNotificationDatetimeAttribute($value)
-    {
-        return $value ? strtotime($value) : null;
-    }
+    // public function getExamDatetimeNotificationDatetimeAttribute($value)
+    // {
+    //     return $value ? strtotime($value) : null;
+    // }
 
 
     // public function setExamDatetimeNotificationDatetimeAttribute($value) // NSR
@@ -41,16 +42,16 @@ class OnlineExam extends Model
     //     $this->attributes['exam_datetime_notification_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
     // }
 
-    public function setExamDatetimeNotificationDatetimeAttribute($value) // M7D
-    {
-        $this->attributes['exam_datetime_notification_datetime'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
-    }
+    // public function setExamDatetimeNotificationDatetimeAttribute($value) // M7D
+    // {
+    //     $this->attributes['exam_datetime_notification_datetime'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
+    // }
 
 
-    public function getResultNotificationDatetimeAttribute($value)
-    {
-        return $value ? strtotime($value) : null;
-    }
+    // public function getResultNotificationDatetimeAttribute($value)
+    // {
+    //     return $value ? strtotime($value) : null;
+    // }
 
     
     // public function setResultNotificationDatetimeAttribute($value) // NSR
@@ -58,10 +59,10 @@ class OnlineExam extends Model
     //     $this->attributes['result_notification_datetime'] = $value ? date('Y-m-d H:i:s', $value) : null;
     // }
 
-    public function setResultNotificationDatetimeAttribute($value) // M7D
-    {
-        $this->attributes['result_notification_datetime'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
-    }
+    // public function setResultNotificationDatetimeAttribute($value) // M7D
+    // {
+    //     $this->attributes['result_notification_datetime'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
+    // }
 
     public function student_online_exams() : HasMany {
         return $this->HasMany(StudentOnlineExam::class);

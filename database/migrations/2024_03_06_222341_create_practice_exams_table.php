@@ -22,7 +22,7 @@ return new class extends Migration
             $table->id();
             $table->string('title')->nullable();
             $table->enum('language', LanguageEnum::values());
-            $table->bigInteger('duration');
+            $table->integer('duration');
             $table->enum('difficulty_level', ExamDifficultyLevelEnum::values());
             $table->enum('conduct_method', ExamConductMethodEnum::values());
             $table->enum('status', ExamStatusEnum::values());

@@ -13,6 +13,7 @@ class RealExam extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    protected $dateFormat = 'U';
     protected $fillable = [
         // 'user_id',
         'difficulty_level',
@@ -39,11 +40,11 @@ class RealExam extends Model
         // 'datetime' => 'datetime',
     ];
 
-    public function getDateTimeAttribute($value)
-    {
-        // return strtotime($value); // previous (NSR)
-        return date('Y-m-d H:i:s', strtotime($value)); // new (M7D)
-    }
+    // public function getDateTimeAttribute($value)
+    // {
+    //     // return strtotime($value); // previous (NSR)
+    //     return date('Y-m-d H:i:s', strtotime($value)); // new (M7D)
+    // }
 
     // previous (NSR)
     // public function setDateTimeAttribute($value)
@@ -52,10 +53,10 @@ class RealExam extends Model
     // }
 
     // new (M7D)
-    public function setDateTimeAttribute($value)
-    {
-        $this->attributes['datetime'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
-    }
+    // public function setDateTimeAttribute($value)
+    // {
+    //     $this->attributes['datetime'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
+    // }
 
     public function course_lecturer() : BelongsTo {
         return $this->BelongsTo(CourseLecturer::class);

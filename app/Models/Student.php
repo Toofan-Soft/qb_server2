@@ -14,6 +14,7 @@ class Student extends Model
     use HasFactory;
 
     public $timestamps = false;
+    protected $dateFormat = 'U';
     protected $fillable = [
         'arabic_name',
         'english_name',
@@ -25,17 +26,17 @@ class Student extends Model
         'academic_id',
     ];
 
-    public function getBirthdateAttribute($value)
-    {
-        // $date = date('Y-m-d H:i:s', strtotime($value)); // new (M7D)
-        return DatetimeHelper::convertTimestampToMilliseconds($value);
-    }
+    // public function getBirthdateAttribute($value)
+    // {
+    //     // $date = date('Y-m-d H:i:s', strtotime($value)); // new (M7D)
+    //     return DatetimeHelper::convertTimestampToMilliseconds($value);
+    // }
     
-    public function setBirthdateAttribute($value)
-    {
-        // $this->attributes['birthdate'] = date('Y-m-d H:i:s', $value);
-        $this->attributes['birthdate'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
-    }
+    // public function setBirthdateAttribute($value)
+    // {
+    //     // $this->attributes['birthdate'] = date('Y-m-d H:i:s', $value);
+    //     $this->attributes['birthdate'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
+    // }
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [
         // 'gender' => GenderEnum::class,
