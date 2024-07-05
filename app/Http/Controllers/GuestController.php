@@ -9,6 +9,7 @@ use App\Enums\OwnerTypeEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\ModifyHelper;
+use App\Helpers\NullHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,7 @@ class GuestController extends Controller
             return ResponseHelper::clientError1($x);
         }
         DB::beginTransaction();
-        try {
+        // try {
 
             $guest =  Guest::create([
                 'name' => $request->name,
@@ -48,10 +49,10 @@ class GuestController extends Controller
             }
             DB::commit();
             return ResponseHelper::success();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function modifyGuest(Request $request)
@@ -60,23 +61,31 @@ class GuestController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
-
-        $guest = Guest::where('user_id', auth()->user()->id)->first();
-        // return Guest::all();
-        $guest->update([
-            'name' => $request->name ??  $guest->name,
-            'phone' => $request->phone ?? $guest->phone,
-            'gender' =>  $request->gender_id ??  $guest->gender,
-            'image_url' => ImageHelper::updateImage($request->image,  $guest->image_url)
-        ]);
-        return ResponseHelper::success();
+        try {
+            $guest = Guest::where('user_id', auth()->user()->id)->first();
+            // return Guest::all();
+            $guest->update([
+                'name' => $request->name ??  $guest->name,
+                'phone' => $request->phone ?? $guest->phone,
+                'gender' =>  $request->gender_id ??  $guest->gender,
+                'image_url' => ImageHelper::updateImage($request->image,  $guest->image_url)
+            ]);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveEditableGuestProfile()
     {
         $attributes = ['name', 'gender as gender_id', 'phone', 'image_url'];
-        $guest = Guest::where('user_id', '=', auth()->user()->id)->get($attributes);
-        return ResponseHelper::successWithData($guest);
+        try {
+            $guest = Guest::where('user_id', '=', auth()->user()->id)->get($attributes);
+            $guest = NullHelper::filter($guest);
+            return ResponseHelper::successWithData($guest);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function rules(Request $request): array

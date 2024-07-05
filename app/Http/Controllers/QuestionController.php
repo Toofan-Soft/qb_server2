@@ -192,7 +192,7 @@ class QuestionController extends Controller
             }
             unset($question['type']);
             unset($question['id']);
-            
+
             $question = NullHelper::filter($question);
             $status = [];
 
@@ -279,13 +279,13 @@ class QuestionController extends Controller
 
         DB::beginTransaction();
         try {
-            $this->modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
-
+            // $this->modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
+            
             $question = Question::findOrFail($request->id);
-            $question->question_usage()->create();
-
+            // $question->question_usage()->create();
+            
             if (intval($question->type) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
-                // return ResponseHelper::successWithData(QuestionHelper::generateQuestionChoicesCombination($question));
+                return ResponseHelper::successWithData(QuestionHelper::generateQuestionChoicesCombination($question));
                 QuestionHelper::generateQuestionChoicesCombination($question);
             }
             DB::commit();

@@ -166,7 +166,7 @@ class DepartmentCoursePartChapterTopicController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            'department_course_part_id' => 'required|integer|exists:department_course_parts,id',
+            'department_course_part_id' => 'required|exists:department_course_parts,id',
             'topics_ids'                => 'required|array|min:1',
             'topics_ids.*'              => 'required|integer|exists:topics,id',
         ];

@@ -31,7 +31,7 @@ class UserHelper
         // لضمان ان هذا المتغير يبقى من نوع مصفوفة في حاله لم يتم تمريره او تمرير قيمته بفارغ
 
         DB::beginTransaction();
-        try {
+        // try {
             $generatedToken = self::generateAlphanumericToken(8);
 
             $user = User::create([
@@ -74,10 +74,10 @@ class UserHelper
                 DB::commit();
             return true;
             // }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return false;
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return false;
+        // }
     }
 
     public static function addUserRoles(User $user, $roles = [])

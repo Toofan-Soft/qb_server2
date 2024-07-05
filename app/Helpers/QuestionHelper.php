@@ -22,8 +22,9 @@ class QuestionHelper
     public static function generateQuestionChoicesCombination(Question $question){
         $algorithmData = $question->choices()->get(['id', 'status as isCorrect']);
         foreach ($algorithmData as $choice) {
-            $choice['isCorrect'] = ($choice->isCorrect === ChoiceStatusEnum::CORRECT_ANSWER->value) ? true : false;
+            $choice['isCorrect'] = (intval($choice->isCorrect) === ChoiceStatusEnum::CORRECT_ANSWER->value) ? true : false;
         }
+        return $algorithmData;
         $questionChoicesCombination = (new GenerateQuestionChoicesCombination())->execute($algorithmData);
 
         // // add question Choices Combination
