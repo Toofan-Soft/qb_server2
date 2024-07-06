@@ -33,7 +33,10 @@ class FilterController extends Controller
     public function retrieveCourses()
     {
         $attributes = ['id', 'arabic_name as name'];
-        return GetHelper::retrieveModels(Course::class, $attributes, null);
+
+        $courses = GetHelper::retrieveModels(Course::class, $attributes, null);
+
+        return ResponseHelper::successWithData($courses);
     }
 
     public function retrieveCourseParts(Request $request)
@@ -43,27 +46,38 @@ class FilterController extends Controller
         $enumReplacements = [
             new EnumReplacement('name', CoursePartsEnum::class),
         ];
-        return GetHelper::retrieveModels(CoursePart::class, $attributes,  $conditionAttribute, $enumReplacements);
+
+        $courseParts = GetHelper::retrieveModels(CoursePart::class, $attributes,  $conditionAttribute, $enumReplacements);
+
+        return ResponseHelper::successWithData($courseParts);
     }
 
     public function retrieveChapters(Request $request)
     {
         $attributes = ['id', 'arabic_title as title'];
         $conditionAttribute = ['course_part_id'  => $request->course_part_id];
-        return GetHelper::retrieveModels(Chapter::class, $attributes,  $conditionAttribute);
+
+        $chapters = GetHelper::retrieveModels(Chapter::class, $attributes,  $conditionAttribute);
+
+        return ResponseHelper::successWithData($chapters);
     }
 
     public function retrieveTopics(Request $request)
     {
         $attributes = ['id', 'arabic_title as title'];
         $conditionAttribute = ['chapter_id'  => $request->chapter_id];
-        return GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
+
+        $topics = GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
+
+        return ResponseHelper::successWithData($topics);
     }
 
     public function retrieveColleges()
     {
         $attributes = ['id', 'arabic_name as name'];
+
         $colleges = GetHelper::retrieveModels(College::class, $attributes, null);
+
         return ResponseHelper::successWithData($colleges);
     }
 
@@ -118,7 +132,10 @@ class FilterController extends Controller
     {
         $attributes = ['id', 'arabic_name as name'];
         $conditionAttribute = ['college_id'  => $request->college_id];
-        return GetHelper::retrieveModels(Department::class, $attributes,  $conditionAttribute);
+
+        $departments = GetHelper::retrieveModels(Department::class, $attributes,  $conditionAttribute);
+
+        return ResponseHelper::successWithData($departments);
     }
 
     public function retrieveLecturerDepartments(Request $request)
@@ -160,6 +177,7 @@ class FilterController extends Controller
                 ->where('course_lecturers.academic_year', '=', now()->format('Y'))
                 ->distinct()
                 ->get();
+
             return ResponseHelper::successWithData($lecturerDepartments);
         } else {
             return ResponseHelper::clientError(402);
@@ -263,6 +281,7 @@ class FilterController extends Controller
             $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName($departmentCourseParts, [
                 new EnumReplacement('name', CoursePartsEnum::class),
             ]);
+
             return ResponseHelper::successWithData($departmentCourseParts);
         } else {
             return ResponseHelper::clientError(401);
@@ -290,12 +309,14 @@ class FilterController extends Controller
                 ->where('departments.id', '=', $request->department_id)
                 ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
                 ->get();
+
             return ResponseHelper::successWithData($departmentLecturerCourses);
         } else {
             return ResponseHelper::clientError(402);
             // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
         }
     }
+
     public function retrieveDepartmentLecturerCurrentCourses(Request $request)
     {
         $user = auth()->user();
@@ -399,7 +420,10 @@ class FilterController extends Controller
         // هل يتم ارجاع كل الموظفين (موظف ومحاضر) او موظف فقط؟؟؟؟؟؟؟؟؟؟؟
         // يجب ان اسال العيال على هذه ايش المقصود فيها
         $attributes = ['id', 'arabic_name as name'];
-        return GetHelper::retrieveModels(Employee::class, $attributes, null);
+
+        $employees = GetHelper::retrieveModels(Employee::class, $attributes, null);
+
+        return ResponseHelper::successWithData($employees);
     }
 
     public function retrieveLecturers()
@@ -417,7 +441,10 @@ class FilterController extends Controller
     {
         $attributes = ['id', 'arabic_name as name'];
         $conditionAttribute = ['job_type' => $request->job_type_id];
-        return GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute);
+
+        $employees = GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute);
+
+        return ResponseHelper::successWithData($employees);
     }
 
     public function retrieveAcademicYears()
@@ -476,6 +503,7 @@ class FilterController extends Controller
         } else {
             return ResponseHelper::clientError(401);
         }
+
         return ResponseHelper::successWithData($owners);
     }
 
@@ -493,6 +521,7 @@ class FilterController extends Controller
             ->select('employees.id', 'employees.arabic_name as name')
             ->where('user_roles.role_id', '=', RoleEnum::PROCTOR->value)
             ->get();
+            
         return ResponseHelper::successWithData($proctors);
     }
 }

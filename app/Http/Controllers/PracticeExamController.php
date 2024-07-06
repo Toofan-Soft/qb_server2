@@ -30,6 +30,7 @@ use App\AlgorithmAPI\GenerateExam;
 use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Enums\ExamConductMethodEnum;
 use App\Models\DepartmentCoursePart;
 use App\Models\PracticeExamQuestion;
@@ -138,7 +139,6 @@ class PracticeExamController extends Controller
             ->where('practice_exams.user_id', '=', $userId)
             ->get();
         
-
         $enumReplacement = [
             new EnumReplacement('course_part_name', CoursePartsEnum::class),
         ];
@@ -152,8 +152,10 @@ class PracticeExamController extends Controller
         foreach ($practiceExams as $practiceExam) {
             $examResult = $this->getPracticeExamResult($practiceExam->id);
 
-            $practiceExam->score_rate = $examResult['score_rate'];
-            $practiceExam->appreciation = $examResult['appreciation'];
+            if ($examResult !== null) {
+                $practiceExam->score_rate = $examResult['score_rate'];
+                $practiceExam->appreciation = $examResult['appreciation'];
+            }
         }
 
         $practiceExams = NullHelper::filter($practiceExams);
@@ -209,8 +211,10 @@ class PracticeExamController extends Controller
         foreach ($practiceExams as $practiceExam) {
             $examResult = $this->getPracticeExamResult($practiceExam->id);
 
-            $practiceExam->score_rate = $examResult['score_rate'];
-            $practiceExam->appreciation = $examResult['appreciation'];
+            if ($examResult !== null) {
+                $practiceExam->score_rate = $examResult['score_rate'];
+                $practiceExam->appreciation = $examResult['appreciation'];
+            }
         }
 
         $practiceExams = NullHelper::filter($practiceExams);
@@ -222,7 +226,7 @@ class PracticeExamController extends Controller
     {
         $exam = PracticeExam::findOrFail($request->exam_id);
 
-        $is_complete = ($exam->is_complete === ExamStatusEnum::COMPLETE->value) ? true : false;
+        $is_complete = (intval($exam->status) === ExamStatusEnum::COMPLETE->value) ? true : false;
 
         $questions = $this->getQuestions($request->exam_id, $is_complete);
 
@@ -237,14 +241,24 @@ class PracticeExamController extends Controller
         $examQuestions = PracticeExamQuestion::where('practice_exam_id', '=', $examId)->get();
 
         foreach ($examQuestions as $examQuestion) {
+            // $question = $examQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
             $question = $examQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
-
+            $answer = $examQuestion->answer;
+            
             if ($examQuestion->combination_id) {
                 if ($withAnswer) {
-                    $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, false, true);
+                    $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, true);
                 } else {
-                    $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, false, false);
+                    $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, false);
                 }
+
+                $question->choices = collect($question->choices)->map(function ($choice) use ($answer) {
+                    if ($choice['id'] === $answer) {
+                        $choice['is_selected'] = true;
+                    }
+
+                    return $choice;
+                });
             } else {
                 if ($withAnswer) {
                     $trueFalseQuestion = TrueFalseQuestion::findOrFail($examQuestion->question_id)->first(['answer']);
@@ -252,6 +266,12 @@ class PracticeExamController extends Controller
                         $question['is_true'] = true;
                     } else {
                         $question['is_true'] = false;
+                    }
+
+                    if ($answer === TrueFalseAnswerEnum::TRUE->value) {
+                        $question->user_answer = true;
+                    } elseif ($answer === TrueFalseAnswerEnum::FALSE->value) {
+                        $question->user_answer = false;
                     }
                 }
             }
@@ -283,7 +303,7 @@ class PracticeExamController extends Controller
             new EnumReplacement('language_name', LanguageEnum::class)
         ]);
 
-        $practiceExam->is_complete = ($practiceExam->is_complete === ExamStatusEnum::COMPLETE->value) ? true : false;
+        $practiceExam->is_complete = (intval($practiceExam->is_complete) === ExamStatusEnum::COMPLETE->value) ? true : false;
         $practiceExam->is_mandatory_question_sequence = ($practiceExam->is_mandatory_question_sequence === ExamConductMethodEnum::MANDATORY->value) ? true : false;
 
         $departmentCoursePart = DepartmentCoursePart::findOrFail($practiceExam->department_course_part_id);
@@ -342,18 +362,27 @@ class PracticeExamController extends Controller
 
         $answerId = null;
         if (intval($questionType->type) === QuestionTypeEnum::TRUE_FALSE->value) {
-
             $answerId = ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
         } else {
-            $answerId =  intval($request->choice_id );
+            $answerId =  intval($request->choice_id);
         }
 
         $practiceExamQuestion = PracticeExamQuestion::where('practice_exam_id', $request->exam_id)
-                                                     ->where('question_id', $request->question_id)
-                                                     ->first();
+            ->where('question_id', $request->question_id)
+            ->first();
+            
+        // if ($practiceExamQuestion) {
+        //     $practiceExamQuestion->update([
+        //         'answer' => $answerId
+        //     ]);
+        // } else {
+        //     // Handle the case where the PracticeExamQuestion was not found
+        //     throw new \Exception('PracticeExamQuestion not found');
+        // }
+        
         $practiceExamQuestion->update([
             'answer' =>  $answerId,
-            'answer_duration' => $request->answer_duration ?? null,
+            // 'answer_duration' => $request->answer_duration ?? null,
         ]);
 
         return ResponseHelper::success();
@@ -612,6 +641,7 @@ class PracticeExamController extends Controller
             return $examResult;
         } else {
             // handle error...
+            return null;
         }
     }
 
