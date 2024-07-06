@@ -226,7 +226,7 @@ class PracticeExamController extends Controller
     {
         $exam = PracticeExam::findOrFail($request->exam_id);
 
-        $is_complete = ($exam->is_complete === ExamStatusEnum::COMPLETE->value) ? true : false;
+        $is_complete = (intval($exam->status) === ExamStatusEnum::COMPLETE->value) ? true : false;
 
         $questions = $this->getQuestions($request->exam_id, $is_complete);
 
@@ -303,7 +303,7 @@ class PracticeExamController extends Controller
             new EnumReplacement('language_name', LanguageEnum::class)
         ]);
 
-        $practiceExam->is_complete = ($practiceExam->is_complete === ExamStatusEnum::COMPLETE->value) ? true : false;
+        $practiceExam->is_complete = (intval($practiceExam->is_complete) === ExamStatusEnum::COMPLETE->value) ? true : false;
         $practiceExam->is_mandatory_question_sequence = ($practiceExam->is_mandatory_question_sequence === ExamConductMethodEnum::MANDATORY->value) ? true : false;
 
         $departmentCoursePart = DepartmentCoursePart::findOrFail($practiceExam->department_course_part_id);

@@ -157,7 +157,7 @@ class ProctorOnlinExamController extends Controller
             return $item;
         });
 
-        return $results;
+        return ResponseHelper::successWithData($results);
     }
 
 
@@ -229,7 +229,7 @@ class ProctorOnlinExamController extends Controller
             return $item;
         });
 
-        return $results;
+        return ResponseHelper::successWithData($results);
     }
 
     // public function retrieveOnlineExamStudents1(Request $request)

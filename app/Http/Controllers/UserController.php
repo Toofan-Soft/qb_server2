@@ -137,7 +137,7 @@ class UserController extends Controller
             return ResponseHelper::serverError();
         }
     }
-    public function retrieveProfile(Request $request)
+    public function retrieveProfile()
     {
         try {
             $user = auth()->user();
@@ -163,9 +163,11 @@ class UserController extends Controller
                 array_push($enumReplacements, new EnumReplacement('job_type_name', JobTypeEnum::class));
                 array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
             }
-            $owner = NullHelper::filter($owner);
+            
             $owner = ProcessDataHelper::enumsConvertIdToName($owner, $enumReplacements);
             $owner['email'] = $user->email;
+
+            $owner = NullHelper::filter($owner);
 
             return ResponseHelper::successWithData($owner);
         } catch (\Exception $e) {
