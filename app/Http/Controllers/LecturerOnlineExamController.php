@@ -44,6 +44,7 @@ class LecturerOnlineExamController extends Controller
 {
     public function addOnlineExam(Request $request)
     {
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError(402);
         }
@@ -316,7 +317,7 @@ class LecturerOnlineExamController extends Controller
                 'exam_datetime_notification_datetime',
                 'result_notification_datetime'
             ]);
-            
+
             $onlineExam->datetime_notification_datetime = $onlineExam['exam_datetime_notification_datetime'];
             unset($onlineExam['exam_datetime_notification_datetime']);
 
@@ -435,8 +436,8 @@ class LecturerOnlineExamController extends Controller
     public function retrieveOnlineExamChapters(Request $request)
     {
         try {
-            $onlineExamChapters = ExamHelper::retrieveRealExamChapters($request->exam_id);
-            return ResponseHelper::successWithData($onlineExamChapters);
+            $chapters = ExamHelper::retrieveRealExamChapters($request->exam_id);
+            return ResponseHelper::successWithData($chapters);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -446,8 +447,8 @@ class LecturerOnlineExamController extends Controller
     {
         try {
             // return ExamHelper::retrieveRealExamChapterTopics($request->exam_id, $request->chapter_id);
-            $onlineExamChapterTopics = ExamHelper::retrieveRealExamChapterTopics($request->exam_id, $request->chapter_id);
-            return ResponseHelper::successWithData($onlineExamChapterTopics);
+            $topics = ExamHelper::retrieveRealExamChapterTopics($request->exam_id, $request->chapter_id);
+            return ResponseHelper::successWithData($topics);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -685,34 +686,31 @@ class LecturerOnlineExamController extends Controller
             // real exam table 
             'language_id' => ['required', new Enum(LanguageEnum::class)],
             'difficulty_level_id' => ['required', new Enum(ExamDifficultyLevelEnum::class)],
-            'datetime' => 'required|bigInteger', // check for bigInteger data type
+            'datetime' => 'required|integer', // check for bigInteger data type
             'duration' => 'required|integer',
             'type_id' => ['required', new Enum(ExamTypeEnum::class)],
             'special_note' => 'nullable|string',
             'forms_count' => 'required|integer',
             'form_configuration_method_id' => ['required', new Enum(FormConfigurationMethodEnum::class)],
             'form_name_method_id' => ['required', new Enum(FormNameMethodEnum::class)],
-            
+
             // online exam table 
             'conduct_method_id' => ['required', new Enum(ExamConductMethodEnum::class)],
-            'datetime_notification_datetime' => 'required|bigInteger',// check for bigInteger data type
-            'result_notification_datetime' => 'required|bigInteger',// check for bigInteger data type
+            'datetime_notification_datetime' => 'required|integer',// check for bigInteger data type
+            'result_notification_datetime' => 'required|integer',// check for bigInteger data type
             'proctor_id' => 'nullable|exists:employees,id',
-            // 'status_id' => ['nullable', new Enum(ExamStatusEnum::class)], // لا يتم تمريرها 
 
             // real_exam_question_types
-            'questions_types' => [
-                'type_id' => ['required', new Enum(QuestionTypeEnum::class)],
-                'questions_count' => 'required|integer',
-                // 'question_score' => 'required|float',
-                'question_score' => 'required',
-            ],
+            'questions_types' => 'required|array|min:1',
+            'questions_types.*.type_id' => ['required', new Enum(QuestionTypeEnum::class)],
+            'questions_types.*.questions_count' => 'required|integer',
+            'questions_types.*.question_score' => 'required|numeric', // Use 'numeric' to allow both integer and float
 
             // topice 
             'topics_ids'                => 'required|array|min:1',
             'topics_ids.*'              => 'required|integer|exists:topics,id',
 
-            // ohter variables 
+            // other variables 
             'department_course_part_id' => 'required|exists:department_course_parts,id',
 
         ];
@@ -724,4 +722,8 @@ class LecturerOnlineExamController extends Controller
         }
         return $rules;
     }
+    /**
+     * التاكد من ان رقم المراقب المختار يملك صلاحية مراقب
+     * 
+     */
 }

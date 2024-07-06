@@ -47,150 +47,175 @@ use App\Enums\FormConfigurationMethodEnum;
 class PaperExamController extends Controller
 {
     public function addPaperExam(Request $request)
-    {        
-        if ($x=ValidateHelper::validateData($request, $this->rules($request))) {
+    {
+
+        if ($x = ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError1($x);
         }
 
-        $algorithmData = $this->getAlgorithmData($request);
+        try {
+            $algorithmData = $this->getAlgorithmData($request);
 
-        $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
+            $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
 
-        if ($examFormsQuestions) { // modify to use has function
-            $employee = Employee::where('user_id',  auth()->user()->id)->first();
+            if ($examFormsQuestions) { // modify to use has function
+                $employee = Employee::where('user_id',  auth()->user()->id)->first();
 
-            $courseLecturer = CourseLecturer::where('department_course_part_id', '=', $request->department_course_part_id)
-                ->where('lecturer_id', $employee->id)
-                ->where('academic_year', now()->format('Y'))
-                ->first();
+                $courseLecturer = CourseLecturer::where('department_course_part_id', '=', $request->department_course_part_id)
+                    ->where('lecturer_id', $employee->id)
+                    ->where('academic_year', now()->format('Y'))
+                    ->first();
 
-            $realExam = $courseLecturer->real_exams()->create([
-                'type' => $request->type_id,
-                'datetime' => $request->datetime,
-                'duration' => $request->duration,
-                'language' => $request->language_id,
-                'note' => $request->special_note ?? null,
-                'difficulty_level' => $request->difficulty_level_id,
-                'forms_count' => $request->forms_count,
-                'form_configuration_method' => $request->form_configuration_method_id,
-                'form_name_method' => $request->form_name_method_id,
-                'exam_type' => RealExamTypeEnum::PAPER->value,
-            ]);
+                DB::beginTransaction();
 
-            $paperExam = PaperExam::create([
-                'id' => $realExam->id,
-                'course_lecturer_name' => $request->lecturer_name ?? $employee->arabic_name,
-            ]);
-
-            foreach ($request->questions_types as $question_type) {
-                $realExam->real_exam_question_types()->create([
-                    'question_type' => $question_type['type_id'],
-                    'questions_count' => $question_type['questions_count'],
-                    'question_score' => $question_type['question_score'],
+                $realExam = $courseLecturer->real_exams()->create([
+                    'type' => $request->type_id,
+                    'datetime' => $request->datetime,
+                    'duration' => $request->duration,
+                    'language' => $request->language_id,
+                    'note' => $request->special_note ?? null,
+                    'difficulty_level' => $request->difficulty_level_id,
+                    'forms_count' => $request->forms_count,
+                    'form_configuration_method' => $request->form_configuration_method_id,
+                    'form_name_method' => $request->form_name_method_id,
+                    'exam_type' => RealExamTypeEnum::PAPER->value,
                 ]);
-            }
 
-            //////////add Topics of exam
+                $paperExam = PaperExam::create([
+                    'id' => $realExam->id,
+                    'course_lecturer_name' => $request->lecturer_name ?? $employee->arabic_name,
+                ]);
 
-            // if (intval($request->form_configuration_method) === FormConfigurationMethodEnum::SIMILAR_FORMS->value) {
-            //     $realExam->forms()->create();
-            // } else {
-            //     for ($i = 0; $i <= $request->forms_count; $i++ ) {
-            //         $realExam->forms()->create();
-            //     }
-
-            // }
-
-            foreach ($examFormsQuestions as $questionsIds) {
-                $formQuestions = $this->getQuestionsChoicesCombinations($questionsIds);
-                $form = $realExam->forms()->create();
-                foreach ($formQuestions as $question) {
-                    $form->form_questions()->create([
-                        'question_id' => $question['question_id'],
-                        'combination_id' => $question['combination_id'] ?? null,
+                foreach ($request->questions_types as $question_type) {
+                    $realExam->real_exam_question_types()->create([
+                        'question_type' => $question_type['type_id'],
+                        'questions_count' => $question_type['questions_count'],
+                        'question_score' => $question_type['question_score'],
                     ]);
                 }
-            }
-            ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
 
-            return ResponseHelper::successWithData(['id' => $realExam->id]);
-        }else{
+                //////////add Topics of exam
+
+                // if (intval($request->form_configuration_method) === FormConfigurationMethodEnum::SIMILAR_FORMS->value) {
+                //     $realExam->forms()->create();
+                // } else {
+                //     for ($i = 0; $i <= $request->forms_count; $i++ ) {
+                //         $realExam->forms()->create();
+                //     }
+
+                // }
+
+                foreach ($examFormsQuestions as $questionsIds) {
+                    $formQuestions = $this->getQuestionsChoicesCombinations($questionsIds);
+                    $form = $realExam->forms()->create();
+                    foreach ($formQuestions as $question) {
+                        $form->form_questions()->create([
+                            'question_id' => $question['question_id'],
+                            'combination_id' => $question['combination_id'] ?? null,
+                        ]);
+                    }
+                }
+                ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
+                DB::commit();
+                return ResponseHelper::successWithData(['id' => $realExam->id]);
+            } else {
+                DB::rollBack();
+                return ResponseHelper::serverError();
+                // error in the Algorithm model
+            }
+        } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
     }
 
     public function modifyPaperExam(Request $request)
     {
-        $params = ParamHelper::getParams(
-            $request,
-            [
-                new Param('type_id', 'type'),
-                new Param('datetime'),
-                new Param('form_name_method_id', 'form_name_method'),
-                new Param('special_note', 'note')
-            ]
-        );
-        
-        RealExam::findOrFail($request->id)
-            ->update($params);
-        
-        $params = ParamHelper::getParams(
-            $request,
-            [
-                new Param('lecturer_name', 'course_lecturer_name')
-            ]
-        );
+        try {
+            $params = ParamHelper::getParams(
+                $request,
+                [
+                    new Param('type_id', 'type'),
+                    new Param('datetime'),
+                    new Param('form_name_method_id', 'form_name_method'),
+                    new Param('special_note', 'note')
+                ]
+            );
+            DB::beginTransaction();
+            RealExam::findOrFail($request->id)
+                ->update($params);
 
-        PaperExam::findOrFail($request->id)
-            ->update($params);
-        
-        return ResponseHelper::success();
+            $params = ParamHelper::getParams(
+                $request,
+                [
+                    new Param('lecturer_name', 'course_lecturer_name')
+                ]
+            );
+
+            PaperExam::findOrFail($request->id)
+                ->update($params);
+            DB::commit();
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError();
+        }
     }
 
     public function deletePaperExam(Request $request)
     {
-        return ExamHelper::deleteRealExam($request->id);
+        // دراسة كيفية امكانية انقاص بيانات استخدام الاسئلة
+        try {
+            $realExam = RealExam::findOrFail($request->id);
+            $realExam->delete();
+            // ExamHelper::deleteRealExam($request->id);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrievePaperExams(Request $request) ////**** يتم اضافة شرط ان يتم ارجاع الاختبارات التي تنتمي الى المستخدم الحالي
     {
         $enumReplacements  = [];
+        try {
+            $lecturer_id = Employee::where('user_id', '=', auth()->user()->id)->first(['id'])['id'];
 
-        $lecturer_id = Employee::where('user_id', '=', auth()->user()->id)->first(['id'])['id'];
+            $paperExams =  DB::table('real_exams')
+                ->join('paper_exams', 'real_exams.id', '=', 'paper_exams.id')
+                ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
+                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                ->select(
+                    'real_exams.id',
+                    'real_exams.datetime',
+                    'real_exams.forms_count',
+                    'paper_exams.course_lecturer_name as lecturer_name'
+                )
+                ->when(isset($request->type_id), function ($query) use ($request) {
+                    return $query->where('real_exams.type', '=', $request->type_id);
+                })
+                ->when($request->type_id === null, function ($query) use ($request) {
+                    return $query->selectRaw('real_exams.type as type_name');
+                })
+                ->where('department_course_parts.id', '=', $request->department_course_part_id)
+                ->where('course_lecturers.lecturer_id', '=', $lecturer_id)
+                ->get()
+                ->map(function ($exam) {
+                    $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+                    return $exam;
+                });
 
-        $paperExams =  DB::table('real_exams')
-            ->join('paper_exams', 'real_exams.id', '=', 'paper_exams.id')
-            ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
-            ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
-            ->select(
-                'real_exams.id',
-                'real_exams.datetime',
-                'real_exams.forms_count',
-                'paper_exams.course_lecturer_name as lecturer_name'
-            )
-            ->when(isset($request->type_id), function ($query) use ($request) {
-                return $query->where('real_exams.type', '=', $request->type_id);
-            })
-            ->when($request->type_id === null, function ($query) use ($request) {
-                return $query->selectRaw('real_exams.type as type_name');
-            })
-            ->where('department_course_parts.id', '=', $request->department_course_part_id)
-            ->where('course_lecturers.lecturer_id', '=', $lecturer_id)
-            ->get()
-            ->map(function ($exam) {
-                $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-                return $exam;
-            });
-        
-        if (!isset($request->type_id)) {
-            array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
+            if (!isset($request->type_id)) {
+                array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
+            }
+            $paperExams = NullHelper::filter($paperExams);
+            $paperExams = ProcessDataHelper::enumsConvertIdToName($paperExams, $enumReplacements);
+
+            $paperExams =  ExamHelper::getRealExamsScore($paperExams); // sum score of
+
+            return ResponseHelper::successWithData($paperExams);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
-
-        $paperExams = ProcessDataHelper::enumsConvertIdToName($paperExams, $enumReplacements);
-
-        $paperExams =  ExamHelper::getRealExamsScore($paperExams); // sum score of
-
-        return ResponseHelper::successWithData($paperExams);
     }
 
     public function retrievePaperExamsAndroid(Request $request) ////////** this attribute department_course_part_id can be null
@@ -200,163 +225,194 @@ class PaperExamController extends Controller
             new EnumReplacement('course_part_name', CoursePartsEnum::class),
             new EnumReplacement('language_name', LanguageEnum::class),
         ];
+        try {
+            $lecturer_id = Employee::where('user_id', '=', auth()->user()->id)->first(['id'])['id'];
 
-        $lecturer_id = Employee::where('user_id', '=', auth()->user()->id)->first(['id'])['id'];
+            $paperExams =  DB::table('real_exams')
+                ->join('paper_exams', 'real_exams.id', '=', 'paper_exams.id')
+                ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
+                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+                ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+                ->select(
+                    'courses.arabic_name as course_name',
+                    'course_parts.part_id as course_part_name',
+                    'real_exams.id',
+                    'real_exams.datetime',
+                    'real_exams.language as language_name',
+                    'real_exams.type as type_name',
+                    'paper_exams.course_lecturer_name as lecturer_name'
+                )
+                ->when(isset($request->department_course_part_id), function ($query) use ($request) {
+                    return $query->where('department_course_parts.id', '=', $request->department_course_part_id);
+                })
+                ->when(isset($request->type_id), function ($query) use ($request) {
+                    return $query->where('real_exams.type', '=', $request->type_id);
+                })
+                ->where('course_lecturers.lecturer_id', '=', $lecturer_id)
+                ->get()
+                ->map(function ($exam) {
+                    $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+                    return $exam;
+                });
+            $paperExams = NullHelper::filter($paperExams);
+            $paperExams = ProcessDataHelper::enumsConvertIdToName($paperExams, $enumReplacements);
 
-        $paperExams =  DB::table('real_exams')
-            ->join('paper_exams', 'real_exams.id', '=', 'paper_exams.id')
-            ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
-            ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
-            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-            ->select(
-                'courses.arabic_name as course_name',
-                'course_parts.part_id as course_part_name',
-                'real_exams.id',
-                'real_exams.datetime',
-                'real_exams.language as language_name',
-                'real_exams.type as type_name',
-                'paper_exams.course_lecturer_name as lecturer_name'
-            )
-            ->when(isset($request->department_course_part_id), function ($query) use ($request) {
-                return $query->where('department_course_parts.id', '=', $request->department_course_part_id);
-            })
-            ->when(isset($request->type_id), function ($query) use ($request) {
-                return $query->where('real_exams.type', '=', $request->type_id);
-            })
-            ->where('course_lecturers.lecturer_id', '=', $lecturer_id)
-            ->get()
-            ->map(function ($exam) {
-                $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-                return $exam;
-            });
-                
-        $paperExams = ProcessDataHelper::enumsConvertIdToName($paperExams, $enumReplacements);
-        
-        return ResponseHelper::successWithData($paperExams);
+            return ResponseHelper::successWithData($paperExams);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrievePaperExam(Request $request)
     {
-        $realExam = RealExam::findOrFail($request->id, [
-            'id', 'language as language_name', 'difficulty_level as difficulty_level_name',
-            'forms_count', 'form_configuration_method as form_configuration_method_name', 'form_name_method as form_name_method_name',
-            'datetime', 'duration', 'type as type_name', 'note as special_note', 'course_lecturer_id'
-        ]);
+        try {
+            $realExam = RealExam::findOrFail($request->id, [
+                'id', 'language as language_name', 'difficulty_level as difficulty_level_name',
+                'forms_count', 'form_configuration_method as form_configuration_method_name', 'form_name_method as form_name_method_name',
+                'datetime', 'duration', 'type as type_name', 'note as special_note', 'course_lecturer_id'
+            ]);
 
-        $realExam->lecturer_name = PaperExam::findOrFail($request->id, ['course_lecturer_name'])->first()['course_lecturer_name'];
-        
-        $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
-            new EnumReplacement('language_name', LanguageEnum::class),
-            new EnumReplacement('difficulty_level_name', ExamDifficultyLevelEnum::class),
-            new EnumReplacement('form_configuration_method_name', FormConfigurationMethodEnum::class),
-            new EnumReplacement('form_name_method_name', FormNameMethodEnum::class),
-            new EnumReplacement('type_name', ExamTypeEnum::class),
-        ]);
+            $realExam->lecturer_name = PaperExam::findOrFail($request->id, ['course_lecturer_name'])->first()['course_lecturer_name'];
 
-        $courseLecturer = $realExam->course_lecturer()->first();
-        $departmentCoursePart = $courseLecturer->department_course_part()->first();
-        $coursePart = $departmentCoursePart->course_part()->first(['part_id as course_part_name']);
-        $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
-            new EnumReplacement('course_part_name', CoursePartsEnum::class),
-        ]);
-        $departmentCourse = $departmentCoursePart->department_course()->first(['level as level_name', 'semester as semester_name', 'department_id', 'course_id']);
-        $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
-            new EnumReplacement('level_name', LevelsEnum::class),
-            new EnumReplacement('semester_name', SemesterEnum::class),
-        ]);
-        $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
-        $college = $department->college()->first(['arabic_name as college_name']);
-        $course = $departmentCourse->course()->first(['arabic_name as course_name']);
-        $questionTypes = $realExam->real_exam_question_types()->get(['question_type as type_name', 'questions_count', 'question_score']);
-        $questionTypes = ProcessDataHelper::enumsConvertIdToName($questionTypes, [
-            new EnumReplacement('type_name', QuestionTypeEnum::class),
-        ]);
+            $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
+                new EnumReplacement('language_name', LanguageEnum::class),
+                new EnumReplacement('difficulty_level_name', ExamDifficultyLevelEnum::class),
+                new EnumReplacement('form_configuration_method_name', FormConfigurationMethodEnum::class),
+                new EnumReplacement('form_name_method_name', FormNameMethodEnum::class),
+                new EnumReplacement('type_name', ExamTypeEnum::class),
+            ]);
 
-        $questionTypes = collect($questionTypes)->map(function ($type) {
-            return [
-                'type_name' => $type->type_name,
-                'questions_count' => $type->questions_count,
-                'question_score' => (float) $type->question_score,
-            ];
-        })->toArray();
+            $courseLecturer = $realExam->course_lecturer()->first();
+            $departmentCoursePart = $courseLecturer->department_course_part()->first();
+            $coursePart = $departmentCoursePart->course_part()->first(['part_id as course_part_name']);
+            $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
+                new EnumReplacement('course_part_name', CoursePartsEnum::class),
+            ]);
+            $departmentCourse = $departmentCoursePart->department_course()->first(['level as level_name', 'semester as semester_name', 'department_id', 'course_id']);
+            $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
+                new EnumReplacement('level_name', LevelsEnum::class),
+                new EnumReplacement('semester_name', SemesterEnum::class),
+            ]);
+            $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
+            $college = $department->college()->first(['arabic_name as college_name']);
+            $course = $departmentCourse->course()->first(['arabic_name as course_name']);
+            $questionTypes = $realExam->real_exam_question_types()->get(['question_type as type_name', 'questions_count', 'question_score']);
+            $questionTypes = ProcessDataHelper::enumsConvertIdToName($questionTypes, [
+                new EnumReplacement('type_name', QuestionTypeEnum::class),
+            ]);
 
-        //*** make unset to : 'department_id', 'course_id', 'college_id', 'course_lecturer_id'
-        $departmentCourse = $departmentCourse->toArray();
-        unset($departmentCourse['department_id']);
-        unset($departmentCourse['course_id']);
+            $questionTypes = collect($questionTypes)->map(function ($type) {
+                return [
+                    'type_name' => $type->type_name,
+                    'questions_count' => $type->questions_count,
+                    'question_score' => (float) $type->question_score,
+                ];
+            })->toArray();
 
-        $department = $department->toArray();
-        unset($department['college_id']);
+            //*** make unset to : 'department_id', 'course_id', 'college_id', 'course_lecturer_id'
+            $departmentCourse = $departmentCourse->toArray();
+            unset($departmentCourse['department_id']);
+            unset($departmentCourse['course_id']);
 
-        $realExam = $realExam->toArray();
-        unset($realExam['course_lecturer_id']);
-        unset($realExam['id']);
+            $department = $department->toArray();
+            unset($department['college_id']);
 
-        $realExam =
-            $realExam +
-            $coursePart->toArray() +
-            $departmentCourse  +
-            $department +
-            $college->toArray() +
-            $course->toArray();
+            $realExam = $realExam->toArray();
+            unset($realExam['course_lecturer_id']);
+            unset($realExam['id']);
 
-        $realExam['questions_types'] = $questionTypes;
+            $realExam = NullHelper::filter($realExam);
 
-        $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
+            $realExam =
+                $realExam +
+                $coursePart->toArray() +
+                $departmentCourse  +
+                $department +
+                $college->toArray() +
+                $course->toArray();
 
-        $realExam = NullHelper::filter($realExam);
+            $realExam['questions_types'] = $questionTypes;
 
-        return ResponseHelper::successWithData($realExam);
+            $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
+
+            $realExam = NullHelper::filter($realExam);
+
+            return ResponseHelper::successWithData($realExam);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveEditablePaperExam(Request $request)
     {
-        $realExam = RealExam::findOrFail($request->id,[
-            'id','form_name_method as form_name_method_id',
-            'datetime', 'type as type_id', 'note as special_note'
-        ]);
+        try {
+            $realExam = RealExam::findOrFail($request->id, [
+                'id', 'form_name_method as form_name_method_id',
+                'datetime', 'type as type_id', 'note as special_note'
+            ]);
 
-        $paperExam =  PaperExam::where('id', $realExam->id)->first(['course_lecturer_name as lecturer_name']);
-        $realExam = $realExam->toArray();
-        
-        unset($realExam['id']);
-        $realExam = $realExam + $paperExam->toArray();
+            $paperExam =  PaperExam::where('id', $realExam->id)->first(['course_lecturer_name as lecturer_name']);
+            $realExam = $realExam->toArray();
 
-        $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
+            unset($realExam['id']);
+            $realExam = $realExam + $paperExam->toArray();
 
-        $exam = NullHelper::filter($realExam);
+            $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
 
-        return ResponseHelper::successWithData($exam);
+            $exam = NullHelper::filter($realExam);
+
+            return ResponseHelper::successWithData($exam);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrievePaperExamChapters(Request $request)
     {
-        return ExamHelper::retrieveRealExamChapters($request->exam_id);
+        try {
+            $chapters = ExamHelper::retrieveRealExamChapters($request->exam_id);
+            return ResponseHelper::successWithData($chapters);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrievePaperExamChapterTopics(Request $request)
     {
-        return ExamHelper::retrieveRealExamChapterTopics($request->exam_id, $request->chapter_id);
+        try {
+            $topics = ExamHelper::retrieveRealExamChapterTopics($request->exam_id, $request->chapter_id);
+            return ResponseHelper::successWithData($topics);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrievePaperExamForms(Request $request)
     {
-        $forms = ExamHelper::retrieveRealExamForms($request->exam_id);
-        return ResponseHelper::successWithData($forms);
+        try {
+            $forms = ExamHelper::retrieveRealExamForms($request->exam_id);
+            return ResponseHelper::successWithData($forms);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrievePaperExamFormQuestions(Request $request)
     {
-        $questions = ExamHelper::getFormQuestionsWithDetails($request->form_id, false, false, true);
-        return ResponseHelper::successWithData($questions);
+        try {
+            $questions = ExamHelper::getFormQuestionsWithDetails($request->form_id, false, false, true);
+            return ResponseHelper::successWithData($questions);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function exportPaperExamToPDF(Request $request)
     {
         // id, with mirror?, with answered mirror?
-       /* Data:
+        /* Data:
         *   .
         *   . university *
         *   . college *
@@ -385,52 +441,52 @@ class PaperExamController extends Controller
         *   .
         * */
         // تبقى جزء فحص اذا كان يشتي مع اجابة او لا
+        try {
+            $realExam = RealExam::findOrFail($request->id, [
+                'id', 'datetime', 'duration', 'type as type_name', 'course_lecturer_id',
+                'forms_count', 'form_name_method', 'form_configuration_method',
+            ]);
 
-        $realExam = RealExam::findOrFail($request->id,[
-            'id', 'datetime', 'duration', 'type as type_name', 'course_lecturer_id', 
-            'forms_count', 'form_name_method', 'form_configuration_method',
-        ]);
+            $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
+                new EnumReplacement('type_name', ExamTypeEnum::class),
+            ]);
 
-        $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
-            new EnumReplacement('type_name', ExamTypeEnum::class),
-        ]);
+            $paperExam = PaperExam::where('id', $realExam->id)->first(['course_lecturer_name as lecturer_name']);
+            // $paperExam = $realExam->paper_exam()->first(['course_lecturer_name as lecturer_name']);
 
-        $paperExam = PaperExam::where('id', $realExam->id)->first(['course_lecturer_name as lecturer_name']);
-        // $paperExam = $realExam->paper_exam()->first(['course_lecturer_name as lecturer_name']);
+            $courseLecturer = $realExam->course_lecturer()->first();
+            $departmentCoursePart = $courseLecturer->department_course_part()->first();
 
-        $courseLecturer = $realExam->course_lecturer()->first();
-        $departmentCoursePart = $courseLecturer->department_course_part()->first();
+            $coursePart = $departmentCoursePart->course_part()->first(['part_id as course_part_name']);
+            $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
+                new EnumReplacement('course_part_name', CoursePartsEnum::class)
+            ]);
+            $departmentCourse = $departmentCoursePart->department_course()->first(['level as level_name', 'semester as semester_name', 'department_id', 'course_id']);
+            $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
+                new EnumReplacement('level_name', LevelsEnum::class),
+                new EnumReplacement('semester_name', SemesterEnum::class)
+            ]);
+            $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
 
-        $coursePart = $departmentCoursePart->course_part()->first(['part_id as course_part_name']);
-        $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
-            new EnumReplacement('course_part_name', CoursePartsEnum::class)
-        ]);
-        $departmentCourse = $departmentCoursePart->department_course()->first(['level as level_name', 'semester as semester_name', 'department_id', 'course_id']);
-        $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
-            new EnumReplacement('level_name', LevelsEnum::class),
-            new EnumReplacement('semester_name', SemesterEnum::class)
-        ]);
-        $department = $departmentCourse->department()->first(['arabic_name as department_name','college_id']);
+            $college = $department->college()->first(['arabic_name as college_name']);
 
-        $college = $department->college()->first(['arabic_name as college_name']);
+            $course = $departmentCourse->course()->first(['arabic_name as course_name']);
+            // Total Score of exam 
+            $questionsTypes = $realExam->real_exam_question_types()->get(['questions_count', 'question_score']);
+            $totalScore = 0;
+            foreach ($questionsTypes as $questionType) {
+                $totalScore += ($questionType->questions_count * $questionType->question_score);
+            }
+            // university name 
+            $jsonData = Storage::disk('local')->get('university.json');
+            $universityData = json_decode($jsonData, true);
+            $universityName = [
+                'arabic_name' => $universityData['arabic_name'],
+            ];
 
-        $course = $departmentCourse->course()->first(['arabic_name as course_name']);
-        // Total Score of exam 
-        $questionsTypes = $realExam->real_exam_question_types()->get(['questions_count', 'question_score']);
-        $totalScore = 0;
-        foreach ($questionsTypes as $questionType) {
-            $totalScore += ($questionType->questions_count * $questionType->question_score);
-        }
-        // university name 
-        $jsonData = Storage::disk('local')->get('university.json');
-        $universityData = json_decode($jsonData, true);
-        $universityName = [
-            'arabic_name' => $universityData['arabic_name'],
-        ];
-
-        // form and form questions 
-        // as [formName, questions[], .....] or [formsName[name,...], questoins[]]
-        $examFormsQuestions = [];
+            // form and form questions 
+            // as [formName, questions[], .....] or [formsName[name,...], questoins[]]
+            $examFormsQuestions = [];
             $formsNames = ExamHelper::getRealExamFormsNames($realExam->form_name_method, $realExam->forms_count);
             $examForms = $realExam->forms()->get(['id']);
             if (intval($realExam->form_configuration_methode) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
@@ -445,168 +501,176 @@ class PaperExamController extends Controller
                 array_push($examFormsQuestions, $formQuestions);
             }
 
-        $departmentCourse = $departmentCourse->toArray();
-        unset($departmentCourse['department_id']);
-        unset($departmentCourse['course_id']);
+            $departmentCourse = $departmentCourse->toArray();
+            unset($departmentCourse['department_id']);
+            unset($departmentCourse['course_id']);
 
-        $department = $department->toArray();
-        unset($department['college_id']);
+            $department = $department->toArray();
+            unset($department['college_id']);
 
-        $realExam = $realExam->toArray();
-        unset($realExam['course_lecturer_id']);
-        unset($realExam['id']);
-        unset($realExam['form_name_method']);
-        unset($realExam['forms_count']);
-        unset($realExam['form_configuration_methode']);
+            $realExam = $realExam->toArray();
+            unset($realExam['course_lecturer_id']);
+            unset($realExam['id']);
+            unset($realExam['form_name_method']);
+            unset($realExam['forms_count']);
+            unset($realExam['form_configuration_methode']);
+            
+            $realExam = $realExam +
+                $paperExam->toArray() +
+                $coursePart->toArray() +
+                $departmentCourse +
+                $department +
+                $college->toArray() +
+                $course->toArray();
 
-        $realExam = $realExam +
-        $paperExam->toArray() +
-            $coursePart->toArray() +
-            $departmentCourse +
-            $department +
-            $college->toArray() +
-            $course->toArray();
+            $realExam['score'] = $totalScore;
+            $realExam['university_name'] = $universityName;
+            $realExam['forms'] = $examFormsQuestions;
 
-        $realExam['score'] = $totalScore;
-        $realExam['university_name'] = $universityName;
-        $realExam['forms'] = $examFormsQuestions;
-
-        return ResponseHelper::successWithData($realExam);
+            return ResponseHelper::successWithData($realExam);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
-    private function getFormQuestions ($formId, bool $withAnsweredMirror)
+    private function getFormQuestions($formId, bool $withAnsweredMirror)
     {
         // return form questoin as [content, attachment, is_true, choices[content, attachment, is_true]]
         $questions = [];
-        
+
         // $form = Form::findOrFail($formId);
         // $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
+        try {
+            $formQuestions = FormQuestion::where('form_id', '=', $formId)->get();
 
-        $formQuestions = FormQuestion::where('form_id', '=', $formId)->get();
-
-        foreach ($formQuestions as $formQuestion) {
-            $question = $formQuestion->question()->first(['content', 'attachment as attachment_url']);
-            if ($formQuestion->combination_id) {
-                if ($withAnsweredMirror) {
-                    $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, true);
-                } else {
-                    $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
-                }
-            } else {
-                if ($withAnsweredMirror) {
-                    $trueFalseQuestion = TrueFalseQuestion::findOrFail($formQuestion->question_id)->first(['answer']);
-                    if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
-                        $question['is_true'] = true;
+            foreach ($formQuestions as $formQuestion) {
+                $question = $formQuestion->question()->first(['content', 'attachment as attachment_url']);
+                if ($formQuestion->combination_id) {
+                    if ($withAnsweredMirror) {
+                        $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, true);
                     } else {
-                        $question['is_true'] = false;
+                        $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
+                    }
+                } else {
+                    if ($withAnsweredMirror) {
+                        $trueFalseQuestion = TrueFalseQuestion::findOrFail($formQuestion->question_id)->first(['answer']);
+                        if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
+                            $question['is_true'] = true;
+                        } else {
+                            $question['is_true'] = false;
+                        }
                     }
                 }
+                array_push($questions, $question);
             }
-            array_push($questions, $question);
+
+            return $questions;
+        } catch (\Exception $e) {
+            throw $e;
         }
-            
-        return $questions;
     }
 
     private function getAlgorithmData($request)
     {
         $types = [];
-        foreach ($request->questions_types as $type) 
-        {
-            $t = [
-                'id' => intval($type['type_id']),
-                'count' => intval($type['questions_count'])
+        try {
+            foreach ($request->questions_types as $type) {
+                $t = [
+                    'id' => intval($type['type_id']),
+                    'count' => intval($type['questions_count'])
+                ];
+
+                array_push($types, $t);
+            }
+
+            // دالة مشتركة للاختبار الالكتروني والورقي
+            $algorithmData = [
+                'estimated_time' => intval($request->duration),
+                // 'difficulty_level' => floatval($request->difficulty_level_id),
+                'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id),
+                'forms_count' => ($request->form_configuration_method_id === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) ? $request->forms_count : 1,
+                'question_types_and_questions_count' => $types
+                // 'question_types_and_questions_count' => [
+                //     // 'id' => $request->questions_types['type_id'],
+                //     // 'count' => $request->questions_types['questions_count']
+                //     'id' => $request->questions_types->type_id,
+                //     'count' => $request->questions_types->questions_count
+                // ],
             ];
 
-            array_push($types, $t);
+            $questionTypesIds = [];
+            foreach ($request->questions_types as $type) {
+                array_push($questionTypesIds, $type['type_id']);
+            }
+
+            // $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
+            $accessabilityStatusIds = [
+                AccessibilityStatusEnum::REALEXAM->value,
+                AccessibilityStatusEnum::PRACTICE_REALEXAM->value,
+            ];
+            $questions =  DB::table('questions')
+                ->join('question_usages', 'questions.id', '=', 'question_usages.question_id')
+                ->join('topics', 'questions.topic_id', '=', 'topics.id')
+                ->select(
+                    'questions.id',
+                    'questions.type as type_id',
+                    'questions.difficulty_level',
+                    'questions.estimated_answer_time as answer_time',
+                    'question_usages.online_exam_last_selection_datetime',
+                    'question_usages.practice_exam_last_selection_datetime',
+                    'question_usages.paper_exam_last_selection_datetime',
+                    'question_usages.online_exam_selection_times_count',
+                    'question_usages.practice_exam_selection_times_count',
+                    'question_usages.paper_exam_selection_times_count',
+                    'questions.topic_id',
+                    'topics.id as topic_id',
+                )
+                ->where('questions.status', '=', QuestionStatusEnum::ACCEPTED->value)
+                ->where('questions.language', '=', $request->language_id)
+                ->whereIn('questions.accessability_status', $accessabilityStatusIds)
+                ->whereIn('questions.type', $questionTypesIds)
+                ->whereIn('questions.topic_id', $request->topics_ids)
+                // ->whereIn('topics.id', $request->topics_ids)
+                // ->whereIn('topics.id', [3])
+                ->get()
+                ->toArray();
+
+            foreach ($questions as $question) {
+                // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
+
+                $question->type_id = intval($question->type_id);
+                $question->difficulty_level = floatval($question->difficulty_level);
+
+                // $selections = [1, 2, 3, 4, 5];
+                // $randomIndex = array_rand($selections);
+                // $question['last_selection'] = $selections[$randomIndex];
+                $question->last_selection = 3;
+                // $question['last_selection'] = DatetimeHelper::convertSecondsToDays(
+                //     DatetimeHelper::getDifferenceInSeconds(now(), $question->online_exam_last_selection_datetime) +
+                //         DatetimeHelper::getDifferenceInSeconds(now(), $question->practice_exam_last_selection_datetime) +
+                //         DatetimeHelper::getDifferenceInSeconds(now(), $question->paper_exam_last_selection_datetime)
+                // ) / 3;
+
+                $question->selection_times = 2;
+                // $question['selection_times'] = (
+                //     $question->online_exam_selection_times_count +
+                //     $question->practice_exam_selection_times_count +
+                //     $question->paper_exam_selection_times_count
+                // ) / 3;
+                // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة 
+                unset($question->online_exam_last_selection_datetime);
+                unset($question->practice_exam_last_selection_datetime);
+                unset($question->paper_exam_last_selection_datetime);
+                unset($question->online_exam_selection_times_count);
+                unset($question->practice_exam_selection_times_count);
+                unset($question->paper_exam_selection_times_count);
+            }
+
+            $algorithmData['questions'] = $questions;
+            return $algorithmData;
+        } catch (\Exception $e) {
+            throw $e;
         }
-
-        // دالة مشتركة للاختبار الالكتروني والورقي
-        $algorithmData = [
-            'estimated_time' => intval($request->duration),
-            // 'difficulty_level' => floatval($request->difficulty_level_id),
-            'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id),
-            'forms_count' => ($request->form_configuration_method_id === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) ? $request->forms_count : 1,
-            'question_types_and_questions_count' => $types
-            // 'question_types_and_questions_count' => [
-            //     // 'id' => $request->questions_types['type_id'],
-            //     // 'count' => $request->questions_types['questions_count']
-            //     'id' => $request->questions_types->type_id,
-            //     'count' => $request->questions_types->questions_count
-            // ],
-        ];
-
-        $questionTypesIds = [];
-        foreach ($request->questions_types as $type) 
-        {
-            array_push($questionTypesIds, $type['type_id']);
-        }
-
-        // $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
-        $accessabilityStatusIds = [
-            AccessibilityStatusEnum::REALEXAM->value,
-            AccessibilityStatusEnum::PRACTICE_REALEXAM->value,
-        ];
-        $questions =  DB::table('questions')
-            ->join('question_usages', 'questions.id', '=', 'question_usages.question_id')
-            ->join('topics', 'questions.topic_id', '=', 'topics.id')
-            ->select(
-                'questions.id',
-                'questions.type as type_id',
-                'questions.difficulty_level',
-                'questions.estimated_answer_time as answer_time',
-                'question_usages.online_exam_last_selection_datetime',
-                'question_usages.practice_exam_last_selection_datetime',
-                'question_usages.paper_exam_last_selection_datetime',
-                'question_usages.online_exam_selection_times_count',
-                'question_usages.practice_exam_selection_times_count',
-                'question_usages.paper_exam_selection_times_count',
-                'questions.topic_id',
-                'topics.id as topic_id',
-            )
-            ->where('questions.status', '=', QuestionStatusEnum::ACCEPTED->value)
-            ->where('questions.language', '=', $request->language_id)
-            ->whereIn('questions.accessability_status', $accessabilityStatusIds)
-            ->whereIn('questions.type', $questionTypesIds)
-            ->whereIn('questions.topic_id', $request->topics_ids)
-            // ->whereIn('topics.id', $request->topics_ids)
-            // ->whereIn('topics.id', [3])
-            ->get()
-            ->toArray();
-                
-        foreach ($questions as $question) {
-            // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
-
-            $question->type_id = intval($question->type_id);
-            $question->difficulty_level = floatval($question->difficulty_level);
-
-            // $selections = [1, 2, 3, 4, 5];
-            // $randomIndex = array_rand($selections);
-            // $question['last_selection'] = $selections[$randomIndex];
-            $question->last_selection = 3;
-            // $question['last_selection'] = DatetimeHelper::convertSecondsToDays(
-            //     DatetimeHelper::getDifferenceInSeconds(now(), $question->online_exam_last_selection_datetime) +
-            //         DatetimeHelper::getDifferenceInSeconds(now(), $question->practice_exam_last_selection_datetime) +
-            //         DatetimeHelper::getDifferenceInSeconds(now(), $question->paper_exam_last_selection_datetime)
-            // ) / 3;
-
-            $question->selection_times = 2;
-            // $question['selection_times'] = (
-            //     $question->online_exam_selection_times_count +
-            //     $question->practice_exam_selection_times_count +
-            //     $question->paper_exam_selection_times_count
-            // ) / 3;
-            // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة 
-            unset($question->online_exam_last_selection_datetime);
-            unset($question->practice_exam_last_selection_datetime);
-            unset($question->paper_exam_last_selection_datetime);
-            unset($question->online_exam_selection_times_count);
-            unset($question->practice_exam_selection_times_count);
-            unset($question->paper_exam_selection_times_count);
-        }
-
-        $algorithmData['questions'] = $questions;
-        return $algorithmData;
     }
 
     private function getQuestionsChoicesCombinations($questionsIds)
@@ -620,44 +684,99 @@ class PaperExamController extends Controller
          *   يتم اضافة رقم التوزيعة المختارة الي السؤال
          */
         $formQuestions = [];
-        foreach ($questionsIds as $questionId) {
-            $question = Question::findOrFail($questionId);
-            $combination_id = null;
+        try {
+            foreach ($questionsIds as $questionId) {
+                $question = Question::findOrFail($questionId);
+                $combination_id = null;
 
-            if ($question->type == QuestionTypeEnum::MULTIPLE_CHOICE->value) {
-                $combination_id = $this->selectQuestionsChoicesCombination($question);
+                if ($question->type == QuestionTypeEnum::MULTIPLE_CHOICE->value) {
+                    $combination_id = $this->selectQuestionsChoicesCombination($question);
+                }
+
+                array_push($formQuestions, [
+                    'question_id' => $questionId,
+                    'combination_id' => $combination_id
+                ]);
             }
-
-            array_push($formQuestions, [
-                'question_id' => $questionId,
-                'combination_id' => $combination_id
-            ]);
+            return $formQuestions;
+        } catch (\Exception $e) {
+            throw $e;
         }
-        return $formQuestions;
     }
 
     private function selectQuestionsChoicesCombination(Question $question): int
     {
-        $qestionChoicesCombinationsIds = $question->question_choices_combinations()
-            ->get(['combination_id'])
-            ->map(function ($qestionChoicesCombination) {
-                return $qestionChoicesCombination->combination_id;
-            })->toArray();
-        
-        $selectedIndex = array_rand($qestionChoicesCombinationsIds);
-        return $qestionChoicesCombinationsIds[$selectedIndex];
+        try {
+            $qestionChoicesCombinationsIds = $question->question_choices_combinations()
+                ->get(['combination_id'])
+                ->map(function ($qestionChoicesCombination) {
+                    return $qestionChoicesCombination->combination_id;
+                })->toArray();
+    
+            $selectedIndex = array_rand($qestionChoicesCombinationsIds);
+            return $qestionChoicesCombinationsIds[$selectedIndex];
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
 
     public function rules(Request $request): array
     {
+        /*
+
+- real exam data 
+	- language
+	- difficulty_level
+	- form_configuration_method
+	- forms_count
+	- form_name_method
+	- datetime
+	- duration
+	- type
+	- exam_type
+	- note => special_note
+	- course_lecturer_id
+- real_exam_question_types => questions_types
+	- question_type => type_id
+	- questions_count
+	- question_score
+- paper_exams
+	- course_lecturer_name => lecturer_name
+- topics_ids
+- another variables
+	- department_course_part_id
+		- 
+        */
+
         $rules = [
-            'title' => 'nullable|string',
+            // real exam table 
             'language_id' => ['required', new Enum(LanguageEnum::class)],
-            'duration' => 'required|integer',
             'difficulty_level_id' => ['required', new Enum(ExamDifficultyLevelEnum::class)],
+            'datetime' => 'required|integer', // check for bigInteger data type
+            'duration' => 'required|integer',
+            'type_id' => ['required', new Enum(ExamTypeEnum::class)],
+            'special_note' => 'nullable|string',
+            'forms_count' => 'required|integer',
+            'form_configuration_method_id' => ['required', new Enum(FormConfigurationMethodEnum::class)],
+            'form_name_method_id' => ['required', new Enum(FormNameMethodEnum::class)],
+
+            // real_exam_question_types
+            'questions_types' => 'required|array|min:1',
+            'questions_types.*.type_id' => ['required', new Enum(QuestionTypeEnum::class)],
+            'questions_types.*.questions_count' => 'required|integer',
+            'questions_types.*.question_score' => 'required|numeric', // Use 'numeric' to allow both integer and float
+            
+            // paper_exam
+            'lecturer_name' => 'nullable|string',
+
+            // topice 
+            'topics_ids'                => 'required|array|min:1',
+            'topics_ids.*'              => 'required|integer|exists:topics,id',
+
+            // other variables 
             'department_course_part_id' => 'required|exists:department_course_parts,id',
-            'course_lecturer_name' => 'nullable|string',
+
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

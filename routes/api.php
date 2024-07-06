@@ -318,7 +318,7 @@ Route::middleware('auth:api')->group(function () {
 
     //lecturer online exam
     Route::prefix('lecturer-online-exam/')->group(function () {
-        Route::post('add', [LecturerOnlineExamController::class, 'addOnlineExam']);
+        // Route::post('add', [LecturerOnlineExamController::class, 'addOnlineExam']);
         Route::put('modify', [LecturerOnlineExamController::class, 'modifyOnlineExam']);
         Route::put('change-status', [LecturerOnlineExamController::class, 'changeOnlineExamStatus']);
         Route::delete('delete', [LecturerOnlineExamController::class, 'deleteOnlineExam']);
@@ -477,7 +477,7 @@ Route::prefix('filter/')->group(function () {
 
 //for test with out need to login 
 Route::prefix('test/')->group(function () {
-    Route::post('add', [GuestController::class, 'addGuest']);
+    Route::post('add', [LecturerOnlineExamController::class, 'addOnlineExam']);
     Route::put('modify', [QuestionController::class, 'acceptQuestion']);
     // Route::put('change-status', [UserManagementController::class, 'changeUserStatus']);
     // Route::delete('delete', [UserManagementController::class, 'deleteUser']);
