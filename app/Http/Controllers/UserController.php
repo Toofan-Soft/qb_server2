@@ -124,19 +124,29 @@ class UserController extends Controller
         }
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        try {
-            Auth::logout();
-            if (Auth::check()) {
-                return ResponseHelper::serverError();
-            } else {
-                return ResponseHelper::success();
-            }
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
+        $user = Auth::guard('api')->user();
+        if ($user) {
+            $token = $user->token();
+            $token->revoke(); 
+            return response()->json(['message' => 'Successfully logged out'], 200);
         }
+
+        return response()->json(['message' => 'Unable to logout'], 400);
+        
+        // try {
+        //     Auth::logout();
+        //     // if (Auth::check()) {
+        //     //     return ResponseHelper::serverError();
+        //     // } else {
+        //     //     return ResponseHelper::success();
+        //     // }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
+
     public function retrieveProfile()
     {
         try {
@@ -163,7 +173,7 @@ class UserController extends Controller
                 array_push($enumReplacements, new EnumReplacement('job_type_name', JobTypeEnum::class));
                 array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
             }
-            
+
             $owner = ProcessDataHelper::enumsConvertIdToName($owner, $enumReplacements);
             $owner['email'] = $user->email;
 

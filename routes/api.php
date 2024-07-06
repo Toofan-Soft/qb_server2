@@ -68,7 +68,7 @@ use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
 Route::post('user/register', [GuestController::class, 'addGuest']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);
 Route::post('user/login', [UserController::class, 'login']);
-Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
+Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
 Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
 // Route::post('forget_password',[ForgetPasswordController::class,'forget_password']);
 // Route::post('password_reset',[ResetPasswordController::class,'password_reset']);
@@ -307,7 +307,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('user/')->group(function () {
         // Route::post('verify', [UserController::class, 'verifyAccount']);
         // Route::post('login', [UserController::class, 'login']);
-        Route::post('logout', [UserController::class, 'logou']);
+        Route::post('logout', [UserController::class, 'logout']);
         Route::put('change-password', [UserController::class, 'changePassword']);
         // Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
         // Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
