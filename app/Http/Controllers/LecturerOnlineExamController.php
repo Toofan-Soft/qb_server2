@@ -211,11 +211,11 @@ class LecturerOnlineExamController extends Controller
                 })
                 ->where('department_course_parts.id', '=', $request->department_course_part_id)
                 ->where('course_lecturers.lecturer_id', '=', $lecturer_id)
-                ->get()
-                ->map(function ($exam) {
-                    $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-                    return $exam;
-                });
+                ->get();
+                // ->map(function ($exam) {
+                //     $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+                //     return $exam;
+                // });
 
             if (!isset($request->status_id)) {
                 array_push($enumReplacements,  new EnumReplacement('status_name', ExamStatusEnum::class));
@@ -272,11 +272,11 @@ class LecturerOnlineExamController extends Controller
                     return $query->where('real_exams.type', '=', $request->type_id);
                 })
                 ->where('course_lecturers.lecturer_id', '=', $lecturer_id)
-                ->get()
-                ->map(function ($exam) {
-                    $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-                    return $exam;
-                });
+                ->get();
+                // ->map(function ($exam) {
+                //     $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+                //     return $exam;
+                // });
 
             $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, $enumReplacements);
 
@@ -314,12 +314,9 @@ class LecturerOnlineExamController extends Controller
                 'conduct_method as conduct_method_name',
                 'status as status_name',
                 'proctor_id as proctor_name',
-                'exam_datetime_notification_datetime',
+                'exam_datetime_notification_datetime as datetime_notification_datetime',
                 'result_notification_datetime'
             ]);
-
-            $onlineExam->datetime_notification_datetime = $onlineExam['exam_datetime_notification_datetime'];
-            unset($onlineExam['exam_datetime_notification_datetime']);
 
             $onlineExam = ProcessDataHelper::enumsConvertIdToName($onlineExam, [
                 new EnumReplacement('status_name', ExamStatusEnum::class),
@@ -380,7 +377,7 @@ class LecturerOnlineExamController extends Controller
 
             $realExam['questions_types'] = $questionTypes;
 
-            $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
+            // $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
 
             return ResponseHelper::successWithData($realExam);
         } catch (\Exception $e) {
@@ -421,9 +418,9 @@ class LecturerOnlineExamController extends Controller
                 )
                 ->first();
 
-            $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-            $exam->datetime_notification_datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime_notification_datetime);
-            $exam->result_notification_datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->result_notification_datetime);
+            // $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+            // $exam->datetime_notification_datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime_notification_datetime);
+            // $exam->result_notification_datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->result_notification_datetime);
 
             $exam = NullHelper::filter($exam);
 

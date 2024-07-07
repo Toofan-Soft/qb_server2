@@ -52,7 +52,7 @@ class ProctorOnlinExamController extends Controller
                 ->where('online_exams.status', '=', ExamStatusEnum::ACTIVE->value)
                 ->get()
                 ->map(function ($exam) {
-                    $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+                    // $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
                     return $exam;
                 });
 

@@ -198,11 +198,11 @@ class PaperExamController extends Controller
                 })
                 ->where('department_course_parts.id', '=', $request->department_course_part_id)
                 ->where('course_lecturers.lecturer_id', '=', $lecturer_id)
-                ->get()
-                ->map(function ($exam) {
-                    $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-                    return $exam;
-                });
+                ->get();
+                // ->map(function ($exam) {
+                //     $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+                //     return $exam;
+                // });
 
             if (!isset($request->type_id)) {
                 array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
@@ -251,11 +251,11 @@ class PaperExamController extends Controller
                     return $query->where('real_exams.type', '=', $request->type_id);
                 })
                 ->where('course_lecturers.lecturer_id', '=', $lecturer_id)
-                ->get()
-                ->map(function ($exam) {
-                    $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-                    return $exam;
-                });
+                ->get();
+                // ->map(function ($exam) {
+                //     $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+                //     return $exam;
+                // });
             $paperExams = NullHelper::filter($paperExams);
             $paperExams = ProcessDataHelper::enumsConvertIdToName($paperExams, $enumReplacements);
 
@@ -335,7 +335,7 @@ class PaperExamController extends Controller
 
             $realExam['questions_types'] = $questionTypes;
 
-            $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
+            // $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
 
             $realExam = NullHelper::filter($realExam);
 
@@ -359,7 +359,7 @@ class PaperExamController extends Controller
             unset($realExam['id']);
             $realExam = $realExam + $paperExam->toArray();
 
-            $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
+            // $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
 
             $exam = NullHelper::filter($realExam);
 

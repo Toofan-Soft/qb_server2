@@ -165,7 +165,7 @@ class StudentController extends Controller
     public function retrieveStudent(Request $request)
     {
         try {
-            return ResponseHelper::success();
+            // return ResponseHelper::success();
             $student = Student::where('id', $request->id)
                 ->firstOrFail();
 
