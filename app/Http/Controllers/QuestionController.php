@@ -106,26 +106,10 @@ class QuestionController extends Controller
 
     public function deleteQuestion(Request $request)
     {
-        DB::beginTransaction();
         try {
             $question = Question::findOrFail($request->id);
-            if (intval($question->status) === QuestionStatusEnum::ACCEPTED->value) {
-                $question->question_usages()->delete();
-            }
-
-            if (intval($question->type) === TrueFalseAnswerEnum::TRUE->value) {
-                $question->true_false_question()->delete();
-            } else {
-                QuestionChoicesCombination::where('question_id', '=', $question->id)->delete();
-                Choice::where('question_id', '=', $question->id)->delete();
-                //     $choices = $question->choices()->get(['id']);
-                //      return DeleteHelper::deleteModels(Choice::class, $choices);
-            }
-            $question->delete();
-            DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
-            DB::rollBack();
             return ResponseHelper::serverError();
         }
     }

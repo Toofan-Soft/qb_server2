@@ -245,6 +245,10 @@ class ProctorOnlinExamController extends Controller
             });
 
         return $results;
+        return ResponseHelper::successWithData($results);
+        } catch(\Exception $e){
+            return ResponseHelper::serverError();
+        }
     }
 
     // public function retrieveOnlineExamStudents1(Request $request)

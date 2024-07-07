@@ -96,12 +96,15 @@ class EmployeeController extends Controller
 
     public function deleteEmployee(Request $request)
     {
+        DB::beginTransaction();
         try {
             $employee = Employee::findOrFail($request->id);
+            $employee->user()->delete();
             $employee->delete();
-            // return DeleteHelper::deleteModel($employee);
+            DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
+            DB::rollBack();
             return ResponseHelper::serverError();
         }
     }

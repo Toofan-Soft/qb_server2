@@ -87,17 +87,11 @@ class UserManagementController extends Controller
 
     public function deleteUser(Request $request)
     {
-        DB::beginTransaction();
         try {
             $user = User::findOrFail($request->id);
-            $user->user_roles()->delete();
-            // $userRoles = $user->user_roles()->get(['role_id'])->toArray();
-            // UserHelper::deleteUserRoles($user->id, $userRoles);
             $user->delete();
-            DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
-            DB::rollBack();
             return ResponseHelper::serverError();
         }
     }
@@ -208,9 +202,10 @@ class UserManagementController extends Controller
         $rules = [
             'email' => 'required|email|unique:users,email',
             'owner_type_id' => ['required', new Enum(OwnerTypeEnum::class)],
-            'owner_id' => ['required'],
-            'id' => ['nullable'],    // it is the same of owner_id  but from another process
-            'roles_ids' => ['nullable'],
+            'owner_id' => 'required',
+            'id' => 'nullable',    // it is the same of owner_id  but from another process
+            'roles_ids'                => 'nullable|array',
+            'roles_ids.*'              => ['nullable', new Enum(RoleEnum::class)],
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

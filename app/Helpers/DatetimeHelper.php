@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Carbon;
 
 
 class DatetimeHelper
@@ -15,12 +16,26 @@ class DatetimeHelper
      * return long
      * it using in lecturer online exam -> getAlgorithmData
      */
-    public static function getDifferenceInSeconds($date1, $date2) // check 
+    public static function getDifferenceInSeconds($date1, $date2) // يتم حذفها  
     {
+        // $date2 = self::convertMillisecondsToTimestamp($date2);
         return ($date1->getTimestamp() - $date2->getTimestamp());
     }
+    /**
+     * $date1 and date2 are objects of datetime
+     * return long
+     * it using in lecturer online exam -> getAlgorithmData
+     */
+    public static function getDifferenceInDays($date1, $timestamp)
+    {
+        // Create a Carbon instance from the timestamp
+        $date2 = Carbon::createFromTimestamp($timestamp);
 
-     /**
+        // Calculate the difference in days
+        return $date1->diffInDays($date2);
+    }
+
+    /**
      * $date1 and date2 are objects of datetime
      * return long
      * it using in lecturer online exam -> getAlgorithmData
@@ -66,5 +81,4 @@ class DatetimeHelper
         // Convert to milliseconds
         return $timestampInSeconds * 1000;
     }
-    
 }

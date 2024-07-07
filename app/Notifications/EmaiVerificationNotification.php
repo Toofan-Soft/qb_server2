@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\User;
 use App\Enums\RoleEnum;
 use App\Enums\OwnerTypeEnum;
+use App\Helpers\ResponseHelper;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -28,7 +29,7 @@ class EmaiVerificationNotification extends Notification
     {
         $this->message='use the bellow code for verification';
         $this->subject='verification needed';
-        $this->fromEmail='nasseralabbasi39@gmail.com';
+        $this->fromEmail='fadi@gmail.com';
         $this->mailer='smtp';
         $this->otp=new Otp();
 
@@ -50,12 +51,11 @@ class EmaiVerificationNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-       // $otp = $this->otp->generate($notifiable->email,'alpha_numeric', 9, 60); //generate recieve(email, number of code, duration of code to expired)
-
-        // $otp = $this->otp->generate($notifiable->email,'alpha_numeric', $this->tokenGenerated, 60);
-        $otp = $this->otp->generate($notifiable->email,'alpha_numeric', 9, 60);
-
-       
+        // $otp = $this->otp->generate($notifiable->email,'alpha_numeric', 9, 60); //generate recieve(email, number of code, duration of code to expired)
+        
+        $otp = $this->otp->generate($notifiable->email,'alpha_numeric', $this->tokenGenerated, 60);
+        // $otp = $this->otp->generate($notifiable->email,'alpha_numeric', 9, 60);
+        
         // $user = User::where('email',$notifiable->email)->first();    // update user password to token send
         // if ($user->owner_type !== OwnerTypeEnum::GUEST->value) {      // !! if the admin add guest , the guest canot login by vireficated code
         //     $user->update([

@@ -22,6 +22,7 @@ use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\QuestionHelper;
 use App\Enums\FormNameMethodEnum;
+use App\Enums\QuestionStatusEnum;
 use App\Helpers\EnumReplacement1;
 use App\Models\TrueFalseQuestion;
 use Illuminate\Http\UploadedFile;
@@ -30,6 +31,7 @@ use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Enums\ExamConductMethodEnum;
 use App\Models\RealExamQuestionType;
+use App\Enums\ExamDifficultyLevelEnum;
 use Illuminate\Support\Facades\Storage;
 use App\Enums\CombinationChoiceTypeEnum;
 use App\Models\QuestionChoiceCombination;
@@ -455,6 +457,115 @@ class ExamHelper
     public static function getExamResultAppreciation($scoreRate)
     {
         return 'exelent';
+    }
+
+    /**
+     ***** job: 
+     * this function using for retrieve data that will use in algorithm 
+     * it used in lecturer online exam, paper exam, practice exam 
+     ***** parameters: 
+     * request: Request 
+     * accessabilityStatusIds: [int] 
+     * 
+     ***** return: 
+     * algorithmData [id, content, attachment, is_true]
+     */
+    public static function getAlgorithmData($request, $accessabilityStatusIds)
+    {
+        try {
+            $types = [];
+            foreach ($request->questions_types as $type) {
+                $t = [
+                    'id' => intval($type['type_id']),
+                    'count' => intval($type['questions_count'])
+                ];
+
+                array_push($types, $t);
+            }
+
+            // دالة مشتركة للاختبار الالكتروني والورقي
+            $algorithmData = [
+                'estimated_time' => intval($request->duration),
+                // 'difficulty_level' => floatval($request->difficulty_level_id),
+                'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id),
+                'forms_count' => ($request->form_configuration_method_id === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) ? $request->forms_count : 1,
+                'question_types_and_questions_count' => $types
+                // 'question_types_and_questions_count' => [
+                //     // 'id' => $request->questions_types['type_id'],
+                //     // 'count' => $request->questions_types['questions_count']
+                //     'id' => $request->questions_types->type_id,
+                //     'count' => $request->questions_types->questions_count
+                // ],
+            ];
+
+            $questionTypesIds = [];
+            foreach ($request->questions_types as $type) {
+                array_push($questionTypesIds, $type['type_id']);
+            }
+
+            $questions =  DB::table('questions')
+                ->join('question_usages', 'questions.id', '=', 'question_usages.question_id')
+                // ->join('topics', 'questions.topic_id', '=', 'topics.id')
+                ->select(
+                    'questions.id',
+                    'questions.type as type_id',
+                    'questions.difficulty_level',
+                    'questions.estimated_answer_time as answer_time',
+                    'question_usages.online_exam_last_selection_datetime',
+                    'question_usages.practice_exam_last_selection_datetime',
+                    'question_usages.paper_exam_last_selection_datetime',
+                    'question_usages.online_exam_selection_times_count',
+                    'question_usages.practice_exam_selection_times_count',
+                    'question_usages.paper_exam_selection_times_count',
+                    'questions.topic_id',
+                    // 'topics.id as topic_id',
+                )
+                ->where('questions.status', '=', QuestionStatusEnum::ACCEPTED->value)
+                ->where('questions.language', '=', $request->language_id)
+                ->whereIn('questions.accessability_status', $accessabilityStatusIds)
+                ->whereIn('questions.type', $questionTypesIds)
+                ->whereIn('questions.topic_id', $request->topics_ids)
+                // ->whereIn('topics.id', $request->topics_ids)
+                // ->whereIn('topics.id', [3])
+                ->get()
+                ->toArray();
+
+            foreach ($questions as $question) {
+                // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
+
+                $question->type_id = intval($question->type_id);
+
+                // $selections = [1, 2, 3, 4, 5];
+                // $randomIndex = array_rand($selections);
+                // $question['last_selection'] = $selections[$randomIndex];
+                // $question->last_selection = 3;
+                $question['last_selection'] = intval((
+                    DatetimeHelper::getDifferenceInDays(now(), $question->online_exam_last_selection_datetime) +
+                    DatetimeHelper::getDifferenceInDays(now(), $question->practice_exam_last_selection_datetime) +
+                    DatetimeHelper::getDifferenceInDays(now(), $question->paper_exam_last_selection_datetime)
+                ) / 3);
+
+                // $question->selection_times = 2;
+                $question['selection_times'] = intval((
+                    $question->online_exam_selection_times_count +
+                    $question->practice_exam_selection_times_count +
+                    $question->paper_exam_selection_times_count
+                ) / 3);
+                // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة 
+                unset($question->online_exam_last_selection_datetime);
+                unset($question->practice_exam_last_selection_datetime);
+                unset($question->paper_exam_last_selection_datetime);
+                unset($question->online_exam_selection_times_count);
+                unset($question->practice_exam_selection_times_count);
+                unset($question->paper_exam_selection_times_count);
+            }
+
+            $algorithmData['questions'] = $questions;
+
+            return $algorithmData;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     /**

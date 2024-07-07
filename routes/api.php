@@ -476,14 +476,14 @@ Route::prefix('filter/')->group(function () {
 });///
 
 //for test with out need to login 
-Route::prefix('test/')->group(function () {
-    Route::post('add', [LecturerOnlineExamController::class, 'addOnlineExam']);
-    Route::put('modify', [QuestionController::class, 'acceptQuestion']);
-    // Route::put('change-status', [UserManagementController::class, 'changeUserStatus']);
-    // Route::delete('delete', [UserManagementController::class, 'deleteUser']);
-    Route::get('retrieve', [UserManagementController::class, 'retrieveUser']);
-    Route::get('retrieve-list', [UserManagementController::class, 'retrieveUsers']);
-});
+// Route::prefix('test/')->group(function () {
+//     Route::post('add', [LecturerOnlineExamController::class, 'addOnlineExam']);
+//     Route::put('modify', [QuestionController::class, 'acceptQuestion']);
+//     // Route::put('change-status', [UserManagementController::class, 'changeUserStatus']);
+//     // Route::delete('delete', [UserManagementController::class, 'deleteUser']);
+//     Route::get('retrieve', [UserManagementController::class, 'retrieveUser']);
+//     Route::get('retrieve-list', [UserManagementController::class, 'retrieveUsers']);
+// });
 
 //enum
 Route::prefix('enum/')->group(function () {

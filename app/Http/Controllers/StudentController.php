@@ -125,12 +125,15 @@ class StudentController extends Controller
 
     public function deleteStudent(Request $request)
     {
+        DB::beginTransaction();
         try {
             $student = Student::findOrFail($request->id);
+            $student->user()->delete();
             $student->delete();
-            // return DeleteHelper::deleteModel($student);
+            DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
+            DB::rollBack();
             return ResponseHelper::serverError();
         }
     }
