@@ -70,6 +70,8 @@ Route::post('user/verify', [UserController::class, 'verifyAccount']);
 Route::post('user/login', [UserController::class, 'login']);
 Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
 Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+Route::post('user-management-add', [UserManagementController::class, 'addUser']);
+Route::post('initial/add', [InitialDatabaseController::class, 'initialDatabase']);
 // Route::post('forget_password',[ForgetPasswordController::class,'forget_password']);
 // Route::post('password_reset',[ResetPasswordController::class,'password_reset']);
 // Route::get('logout',[UserController::class,'logout']);
@@ -490,21 +492,6 @@ Route::prefix('enum/')->group(function () {
     Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
 });
 
-
-
-
-
-
-
- // test initial data
- Route::prefix('initial/')->group(function () {
-    Route::post('add', [InitialDatabaseController::class, 'initialDatabase']);
-    // Route::put('modify', [CollegeController::class, 'modifyCollege']);
-    // Route::delete('delete', [CollegeController::class, 'deleteCollege']);
-    // Route::get('retrieve', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
-    // Route::get('retrieve-list', [CollegeController::class, 'retrieveColleges']);
-    // Route::get('retrieve-basic-info-list', [CollegeController::class, 'retrieveBasicCollegesInfo']);
-});
 
 
 //test enum

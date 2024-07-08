@@ -292,6 +292,7 @@ class QuestionController extends Controller
 
     private function modifyQuestionStatus($question_id, $status_id)
     {
+        // هل يتم اضافة كود لفحص حالة السؤال سابقا، ومن ثم التعديل او عدم التعديل
         try {
             $question = Question::findOrFail($question_id);
             $question->update([

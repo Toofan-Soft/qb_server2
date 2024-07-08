@@ -2,23 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Pusher\Pusher;
 use App\Models\User;
+use App\Models\Topic;
+use App\Models\Course;
+use App\Models\Chapter;
 use App\Models\College;
+use App\Models\Question;
 use App\Events\FireEvent;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Models\CoursePart;
+use App\Enums\LanguageEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
-use App\Helpers\InitialDatabaseHelper;
 use App\Helpers\ModifyHelper;
 use App\Helpers\ResponeHelper;
+use App\Enums\ChoiceStatusEnum;
+use App\Enums\QuestionTypeEnum;
+use App\Helpers\QuestionHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Models\DepartmentCourse;
+use App\Enums\QuestionStatusEnum;
+use App\Enums\TrueFalseAnswerEnum;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Enums\AccessibilityStatusEnum;
+use App\Enums\ExamDifficultyLevelEnum;
+use App\Helpers\InitialDatabaseHelper;
 use Illuminate\Support\Facades\Storage;
 use League\CommonMark\Node\Query\OrExpr;
 use Illuminate\Support\Facades\Validator;
@@ -26,93 +40,166 @@ use Illuminate\Support\Facades\Validator;
 class InitialDatabaseController extends Controller
 {
 
-    public function initialDatabase()
+    public function initialDatabase(Request $request)
     {
         // InitialDatabaseHelper::colleges();
         // InitialDatabaseHelper::departments();
-        // InitialDatabaseHelper::courses();
-        // InitialDatabaseHelper::chapters();
-        // InitialDatabaseHelper::topics();
-        
-        $temp = InitialDatabaseHelper::questions();
-        return ResponseHelper::successWithData($temp);
+        // $this->courses();
+        // $this->chapters(6);
+        // $this->topics($request->id);
+        // $this->questionsChoice($request->id);
+        // $this->questionsTrueFalse($request->id);
+        return $this->acceptQuestions();
+        // $this->acceptQuestions();
+
         return ResponseHelper::success();
     }
 
-    public function addCollege(Request $request)
+    private function courses()
     {
-        if( ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError(401);
+        $jsonFilePath = base_path() . '/app/InitialDatabase/courses.json';
+        $rows = $this->readDataFromJson($jsonFilePath);
+        $temp = [];
+        foreach ($rows as $row) {
+            Course::create([]);
         }
-        College::create([
-            'arabic_name' => $request->arabic_name,
-            'english_name' => $request->english_name,
-            'phone' => $request->phone ?? null,
-            'email' => $request->email ?? null,
-            'description' => $request->description?? null,
-            'facebook' => $request->facebook ?? null,
-            'youtube' => $request->youtube?? null,
-            'x_platform' => $request->x_platform ?? null,
-            'telegram' => $request->telegram ?? null,
-            'logo_url' => ImageHelper::uploadImage($request->logo)
-        ]);
+    }
+    private function chapters($coursePartId)
+    {
+        $jsonFilePath = base_path() . '/app/InitialDatabase/chapters.json';
+        $rows = $this->readDataFromJson($jsonFilePath);
+        $coursePart = CoursePart::findOrFail($coursePartId);
+        foreach ($rows as $row) {
+            // return $row;
+            $coursePart->chapters()->create([
+                "arabic_title" => $row['arabic_title'],
+                "english_title" => $row['english_title'],
+                "description" => $row['description']
+            ]);
+        }
+    }
+    private function topics($chapterId)
+    {
+        $jsonFilePath = base_path() . '/app/InitialDatabase/topics.json';
+        $rows = $this->readDataFromJson($jsonFilePath);
+        $chapter = Chapter::findOrFail($chapterId);
+        foreach ($rows as $row) {
+            // return $row;
+            $chapter->topics()->create([
+                "arabic_title" => $row['arabic_title'],
+                "english_title" => $row['english_title'],
+                "description" => $row['description']
+            ]);
+        }
+    }
+    private function questionsChoice($topicId)
+    {
+        $jsonFilePath = base_path() . '/app/InitialDatabase/questions.json';
+        $rows = $this->readDataFromJson($jsonFilePath);
+        $topic = Topic::findOrFail($topicId);
+        foreach ($rows as $row) {
+            $question = $topic->questions()->create([
+                'type' => QuestionTypeEnum::MULTIPLE_CHOICE->value,
+                'difficulty_level' => ExamDifficultyLevelEnum::toFloat($this->selectRandomDifficultyLevel()),
+                'accessibility_status' => $this->selectRandomAccessibilityStatus(),
+                'language' => LanguageEnum::ENGLISH->value,
+                'estimated_answer_time' => $this->selectRandomEstimatedAnswerTime(),
+                'content' => $row['content'],
+                'status' => QuestionStatusEnum::REQUESTED->value,
+                'attachment' => null,
+                'title' => null,
+            ]);
+            $this->saveQuestionChoices($question, $row['choices']);
+        }
+    }
+    private function questionsTrueFalse($topicId)
+    {
+        $jsonFilePath = base_path() . '/app/InitialDatabase/questionsTrueFalse.json';
+        $rows = $this->readDataFromJson($jsonFilePath);
+        $topic = Topic::findOrFail($topicId);
+        foreach ($rows as $row) {
+            $question = $topic->questions()->create([
+                'type' => QuestionTypeEnum::TRUE_FALSE->value,
+                'difficulty_level' => ExamDifficultyLevelEnum::toFloat($this->selectRandomDifficultyLevel()),
+                'accessibility_status' => $this->selectRandomAccessibilityStatus(),
+                'language' => LanguageEnum::ENGLISH->value,
+                'estimated_answer_time' => $this->selectRandomEstimatedAnswerTime(),
+                'content' => $row['content'],
+                'status' => QuestionStatusEnum::ACCEPTED->value,
+                'attachment' => null,
+                'title' => null,
+            ]);
+            $question->true_false_question()->create([
+                'answer' => ($row['isCorrect']) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
+            ]);
+        }
+    }
+    private function acceptQuestions()
+    {
+        DB::beginTransaction();
+        $questions = Question::where('type', '=', QuestionTypeEnum::MULTIPLE_CHOICE->value)
+            ->where('status', '=', 1)
+            ->where('id', '<=', 600)
+            ->get();
+        // return $questions;
+        foreach ($questions as $question) {
+            $question->update([
+                'status' => 2
+            ]);
+            $question->question_usage()->create();
 
-       return ResponseHelper::success();
+            if (intval($question->type) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
+                QuestionHelper::generateQuestionChoicesCombination($question);
+            }
+        }
+        DB::commit();
+        // return $questions;
     }
 
-    public function modifyCollege (Request $request)
+    private function readDataFromJson($jsonFilePath)
     {
-
-        if(ValidateHelper::validateData($request, $this->rules($request))){
-            return  ResponseHelper::clientError(401);
+        if (!file_exists($jsonFilePath)) {
+            throw new Exception("File not found: " . $jsonFilePath);
         }
 
-        $college = College::findOrFail($request->id);
-        $college->update([
-            'arabic_name' => $request->arabic_name ?? $college->arabic_name ,
-            'english_name' => $request->english_name ?? $college->english_name,
-            'phone' => $request->phone ??  $college->phone,
-            'email' => $request->email ?? $college->email,
-            'description' => $request->description?? $college->description,
-            'youtube' => $request->youtube?? $college->youtube,
-            'facebook' => $request->facebook ?? $college->facebook,
-            'x_platform' => $request->x_platform ?? $college->x_platform,
-            'telegram' => $request->telegram ?? $college->telegram,
-            'logo_url' => ImageHelper::updateImage($request->logo, $college->logo_url)
-        ]);
+        $jsonContents = file_get_contents($jsonFilePath);
+        $data = json_decode($jsonContents, true);
 
-        // event(new FireEvent($college));
-
-      return ResponseHelper::success();
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new Exception("Error decoding JSON: " . json_last_error_msg());
+        }
+        return $data;
     }
-
-
-    public function deleteCollege (Request $request)
+    private function selectRandomDifficultyLevel(): int
     {
-        $college = College::findOrFail( $request->id);
-        return DeleteHelper::deleteModel($college);
+        $difficultyLevels = ExamDifficultyLevelEnum::values();
+        $randomIndex = array_rand($difficultyLevels);
+        return $difficultyLevels[$randomIndex];
     }
-
-    public function retrieveColleges ()
+    private function selectRandomAccessibilityStatus(): int
     {
-        $attributes = ['id', 'arabic_name', 'english_name', 'phone', 'email', 'logo_url'];
-        return GetHelper::retrieveModels(College::class, $attributes);
+        $accessibilityStatuses = AccessibilityStatusEnum::values();
+        $randomIndex = array_rand($accessibilityStatuses);
+        return $accessibilityStatuses[$randomIndex];
     }
-    public function retrieveBasicCollegesInfo ()
+    private function selectRandomEstimatedAnswerTime(): float
     {
-        $attributes = ['id', 'arabic_name as name','logo_url'];
-        return GetHelper::retrieveModels(College::class, $attributes);
+        // select randomly int number
+        // this number represent time in second. 
+        // the selected time must be >= 1 minute and <= 10 minute 
+
+        $minSeconds = 1 * 60; // 1 minute in seconds
+        $maxSeconds = 10 * 60; // 10 minutes in seconds
+        $randomSeconds = mt_rand($minSeconds, $maxSeconds);
+        return $randomSeconds;
     }
-
-
-    public function retrieveCollege(Request $request)
+    private function saveQuestionChoices(Question $question, $choices)
     {
-       
-        $attributes = [ 'arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
-        $conditionAttribute = ['id' => $request->id];
-        return GetHelper::retrieveModel(College::class, $attributes, $conditionAttribute);
-
+        foreach ($choices as $choice) {
+            $question->choices()->create([
+                'content' => $choice['content'],
+                'status' => ($choice['isCorrect']) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value
+            ]);
+        }
     }
-
-
 }
