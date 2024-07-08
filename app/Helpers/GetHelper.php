@@ -137,7 +137,7 @@ class GetHelper
         if ($columnReplacements) {
             $row = ProcessDataHelper::columnConvertIdToName($row, $columnReplacements);
         }
-        
+
         // return ResponseHelper::successWithData($row);
         return $row;
     }

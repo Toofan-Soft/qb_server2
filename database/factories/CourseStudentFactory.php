@@ -27,10 +27,10 @@ final class CourseStudentFactory extends Factory
     public function definition(): array
     {
         return [
-            'department_course_id' => fake()->randomNumber(),
-            'student_id' => fake()->randomNumber(),
             'status' => fake()->randomElement(['0', '1', '2']),
             'academic_year' => fake()->randomNumber(),
+            'department_course_id' => fake()->randomNumber(),
+            'student_id' => fake()->randomNumber(),
         ];
     }
 }

@@ -33,9 +33,8 @@ final class PracticeExamFactory extends Factory
             'difficulty_level' => fake()->randomElement(['0', '1', '2', '3', '4']),
             'conduct_method' => fake()->randomElement(['0', '1']),
             'status' => fake()->randomElement(['0', '1', '2']),
-            'department_course_part_id' => fake()->randomNumber(),
+            'department_course_part_id' => \App\Models\DepartmentCoursePart::factory(),
             'user_id' => fake()->uuid,
-            'department_course_part_id' => fake()->randomNumber(),
         ];
     }
 }

@@ -27,11 +27,11 @@ final class StudentOnlineExamFactory extends Factory
     public function definition(): array
     {
         return [
-            'student_id' => fake()->randomNumber(),
-            'online_exam_id' => fake()->randomNumber(),
             'start_datetime' => fake()->optional()->dateTime(),
             'end_datetime' => fake()->optional()->dateTime(),
             'status' => fake()->randomElement(['0', '1', '2', '3']),
+            'student_id' => fake()->randomNumber(),
+            'online_exam_id' => fake()->randomNumber(),
         ];
     }
 }

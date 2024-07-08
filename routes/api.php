@@ -69,7 +69,7 @@ Route::post('user/register', [GuestController::class, 'addGuest']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);
 Route::post('user/login', [UserController::class, 'login']);
 Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
-Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+Route::put('user/change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
 // Route::post('forget_password',[ForgetPasswordController::class,'forget_password']);
 // Route::post('password_reset',[ResetPasswordController::class,'password_reset']);
 // Route::get('logout',[UserController::class,'logout']);
@@ -394,12 +394,8 @@ Route::middleware('auth:api')->group(function () {
 
     /// for test just
     Route::post('test', function (Request $request) {
-        // return now()->getTimestamp();
-
-        foreach ($request->examQuestions as $examQuestion) {
-
-        }
-       });
+        return User::all();
+           });
 
 // }); ////
 
@@ -475,7 +471,7 @@ Route::prefix('filter/')->group(function () {
 
 });///
 
-//for test with out need to login 
+//for test with out need to login
 Route::prefix('test/')->group(function () {
     Route::post('add', [LecturerOnlineExamController::class, 'addOnlineExam']);
     Route::put('modify', [QuestionController::class, 'acceptQuestion']);

@@ -41,7 +41,7 @@ class GuestController extends Controller
             //  $response = UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password);
             //  return ResponseHelper::successWithToken($response);
 
-            return ResponseHelper::successWithData(UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password));
+            // return ResponseHelper::successWithData(UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password));
 
             if (!UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password)) {
                 return ResponseHelper::serverError1("hellow");
@@ -82,6 +82,7 @@ class GuestController extends Controller
         try {
             $guest = Guest::where('user_id', '=', auth()->user()->id)->get($attributes);
             $guest = NullHelper::filter($guest);
+
             return ResponseHelper::successWithData($guest);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

@@ -27,9 +27,9 @@ final class DepartmentCourseFactory extends Factory
     public function definition(): array
     {
         return [
-            'course_id' => fake()->randomNumber(),
             'level' => fake()->randomElement(['1', '2', '3', '4', '5', '6', '7']),
             'semester' => fake()->randomElement(['1', '2']),
+            'course_id' => fake()->randomNumber(),
             'department_id' => fake()->randomNumber(),
         ];
     }

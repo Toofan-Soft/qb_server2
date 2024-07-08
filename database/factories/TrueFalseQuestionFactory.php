@@ -27,8 +27,8 @@ final class TrueFalseQuestionFactory extends Factory
     public function definition(): array
     {
         return [
-            'question_id' => fake()->randomNumber(),
             'answer' => fake()->randomElement(['0', '1']),
+            'question_id' => fake()->randomNumber(),
         ];
     }
 }

@@ -27,12 +27,12 @@ final class DepartmentCoursePartFactory extends Factory
     public function definition(): array
     {
         return [
-            'department_course_id' => fake()->randomNumber(),
-            'course_part_id' => fake()->randomNumber(),
             'note' => fake()->optional()->sentence,
             'score' => fake()->optional()->randomNumber(),
             'lectures_count' => fake()->optional()->randomNumber(),
             'lecture_duration' => fake()->optional()->randomNumber(),
+            'course_part_id' => fake()->randomNumber(),
+            'department_course_id' => fake()->randomNumber(),
         ];
     }
 }

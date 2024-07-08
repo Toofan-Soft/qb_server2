@@ -60,25 +60,65 @@ class ImageHelper
         return $oldImagePath;
     }
 
+    // public static function addCompleteDomainToMediaUrls($data, $imageFields = ['image_url', 'attachment', 'logo_url'])
+    // {
+    //     if (is_array($data)) {
+    //         foreach ($data as $item) {
+    //             foreach ($imageFields as $field) {
+    //                 if (isset($item->$field)) {
+    //                     $item->$field = asset($item->$field);
+    //                 }
+    //             }
+    //         }
+    //     } else {
+    //         foreach ($imageFields as $field) {
+    //             if (isset($data->$field)) {
+    //                 $data->$field =asset($data->$field);
+    //             }
+    //         }
+    //     }
+
+    //     return $data;
+
+    // }
+
     public static function addCompleteDomainToMediaUrls($data, $imageFields = ['image_url', 'attachment', 'logo_url'])
-    {
-        if (is_array($data)) {
-            foreach ($data as $item) {
-                foreach ($imageFields as $field) {
-                    if (isset($item->$field)) {
-                        $item->$field = asset($item->$field);
-                    }
+{
+    // Check if data is a collection
+    if ($data instanceof \Illuminate\Support\Collection) {
+        
+        $data->each(function($item) use ($imageFields) {
+            foreach ($imageFields as $field) {
+                if (isset($item->$field)) {
+                    $item->$field = asset($item->$field);
                 }
             }
-        } else {
+        });
+    }
+    // Check if data is an array
+    else if (is_array($data)) {
+
+        foreach ($data as &$item) { // Use reference to modify array elements
             foreach ($imageFields as $field) {
-                if (isset($data->$field)) {
-                    $data->$field =asset($data->$field);
+                if (isset($item[$field])) {
+                    $item[$field] = asset($item[$field]);
                 }
             }
         }
-
-        return $data;
-
     }
+    // Check if data is an object
+    else if (is_object($data)) {
+
+        foreach ($imageFields as $field) {
+            if (isset($data->$field)) {
+                $data->$field = asset($data->$field);
+            }
+        }
+    }
+
+    return $data;
+}
+
+
+
 }

@@ -50,7 +50,7 @@ class PracticeExamController extends Controller
         $algorithmData = $this->getAlgorithmData($request);
 
         $examQuestions = (new GenerateExam())->execute($algorithmData);
-        
+
         if ($examQuestions) { // modify to use has function
 
             $user = User::findOrFail(auth()->user()->id);
@@ -138,7 +138,7 @@ class PracticeExamController extends Controller
             ->where('practice_exams.department_course_part_id', '=', $request->department_course_part_id)
             ->where('practice_exams.user_id', '=', $userId)
             ->get();
-        
+
         $enumReplacement = [
             new EnumReplacement('course_part_name', CoursePartsEnum::class),
         ];
@@ -198,14 +198,14 @@ class PracticeExamController extends Controller
             })
             ->where('practice_exams.user_id', '=', $userId)
             ->get();
-        
+
 
         $enumReplacement = [
             new EnumReplacement('course_part_name', CoursePartsEnum::class),
             new EnumReplacement('language_name', LanguageEnum::class),
             new EnumReplacement('status_name', ExamStatusEnum::class)
         ];
-        
+
         $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, $enumReplacement);
 
         foreach ($practiceExams as $practiceExam) {
@@ -229,7 +229,7 @@ class PracticeExamController extends Controller
         $is_complete = (intval($exam->status) === ExamStatusEnum::COMPLETE->value) ? true : false;
 
         $questions = $this->getQuestions($request->exam_id, $is_complete);
-
+        $questions = NullHelper::filter($questions);
         return ResponseHelper::successWithData($questions);
     }
 
@@ -237,14 +237,14 @@ class PracticeExamController extends Controller
     {
         // return questoin as [content, attachment, is_true, choices[content, attachment, is_true]]
         $questions = [];
-        
+
         $examQuestions = PracticeExamQuestion::where('practice_exam_id', '=', $examId)->get();
 
         foreach ($examQuestions as $examQuestion) {
             // $question = $examQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
             $question = $examQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
             $answer = $examQuestion->answer;
-            
+
             if ($examQuestion->combination_id) {
                 if ($withAnswer) {
                     $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, true);
@@ -277,7 +277,7 @@ class PracticeExamController extends Controller
             }
             array_push($questions, $question);
         }
-            
+
         return $questions;
     }
 
@@ -341,9 +341,9 @@ class PracticeExamController extends Controller
             $department +
             $college->toArray() +
             $course->toArray();
-        
+
         $practiceExam = NullHelper::filter($practiceExam);
-        
+
         return ResponseHelper::successWithData($practiceExam);
     }
 
@@ -358,34 +358,19 @@ class PracticeExamController extends Controller
 
     public function savePracticeExamQuestionAnswer(Request $request)
     {
-        $questionType = Question::findOrFail($request->question_id, ['type']);
-
-        $answerId = null;
-        if (intval($questionType->type) === QuestionTypeEnum::TRUE_FALSE->value) {
-            $answerId = ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
-        } else {
-            $answerId =  intval($request->choice_id);
-        }
-
-        $practiceExamQuestion = PracticeExamQuestion::where('practice_exam_id', $request->exam_id)
-            ->where('question_id', $request->question_id)
-            ->first();
-            
-        // if ($practiceExamQuestion) {
-        //     $practiceExamQuestion->update([
-        //         'answer' => $answerId
-        //     ]);
+        // $questionType = Question::findOrFail($request->question_id, ['type']);
+        // if (intval($questionType->type) === QuestionTypeEnum::TRUE_FALSE->value) {
+        //     $answerId = ($request->is_true === true) ?  TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
         // } else {
-        //     // Handle the case where the PracticeExamQuestion was not found
-        //     throw new \Exception('PracticeExamQuestion not found');
+        //     $answerId = intval($request->choice_id);
         // }
-        
-        $practiceExamQuestion->update([
-            'answer' =>  $answerId,
-            // 'answer_duration' => $request->answer_duration ?? null,
-        ]);
 
-        return ResponseHelper::success();
+          PracticeExamQuestion::where('practice_exam_id', $request->exam_id)
+            ->where('question_id', $request->question_id)
+            ->update([
+                'answer' => $request->choice_id ?? $request->is_true
+            ]);
+          return ResponseHelper::success();
     }
 
     public function finishPracticeExam(Request $request)
@@ -417,7 +402,7 @@ class PracticeExamController extends Controller
     private function getAlgorithmData($request)
     {
         $types = [];
-        foreach ($request->questions_types as $type) 
+        foreach ($request->questions_types as $type)
         {
             $t = [
                 'id' => intval($type['type_id']),
@@ -443,7 +428,7 @@ class PracticeExamController extends Controller
         ];
 
         $questionTypesIds = [];
-        foreach ($request->questions_types as $type) 
+        foreach ($request->questions_types as $type)
         {
             array_push($questionTypesIds, $type['type_id']);
         }
@@ -479,7 +464,7 @@ class PracticeExamController extends Controller
             // ->whereIn('topics.id', [3])
             ->get()
             ->toArray();
-                
+
         foreach ($questions as $question) {
             // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
 
@@ -502,7 +487,7 @@ class PracticeExamController extends Controller
             //     $question->practice_exam_selection_times_count +
             //     $question->paper_exam_selection_times_count
             // ) / 3;
-            // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة 
+            // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة
             unset($question->online_exam_last_selection_datetime);
             unset($question->practice_exam_last_selection_datetime);
             unset($question->paper_exam_last_selection_datetime);
@@ -549,7 +534,7 @@ class PracticeExamController extends Controller
             ->map(function ($qestionChoicesCombination) {
                 return $qestionChoicesCombination->combination_id;
             })->toArray();
-        
+
         $selectedIndex = array_rand($qestionChoicesCombinationsIds);
         return $qestionChoicesCombinationsIds[$selectedIndex];
     }
@@ -557,38 +542,38 @@ class PracticeExamController extends Controller
     private function retrievePracticeExamResult($practiceExamId)
     {
         $practiceExam = PracticeExam::findOrFail($practiceExamId);
-        
+
         if ($practiceExam->status === ExamStatusEnum::COMPLETE->value) {
             $examQuestions = $practiceExam->practice_exam_question()
                 ->get(['question_id', 'answer', 'answer_duration', 'combination_id']);
-            
+
             $totalScoure = $examQuestions->count();
 
             $StudentScore = 0;
             $timeSpent = 0;
-            
+
             foreach ($examQuestions as $examQuestion) {
                 $timeSpent = $timeSpent + $examQuestion->answer_duration;
 
                 $question = Question::findOrFail($examQuestion->question_id);
-    
+
                 if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
                     if (ExamHelper::checkTrueFalseQuestionAnswer($question, $examQuestion->answer)) {
                         $StudentScore ++;
                     }
-    
+
                 } else {
                     if (ExamHelper::checkChoicesQuestionAnswer($question, $examQuestion->answer, $examQuestion->combination_id )) {
                         $StudentScore ++;
                     }
                 }
             }
-    
+
             $scoreRate = $StudentScore / $totalScoure * 100;
             $appreciation = ExamHelper::getExamResultAppreciation($scoreRate);
             $questionAverageAnswerTime = $timeSpent / $examQuestions->count();
             $incorrectAnswerCount = $examQuestions->count() - $scoreRate;
-            
+
             $examResult = [
                 'time_spent' => $timeSpent,
                 'question_average_answer_time' => $questionAverageAnswerTime,
@@ -607,18 +592,18 @@ class PracticeExamController extends Controller
     private function getPracticeExamResult($practiceExamId)
     {
         $practiceExam = PracticeExam::findOrFail($practiceExamId);
-        
+
         if ($practiceExam->status === ExamStatusEnum::COMPLETE->value) {
             $examQuestions = $practiceExam->practice_exam_question()
                 ->get(['question_id', 'answer', 'combination_id']);
-            
+
             $totalScoure = $examQuestions->count();
 
             $StudentScore = 0;
-            
+
             foreach ($examQuestions as $examQuestion) {
                 $question = Question::findOrFail($examQuestion->question_id);
-    
+
                 if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
                     if (ExamHelper::checkTrueFalseQuestionAnswer($question, $examQuestion->answer)) {
                         $StudentScore ++;
@@ -629,10 +614,10 @@ class PracticeExamController extends Controller
                     }
                 }
             }
-            
+
             $scoreRate = $StudentScore / $totalScoure * 100;
             $appreciation = ExamHelper::getExamResultAppreciation($scoreRate);
-            
+
             $examResult = [
                 'score_rate' => $scoreRate,
                 'appreciation' => $appreciation

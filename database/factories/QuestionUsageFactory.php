@@ -27,7 +27,6 @@ final class QuestionUsageFactory extends Factory
     public function definition(): array
     {
         return [
-            'question_id' => fake()->randomNumber(),
             'online_exam_last_selection_datetime' => fake()->optional()->dateTime(),
             'practice_exam_last_selection_datetime' => fake()->optional()->dateTime(),
             'paper_exam_last_selection_datetime' => fake()->optional()->dateTime(),
@@ -38,6 +37,7 @@ final class QuestionUsageFactory extends Factory
             'online_exam_incorrect_answers_count' => fake()->optional()->randomNumber(),
             'practice_exam_incorrect_answers_count' => fake()->optional()->randomNumber(),
             'practice_exam_correct_answers_count' => fake()->optional()->randomNumber(),
+            'question_id' => fake()->randomNumber(),
         ];
     }
 }

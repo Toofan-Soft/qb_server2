@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
+use App\Helpers\ImageHelper;
 use App\Helpers\NullHelper;
 
 class CourseStudentController extends Controller
@@ -96,7 +97,7 @@ class CourseStudentController extends Controller
                 return ResponseHelper::success();
             } else {
                 return ResponseHelper::clientError(401);
-                // غير مسموح تمرير الكرس وهو معلق او ممرر 
+                // غير مسموح تمرير الكرس وهو معلق او ممرر
             }
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -120,7 +121,7 @@ class CourseStudentController extends Controller
                 return ResponseHelper::success();
             } else {
                 return ResponseHelper::clientError(401);
-                // غير مسموح تعليق الكرس وهو معلق او مكتمل 
+                // غير مسموح تعليق الكرس وهو معلق او مكتمل
             }
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -129,7 +130,7 @@ class CourseStudentController extends Controller
 
     public function deleteCourseStudent(Request $request)
     {
-        // هل هناك قيود لحذف المقرر بناء على حالته الحالية او لا 
+        // هل هناك قيود لحذف المقرر بناء على حالته الحالية او لا
         try {
             $courseStudent = CourseStudent::where('department_course_id', '=', $request->department_course_id)
                 ->where('student_id', '=', $request->student_id);
@@ -193,6 +194,8 @@ class CourseStudentController extends Controller
 
             $unlinkCourseStudents = $departmentStudents->whereNotIn('id', $departmentCourseStudents->pluck('student_id'));
             $unlinkCourseStudents = NullHelper::filter($unlinkCourseStudents);
+            // $unlinkCourseStudents = ImageHelper::addCompleteDomainToMediaUrls($unlinkCourseStudents);
+
             return ResponseHelper::successWithData($unlinkCourseStudents);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

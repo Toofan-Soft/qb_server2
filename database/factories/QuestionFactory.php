@@ -33,7 +33,7 @@ final class QuestionFactory extends Factory
             'type' => fake()->randomElement(['0', '1']),
             'difficulty_level' => fake()->randomFloat(),
             'status' => fake()->randomElement(['0', '1', '2', '3']),
-            'accessability_status' => fake()->randomElement(['0', '1', '2']),
+            'accessibility_status' => fake()->randomElement(['0', '1', '2']),
             'estimated_answer_time' => fake()->randomNumber(),
             'language' => fake()->randomElement(['0', '1']),
             'topic_id' => fake()->randomNumber(),

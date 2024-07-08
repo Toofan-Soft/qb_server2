@@ -129,12 +129,12 @@ class UserController extends Controller
         $user = Auth::guard('api')->user();
         if ($user) {
             $token = $user->token();
-            $token->revoke(); 
+            $token->revoke();
             return response()->json(['message' => 'Successfully logged out'], 200);
         }
 
         return response()->json(['message' => 'Unable to logout'], 400);
-        
+
         // try {
         //     Auth::logout();
         //     // if (Auth::check()) {
@@ -207,7 +207,6 @@ class UserController extends Controller
         }
     }
 
-    // reset password by email // this for make notify by send code to email , then user where make req to changePasswordAfterAccountReovery method
     public function requestAccountReovery(Request $request)
     {
         try {
@@ -227,14 +226,24 @@ class UserController extends Controller
             return ResponseHelper::serverError();
         }
     }
-    public function changePasswordAfterAccountReovery(Request $request)
+    public function verifyAccountAfterReovery(Request $request)
     {
         try {
             $otp2 = $this->otp->validate($request->code);
             if (!$otp2->status) {
                 return ResponseHelper::clientError(401);
             }
-            $user = User::where('email', $otp2->email)->first();
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
+    }
+
+    public function changePasswordAfterAccountReovery(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            $user = User::where('email', $user->email)->first();
             $user->update(['password' => bcrypt($request->new_password)]);
             return ResponseHelper::success();
         } catch (\Exception $e) {

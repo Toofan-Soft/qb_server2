@@ -27,9 +27,9 @@ final class FormQuestionFactory extends Factory
     public function definition(): array
     {
         return [
+            'combination_id' => fake()->optional()->randomNumber(),
             'question_id' => fake()->randomNumber(),
             'form_id' => fake()->randomNumber(),
-            'combination_id' => fake()->optional()->randomNumber(),
         ];
     }
 }
