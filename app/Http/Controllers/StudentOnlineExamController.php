@@ -105,7 +105,7 @@ class StudentOnlineExamController extends Controller
                 )
                 ->first();
 
-            $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+            // $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
 
             $exam = ProcessDataHelper::enumsConvertIdToName(
                 $exam,
@@ -497,11 +497,11 @@ class StudentOnlineExamController extends Controller
                     'c.arabic_name as course_name',
                     'cp.part_id as course_part_name'
                 )
-                ->get()
-                ->map(function ($exam) {
-                    $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-                    return $exam;
-                });
+                ->get();
+                // ->map(function ($exam) {
+                //     $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+                //     return $exam;
+                // });
 
             $exams = ProcessDataHelper::enumsConvertIdToName($exams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
 

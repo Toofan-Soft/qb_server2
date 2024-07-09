@@ -249,9 +249,9 @@ class CourseStudentController extends Controller
             'department_course_id' => 'required|exists:department_courses,id',
             'student_id' => 'nullable|exists:students,id',
             'students_ids'                => 'required|array|min:1',
-            'students_ids.*'              => 'required|integer|exists:students,id',
+            'students_ids.*'              => 'required|exists:students,id',
             // 'status' => ['nullable', new Enum(CourseStudentStatusEnum::class)], // Assuming CourseStudentStatusEnum holds valid values
-            // 'academic_year' => 'required|integer',
+            'academic_year' => 'nullable|integer',
         ];
 
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

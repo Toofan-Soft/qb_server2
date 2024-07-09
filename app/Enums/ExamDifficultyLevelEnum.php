@@ -1,6 +1,7 @@
 <?php
 namespace App\Enums;
 use App\Traits\EnumTraits;
+use InvalidArgumentException;
 use Kongulov\Traits\InteractWithEnum;
 
 enum ExamDifficultyLevelEnum: int {

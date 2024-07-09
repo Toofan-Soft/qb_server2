@@ -488,21 +488,6 @@ Route::prefix('enum/')->group(function () {
 
 
 
-
-
-
-
- // test initial data
- Route::prefix('initial/')->group(function () {
-    Route::post('add', [InitialDatabaseController::class, 'initialDatabase']);
-    // Route::put('modify', [CollegeController::class, 'modifyCollege']);
-    // Route::delete('delete', [CollegeController::class, 'deleteCollege']);
-    // Route::get('retrieve', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
-    // Route::get('retrieve-list', [CollegeController::class, 'retrieveColleges']);
-    // Route::get('retrieve-basic-info-list', [CollegeController::class, 'retrieveBasicCollegesInfo']);
-});
-
-
 //test enum
 Route::get('getenum', function () {
     // $englishNames = EnumTraits::getEnglishNames(SemesterEnum::class);

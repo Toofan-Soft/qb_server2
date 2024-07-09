@@ -1,0 +1,24 @@
+[
+    {
+        "comment": "employee::add",
+        "arabic_name": "فادي مدير النظام",
+        "english_name": "Fadi Admin",
+        "job_type_id": 2,
+        "qualification_id": 5,
+        "specialization": "System Administrator",
+        "gender_id": 0,
+        "phone": "111222333"
+    },
+    {
+        "comment": "university::add",
+        "arabic_name": "تعز",
+        "english_name": "taiz"
+    },
+    {
+        "comment": "user management : add",
+        "email": "fadiadmin@gmail.com",
+        "owner_type_id": 3,
+        "owner_id": 1,
+        "roles_ids": [2, 3, 4, 5, 6, 7]
+    }
+]

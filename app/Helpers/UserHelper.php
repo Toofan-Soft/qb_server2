@@ -64,7 +64,7 @@ class UserHelper
                     'role_id' => $role,
                 ]);
             }
-
+            // return [$user, $generatedToken];
             $user->notify(new EmaiVerificationNotification($generatedToken));
 
             // if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {

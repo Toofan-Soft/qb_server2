@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\User;
 use App\Enums\RoleEnum;
 use App\Enums\OwnerTypeEnum;
+use App\Helpers\ResponseHelper;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -28,7 +29,7 @@ class EmaiVerificationNotification extends Notification
     {
         $this->message='use the bellow code for verification';
         $this->subject='verification needed';
-        $this->fromEmail='nasseralabbasi39@gmail.com';
+        $this->fromEmail='fadi@gmail.com';
         $this->mailer='smtp';
         $this->otp=new Otp();
 

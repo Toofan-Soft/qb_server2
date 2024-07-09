@@ -12,31 +12,29 @@ use App\Helpers\GetHelper;
 use App\Models\CoursePart;
 use App\Models\Department;
 use Illuminate\Http\Request;
-use App\Helpers\FilterHelper;
 use App\Enums\CoursePartsEnum;
 use App\Enums\LevelsEnum;
 use App\Enums\OwnerTypeEnum;
 use App\Enums\RoleEnum;
 use App\Helpers\EnumReplacement;
-use App\Models\DepartmentCourse;
-use App\Helpers\EnumReplacement1;
 use App\Helpers\ProcessDataHelper;
 use App\Helpers\ResponseHelper;
 use App\Models\Chapter;
 use App\Models\Student;
 use Illuminate\Support\Facades\DB;
-use PHPUnit\Framework\MockObject\Builder\Stub;
-use Symfony\Component\Console\Helper\ProcessHelper;
 
 class FilterController extends Controller
 {
     public function retrieveCourses()
     {
         $attributes = ['id', 'arabic_name as name'];
+        try {
+            $courses = GetHelper::retrieveModels(Course::class, $attributes, null);
 
-        $courses = GetHelper::retrieveModels(Course::class, $attributes, null);
-
-        return ResponseHelper::successWithData($courses);
+            return ResponseHelper::successWithData($courses);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveCourseParts(Request $request)
@@ -46,371 +44,440 @@ class FilterController extends Controller
         $enumReplacements = [
             new EnumReplacement('name', CoursePartsEnum::class),
         ];
+        try {
 
-        $courseParts = GetHelper::retrieveModels(CoursePart::class, $attributes,  $conditionAttribute, $enumReplacements);
-
-        return ResponseHelper::successWithData($courseParts);
+            $courseParts = GetHelper::retrieveModels(CoursePart::class, $attributes,  $conditionAttribute, $enumReplacements);
+            return ResponseHelper::successWithData($courseParts);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveChapters(Request $request)
     {
         $attributes = ['id', 'arabic_title as title'];
         $conditionAttribute = ['course_part_id'  => $request->course_part_id];
+        try {
+            $chapters = GetHelper::retrieveModels(Chapter::class, $attributes,  $conditionAttribute);
 
-        $chapters = GetHelper::retrieveModels(Chapter::class, $attributes,  $conditionAttribute);
-
-        return ResponseHelper::successWithData($chapters);
+            return ResponseHelper::successWithData($chapters);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveTopics(Request $request)
     {
         $attributes = ['id', 'arabic_title as title'];
         $conditionAttribute = ['chapter_id'  => $request->chapter_id];
+        try {
 
-        $topics = GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
+            $topics = GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
 
-        return ResponseHelper::successWithData($topics);
+            return ResponseHelper::successWithData($topics);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveColleges()
     {
         $attributes = ['id', 'arabic_name as name'];
+        try {
+            $colleges = GetHelper::retrieveModels(College::class, $attributes, null);
 
-        $colleges = GetHelper::retrieveModels(College::class, $attributes, null);
-
-        return ResponseHelper::successWithData($colleges);
+            return ResponseHelper::successWithData($colleges);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveLecturerColleges()
     {
-        $user = auth()->user();
-        $lecturer = Employee::where('user_id', $user->id)->first();
+        try {
+            $user = auth()->user();
+            $lecturer = Employee::where('user_id', $user->id)->first();
 
-        if ($lecturer) {
-            $lecturerColleges =  DB::table('course_lecturers')
-                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
-                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-                ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-                ->join('colleges', 'departments.college_id', '=', 'colleges.id')
-                ->select('colleges.id', 'colleges.arabic_name as name')
-                ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
-                ->distinct()
-                ->get();
-            
-            return ResponseHelper::successWithData($lecturerColleges);
-        } else {
-            return ResponseHelper::clientError(402);
-            // return response()->json(['error_message' => 'lectuer not authorized'], 401);
+            if ($lecturer) {
+                $lecturerColleges =  DB::table('course_lecturers')
+                    ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                    ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                    ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+                    ->join('colleges', 'departments.college_id', '=', 'colleges.id')
+                    ->select('colleges.id', 'colleges.arabic_name as name')
+                    ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
+                    ->distinct()
+                    ->get();
+
+                return ResponseHelper::successWithData($lecturerColleges);
+            } else {
+                return ResponseHelper::clientError(402);
+                // return response()->json(['error_message' => 'lectuer not authorized'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
     public function retrieveLecturerCurrentColleges()
     {
-        $user = auth()->user();
-        $lecturer = Employee::where('user_id', $user->id)->first();
+        try {
+            $user = auth()->user();
+            $lecturer = Employee::where('user_id', $user->id)->first();
 
-        if ($lecturer) {
-            $lecturerColleges =  DB::table('course_lecturers')
-                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
-                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-                ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-                ->join('colleges', 'departments.college_id', '=', 'colleges.id')
-                ->select('colleges.id', 'colleges.arabic_name as name')
-                ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
-                ->where('course_lecturers.academic_year', '=', now()->format('Y'))
-                ->distinct()
-                ->get();
+            if ($lecturer) {
+                $lecturerColleges =  DB::table('course_lecturers')
+                    ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                    ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                    ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+                    ->join('colleges', 'departments.college_id', '=', 'colleges.id')
+                    ->select('colleges.id', 'colleges.arabic_name as name')
+                    ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
+                    ->where('course_lecturers.academic_year', '=', now()->format('Y'))
+                    ->distinct()
+                    ->get();
 
-            return ResponseHelper::successWithData($lecturerColleges);
-        } else {
-            return ResponseHelper::clientError(402);
-            // return response()->json(['error_message' => 'lectuer not authorized'], 401);
+                return ResponseHelper::successWithData($lecturerColleges);
+            } else {
+                return ResponseHelper::clientError(402);
+                // return response()->json(['error_message' => 'lectuer not authorized'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
     public function retrieveDepartments(Request $request)
     {
-        $attributes = ['id', 'arabic_name as name'];
-        $conditionAttribute = ['college_id'  => $request->college_id];
+        try {
+            $attributes = ['id', 'arabic_name as name'];
+            $conditionAttribute = ['college_id'  => $request->college_id];
 
-        $departments = GetHelper::retrieveModels(Department::class, $attributes,  $conditionAttribute);
+            $departments = GetHelper::retrieveModels(Department::class, $attributes,  $conditionAttribute);
 
-        return ResponseHelper::successWithData($departments);
+            return ResponseHelper::successWithData($departments);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveLecturerDepartments(Request $request)
     {
-        $user = auth()->user();
-        $lecturer = Employee::where('user_id', $user->id)->first();
+        try {
+            $user = auth()->user();
+            $lecturer = Employee::where('user_id', $user->id)->first();
 
-        if ($lecturer) {
-            $lecturerDepartments =  DB::table('course_lecturers')
-                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
-                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-                ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-                ->select('departments.id', 'departments.arabic_name as name')
-                ->where('departments.college_id', '=', $request->college_id)
-                ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
-                ->distinct()
-                ->get();
+            if ($lecturer) {
+                $lecturerDepartments =  DB::table('course_lecturers')
+                    ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                    ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                    ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+                    ->select('departments.id', 'departments.arabic_name as name')
+                    ->where('departments.college_id', '=', $request->college_id)
+                    ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
+                    ->distinct()
+                    ->get();
 
-            return ResponseHelper::successWithData($lecturerDepartments);
-        } else {
-            return ResponseHelper::clientError(402);
-            // return response()->json(['error_message' => 'lectuer not authorized'], 401);
+                return ResponseHelper::successWithData($lecturerDepartments);
+            } else {
+                return ResponseHelper::clientError(402);
+                // return response()->json(['error_message' => 'lectuer not authorized'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
     public function retrieveLecturerCurrentDepartments(Request $request)
     {
-        $user = auth()->user();
-        $lecturer = Employee::where('user_id', $user->id)->first();
+        try {
+            $user = auth()->user();
+            $lecturer = Employee::where('user_id', $user->id)->first();
 
-        if ($lecturer) {
-            $lecturerDepartments =  DB::table('course_lecturers')
-                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
-                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-                ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-                ->select('departments.id', 'departments.arabic_name as name')
-                ->where('departments.college_id', '=', $request->college_id)
-                ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
-                ->where('course_lecturers.academic_year', '=', now()->format('Y'))
-                ->distinct()
-                ->get();
+            if ($lecturer) {
+                $lecturerDepartments =  DB::table('course_lecturers')
+                    ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                    ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                    ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+                    ->select('departments.id', 'departments.arabic_name as name')
+                    ->where('departments.college_id', '=', $request->college_id)
+                    ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
+                    ->where('course_lecturers.academic_year', '=', now()->format('Y'))
+                    ->distinct()
+                    ->get();
 
-            return ResponseHelper::successWithData($lecturerDepartments);
-        } else {
-            return ResponseHelper::clientError(402);
-            // return response()->json(['error_message' => 'lectuer not authorized'], 401);
+                return ResponseHelper::successWithData($lecturerDepartments);
+            } else {
+                return ResponseHelper::clientError(402);
+                // return response()->json(['error_message' => 'lectuer not authorized'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
     public function retrieveDepartmentLevels(Request $request)
     {
-        $attributes = ['levels_count'];
-        
-        $levelsCount = Department::findOrFail($request->department_id, $attributes)['levels_count'];
+        try {
+            $attributes = ['levels_count'];
 
-        $levels = LevelsEnum::getLevelsTo($levelsCount);
+            $levelsCount = Department::findOrFail($request->department_id, $attributes)['levels_count'];
 
-        return ResponseHelper::successWithData($levels);
+            $levels = LevelsEnum::getLevelsTo($levelsCount);
+
+            return ResponseHelper::successWithData($levels);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveDepartmentCourses(Request $request)
     {
-        if ($request->department_id) {
-            $departmentCourses =  DB::table('departments')
-                ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
-                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                ->select('department_courses.id', 'courses.arabic_name as name')
-                ->where('departments.id', '=', $request->department_id)
-                ->get();
+        try {
+            if ($request->department_id) {
+                $departmentCourses =  DB::table('departments')
+                    ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
+                    ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+                    ->select('department_courses.id', 'courses.arabic_name as name')
+                    ->where('departments.id', '=', $request->department_id)
+                    ->get();
 
-            return ResponseHelper::successWithData($departmentCourses);
-        } else {
-            return ResponseHelper::clientError(401);
-            // return response()->json(['error_message' => 'department_id is empty'], 401);
+                return ResponseHelper::successWithData($departmentCourses);
+            } else {
+                return ResponseHelper::clientError(401);
+                // return response()->json(['error_message' => 'department_id is empty'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
     public function retrieveDepartmentLevelCourses(Request $request)
     {
-        if ($request->department_id && $request->level_id) {
-            // // Fetch department with related department courses and courses
-            // $departmentCourses = Department::where('id', $request->department_id)
-            // ->with(['department_courses' => function($query) use ($request) {
-            //     $query->where('level', $request->level_id)
-            //             ->with('course');
-            // }])
-            // ->first();
+        try {
+            if ($request->department_id && $request->level_id) {
+                // // Fetch department with related department courses and courses
+                // $departmentCourses = Department::where('id', $request->department_id)
+                // ->with(['department_courses' => function($query) use ($request) {
+                //     $query->where('level', $request->level_id)
+                //             ->with('course');
+                // }])
+                // ->first();
 
-            // // Extract the required information
-            //  $data = $departmentCourses->department_courses->map(function($departmentCourse) {
-            //     return [
-            //         'id' => $departmentCourse->id,
-            //         'name' => $departmentCourse->course->arabic_name,
-            //     ];
-            // });
+                // // Extract the required information
+                //  $data = $departmentCourses->department_courses->map(function($departmentCourse) {
+                //     return [
+                //         'id' => $departmentCourse->id,
+                //         'name' => $departmentCourse->course->arabic_name,
+                //     ];
+                // });
 
-            $departmentCourses =  DB::table('departments')
-                ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
-                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                ->select('department_courses.id', 'courses.arabic_name as name')
-                ->where('departments.id', '=', $request->department_id)
-                ->where('department_courses.level', '=', $request->level_id)
-                ->get();
+                $departmentCourses =  DB::table('departments')
+                    ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
+                    ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+                    ->select('department_courses.id', 'courses.arabic_name as name')
+                    ->where('departments.id', '=', $request->department_id)
+                    ->where('department_courses.level', '=', $request->level_id)
+                    ->get();
 
-            return ResponseHelper::successWithData($departmentCourses);
-        } else {
-            return ResponseHelper::clientError(401);
-            // return response()->json(['error_message' => 'department_id or level_id is empty'], 401);
+                return ResponseHelper::successWithData($departmentCourses);
+            } else {
+                return ResponseHelper::clientError(401);
+                // return response()->json(['error_message' => 'department_id or level_id is empty'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
     public function retrieveDepartmentLevelSemesterCourses(Request $request)
     {
-        if ($request->department_id && $request->level_id && $request->semester_id) {
-            $departmentCourses =  DB::table('departments')
-                ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
-                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                ->select('department_courses.id', 'courses.arabic_name as name')
-                ->where('departments.id', '=', $request->department_id)
-                ->where('department_courses.level', '=', $request->level_id)
-                ->where('department_courses.semester', '=', $request->semester_id)
-                ->get();
-                
-            return ResponseHelper::successWithData($departmentCourses);
-        } else {
-            return ResponseHelper::clientError(401);
-            // return response()->json(['error_message' => 'department_id or level_id or semester_id is empty'], 401);
+        try {
+            if ($request->department_id && $request->level_id && $request->semester_id) {
+                $departmentCourses =  DB::table('departments')
+                    ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
+                    ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+                    ->select('department_courses.id', 'courses.arabic_name as name')
+                    ->where('departments.id', '=', $request->department_id)
+                    ->where('department_courses.level', '=', $request->level_id)
+                    ->where('department_courses.semester', '=', $request->semester_id)
+                    ->get();
+
+                return ResponseHelper::successWithData($departmentCourses);
+            } else {
+                return ResponseHelper::clientError(401);
+                // return response()->json(['error_message' => 'department_id or level_id or semester_id is empty'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
     public function retrieveDepartmentCourseParts(Request $request)
     {
-        if ($request->department_course_id) {
-            $departmentCourseParts =  DB::table('department_course_parts')
-                ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-                ->select(
-                    'department_course_parts.id',
-                    'course_parts.part_id as name'
-                )
-                ->where('department_course_parts.department_course_id', '=', $request->department_course_id)
-                ->get();
+        try {
+            if ($request->department_course_id) {
+                $departmentCourseParts =  DB::table('department_course_parts')
+                    ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+                    ->select(
+                        'department_course_parts.id',
+                        'course_parts.part_id as name'
+                    )
+                    ->where('department_course_parts.department_course_id', '=', $request->department_course_id)
+                    ->get();
 
-            $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName($departmentCourseParts, [
-                new EnumReplacement('name', CoursePartsEnum::class),
-            ]);
+                $departmentCourseParts = ProcessDataHelper::enumsConvertIdToName($departmentCourseParts, [
+                    new EnumReplacement('name', CoursePartsEnum::class),
+                ]);
 
-            return ResponseHelper::successWithData($departmentCourseParts);
-        } else {
-            return ResponseHelper::clientError(401);
-            // return response()->json(['error_message' => 'department_course_id is empty'], 401);
+                return ResponseHelper::successWithData($departmentCourseParts);
+            } else {
+                return ResponseHelper::clientError(401);
+                // return response()->json(['error_message' => 'department_course_id is empty'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
     public function retrieveDepartmentLecturerCourses(Request $request)
     {
-        $user = auth()->user();
-        $lecturer = Employee::where('user_id', $user->id)->first();
+        try {
+            $user = auth()->user();
+            $lecturer = Employee::where('user_id', $user->id)->first();
 
-        // $lecturer = Employee::findOrFail(auth()->user()->id);
+            // $lecturer = Employee::findOrFail(auth()->user()->id);
 
-        if ($lecturer) {
-            $departmentLecturerCourses =  DB::table('course_lecturers')
-                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
-                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-                ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                ->select(
-                    'department_courses.id',
-                    'courses.arabic_name as name'
-                )
-                ->where('departments.id', '=', $request->department_id)
-                ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
-                ->get();
+            if ($lecturer) {
+                $departmentLecturerCourses =  DB::table('course_lecturers')
+                    ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                    ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                    ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+                    ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+                    ->select(
+                        'department_courses.id',
+                        'courses.arabic_name as name'
+                    )
+                    ->where('departments.id', '=', $request->department_id)
+                    ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
+                    ->get();
 
-            return ResponseHelper::successWithData($departmentLecturerCourses);
-        } else {
-            return ResponseHelper::clientError(402);
-            // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
+                return ResponseHelper::successWithData($departmentLecturerCourses);
+            } else {
+                return ResponseHelper::clientError(402);
+                // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
     public function retrieveDepartmentLecturerCurrentCourses(Request $request)
     {
-        $user = auth()->user();
-        $lecturer = Employee::where('user_id', $user->id)->first();
+        try {
+            $user = auth()->user();
+            $lecturer = Employee::where('user_id', $user->id)->first();
 
-        // $lecturer = Employee::findOrFail(auth()->user()->id);
+            // $lecturer = Employee::findOrFail(auth()->user()->id);
 
-        if ($lecturer) {
-            $departmentLecturerCourses =  DB::table('course_lecturers')
-                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
-                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-                ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                ->select(
-                    'department_courses.id',
-                    'courses.arabic_name as name'
-                )
-                ->where('departments.id', '=', $request->department_id)
-                ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
-                ->where('course_lecturers.academic_year', '=', now()->format('Y'))
-                ->get();
-            return ResponseHelper::successWithData($departmentLecturerCourses);
-        } else {
-            return ResponseHelper::clientError(402);
-            // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
+            if ($lecturer) {
+                $departmentLecturerCourses =  DB::table('course_lecturers')
+                    ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                    ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                    ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+                    ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+                    ->select(
+                        'department_courses.id',
+                        'courses.arabic_name as name'
+                    )
+                    ->where('departments.id', '=', $request->department_id)
+                    ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
+                    ->where('course_lecturers.academic_year', '=', now()->format('Y'))
+                    ->get();
+                return ResponseHelper::successWithData($departmentLecturerCourses);
+            } else {
+                return ResponseHelper::clientError(402);
+                // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
     public function retrieveDepartmentLecturerCourseParts(Request $request)
     {
-        $user = auth()->user();
-        $lecturer = Employee::where('user_id', $user->id)->first();
+        try {
+            $user = auth()->user();
+            $lecturer = Employee::where('user_id', $user->id)->first();
 
-        // $lecturer = Employee::findOrFail(auth()->user()->id);
+            // $lecturer = Employee::findOrFail(auth()->user()->id);
 
-        if ($lecturer) {
-            $departmentLecturerCourseParts =  DB::table('course_lecturers')
-                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
-                ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-                ->select(
-                    'department_course_parts.id',
-                    'course_parts.part_id as name'
-                )
-                ->where('department_courses.id', '=', $request->department_course_id)
-                ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
-                ->get();
-            
-            $departmentLecturerCourseParts = ProcessDataHelper::enumsConvertIdToName(
-                $departmentLecturerCourseParts,
-                [
-                    new EnumReplacement('name', CoursePartsEnum::class)
-                ]
-            );
+            if ($lecturer) {
+                $departmentLecturerCourseParts =  DB::table('course_lecturers')
+                    ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                    ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+                    ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                    ->select(
+                        'department_course_parts.id',
+                        'course_parts.part_id as name'
+                    )
+                    ->where('department_courses.id', '=', $request->department_course_id)
+                    ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
+                    ->get();
 
-            return ResponseHelper::successWithData($departmentLecturerCourseParts);
-        } else {
-            return ResponseHelper::clientError(402);
-            // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
+                $departmentLecturerCourseParts = ProcessDataHelper::enumsConvertIdToName(
+                    $departmentLecturerCourseParts,
+                    [
+                        new EnumReplacement('name', CoursePartsEnum::class)
+                    ]
+                );
+
+                return ResponseHelper::successWithData($departmentLecturerCourseParts);
+            } else {
+                return ResponseHelper::clientError(402);
+                // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
     public function retrieveDepartmentLecturerCurrentCourseParts(Request $request)
     {
-        $user = auth()->user();
-        $lecturer = Employee::where('user_id', $user->id)->first();
+        try {
+            $user = auth()->user();
+            $lecturer = Employee::where('user_id', $user->id)->first();
 
-        // $lecturer = Employee::findOrFail(auth()->user()->id);
+            // $lecturer = Employee::findOrFail(auth()->user()->id);
 
-        if ($lecturer) {
-            $departmentLecturerCourseParts =  DB::table('course_lecturers')
-                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
-                ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-                ->select(
-                    'department_course_parts.id',
-                    'course_parts.part_id as name'
-                )
-                ->where('department_courses.id', '=', $request->department_course_id)
-                ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
-                ->where('course_lecturers.academic_year', '=', now()->format('Y')) // سؤال العيال
-                ->get();
-            
-            $departmentLecturerCourseParts = ProcessDataHelper::enumsConvertIdToName(
-                $departmentLecturerCourseParts,
-                [
-                    new EnumReplacement('name', CoursePartsEnum::class)
-                ]
-            );
+            if ($lecturer) {
+                $departmentLecturerCourseParts =  DB::table('course_lecturers')
+                    ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                    ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+                    ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                    ->select(
+                        'department_course_parts.id',
+                        'course_parts.part_id as name'
+                    )
+                    ->where('department_courses.id', '=', $request->department_course_id)
+                    ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
+                    ->where('course_lecturers.academic_year', '=', now()->format('Y')) // سؤال العيال
+                    ->get();
 
-            return ResponseHelper::successWithData($departmentLecturerCourseParts);
-        } else {
-            return ResponseHelper::clientError(402);
-            // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
+                $departmentLecturerCourseParts = ProcessDataHelper::enumsConvertIdToName(
+                    $departmentLecturerCourseParts,
+                    [
+                        new EnumReplacement('name', CoursePartsEnum::class)
+                    ]
+                );
+
+                return ResponseHelper::successWithData($departmentLecturerCourseParts);
+            } else {
+                return ResponseHelper::clientError(402);
+                // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
     }
 
@@ -420,31 +487,41 @@ class FilterController extends Controller
         // هل يتم ارجاع كل الموظفين (موظف ومحاضر) او موظف فقط؟؟؟؟؟؟؟؟؟؟؟
         // يجب ان اسال العيال على هذه ايش المقصود فيها
         $attributes = ['id', 'arabic_name as name'];
+        try {
+            $employees = GetHelper::retrieveModels(Employee::class, $attributes, null);
 
-        $employees = GetHelper::retrieveModels(Employee::class, $attributes, null);
-
-        return ResponseHelper::successWithData($employees);
+            return ResponseHelper::successWithData($employees);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveLecturers()
     {
         $attributes = ['id', 'arabic_name as name'];
-        $lecturers = Employee::whereIn(
-            'job_type',
-            [JobTypeEnum::LECTURER->value, JobTypeEnum::EMPLOYEE_LECTURE->value]
-        )
-            ->get($attributes);
-        return ResponseHelper::successWithData($lecturers);
+        try {
+            $lecturers = Employee::whereIn(
+                'job_type',
+                [JobTypeEnum::LECTURER->value, JobTypeEnum::EMPLOYEE_LECTURE->value]
+            )
+                ->get($attributes);
+            return ResponseHelper::successWithData($lecturers);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveEmployeesOfJob(Request $request)
     {
         $attributes = ['id', 'arabic_name as name'];
         $conditionAttribute = ['job_type' => $request->job_type_id];
+        try {
+            $employees = GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute);
 
-        $employees = GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute);
-
-        return ResponseHelper::successWithData($employees);
+            return ResponseHelper::successWithData($employees);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveAcademicYears()
@@ -482,46 +559,59 @@ class FilterController extends Controller
 
     public function retrieveOwners(Request $request)
     {
+
         $attributes = ['id', 'arabic_name as name'];
         $owners = [];
-        if ($request->owner_type_id === OwnerTypeEnum::STUDENT->value) {
-            $owners = Student::where('user_id', '=', null)->get($attributes);
-        } elseif ($request->owner_type_id === OwnerTypeEnum::LECTURER->value) {
-            $owners = Employee::whereIn(
-                'job_type',
-                [JobTypeEnum::LECTURER->value, JobTypeEnum::EMPLOYEE_LECTURE->value]
-            )
-                ->where('user_id', '=', null)
-                ->get($attributes);
-        } elseif ($request->owner_type_id === OwnerTypeEnum::EMPLOYEE->value) {
-            $owners = Employee::whereIn(
-                'job_type',
-                [JobTypeEnum::EMPLOYEE->value, JobTypeEnum::EMPLOYEE_LECTURE->value]
-            )
-                ->where('user_id', '=', null)
-                ->get($attributes);
-        } else {
-            return ResponseHelper::clientError(401);
-        }
+        try {
+            if ($request->owner_type_id === OwnerTypeEnum::STUDENT->value) {
+                $owners = Student::where('user_id', '=', null)->get($attributes);
+            } elseif ($request->owner_type_id === OwnerTypeEnum::LECTURER->value) {
+                $owners = Employee::whereIn(
+                    'job_type',
+                    [JobTypeEnum::LECTURER->value, JobTypeEnum::EMPLOYEE_LECTURE->value]
+                )
+                    ->where('user_id', '=', null)
+                    ->get($attributes);
+            } elseif ($request->owner_type_id === OwnerTypeEnum::EMPLOYEE->value) {
+                $owners = Employee::whereIn(
+                    'job_type',
+                    [JobTypeEnum::EMPLOYEE->value, JobTypeEnum::EMPLOYEE_LECTURE->value]
+                )
+                    ->where('user_id', '=', null)
+                    ->get($attributes);
+            } else {
+                return ResponseHelper::clientError(401);
+            }
 
-        return ResponseHelper::successWithData($owners);
+            return ResponseHelper::successWithData($owners);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveRoles(Request $request)
     {
-        $roles = RoleEnum::getOwnerRoles($request->owner_type_id);
-        return ResponseHelper::successWithData($roles);
+        try {
+            $roles = RoleEnum::getOwnerRoles($request->owner_type_id);
+            return ResponseHelper::successWithData($roles);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveProctors()
     {
-        $proctors =  DB::table('employees')
-            ->join('users', 'employees.user_id', '=', 'users.id')
-            ->join('user_roles', 'users.id', '=', 'user_roles.user_id')
-            ->select('employees.id', 'employees.arabic_name as name')
-            ->where('user_roles.role_id', '=', RoleEnum::PROCTOR->value)
-            ->get();
-            
-        return ResponseHelper::successWithData($proctors);
+        try {
+            $proctors =  DB::table('employees')
+                ->join('users', 'employees.user_id', '=', 'users.id')
+                ->join('user_roles', 'users.id', '=', 'user_roles.user_id')
+                ->select('employees.id', 'employees.arabic_name as name')
+                ->where('user_roles.role_id', '=', RoleEnum::PROCTOR->value)
+                ->get();
+
+            return ResponseHelper::successWithData($proctors);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 }

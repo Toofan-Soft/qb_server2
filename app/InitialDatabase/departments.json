@@ -22,8 +22,8 @@
     },
     {
         "college_id": 2,
-        "arabic_name": "اختبارات القبول",
-        "english_name": "Acceptance Exams", 
+        "arabic_name": " اختبارات القبول لكلية الطب",
+        "english_name": "Acceptance Exams in Medical college", 
         "levels_count": 2,
         "comment": " id = 4"
     },

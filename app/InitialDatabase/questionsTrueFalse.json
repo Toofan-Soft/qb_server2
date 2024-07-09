@@ -1,0 +1,42 @@
+[
+    {
+        "content": "apple is a fegetable",
+        "isCorrect": true
+    },
+    {
+        "content": "go is a verb",
+        "isCorrect": true
+    },
+    {
+        "content": "new is a Verb",
+        "isCorrect": false
+    },
+    {
+        "content": "fadi is taller than naser",
+        "isCorrect": true
+    },
+    {
+        "content": "ahmed is is taller student in class",
+        "isCorrect": false
+    },
+    {
+        "content": "ahmed is is tallest student in class",
+        "isCorrect": true
+    },
+    {
+        "content": "i like apple",
+        "isCorrect": true
+    },
+    {
+        "content": "she love me",
+        "isCorrect": false
+    },
+    {
+        "content": "it will be raning",
+        "isCorrect": false
+    },
+    {
+        "content": "she butifual",
+        "isCorrect": false
+    }  
+]

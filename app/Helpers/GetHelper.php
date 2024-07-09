@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use Traversable;
 use App\Helpers\ResponseHelper;
 use PhpParser\Node\Stmt\Foreach_;
 
@@ -74,7 +75,6 @@ class GetHelper
                 $row->attachmetn_url = asset($row->attachmetn_url);
             }
         }
-
         if ($enumReplacements) {
             $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
         }
@@ -82,12 +82,16 @@ class GetHelper
         if ($columnReplacements) {
             $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
         }
-
+        
         // if (count($rows) === 1) {
         //     return ResponseHelper::successWithData($rows->first());
         //   }
         // return ResponseHelper::successWithData($rows);
-        return $rows->toArray();
+        if(is_array($rows) || $rows instanceof Traversable){
+            return $rows;
+        }else{
+            return $rows->toArray();
+        }
     }
 
 
