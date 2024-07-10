@@ -27,10 +27,10 @@ final class RealExamQuestionTypeFactory extends Factory
     public function definition(): array
     {
         return [
-            'real_exam_id' => fake()->randomNumber(),
             'question_type' => fake()->randomElement(['0', '1']),
             'questions_count' => fake()->randomNumber(),
             'question_score' => fake()->randomFloat(),
+            'real_exam_id' => fake()->randomNumber(),
         ];
     }
 }

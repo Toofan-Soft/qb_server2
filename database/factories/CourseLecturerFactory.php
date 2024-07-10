@@ -28,7 +28,7 @@ final class CourseLecturerFactory extends Factory
     {
         return [
             'academic_year' => fake()->randomNumber(),
-            'department_course_part_id' => fake()->randomNumber(),
+            'department_course_part_id' => \App\Models\DepartmentCoursePart::factory(),
             'lecturer_id' => fake()->randomNumber(),
         ];
     }

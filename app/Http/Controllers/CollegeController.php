@@ -98,12 +98,12 @@ class CollegeController extends Controller
 
     public function retrieveColleges()
     {
-        Gate::authorize('addCollege', CollegeController::class);
+        // Gate::authorize('addCollege', CollegeController::class);
 
         $attributes = ['id', 'arabic_name', 'english_name', 'phone', 'email', 'logo_url'];
         try {
             $colleges = GetHelper::retrieveModels(College::class, $attributes);
-            
+
             $colleges = NullHelper::filter1($colleges);
 
             return ResponseHelper::successWithData($colleges);

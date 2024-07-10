@@ -27,10 +27,10 @@ final class ChoiceFactory extends Factory
     public function definition(): array
     {
         return [
-            'question_id' => fake()->randomNumber(),
             'content' => fake()->text,
             'attachment' => fake()->optional()->word,
             'status' => fake()->randomElement(['0', '1']),
+            'question_id' => fake()->randomNumber(),
         ];
     }
 }

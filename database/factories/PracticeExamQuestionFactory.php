@@ -27,11 +27,11 @@ final class PracticeExamQuestionFactory extends Factory
     public function definition(): array
     {
         return [
-            'practice_exam_id' => fake()->randomNumber(),
-            'question_id' => fake()->randomNumber(),
             'combination_id' => fake()->optional()->randomNumber(),
             'answer' => fake()->optional()->randomNumber(),
             'answer_duration' => fake()->optional()->randomNumber(),
+            'practice_exam_id' => fake()->randomNumber(),
+            'question_id' => fake()->randomNumber(),
         ];
     }
 }

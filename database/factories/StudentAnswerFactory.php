@@ -27,11 +27,11 @@ final class StudentAnswerFactory extends Factory
     public function definition(): array
     {
         return [
+            'answer' => fake()->optional()->randomNumber(),
+            'answer_duration' => fake()->optional()->randomNumber(),
             'student_id' => fake()->randomNumber(),
             'question_id' => fake()->randomNumber(),
             'form_id' => fake()->randomNumber(),
-            'answer' => fake()->optional()->randomNumber(),
-            'answer_duration' => fake()->optional()->randomNumber(),
         ];
     }
 }

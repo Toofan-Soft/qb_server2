@@ -99,8 +99,8 @@ class StudentOnlineExamController extends Controller
                     'c.arabic_name as course_name',
                     'cp.part_id as course_part_name',
                     'e.arabic_name as lecturer_name',
-                    DB::raw("(SELECT SUM(questions_count * question_score) 
-                            FROM public.real_exam_question_types 
+                    DB::raw("(SELECT SUM(questions_count * question_score)
+                            FROM public.real_exam_question_types
                             WHERE real_exam_id = res.id) as total_score")
                 )
                 ->first();
@@ -293,23 +293,42 @@ class StudentOnlineExamController extends Controller
         try {
             // يتم تحديث بيانات استخدام السؤال
             $student = Student::where('user_id', auth()->user()->id)->first();
-            $studentAnswer = StudentAnswer::where('student_id', $student->id)
-                ->where('form_id', $request->form_id)
-                ->where('question_id', $request->question_id); // need to get() func
 
-            $questionType = Question::findOrFail($request->question_id, ['type']);
-            $answerId = null;
-            if ($questionType->type === QuestionTypeEnum::TRUE_FALSE->value) {
+            // $studentAnswer = StudentAnswer::where('student_id', $student->id)
+            //     ->where('form_id', $request->form_id)
+            //     ->where('question_id', $request->question_id); // need to get() func
 
-                $answerId = ($request->is_true === true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
-            } else {
-                $answerId =  $request->choice_id;
-            }
-            StudentAnswer::create([
+            // $questionType = Question::findOrFail($request->question_id, ['type']);
+
+            //$answerId = null;
+           // if ($questionType->type === QuestionTypeEnum::TRUE_FALSE->value) {
+
+            //     $answerId = ($request->is_true === true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
+            // } else {
+            //     $answerId =  $request->choice_id;
+            // }
+
+            ////////////**** THIS FOR MAKE LISTENER TO CHECK THE STATUS OF ONLINE EXAM  ****////
+            // $studentOnlineExam =  DB::table('student_online_exams')
+            //     ->join('students', 'student_online_exams.student_id', '=', 'students.id')
+            //     ->join('student_answers', 'students.id', '=', 'student_answers.student_id')
+            //     ->select(
+            //        'student_online_exams.online_exam_id',
+            //        'student_online_exams.start_datetime',
+            //        'student_online_exams.end_datetime',
+            //        'student_online_exams.status'
+            //     )
+            //     ->where('student_online_exams.student_id', '=', $student->id)
+            //     // ->where('student_answers.student_id', '=', $student->id)
+            //     ->first();
+
+            /////////////////////////////////////////////////////
+
+            StudentAnswer::createOrUpdate([
                 'student_id' => $student->id,
                 'form_id' => $request->form_id,
                 'question_id' => $request->question_id,
-                'answer' => $answerId,
+                'answer' =>  $request->choice_id ?? $request->is_true ,  //$answerId,
                 'answer_duration' => $request->answer_duration ?? null,
             ]);
 
@@ -491,9 +510,9 @@ class StudentOnlineExamController extends Controller
             throw $e;
         }
     }
-    /** for rules 
+    /** for rules
      * retrieveOnlineExams attributes {status id}
      * saveOnlineExamQuestionAnswer attributes {exam id, question id, answer}
-     * 
+     *
      */
 }

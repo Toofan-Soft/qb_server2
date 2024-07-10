@@ -23,13 +23,13 @@ class NullHelper
     // {
     //     return $value->map(function ($item) {
     //         $itemArray = $item->toArray();
-            
+
     //         foreach ($itemArray as $key => $value) {
     //             if (is_null($value)) {
     //                 unset($itemArray[$key]);
     //             }
     //         }
-        
+
     //         return $itemArray;
     //     });
     // }
@@ -59,10 +59,10 @@ class NullHelper
     //         //             unset($itemArray[$key]);
     //         //         }
     //         //     }
-            
+
     //         //     return $itemArray;
     //         // });
-             
+
     //         return array_filter($value, function ($item) {
     //             if (is_array($item)) {
     //                 // return 5;
@@ -107,11 +107,11 @@ class NullHelper
             throw new \InvalidArgumentException("Value must be an array or object");
         }
     }
-    
+
     private static function filterArray(array $array)
     {
         $filteredArray = [];
-
+        $imageFields = ['image_url', 'attachment', 'logo_url'];
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 $filteredValue = self::filterArray($value);
@@ -123,6 +123,12 @@ class NullHelper
 
             if (!is_null($filteredValue)) {
                 $filteredArray[$key] = $filteredValue;
+            }
+
+            foreach ($imageFields as $field) {
+                if ($key === $field) {
+                    $filteredArray[$key] = asset($filteredValue);
+                }
             }
         }
 
@@ -162,7 +168,7 @@ class NullHelper
             throw new \InvalidArgumentException("Value must be an array or object");
         }
     }
-    
+
     private static function filterArray1(array $array)
     {
         $filteredArray = [];

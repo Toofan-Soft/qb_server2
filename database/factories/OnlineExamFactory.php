@@ -27,12 +27,12 @@ final class OnlineExamFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => fake()->randomNumber(),
-            'proctor_id' => fake()->optional()->randomNumber(),
             'status' => fake()->randomElement(['0', '1', '2']),
             'conduct_method' => fake()->randomElement(['0', '1']),
             'exam_datetime_notification_datetime' => fake()->dateTime(),
             'result_notification_datetime' => fake()->dateTime(),
+            'id' => fake()->randomNumber(),
+            'proctor_id' => fake()->optional()->randomNumber(),
         ];
     }
 }

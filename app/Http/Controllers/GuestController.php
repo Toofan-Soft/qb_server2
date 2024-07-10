@@ -82,6 +82,7 @@ class GuestController extends Controller
         try {
             $guest = Guest::where('user_id', '=', auth()->user()->id)->get($attributes);
             $guest = NullHelper::filter($guest);
+
             return ResponseHelper::successWithData($guest);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
