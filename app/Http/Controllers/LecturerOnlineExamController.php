@@ -48,11 +48,13 @@ class LecturerOnlineExamController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError(402);
         }
-        try {
+        // try {
             $algorithmData = $this->getAlgorithmData($request);
-
+            
+            return ResponseHelper::successWithData($algorithmData);
             $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
-
+            
+            
             if ($examFormsQuestions) { // modify to use has function
                 $employee = Employee::where('user_id',  auth()->user()->id)->first();
 
@@ -111,10 +113,10 @@ class LecturerOnlineExamController extends Controller
                 DB::rollBack();
                 return ResponseHelper::serverError();
             }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function modifyOnlineExam(Request $request)

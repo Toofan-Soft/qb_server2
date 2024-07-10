@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
 use App\Models\StudentAnswer;
 use App\Enums\CoursePartsEnum;
+use Illuminate\Support\Carbon;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\QuestionHelper;
@@ -522,7 +523,7 @@ class ExamHelper
                 )
                 ->where('questions.status', '=', QuestionStatusEnum::ACCEPTED->value)
                 ->where('questions.language', '=', $request->language_id)
-                ->whereIn('questions.accessability_status', $accessabilityStatusIds)
+                ->whereIn('questions.accessibility_status', $accessabilityStatusIds)
                 ->whereIn('questions.type', $questionTypesIds)
                 ->whereIn('questions.topic_id', $request->topics_ids)
                 // ->whereIn('topics.id', $request->topics_ids)
@@ -534,19 +535,20 @@ class ExamHelper
                 // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
 
                 $question->type_id = intval($question->type_id);
+                $question->difficulty_level = floatval($question->difficulty_level);
 
                 // $selections = [1, 2, 3, 4, 5];
                 // $randomIndex = array_rand($selections);
                 // $question['last_selection'] = $selections[$randomIndex];
                 // $question->last_selection = 3;
-                $question['last_selection'] = intval((
+                $question->last_selection = intval((
                     DatetimeHelper::getDifferenceInDays(now(), $question->online_exam_last_selection_datetime) +
                     DatetimeHelper::getDifferenceInDays(now(), $question->practice_exam_last_selection_datetime) +
                     DatetimeHelper::getDifferenceInDays(now(), $question->paper_exam_last_selection_datetime)
                 ) / 3);
 
                 // $question->selection_times = 2;
-                $question['selection_times'] = intval((
+                $question->selection_times = intval((
                     $question->online_exam_selection_times_count +
                     $question->practice_exam_selection_times_count +
                     $question->paper_exam_selection_times_count
