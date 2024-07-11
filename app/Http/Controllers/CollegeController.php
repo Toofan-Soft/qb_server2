@@ -145,8 +145,8 @@ class CollegeController extends Controller
             'english_name' => 'required|string|unique:colleges,english_name|max:255',
             'logo' =>  'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust max size as needed
             'description' => 'nullable|string',
-            'phone' => 'nullable|string|unique:colleges,phone',
-            'email' => 'nullable|email|unique:colleges,email',
+            'phone' => 'nullable|integer',
+            'email' => 'nullable|email',
             'facebook' => 'nullable|string|max:255',
             'x_platform' => 'nullable|string|max:255',
             'youtube' => 'nullable|string|max:255',

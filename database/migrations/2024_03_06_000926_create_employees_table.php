@@ -19,7 +19,7 @@ return new class extends Migration
 
             $table->string('arabic_name') ;
             $table->string('english_name');
-            $table->string('phone')->unique()->nullable();
+            $table->integer('phone')->unique()->nullable();
             $table->string('image_url')->nullable();
             $table->enum('job_type', JobTypeEnum::values());
             $table->enum('qualification', QualificationEnum::values());

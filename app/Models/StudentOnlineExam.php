@@ -19,6 +19,7 @@ class StudentOnlineExam extends Model
         'online_exam_id',
         'start_datetime',
         'end_datetime',
+        'form_id',
         'status',
     ];
 

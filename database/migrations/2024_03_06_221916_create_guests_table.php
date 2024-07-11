@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('guests', function (Blueprint $table) {
             $table->id();
             $table->string('name') ;
-            $table->string('phone')->unique()->nullable();
+            $table->integer('phone')->unique()->nullable();
             $table->string('image_url')->nullable();
             $table->enum('gender', GenderEnum::values());
             

@@ -45,7 +45,6 @@ class DatetimeHelper
         return ($seconds / (24 * 3600));
     }
 
-
     // public static function convertMillisecondsToTimestamp($value)
     // {
     //     if ($value == null) {

@@ -95,7 +95,7 @@ class GuestController extends Controller
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
-            'phone' => 'nullable|string|unique:guests,phone',
+            'phone' => 'nullable|integer',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gender_id' => ['required', new Enum(GenderEnum::class)], // Assuming GenderEnum holds valid values
             //'user_id' => 'nullable|uuid|unique:users,id',

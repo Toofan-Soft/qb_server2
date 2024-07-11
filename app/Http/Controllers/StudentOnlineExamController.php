@@ -205,11 +205,13 @@ class StudentOnlineExamController extends Controller
     public function retrieveOnlineExamQuestions(Request $request)
     {
         try {
-            $realExam = RealExam::findOrFail($request->id);
-
+            // $realExam = RealExam::findOrFail($request->id);
             // $formId = self::selectStudentForm($realExam)['id'];
-            $formId = self::selectStudentForm($realExam);
-
+            // $formId = self::selectStudentForm($realExam);
+            $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
+            $formId = StudentOnlineExam::where('online_exam_id', $request->id)
+                ->where('student_id', $studentId)
+                ->first(['form_id']);
             $questions = $this->getFormQuestions($formId);
             $questions = NullHelper::filter($questions);
             return ResponseHelper::successWithData($questions);
@@ -271,17 +273,19 @@ class StudentOnlineExamController extends Controller
             $student = Student::where('user_id', auth()->user()->id)->first();
             $studentOnlineExam = StudentOnlineExam::where('student_id', $student->id)
                 ->where('online_exam_id', $request->id)->firstOrFail();
-            if ($studentOnlineExam) {
-                StudentOnlineExam::where('student_id', $student->id)
-                    ->where('online_exam_id', $request->id)
-                    ->update([
-                        'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
-                        'end_datetime' => now(),
-                    ]);
-                return ResponseHelper::success();
-            } else {
-                return ResponseHelper::clientError();
-            }
+            $studentOnlineExam->update([
+                'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
+                'end_datetime' => now()->getTimestamp(),
+            ]);
+            // StudentOnlineExam::where('student_id', $student->id)
+            //     ->where('online_exam_id', $request->id)
+            //     ->update([
+            //         'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
+            //         'end_datetime' => now(),
+            //     ]);
+
+            // refresh student and proctor 
+            return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -292,8 +296,7 @@ class StudentOnlineExamController extends Controller
     {
         try {
             // يتم تحديث بيانات استخدام السؤال
-            $student = Student::where('user_id', auth()->user()->id)->first();
-
+            // $student = Student::where('user_id', auth()->user()->id)->first();
             // $studentAnswer = StudentAnswer::where('student_id', $student->id)
             //     ->where('form_id', $request->form_id)
             //     ->where('question_id', $request->question_id); // need to get() func
@@ -301,7 +304,7 @@ class StudentOnlineExamController extends Controller
             // $questionType = Question::findOrFail($request->question_id, ['type']);
 
             //$answerId = null;
-           // if ($questionType->type === QuestionTypeEnum::TRUE_FALSE->value) {
+            // if ($questionType->type === QuestionTypeEnum::TRUE_FALSE->value) {
 
             //     $answerId = ($request->is_true === true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
             // } else {
@@ -324,33 +327,38 @@ class StudentOnlineExamController extends Controller
 
             /////////////////////////////////////////////////////
 
-            StudentAnswer::createOrUpdate([
-                'student_id' => $student->id,
-                'form_id' => $request->form_id,
-                'question_id' => $request->question_id,
-                'answer' =>  $request->choice_id ?? $request->is_true ,  //$answerId,
-                'answer_duration' => $request->answer_duration ?? null,
+            // StudentAnswer::createOrUpdate([
+            //     'student_id' => $student->id,
+            //     'form_id' => $request->form_id,
+            //     'question_id' => $request->question_id,
+            //     'answer' =>  $request->choice_id ?? $request->is_true,  //$answerId,
+            //     'answer_duration' => $request->answer_duration ?? null,
+            // ]);
+
+            $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
+            $formId = StudentOnlineExam::where('online_exam_id', $request->id)
+                ->where('student_id', $studentId)
+                ->first(['form_id']);
+                $questionType = Question::findOrFail($request->question_id, ['type']);
+
+            $answerId = null;
+            if (intval($questionType->type) === QuestionTypeEnum::TRUE_FALSE->value) {
+                $answerId = ($request->is_true === true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
+            } else {
+                $answerId =  $request->choice_id;
+            }
+            StudentAnswer::where('student_id', $studentId)
+            ->where('form_id', $formId)
+            ->where('question_id', $request->question_id)
+            ->update([
+                'answer' =>  $answerId
             ]);
+
+            // refresh student and proctor 
 
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
-        }
-    }
-
-    private static function selectStudentForm(RealExam $realExam) // need to test
-    {
-        try {
-            $examFormsIds = $realExam->forms()->get(['id'])
-                ->map(function ($form) {
-                    return $form->id;
-                })
-                ->toArray();
-
-            $selectedStudentFormId = array_rand($examFormsIds);
-            return $examFormsIds[$selectedStudentFormId];
-        } catch (\Exception $e) {
-            throw $e;
         }
     }
 
@@ -498,10 +506,10 @@ class StudentOnlineExamController extends Controller
                     'cp.part_id as course_part_name'
                 )
                 ->get();
-                // ->map(function ($exam) {
-                //     $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-                //     return $exam;
-                // });
+            // ->map(function ($exam) {
+            //     $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
+            //     return $exam;
+            // });
 
             $exams = ProcessDataHelper::enumsConvertIdToName($exams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
 

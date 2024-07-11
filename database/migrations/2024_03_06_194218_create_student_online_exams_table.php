@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('student_online_exams', function (Blueprint $table) {
             $table->timestamp('start_datetime')->nullable();
             $table->timestamp('end_datetime')->nullable();//
+            $table->unsignedBigInteger('form_id')->nullable();//
             $table->enum('status', StudentOnlineExamStatusEnum::values());
             
             $table->unsignedBigInteger('student_id');

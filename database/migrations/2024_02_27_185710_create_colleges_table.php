@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('english_name')->unique();
             $table->string('logo_url')->nullable() ;
             $table->text('description')->nullable() ;
-            $table->string('phone')->unique()->nullable();
-            $table->string('email')->unique()->nullable();
+            $table->integer('phone')->nullable();
+            $table->string('email')->nullable();
             $table->string('facebook')->nullable() ;
             $table->string('x_platform')->nullable() ;
             $table->string('youtube')->nullable() ;

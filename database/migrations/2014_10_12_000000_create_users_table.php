@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\LanguageEnum;
 use App\Enums\OwnerTypeEnum;
 use App\Enums\UserStatusEnum;
 use Illuminate\Support\Facades\Schema;
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('status', UserStatusEnum::values());
             $table->enum('owner_type', OwnerTypeEnum::values());
+            $table->enum('language', LanguageEnum::values())->default(LanguageEnum::ARABIC->value);
             $table->rememberToken();
             $table->timestamps();
         });

@@ -174,7 +174,7 @@ class EmployeeController extends Controller
         $rules = [
             'arabic_name' => 'required|string',
             'english_name' => 'required|string',
-            'phone' => 'nullable|string|unique:employees,phone',
+            'phone' => 'nullable|integer',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'job_type_id' => ['required', new Enum(JobTypeEnum::class)], // Assuming JobTypeEnum holds valid values
             'qualification_id' => ['required', new Enum(QualificationEnum::class)], // Assuming QualificationEnum holds valid values
