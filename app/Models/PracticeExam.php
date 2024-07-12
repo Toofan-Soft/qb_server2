@@ -9,6 +9,7 @@ use App\Enums\ExamConductMethodEnum;
 use App\Enums\ExamDifficultyLevelEnum;
 use App\Enums\ExamProcedureMethodEnum;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -17,9 +18,11 @@ class PracticeExam extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    protected $dateFormat = 'U';
     protected $fillable = [
         'title',
         'language',
+        'datetime',
         'duration',
         'difficulty_level',
         'conduct_method',
@@ -43,6 +46,10 @@ class PracticeExam extends Model
 
     public function practice_exam_question() : HasMany {
         return $this->HasMany(PracticeExamQuestion::class);
+    }
+
+    public function practice_exam_usage() : HasOne {
+        return $this->HasOne(PracticeExamUsage::class);
     }
 
     public function department_course_part() : BelongsTo {

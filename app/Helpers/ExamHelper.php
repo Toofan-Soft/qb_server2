@@ -469,7 +469,10 @@ class ExamHelper
      * accessabilityStatusIds: [int] 
      * 
      ***** return: 
-     * algorithmData [id, content, attachment, is_true]
+     * algorithmData = { estimated_time, difficulty_level, forms_count,  
+     *      question_types_and_questions_count [id, count], 
+     *      question [id, type_id, difficulty_level, answer_time, topic_id, last_selection, selection_times]
+     *  }
      */
     public static function getAlgorithmData($request, $accessabilityStatusIds)
     {

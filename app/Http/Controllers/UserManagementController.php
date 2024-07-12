@@ -139,27 +139,25 @@ class UserManagementController extends Controller
     public function retrieveUser(Request $request)
     {
         try {
-            return ResponseHelper::success();
             $userData = User::findOrFail(
                 $request->id,
                 ['id', 'email', 'status as status_name', 'owner_type as owner_type_name']
             );
 
-            $ownerTable = '';
-            $nameColumn = 'arabic_name as name';
             if (intval($userData->owner_type_name) === OwnerTypeEnum::GUEST->value) {
-                $ownerTable = 'guests';
-                $nameColumn = 'name';
+                $ownerData = $userData->guest()->get(['name', 'image_url']);
+                $userRoles = RoleEnum::getOwnerRolesWithMandatory(intval($userData->owner_type_name));
             } elseif (intval($userData->owner_type_name) === OwnerTypeEnum::STUDENT->value) {
-                $ownerTable = 'student';
-            } else {
-                $ownerTable = 'employee';
-            }
+                $ownerData = $userData->student()->get(['arabic_name as name', 'image_url']);
+                $userRoles = RoleEnum::getOwnerRolesWithMandatory(intval($userData->owner_type_name));
+            } elseif (intval($userData->owner_type_name) === OwnerTypeEnum::EMPLOYEE->value) {
+                $ownerData = $userData->employee()->get(['arabic_name as name', 'image_url', 'job_type']);
+                $userRoles = RoleEnum::getOwnerRolesWithMandatory(intval($userData->owner_type_name), intval($ownerData->job_type));
+                unset($ownerData['job_type']);
+            } 
 
-            $ownerData = $userData->$ownerTable()->get([$nameColumn, 'image_url']);
             $ownerData = NullHelper::filter($ownerData);
             $currentUserRoles = $userData->user_roles()->pluck('role_id')->toArray();
-            $userRoles = UserHelper::retrieveOwnerRoles($userData->owner_type_name);
             $resultRoles = [];
             foreach ($userRoles as $userRole) {
                 if (in_array($userRole['id'], $currentUserRoles)) {
@@ -176,7 +174,8 @@ class UserManagementController extends Controller
                 new EnumReplacement('status_name', UserStatusEnum::class)
             ]);
             unset($userData['id']);
-            $userData = $userData->toArray() + $ownerData->toArray();
+            $userData = $userData + $ownerData->toArray();
+            // $userData = $userData->toArray() + $ownerData->toArray();
             // array_merge($userData->toArray(), $ownerData->toArray());
             $userData['roles'] = $resultRoles;
             return ResponseHelper::successWithData($userData);
@@ -188,8 +187,8 @@ class UserManagementController extends Controller
     public function retrieveOwnerRoles(Request $request)
     {
         try {
-            $userRoles = UserHelper::retrieveOwnerRoles($request->owner_type_id);
-            return ResponseHelper::successWithData($userRoles);
+            $ownerRoles = RoleEnum::getOwnerRolesWithMandatory($request->owner_type_id, $request->job_type_id);
+            return ResponseHelper::successWithData($ownerRoles);
             // $attributes = ['id, name, is_mandatory'];
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
