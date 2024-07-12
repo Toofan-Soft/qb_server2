@@ -418,6 +418,7 @@ class StudentOnlineExamController extends Controller
             $examScores = $this->getRealExamQuestionScore($onlineExamId);
 
             $StudentScore = 0;
+            
             foreach ($questionsAnswers as $questionAnswer) {
                 $question = Question::findOrFail($questionAnswer->questoin_id);
                 if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {

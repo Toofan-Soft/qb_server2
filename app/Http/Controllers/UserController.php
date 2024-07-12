@@ -97,50 +97,50 @@ class UserController extends Controller
     //     }
     // }
 
-    public function login1()
-    {
-        // User::
-        $user = User::findOrFail(auth()->user()->id);
-        // return $user->tokens();
+    // public function login1()
+    // {
+    //     // User::
+    //     $user = User::findOrFail(auth()->user()->id);
+    //     // return $user->tokens();
 
-        // $tokens = $user->tokens; // Retrieve the tokens as a collection
+    //     // $tokens = $user->tokens; // Retrieve the tokens as a collection
         
-        // $tokens = $user->tokens()->get(['id', 'client_id', 'name', 'scopes', 'revoked', 'created_at', 'updated_at', 'expires_at', 'user_id']);    
-        // return response()->json($tokens); // Return the collection as JSON
-        // return response()->json($tokens->first()); // Return the collection as JSON
-        // return response()->json($tokens->first()->accessToken); // Return the collection as JSON
+    //     // $tokens = $user->tokens()->get(['id', 'client_id', 'name', 'scopes', 'revoked', 'created_at', 'updated_at', 'expires_at', 'user_id']);    
+    //     // return response()->json($tokens); // Return the collection as JSON
+    //     // return response()->json($tokens->first()); // Return the collection as JSON
+    //     // return response()->json($tokens->first()->accessToken); // Return the collection as JSON
 
-        // Retrieve non-revoked tokens where the name matches 'quesionbanklaravelapi'
-        $tokens = $user->tokens()
-            ->where('name', 'quesionbanklaravelapi')
-            ->where('revoked', false)
-            ->get(['id', 'client_id', 'name', 'scopes', 'revoked', 'created_at', 'updated_at', 'expires_at', 'user_id']);
+    //     // Retrieve non-revoked tokens where the name matches 'quesionbanklaravelapi'
+    //     $tokens = $user->tokens()
+    //         ->where('name', 'quesionbanklaravelapi')
+    //         ->where('revoked', false)
+    //         ->get(['id', 'client_id', 'name', 'scopes', 'revoked', 'created_at', 'updated_at', 'expires_at', 'user_id']);
 
-        if ($tokens->isEmpty()) {
-            return response()->json(['error' => 'No tokens found'], 404);
-        }
+    //     if ($tokens->isEmpty()) {
+    //         return response()->json(['error' => 'No tokens found'], 404);
+    //     }
 
-        // // Decrypt tokens if necessary and prepare the response
-        // $tokensWithAccess = $tokens->map(function ($token) {
-        // return [
-        //     'id' => $token->id,
-        //     'accessToken' => Crypt::decrypt($token->id) // Assuming the access token is stored in the 'id' column and encrypted
-        //     ];
-        // });
+    //     // // Decrypt tokens if necessary and prepare the response
+    //     // $tokensWithAccess = $tokens->map(function ($token) {
+    //     // return [
+    //     //     'id' => $token->id,
+    //     //     'accessToken' => Crypt::decrypt($token->id) // Assuming the access token is stored in the 'id' column and encrypted
+    //     //     ];
+    //     // });
 
-        // return response()->json($tokensWithAccess);
+    //     // return response()->json($tokensWithAccess);
 
-        // Fetch JWT tokens from a custom field
-        $tokensWithAccess = $tokens->map(function ($token) {
-            $accessToken = DB::table('oauth_access_tokens')->where('id', $token->id)->value('jwt_token'); // Adjust the column name as needed
-            return [
-                'id' => $token->id,
-                'accessToken' => $accessToken
-            ];
-        });
+    //     // Fetch JWT tokens from a custom field
+    //     $tokensWithAccess = $tokens->map(function ($token) {
+    //         $accessToken = DB::table('oauth_access_tokens')->where('id', $token->id)->value('jwt_token'); // Adjust the column name as needed
+    //         return [
+    //             'id' => $token->id,
+    //             'accessToken' => $accessToken
+    //         ];
+    //     });
 
-        return response()->json($tokensWithAccess);
-    }
+    //     return response()->json($tokensWithAccess);
+    // }
 
     public function login(Request $request)
     {

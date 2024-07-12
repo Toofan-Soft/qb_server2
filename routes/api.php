@@ -102,7 +102,7 @@ Route::middleware('auth:api')->group(function () {
 
     // user
     Route::get('user/retrieve-profile', [UserController::class, 'retrieveProfile']);
-    Route::get('user/login1', [UserController::class, 'login1']);
+    // Route::get('user/login1', [UserController::class, 'login1']);
     // Route::get('filter/retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
 
 // });///
