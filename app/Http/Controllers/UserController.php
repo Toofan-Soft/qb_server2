@@ -172,7 +172,7 @@ class UserController extends Controller
                         "uid" => $user->id,
                         "user_type_id" => $user->owner_type,
                         "roles_ids" => $rolesIds,
-                        // "language_id" => $user->owner_type,
+                        "language_id" => $user->language,
                         "token" => $token
                     ];
                     return ResponseHelper::successWithTokenAndUserType($token, $user->owner_type);
