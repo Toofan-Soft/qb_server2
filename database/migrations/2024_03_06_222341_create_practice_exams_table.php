@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use App\Enums\ExamFormConfigurationMethodEnum;
+use App\Enums\PracticeExamStatusEnum;
 
 return new class extends Migration
 {
@@ -22,10 +23,11 @@ return new class extends Migration
             $table->id();
             $table->string('title')->nullable();
             $table->enum('language', LanguageEnum::values());
+            $table->timestamp('datetime');
             $table->integer('duration');
             $table->enum('difficulty_level', ExamDifficultyLevelEnum::values());
             $table->enum('conduct_method', ExamConductMethodEnum::values());
-            $table->enum('status', ExamStatusEnum::values());
+            $table->enum('status', PracticeExamStatusEnum::values())->default(PracticeExamStatusEnum::NEW->value);
 
             $table->unsignedBigInteger('department_course_part_id');
             $table->foreign('department_course_part_id')

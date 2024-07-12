@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Enums\JobTypeEnum;
 use App\Models\User;
 use App\Models\Guest;
 use App\Enums\RoleEnum;
@@ -49,14 +50,13 @@ class UserHelper
             } elseif ($ownerTypeId === OwnerTypeEnum::STUDENT->value) {
                 $owner = Student::findOrFail($ownerId)->update(['user_id' => $user->id]);
                 array_push($roles, RoleEnum::STUDENT->value);
-            } elseif ($ownerTypeId === OwnerTypeEnum::LECTURER->value) {
-                $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
-                array_push($roles, RoleEnum::LECTURER->value);
             } elseif ($ownerTypeId === OwnerTypeEnum::EMPLOYEE->value) {
-                $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
-            } else {
-                $owner = Employee::findOrFail($ownerId)->update(['user_id' => $user->id]);
-                array_push($roles, RoleEnum::LECTURER->value);
+                $owner = Employee::findOrFail($ownerId);
+                if((intval($owner->job_type) === JobTypeEnum::LECTURER->value) || 
+                    (intval($owner->job_type) === JobTypeEnum::EMPLOYEE_LECTURE->value)){
+                    array_push($roles, RoleEnum::LECTURER->value);
+                }
+                $owner->update(['user_id' => $user->id]);
             }
 
             foreach ($roles as $role) {
@@ -93,86 +93,79 @@ class UserHelper
         }
     }
 
-    public static function retrieveOwnerRoles($ownerTypeId)
-    {
-        $userRoles = [];
+    // public static function retrieveOwnerRoles($ownerTypeId)
+    // {
+    //     $userRoles = [];
 
-        if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
-            $userRoles = [
-                [
-                    'id' => RoleEnum::GUEST->value,
-                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::GUEST->value),
-                    'name' => EnumTraits::getNameByNumber(RoleEnum::GUEST->value, RoleEnum::class),
-                    'is_mandatory' => true
-                ]
-            ];
-        } elseif ($ownerTypeId === OwnerTypeEnum::STUDENT->value) {
-            $userRoles = [
-                [
-                    'id' => RoleEnum::STUDENT->value,
-                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::STUDENT->value),
-                    'name' => EnumTraits::getNameByNumber(RoleEnum::STUDENT->value, RoleEnum::class),
-                    'is_mandatory' => true
-                ]
-            ];
-        } elseif ($ownerTypeId === OwnerTypeEnum::LECTURER->value) {
-            $userRoles = [
-                [
-                    'id' => RoleEnum::LECTURER->value,
-                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::LECTURER->value),
-                    'name' => EnumTraits::getNameByNumber(RoleEnum::LECTURER->value, RoleEnum::class),
-                    'is_mandatory' => true
-                ],
-                [
-                    'id' => RoleEnum::QUESTION_ENTRY->value,
-                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_ENTRY->value),
-                    'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
-                    'is_mandatory' => false
-                ],
-                [
-                    'id' => RoleEnum::PROCTOR->value,
-                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::PROCTOR->value),
-                    'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
-                    'is_mandatory' => false
-                ]
-            ];
-        } elseif ($ownerTypeId === OwnerTypeEnum::EMPLOYEE->value) {
-            $userRoles = [
-                [
-                    'id' => RoleEnum::QUESTION_REVIEWER->value,
-                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value),
-                    'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value, RoleEnum::class),
-                    'is_mandatory' => false
-                ],
-                [
-                    'id' => RoleEnum::QUESTION_ENTRY->value,
-                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::QUESTION_ENTRY->value),
-                    'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
-                    'is_mandatory' => false
-                ],
-                [
-                    'id' => RoleEnum::PROCTOR->value,
-                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::PROCTOR->value),
-                    'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
-                    'is_mandatory' => false
-                ],
-                [
-                    'id' => RoleEnum::SYSTEM_ADMINISTRATOR->value,
-                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value),
-                    'name' => EnumTraits::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value, RoleEnum::class),
-                    'is_mandatory' => false
-                ],
-                [
-                    'id' => RoleEnum::DATA_ENTRY->value,
-                    // 'name' =>RoleEnum::getNameByNumber(RoleEnum::DATA_ENTRY->value),
-                    'name' => EnumTraits::getNameByNumber(RoleEnum::DATA_ENTRY->value, RoleEnum::class),
-                    'is_mandatory' => false
-                ]
-            ];
-        }
+    //     if ($ownerTypeId === OwnerTypeEnum::GUEST->value) {
+    //         $userRoles = [
+    //             [
+    //                 'id' => RoleEnum::GUEST->value,
+    //                 'name' => EnumTraits::getNameByNumber(RoleEnum::GUEST->value, RoleEnum::class),
+    //                 'is_mandatory' => true
+    //             ]
+    //         ];
+    //     } elseif ($ownerTypeId === OwnerTypeEnum::STUDENT->value) {
+    //         $userRoles = [
+    //             [
+    //                 'id' => RoleEnum::STUDENT->value,
+    //                 'name' => EnumTraits::getNameByNumber(RoleEnum::STUDENT->value, RoleEnum::class),
+    //                 'is_mandatory' => true
+    //             ]
+    //         ];
+    //     } elseif ($ownerTypeId === OwnerTypeEnum::LECTURER->value) {
+    //         $userRoles = [
+    //             [
+    //                 'id' => RoleEnum::LECTURER->value,
+    //                 'name' => EnumTraits::getNameByNumber(RoleEnum::LECTURER->value, RoleEnum::class),
+    //                 'is_mandatory' => true
+    //             ],
+    //             [
+    //                 'id' => RoleEnum::QUESTION_ENTRY->value,
+    //                 'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
+    //                 'is_mandatory' => false
+    //             ],
+    //             [
+    //                 'id' => RoleEnum::PROCTOR->value,
+    //                 'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
+    //                 'is_mandatory' => false
+    //             ]
+    //         ];
+    //     } elseif ($ownerTypeId === OwnerTypeEnum::EMPLOYEE->value) {
+    //         $userRoles = [
+    //             [
+    //                 'id' => RoleEnum::QUESTION_REVIEWER->value,
+    //                 'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value, RoleEnum::class),
+    //                 'is_mandatory' => false
+    //             ],
+    //             [
+    //                 'id' => RoleEnum::QUESTION_ENTRY->value,
+    //                 'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
+    //                 'is_mandatory' => false
+    //             ],
+    //             [
+    //                 'id' => RoleEnum::PROCTOR->value,
+    //                 // 'name' =>RoleEnum::getNameByNumber(RoleEnum::PROCTOR->value),
+    //                 'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
+    //                 'is_mandatory' => false
+    //             ],
+    //             [
+    //                 'id' => RoleEnum::SYSTEM_ADMINISTRATOR->value,
+    //                 // 'name' =>RoleEnum::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value),
+    //                 'name' => EnumTraits::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value, RoleEnum::class),
+    //                 'is_mandatory' => false
+    //             ],
+    //             [
+    //                 'id' => RoleEnum::DATA_ENTRY->value,
+    //                 // 'name' =>RoleEnum::getNameByNumber(RoleEnum::DATA_ENTRY->value),
+    //                 'name' => EnumTraits::getNameByNumber(RoleEnum::DATA_ENTRY->value, RoleEnum::class),
+    //                 'is_mandatory' => false
+    //             ]
+    //         ];
+    //     }
 
-        return $userRoles;
-    }
+    //     return $userRoles;
+    // }
 
     private static function generateAlphanumericToken(int $length = 8): string
     {

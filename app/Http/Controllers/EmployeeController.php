@@ -46,16 +46,7 @@ class EmployeeController extends Controller
             ]);
 
             if ($request->email) {
-                if (intval($employee->job_type) === JobTypeEnum::EMPLOYEE->value) {
-                    $ownerTypeId = OwnerTypeEnum::EMPLOYEE->value;
-                } elseif (intval($employee->job_type) === JobTypeEnum::LECTURER->value) {
-                    $ownerTypeId = OwnerTypeEnum::LECTURER->value;
-                } else {
-                    // $ownerTypeId = -1;
-                    $ownerTypeId = OwnerTypeEnum::LECTURER->value;
-                }
-
-                if (!UserHelper::addUser($request->email, $ownerTypeId, $employee->id)) {
+                if (!UserHelper::addUser($request->email, OwnerTypeEnum::EMPLOYEE->value, $employee->id)) {
                     //  return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
                     return ResponseHelper::serverError(401);
                 }
