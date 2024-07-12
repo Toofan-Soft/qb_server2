@@ -39,6 +39,7 @@ use App\Enums\CourseStudentStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
 use Illuminate\Support\Facades\Storage;
 use App\Enums\OnlineExamTakingStatusEnum;
+use App\Helpers\OnlineExamListenerHelper;
 use App\Enums\FormConfigurationMethodEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
 
@@ -284,7 +285,9 @@ class StudentOnlineExamController extends Controller
             //         'end_datetime' => now(),
             //     ]);
 
-            // refresh student and proctor 
+            // refresh student and proctor
+            OnlineExamListenerHelper::refreshProctor($student->id, $request->exam_id, $studentOnlineExam->form_id);
+
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -355,7 +358,8 @@ class StudentOnlineExamController extends Controller
             ]);
 
             // refresh student and proctor 
-
+            OnlineExamListenerHelper::refreshProctor($studentId, $request->exam_id, $formId);
+            
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

@@ -25,40 +25,69 @@ class ImageHelper
 
     public static function uploadImage($fileData, $folder = 'images') // M7D
     {
-        if (!Storage::exists($folder)) {
-            Storage::makeDirectory($folder);
-        }
-
         if ($fileData !== null) {
+            if (!Storage::exists($folder)) {
+                Storage::makeDirectory($folder);
+            }
+
             $fileName = time() . '.png'; // Adjust the extension as needed
+            
             $filePath = public_path($folder . '/' . $fileName);
 
             file_put_contents($filePath, implode(array_map("chr", $fileData)));
 
-            return $folder . '/' . $fileName;
+            // return $folder . '/' . $fileName;
+            return $fileName;
         }
+        
         return null;
     }
 
-    public static function updateImage( $newImage, $oldImagePath ,$folder = 'images')
+    public static function updateImage($newImage, $oldImageName, $folder = 'images')
     {
-        if (!Storage::exists($folder)) {
-            Storage::makeDirectory($folder);
+        // Delete old image if it exists
+        if ($oldImageName !== null) {
+            self::deleteImage($oldImageName, $folder);
         }
 
-        // Generate a unique filename for the image
-        if ($newImage !==null) {
-            $imageName = time() . '.' . $newImage->getClientOriginalExtension();
-            $newImagePathath = $newImage->move(public_path($folder), $imageName);
-            if ($newImagePathath) {
-                if ($oldImagePath) {
-                    Storage::delete($oldImagePath);
-                }
-             return $folder . '/' . $imageName;
+        // Upload new image
+        return self::uploadImage($newImage, $folder);
+    }
+
+    private static function deleteImage($imageName, $folder = 'images')
+    {
+        if ($imageName) {
+            $filePath = public_path($folder . '/' . $imageName);
+            
+            if (file_exists($filePath)) {
+                unlink($filePath); // Delete the file
             }
         }
-        return $oldImagePath;
     }
+
+
+
+
+
+    // public static function updateImage1($newImage, $oldImagePath ,$folder = 'images')
+    // {
+    //     if (!Storage::exists($folder)) {
+    //         Storage::makeDirectory($folder);
+    //     }
+
+    //     // Generate a unique filename for the image
+    //     if ($newImage !==null) {
+    //         $imageName = time() . '.' . $newImage->getClientOriginalExtension();
+    //         $newImagePathath = $newImage->move(public_path($folder), $imageName);
+    //         if ($newImagePathath) {
+    //             if ($oldImagePath) {
+    //                 Storage::delete($oldImagePath);
+    //             }
+    //          return $folder . '/' . $imageName;
+    //         }
+    //     }
+    //     return $oldImagePath;
+    // }
 
     // public static function addCompleteDomainToMediaUrls($data, $imageFields = ['image_url', 'attachment', 'logo_url'])
     // {

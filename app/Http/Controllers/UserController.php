@@ -4,22 +4,26 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\User;
-use Ichtrojan\Otp\Otp;
 use App\Models\Guest;
+use Ichtrojan\Otp\Otp;
 use App\Models\Student;
 use App\Models\Employee;
 use App\Enums\GenderEnum;
+use App\Events\FireEvent;
 use App\Enums\JobTypeEnum;
+use App\Helpers\NullHelper;
 use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHelper;
 use App\Enums\QualificationEnum;
 use App\Helpers\EnumReplacement;
-use App\Helpers\NullHelper;
 use App\Helpers\ProcessDataHelper;
+use App\Models\UserRole;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\Console\Helper\ProcessHelper;
 use App\Notifications\ResetPasswordNotificationVerification;
@@ -43,8 +47,9 @@ class UserController extends Controller
             }
 
             $user = User::where('email', $otp2->email)->first();
-
+            
             $user->update(['email_verified_at' => now()]);
+
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -92,6 +97,51 @@ class UserController extends Controller
     //     }
     // }
 
+    public function login1()
+    {
+        // User::
+        $user = User::findOrFail(auth()->user()->id);
+        // return $user->tokens();
+
+        // $tokens = $user->tokens; // Retrieve the tokens as a collection
+        
+        // $tokens = $user->tokens()->get(['id', 'client_id', 'name', 'scopes', 'revoked', 'created_at', 'updated_at', 'expires_at', 'user_id']);    
+        // return response()->json($tokens); // Return the collection as JSON
+        // return response()->json($tokens->first()); // Return the collection as JSON
+        // return response()->json($tokens->first()->accessToken); // Return the collection as JSON
+
+        // Retrieve non-revoked tokens where the name matches 'quesionbanklaravelapi'
+        $tokens = $user->tokens()
+            ->where('name', 'quesionbanklaravelapi')
+            ->where('revoked', false)
+            ->get(['id', 'client_id', 'name', 'scopes', 'revoked', 'created_at', 'updated_at', 'expires_at', 'user_id']);
+
+        if ($tokens->isEmpty()) {
+            return response()->json(['error' => 'No tokens found'], 404);
+        }
+
+        // // Decrypt tokens if necessary and prepare the response
+        // $tokensWithAccess = $tokens->map(function ($token) {
+        // return [
+        //     'id' => $token->id,
+        //     'accessToken' => Crypt::decrypt($token->id) // Assuming the access token is stored in the 'id' column and encrypted
+        //     ];
+        // });
+
+        // return response()->json($tokensWithAccess);
+
+        // Fetch JWT tokens from a custom field
+        $tokensWithAccess = $tokens->map(function ($token) {
+            $accessToken = DB::table('oauth_access_tokens')->where('id', $token->id)->value('jwt_token'); // Adjust the column name as needed
+            return [
+                'id' => $token->id,
+                'accessToken' => $accessToken
+            ];
+        });
+
+        return response()->json($tokensWithAccess);
+    }
+
     public function login(Request $request)
     {
         try {
@@ -107,11 +157,24 @@ class UserController extends Controller
 
             if (auth()->attempt($input)) {
                 $user = Auth::user();
-
-                // return $user;
-
+                
                 if ($user->email_verified_at !== false) {
                     $token =  $user->createToken('quesionbanklaravelapi')->accessToken;
+                    $rolesIds = UserRole::where('user_id', $user->id)
+                        ->get()
+                        ->map(function ($role) {
+                            return $role->role_id;
+                        });
+
+                    // event(new FireEvent($token));
+
+                    return [
+                        "uid" => $user->id,
+                        "user_type_id" => $user->owner_type,
+                        "roles_ids" => $rolesIds,
+                        // "language_id" => $user->owner_type,
+                        "token" => $token
+                    ];
                     return ResponseHelper::successWithTokenAndUserType($token, $user->owner_type);
                 } else {
                     return ResponseHelper::clientError(401);
