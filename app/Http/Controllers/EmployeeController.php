@@ -114,9 +114,9 @@ class EmployeeController extends Controller
         ];
         try {
             $employees = GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements);
-    
+
             $employees = NullHelper::filter($employees);
-    
+
             return ResponseHelper::successWithData($employees);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -125,8 +125,7 @@ class EmployeeController extends Controller
 
     public function retrieveEmployee(Request $request)
     {
-        $attributes = ['arabic_name', 'english_name', 'gender as gender_name', 'phone', 'user_id as email', 'job_type as job_type_name', 'specialization', 'qualification as qualification_name', 'image_url'];
-        $conditionAttribute = ['id' => $request->id];
+        $attributes = ['arabic_name', 'english_name', 'gender as gender_name', 'phone', 'user_id', 'job_type as job_type_name', 'specialization', 'qualification as qualification_name', 'image_url'];
         $enumReplacements = [
             new EnumReplacement('gender_name', GenderEnum::class),
             new EnumReplacement('job_type_name', JobTypeEnum::class),
@@ -136,9 +135,12 @@ class EmployeeController extends Controller
             new ColumnReplacement('email', 'email', User::class)
         ];
         try {
-            $employee = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacements);
-    
+            $employee = Employee::findOrFail($request->id, $attributes);
+            $employee->email = $employee->user_id;
+            $employee = ProcessDataHelper::enumsConvertIdToName($employee, $enumReplacements);
+            $employee = ProcessDataHelper::columnConvertIdToName($employee, $columnReplacements);
             $employee = NullHelper::filter($employee);
+
             return ResponseHelper::successWithData($employee);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -151,9 +153,9 @@ class EmployeeController extends Controller
         $conditionAttribute = ['id' => $request->id];
         try {
             $employee = GetHelper::retrieveModel(Employee::class, $attributes, $conditionAttribute);
-    
+
             $employee = NullHelper::filter($employee);
-    
+
             return ResponseHelper::successWithData($employee);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -165,7 +167,7 @@ class EmployeeController extends Controller
         $rules = [
             'arabic_name' => 'required|string',
             'english_name' => 'required|string',
-            'phone' => 'nullable|integer',
+            'phone' => 'nullable|integer|unique:employee,phone',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'job_type_id' => ['required', new Enum(JobTypeEnum::class)], // Assuming JobTypeEnum holds valid values
             'qualification_id' => ['required', new Enum(QualificationEnum::class)], // Assuming QualificationEnum holds valid values

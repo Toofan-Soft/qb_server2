@@ -53,7 +53,6 @@ class ChapterController extends Controller
         try {
             $chapter = Chapter::findOrFail($request->id);
             $chapter->delete();
-            //    return DeleteHelper::deleteModel($chapter);
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -62,14 +61,14 @@ class ChapterController extends Controller
 
     public function retrieveChapters(Request $request)
     {
-        $attributes = ['id', 'arabic_title', 'english_title', 'status as status_name', 'description'];
-        $conditionAttribute = ['course_part_id' => $request->course_part_id];
-        $enumReplacements = [
-            new EnumReplacement('status_name', ChapterStatusEnum::class),
-        ];
         try {
+            $attributes = ['id', 'arabic_title', 'english_title', 'status as status_name', 'description'];
+            $conditionAttribute = ['course_part_id' => $request->course_part_id];
+            $enumReplacements = [
+                new EnumReplacement('status_name', ChapterStatusEnum::class),
+            ];
             $chapters = GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute, $enumReplacements);
-            
+
             $chapters = NullHelper::filter($chapters);
 
             return ResponseHelper::successWithData($chapters);
@@ -77,15 +76,15 @@ class ChapterController extends Controller
             return ResponseHelper::serverError();
         }
     }
-    
+
     public function retrieveAvailableChapters(Request $request)
     {
+        try {
         $attributes = ['id', 'arabic_title', 'english_title'];
         $conditionAttribute = [
             'course_part_id' => $request->course_part_id,
             'status' => ChapterStatusEnum::AVAILABLE->value,
         ];
-        try {
             $chapters = GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute);
             return ResponseHelper::successWithData($chapters);
         } catch (\Exception $e) {
@@ -95,16 +94,16 @@ class ChapterController extends Controller
 
     public function retrieveChapter(Request $request)
     {
-        $attributes = ['arabic_title', 'english_title', 'status as status_name', 'description'];
-        $conditionAttribute = ['id' => $request->id];
-        $enumReplacements = [
-            new EnumReplacement('status_name', ChapterStatusEnum::class),
-        ];
         try {
+            $attributes = ['arabic_title', 'english_title', 'status as status_name', 'description'];
+            $conditionAttribute = ['id' => $request->id];
+            $enumReplacements = [
+                new EnumReplacement('status_name', ChapterStatusEnum::class),
+            ];
             $chapter = GetHelper::retrieveModel(Chapter::class, $attributes, $conditionAttribute, $enumReplacements);
 
             $chapter = NullHelper::filter($chapter);
-            
+
             return ResponseHelper::successWithData($chapter);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

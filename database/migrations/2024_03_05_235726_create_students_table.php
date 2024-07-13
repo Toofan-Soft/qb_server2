@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('academic_id');
             $table->string('arabic_name') ;
             $table->string('english_name');
-            $table->integer('phone')->unique()->nullable();
+            $table->integer('phone')->nullable();
             $table->string('image_url')->nullable();
             $table->enum('gender', GenderEnum::values());
             $table->timestamp('birthdate')->nullable();

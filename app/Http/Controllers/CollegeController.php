@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Pusher\Pusher;
 use App\Models\User;
 use App\Helpers\Param;
+use App\Enums\RoleEnum;
 use App\Models\College;
+use App\Models\UserRole;
 use App\Events\FireEvent;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
@@ -98,8 +100,8 @@ class CollegeController extends Controller
 
     public function retrieveColleges()
     {
-        // Gate::authorize('addCollege', CollegeController::class);
-
+        // Gate::authorize('retrieveColleges', CollegeController::class);
+       
         $attributes = ['id', 'arabic_name', 'english_name', 'phone', 'email', 'logo_url'];
         try {
             $colleges = GetHelper::retrieveModels(College::class, $attributes);
@@ -125,6 +127,18 @@ class CollegeController extends Controller
 
 
     public function retrieveCollege(Request $request)
+    {
+        $attributes = ['arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
+        $conditionAttribute = ['id' => $request->id];
+        try {
+            $college = GetHelper::retrieveModel(College::class, $attributes, $conditionAttribute);
+            $college = NullHelper::filter($college);
+            return ResponseHelper::successWithData($college);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
+    }
+    public function retrieveEditableCollege(Request $request)
     {
         $attributes = ['arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
         $conditionAttribute = ['id' => $request->id];

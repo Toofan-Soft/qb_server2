@@ -4,23 +4,26 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\User;
-use Ichtrojan\Otp\Otp;
 use App\Models\Guest;
+use Ichtrojan\Otp\Otp;
 use App\Models\Student;
 use App\Models\Employee;
 use App\Enums\GenderEnum;
 use App\Enums\JobTypeEnum;
+use App\Enums\LanguageEnum;
+use App\Helpers\NullHelper;
 use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHelper;
 use App\Enums\QualificationEnum;
 use App\Helpers\EnumReplacement;
-use App\Helpers\NullHelper;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Enum;
 use Illuminate\Support\Facades\Validator;
+use App\Notifications\EmaiVerificationNotification;
 use Symfony\Component\Console\Helper\ProcessHelper;
 use App\Notifications\ResetPasswordNotificationVerification;
 
@@ -153,29 +156,27 @@ class UserController extends Controller
             $user = auth()->user();
 
             $owner = null;
-            $enumReplacements = [];
+            $enumReplacements = [
+                new EnumReplacement('gender_name', GenderEnum::class)
+            ];
 
             if (intval($user->owner_type) === OwnerTypeEnum::GUEST->value) {
-                $attributes = ['name', 'phone', 'gender as gender_name', 'image_url'];
+                $attributes = ['name', 'email', 'phone', 'gender as gender_name', 'image_url'];
                 $owner = Guest::where('user_id', $user->id)->first($attributes);
-                array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
             } elseif (intval($user->owner_type) === OwnerTypeEnum::STUDENT->value) {
-                $attributes = ['arabic_name', 'english_name', 'phone', 'birthdate', 'gender as gender_name', 'image_url'];
+                $attributes = ['arabic_name', 'english_name', 'email', 'phone', 'birthdate', 'gender as gender_name', 'image_url'];
                 $owner = Student::where('user_id', $user->id)->first($attributes);
-                array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
             } else {
                 $attributes = [
-                    'arabic_name', 'english_name', 'phone', 'gender as gender_name', 'image_url', 'specialization',
+                    'arabic_name', 'english_name', 'email', 'phone', 'gender as gender_name', 'image_url', 'specialization',
                     'qualification as qualification_name', 'job_type as job_type_name'
                 ];
                 $owner = Employee::where('user_id', $user->id)->first($attributes);
                 array_push($enumReplacements, new EnumReplacement('qualification_name', QualificationEnum::class));
                 array_push($enumReplacements, new EnumReplacement('job_type_name', JobTypeEnum::class));
-                array_push($enumReplacements, new EnumReplacement('gender_name', GenderEnum::class));
             }
 
             $owner = ProcessDataHelper::enumsConvertIdToName($owner, $enumReplacements);
-            $owner['email'] = $user->email;
 
             $owner = NullHelper::filter($owner);
 
@@ -249,5 +250,41 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
+    }
+
+    public function resendCode(Request $request)
+    {
+        try {
+            $generatedToken = self::generateAlphanumericToken(8);
+            // $user = auth()->user();
+            $user = User::where('email', auth()->user()->email)->first();
+            $user->notify(new EmaiVerificationNotification($generatedToken));
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
+    }
+
+    public function changeLanguage(Request $request)
+    {
+        try {
+            $user = User::where('email', auth()->user()->email)->first();
+            $validator = Validator::make($request->all(), ['language_id' => ['required', new Enum(LanguageEnum::class)]]);
+            if ($validator->fails()) {
+                return ResponseHelper::clientError(401);
+            } else {
+                $user->update([
+                    'language' => $request->language_id
+                ]);
+                return ResponseHelper::success();
+            }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
+    }
+    private static function generateAlphanumericToken(int $length = 8): string
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        return substr(str_shuffle($characters), 0, $length);
     }
 }

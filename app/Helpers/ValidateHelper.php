@@ -11,6 +11,7 @@ use App\Enums\OwnerTypeEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Enums\UserStatusEnum;
+use App\Models\UserRole;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -25,7 +26,7 @@ class ValidateHelper
         if ($validator->fails()) {
             return  $validator->errors()->first();
             // return false;
-        } 
+        }
         // if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
         //     if (count($rules) > 0) {
         //         return true;
@@ -35,8 +36,14 @@ class ValidateHelper
         // }
     }
 
-    public static function validatePolicy($roles = []) : bool {
-
-        return true;        
+    public static function validatePolicy($roles = []): bool
+    {
+        $userRoles = UserRole::where('user_id', '=', auth()->user()->id)->pluck('role_id')->toArray();
+        foreach ($userRoles as $userRole) {
+            if (in_array(intval($userRole), $roles)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

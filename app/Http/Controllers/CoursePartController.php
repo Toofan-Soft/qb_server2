@@ -18,6 +18,7 @@ use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
 use App\Helpers\EnumReplacement1;
+use App\Enums\CoursePartStatusEnum;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Enum;
 
@@ -32,10 +33,10 @@ class CoursePartController extends Controller
         try {
             $course = Course::findOrFail($request->course_id);
             $course->course_parts()->create([
-                'part_id' => $request->course_part_id,
+                'part_id' => $request->part_id,
                 'description' => $request->description ?? null,
             ]);
-    
+
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -65,7 +66,6 @@ class CoursePartController extends Controller
         try {
             $coursePart = CoursePart::findOrFail($request->id);
             $coursePart->delete();
-            // return DeleteHelper::deleteModel($coursePart);
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -74,13 +74,13 @@ class CoursePartController extends Controller
 
     public function retrieveCourseParts(Request $request)
     {
-        $attributes = ['id', 'part_id as name', 'status as status_name', 'description'];
-        $conditionAttribute = ['course_id' => $request->course_id];
-        $enumReplacements = [
-            new EnumReplacement('name', CoursePartsEnum::class),
-            new EnumReplacement('status_name', CourseStatusEnum::class),
-        ];
         try {
+            $attributes = ['id', 'part_id as name', 'status as status_name', 'description'];
+            $conditionAttribute = ['course_id' => $request->course_id];
+            $enumReplacements = [
+                new EnumReplacement('name', CoursePartsEnum::class),
+                new EnumReplacement('status_name', CoursePartStatusEnum::class),
+            ];
             $courseParts = GetHelper::retrieveModels(CoursePart::class, $attributes, $conditionAttribute, $enumReplacements);
             $courseParts = NullHelper::filter($courseParts);
             return ResponseHelper::successWithData($courseParts);
@@ -92,9 +92,9 @@ class CoursePartController extends Controller
 
     public function retrieveEditableCoursePart(Request $request)
     {
-        $attributes = ['status as status_id', 'description'];
-        $conditionAttribute = ['id' => $request->id];
         try {
+            $attributes = ['status as status_id', 'description'];
+            $conditionAttribute = ['id' => $request->id];
             $coursePart = GetHelper::retrieveModel(CoursePart::class, $attributes, $conditionAttribute);
             $coursePart = NullHelper::filter($coursePart);
             return ResponseHelper::successWithData($coursePart);
@@ -107,8 +107,8 @@ class CoursePartController extends Controller
     {
         $rules = [
             'course_id' => 'required|exists:courses,id',
-            'course_part_id' => ['required', new Enum(CoursePartsEnum::class)], // Assuming CoursePartsEnum holds valid values
-            'status_id' => [new Enum(CourseStatusEnum::class)], // Assuming CourseStatusEnum holds valid values
+            'part_id' => ['required', new Enum(CoursePartsEnum::class)], // Assuming CoursePartsEnum holds valid values
+            'status_id' => [new Enum(CoursePartStatusEnum::class)], // Assuming CourseStatusEnum holds valid values
             'description' => 'nullable|string',
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

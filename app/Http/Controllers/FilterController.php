@@ -556,34 +556,32 @@ class FilterController extends Controller
     //     }
     // }
 
-
-    public function retrieveOwners(Request $request)
+    public function retrieveNonOwnerEmployees(Request $request)
     {
-
-        $attributes = ['id', 'arabic_name as name'];
-        $owners = [];
         try {
-            if ($request->owner_type_id === OwnerTypeEnum::STUDENT->value) {
-                $owners = Student::where('user_id', '=', null)->get($attributes);
-            } elseif ($request->owner_type_id === OwnerTypeEnum::LECTURER->value) {
-                $owners = Employee::whereIn(
-                    'job_type',
-                    [JobTypeEnum::LECTURER->value, JobTypeEnum::EMPLOYEE_LECTURE->value]
-                )
-                    ->where('user_id', '=', null)
-                    ->get($attributes);
-            } elseif ($request->owner_type_id === OwnerTypeEnum::EMPLOYEE->value) {
-                $owners = Employee::whereIn(
-                    'job_type',
-                    [JobTypeEnum::EMPLOYEE->value, JobTypeEnum::EMPLOYEE_LECTURE->value]
-                )
-                    ->where('user_id', '=', null)
-                    ->get($attributes);
-            } else {
-                return ResponseHelper::clientError(401);
-            }
+            $nonOwnerEmployees = Employee::where('user_id', '=', null)
+                ->where('job_type', '=', $request->job_type_id)
+                ->get(['id', 'arabic_name as name']);
+            return ResponseHelper::successWithData($nonOwnerEmployees);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
+    }
+    public function retrieveNonOwnerStudents(Request $request)
+    {
+        try {
 
-            return ResponseHelper::successWithData($owners);
+            $nonOwnerStudents = DB::table('department_courses')
+            ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
+            ->join('students', 'course_students.student_id', '=', 'students.id')
+            ->select('students.id', 'students.arabic_name as name')
+            ->where('department_courses.department_id', '=', $request->department_id)
+            ->where('department_courses.level', '=', $request->level_id)
+            ->where('department_courses.semester', '=', $request->semester_id)
+            ->where('students.user_id', '=', null)
+            ->distinct()
+            ->get();
+            return ResponseHelper::successWithData($nonOwnerStudents);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }

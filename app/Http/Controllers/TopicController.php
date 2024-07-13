@@ -26,15 +26,14 @@ class TopicController extends Controller
 
     public function modifyTopic(Request $request)
     {
-        // return ModifyHelper::modifyModel($request, Topic::class,  $this->rules($request));
-        if( ValidateHelper::validateData($request, $this->rules($request))){
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError(401);
         }
         try {
             $topic = Topic::findOrFail($request->id);
             $topic->update([
                 'arabic_title' => $request->arabic_title ?? $topic->arabic_title,
-                'english_title' =>$request->english_title ?? $topic->english_title,
+                'english_title' => $request->english_title ?? $topic->english_title,
                 'description' => $request->description ??  $topic->description,
             ]);
             return ResponseHelper::success();
@@ -46,9 +45,8 @@ class TopicController extends Controller
     public function deleteTopic(Request $request)
     {
         try {
-            $topic = Topic::findOrFail( $request->id);
+            $topic = Topic::findOrFail($request->id);
             $topic->delete();
-        //    return DeleteHelper::deleteModel($topic);
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -57,61 +55,69 @@ class TopicController extends Controller
 
     public function retrieveTopics(Request $request)
     {
-        $attributes = ['id', 'arabic_title', 'english_title', 'description'];
-        $conditionAttribute = ['chapter_id' => $request->chapter_id];
         try {
-            $topics = GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute );
+            $attributes = ['id', 'arabic_title', 'english_title', 'description'];
+            $conditionAttribute = ['chapter_id' => $request->chapter_id];
+            $topics = GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
             $topics = NullHelper::filter($topics);
             return ResponseHelper::successWithData($topics);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
-
     }
-
-
-    public function retrieveAvailableTopics(Request $request)
-    {
-        $attributes = ['id', 'arabic_title', 'english_title'];
-        $conditionAttribute = [
-            'chapter_id' => $request->chapter_id,
-        ];
-        try {
-            $topics = GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
-            return ResponseHelper::successWithData($topics);
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
-    }
-
 
     public function retrieveTopic(Request $request)
     {
-        $attributes = ['arabic_title', 'english_title', 'description'];
-        $conditionAttribute = ['id' => $request->id];
         try {
+            $attributes = ['arabic_title', 'english_title', 'description'];
+            $conditionAttribute = ['id' => $request->id];
             $topic = GetHelper::retrieveModel(Topic::class, $attributes, $conditionAttribute);
             $topic = NullHelper::filter($topic);
             return ResponseHelper::successWithData($topic);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
-
     }
+
+    public function retrieveEditableTopic(Request $request)
+    {
+        try {
+            $attributes = ['arabic_title', 'english_title', 'description'];
+            $conditionAttribute = ['id' => $request->id];
+            $topic = GetHelper::retrieveModel(Topic::class, $attributes, $conditionAttribute);
+            $topic = NullHelper::filter($topic);
+            return ResponseHelper::successWithData($topic);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
+    }
+
     public function retrieveTopicDescription(Request $request)
     {
-        $attributes = ['description'];
-        $conditionAttribute = ['id' => $request->id];
         try {
+            $attributes = ['description'];
+            $conditionAttribute = ['id' => $request->id];
             $topic = GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
             $topic = NullHelper::filter($topic);
             return ResponseHelper::successWithData($topic);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
-
     }
 
+    public function retrieveAvailableTopics(Request $request)
+    {
+        try {
+            $attributes = ['id', 'arabic_title', 'english_title'];
+            $conditionAttribute = [
+                'chapter_id' => $request->chapter_id,
+            ];
+            $topics = GetHelper::retrieveModels(Topic::class, $attributes, $conditionAttribute);
+            return ResponseHelper::successWithData($topics);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
+    }
 
     public function rules(Request $request): array
     {
@@ -129,5 +135,4 @@ class TopicController extends Controller
         }
         return $rules;
     }
-
 }

@@ -104,7 +104,7 @@ class UniversityController extends Controller
             'x_platform' => 'nullable|url',
             'facebook' => 'nullable|url',
             'telegram' => 'nullable|url',
-            'logo' => 'nullable|image|max:2048', // Assuming the logo is uploaded as a file
+            'logo' => 'required|image|max:2048', // Assuming the logo is uploaded as a file
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {
