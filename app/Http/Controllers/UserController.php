@@ -165,9 +165,7 @@ class UserController extends Controller
                         ->map(function ($role) {
                             return $role->role_id;
                         });
-
-                    // event(new FireEvent($token));
-
+                    
                     return [
                         "uid" => $user->id,
                         "user_type_id" => $user->owner_type,
