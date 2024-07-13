@@ -1,11 +1,12 @@
 <?php
 
 use App\Enums\CoursePartsEnum;
-use App\Enums\CourseStatusEnum;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use App\Enums\LevelsCountEnum;
+use App\Enums\CourseStatusEnum;
+use App\Enums\CoursePartStatusEnum;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration
 {
@@ -19,7 +20,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('course_id'); // Foreign key
             $table->enum('part_id', CoursePartsEnum::values());
-            $table->enum('status', CourseStatusEnum::values())->default(CourseStatusEnum::AVAILABLE->value);;
+            $table->enum('status', CoursePartStatusEnum::values())->default(CoursePartStatusEnum::AVAILABLE->value);;
             $table->text('description')->nullable();
 
             $table->foreign('course_id')

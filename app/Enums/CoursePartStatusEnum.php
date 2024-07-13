@@ -3,7 +3,7 @@
 namespace App\Enums;
 use App\Traits\EnumTraits;
 use Kongulov\Traits\InteractWithEnum;
-enum CourseStatusEnum: int {
+enum CoursePartStatusEnum: int {
     use InteractWithEnum;
     use EnumTraits;
 

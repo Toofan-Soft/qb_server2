@@ -218,7 +218,6 @@ class DepartmentCourseController extends Controller
     public function retrieveDepartmentCourse(Request $request)
     {
         try {
-            return ResponseHelper::success();
             $departmentCourse = DepartmentCourse::findOrFail($request->id); //updated successfull
             $course = $departmentCourse->course()->first(['arabic_name']);
             $department = $departmentCourse->department()->first(['college_id', 'arabic_name']);
@@ -284,6 +283,7 @@ class DepartmentCourseController extends Controller
             'level_id' => ['required', new Enum(LevelsEnum::class)], // Assuming LevelsEnum holds valid values
             'semester_id' => ['required', new Enum(SemesterEnum::class)], // Assuming SemesterEnum holds valid values
         ];
+        // التحقق من ان المستوى ينتمي الي القسم، اي يتوفق مع عدد المستويات 
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {
                 // Ensure strict type comparison for security

@@ -143,34 +143,34 @@ class PracticeExamController extends Controller
          */
         $userId = auth()->user()->id;
         try {
-        $practiceExams =  DB::table('practice_exams')
-            ->join('department_course_parts', 'practice_exams.department_course_part_id', '=', 'department_course_parts.id')
-            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-            ->select(
-                'courses.arabic_name as course_name',
-                'course_parts.part_id as course_part_name',
-                'practice_exams.id',
-                'practice_exams.title',
-                'practice_exams.datetime'
-            )
-            ->when(isset($request->status_id), function ($query) use ($request) {
-                return  $query->where('practice_exams.status', '=', $request->status_id);
-            })
-            // ->when($request->status_id === null, function ($query) {
-            ->when(is_null($request->status_id), function ($query) {
-                return  $query->selectRaw('practice_exams.status as status_name');
-            })
-            ->where('practice_exams.department_course_part_id', '=', $request->department_course_part_id)
-            ->where('practice_exams.user_id', '=', $userId)
-            ->get();
+            $practiceExams =  DB::table('practice_exams')
+                ->join('department_course_parts', 'practice_exams.department_course_part_id', '=', 'department_course_parts.id')
+                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+                ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+                ->select(
+                    'courses.arabic_name as course_name',
+                    'course_parts.part_id as course_part_name',
+                    'practice_exams.id',
+                    'practice_exams.title',
+                    'practice_exams.datetime'
+                )
+                ->when(isset($request->status_id), function ($query) use ($request) {
+                    return  $query->where('practice_exams.status', '=', $request->status_id);
+                })
+                // ->when($request->status_id === null, function ($query) {
+                ->when(is_null($request->status_id), function ($query) {
+                    return  $query->selectRaw('practice_exams.status as status_name');
+                })
+                ->where('practice_exams.department_course_part_id', '=', $request->department_course_part_id)
+                ->where('practice_exams.user_id', '=', $userId)
+                ->get();
 
-        $enumReplacements = [
-            new EnumReplacement('course_part_name', CoursePartsEnum::class),
-        ];
+            $enumReplacements = [
+                new EnumReplacement('course_part_name', CoursePartsEnum::class),
+            ];
 
-       
+
             if (is_null($request->status_id)) {
                 array_push($enumReplacements, new EnumReplacement('status_name', PracticeExamStatusEnum::class));
             }
@@ -204,44 +204,44 @@ class PracticeExamController extends Controller
 
         $userId = auth()->user()->id;
         try {
-        $practiceExams =  DB::table('practice_exams')
-            ->join('department_course_parts', 'practice_exams.department_course_part_id', '=', 'department_course_parts.id')
-            ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
-            ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-            ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
-            ->select(
-                'courses.arabic_name as course_name',
-                'course_parts.part_id as course_part_name',
-                'practice_exams.id',
-                'practice_exams.title',
-                'practice_exams.language as language_name',
-                'practice_exams.datetime'
-            )
-            ->when(isset($request->status_id), function ($query) use ($request) {
-                return  $query->where('practice_exams.status', '=', $request->status_id);
-            })
-            ->when(is_null($request->status_id), function ($query) {
-                return  $query->selectRaw('practice_exams.status as status_name');
-            })
-            ->when(isset($request->department_course_part_id), function ($query) use ($request) {
-                return  $query->where('practice_exams.department_course_part_id', '=', $request->department_course_part_id);
-            })
-            ->where('practice_exams.user_id', '=', $userId)
-            ->get();
+            $practiceExams =  DB::table('practice_exams')
+                ->join('department_course_parts', 'practice_exams.department_course_part_id', '=', 'department_course_parts.id')
+                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                ->join('courses', 'department_courses.course_id', '=', 'courses.id')
+                ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+                ->select(
+                    'courses.arabic_name as course_name',
+                    'course_parts.part_id as course_part_name',
+                    'practice_exams.id',
+                    'practice_exams.title',
+                    'practice_exams.language as language_name',
+                    'practice_exams.datetime'
+                )
+                ->when(isset($request->status_id), function ($query) use ($request) {
+                    return  $query->where('practice_exams.status', '=', $request->status_id);
+                })
+                ->when(is_null($request->status_id), function ($query) {
+                    return  $query->selectRaw('practice_exams.status as status_name');
+                })
+                ->when(isset($request->department_course_part_id), function ($query) use ($request) {
+                    return  $query->where('practice_exams.department_course_part_id', '=', $request->department_course_part_id);
+                })
+                ->where('practice_exams.user_id', '=', $userId)
+                ->get();
 
 
-        $enumReplacements = [
-            new EnumReplacement('course_part_name', CoursePartsEnum::class),
-            new EnumReplacement('language_name', LanguageEnum::class),
-        ];
+            $enumReplacements = [
+                new EnumReplacement('course_part_name', CoursePartsEnum::class),
+                new EnumReplacement('language_name', LanguageEnum::class),
+            ];
 
-        if (is_null($request->status_id)) {
-            array_push($enumReplacements, new EnumReplacement('status_name', PracticeExamStatusEnum::class));
-        }
+            if (is_null($request->status_id)) {
+                array_push($enumReplacements, new EnumReplacement('status_name', PracticeExamStatusEnum::class));
+            }
 
-        $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, $enumReplacements);
+            $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, $enumReplacements);
 
-       
+
             foreach ($practiceExams as $practiceExam) {
                 $examResult = $this->getPracticeExamResult($practiceExam->id);
 
@@ -426,26 +426,26 @@ class PracticeExamController extends Controller
     public function savePracticeExamQuestionAnswer(Request $request)
     {
         try {
-        $questionType = Question::findOrFail($request->question_id, ['type']);
+            $questionType = Question::findOrFail($request->question_id, ['type']);
 
-        $answerId = null;
-        if (intval($questionType->type) === QuestionTypeEnum::TRUE_FALSE->value) {
-            $answerId = ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
-        } else {
-            $answerId =  intval($request->choice_id);
+            $answerId = null;
+            if (intval($questionType->type) === QuestionTypeEnum::TRUE_FALSE->value) {
+                $answerId = ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
+            } else {
+                $answerId =  intval($request->choice_id);
+            }
+
+            $practiceExamQuestion = PracticeExamQuestion::where('practice_exam_id', $request->exam_id)
+                ->where('question_id', $request->question_id)
+                ->update([
+                    'answer' =>  $request->is_true,
+                    // 'answer_duration' => $request->answer_duration ?? null,
+                ]);
+
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
-
-        $practiceExamQuestion = PracticeExamQuestion::where('practice_exam_id', $request->exam_id)
-            ->where('question_id', $request->question_id)
-            ->update([
-                'answer' =>  $request->is_true,
-                // 'answer_duration' => $request->answer_duration ?? null,
-            ]);
-
-        return ResponseHelper::success();
-    } catch (\Exception $e) {
-        return ResponseHelper::serverError();
-    }
     }
 
     public function finishPracticeExam(Request $request)

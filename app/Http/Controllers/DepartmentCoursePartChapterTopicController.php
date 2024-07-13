@@ -7,6 +7,7 @@ use App\Helpers\AddHelper;
 use App\Models\CoursePart;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 use App\Enums\ChapterStatusEnum;
 use Illuminate\Support\Facades\DB;
 use App\Models\DepartmentCoursePart;
@@ -14,28 +15,54 @@ use App\Models\DepartmentCoursePartTopic;
 
 class DepartmentCoursePartChapterTopicController extends Controller
 {
-    public function addDepartmentCoursePartTopics(Request $request)
+    // public function addDepartmentCoursePartTopics(Request $request)
+    // {
+    //     // if ($request->topics_ids->count() > 1) {
+    //     //     $departmentCoursePart->department_course_part_topics()->createMany($request->topics_ids);
+    //     // } else {
+    //     //     $departmentCoursePart->department_course_part_topics()->create($request->topics_ids);
+    //     // }
+    //     DB::beginTransaction();
+    //     try {
+    //         $departmentCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
+    //         if (count($request->topics_ids) === 1) {
+    //             $departmentCoursePart->department_course_part_topics()->create([
+    //                 'topic_id' => $request->topics_ids[0],
+    //             ]);
+    //         } else {
+    //             $topicsData = [];
+    //             foreach ($request->topics_ids as $topicId) {
+    //                 $topicsData[] = [
+    //                     'topic_id' => $topicId,
+    //                 ];
+    //             }
+    //             $departmentCoursePart->department_course_part_topics()->createMany($topicsData);
+    //         }
+    //         DB::commit();
+    //         return ResponseHelper::success();
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         return ResponseHelper::serverError();
+    //     }
+    // } // this use case will deleted 
+
+    public function modifyDepartmentCoursePartTopics(Request $request)
     {
-        // if ($request->topics_ids->count() > 1) {
-        //     $departmentCoursePart->department_course_part_topics()->createMany($request->topics_ids);
-        // } else {
-        //     $departmentCoursePart->department_course_part_topics()->create($request->topics_ids);
-        // }
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError(401);
+        }
         DB::beginTransaction();
         try {
             $departmentCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
-            if (count($request->topics_ids) === 1) {
-                $departmentCoursePart->department_course_part_topics()->create([
-                    'topic_id' => $request->topics_ids[0],
-                ]);
-            } else {
-                $topicsData = [];
-                foreach ($request->topics_ids as $topicId) {
-                    $topicsData[] = [
-                        'topic_id' => $topicId,
-                    ];
+            $departmentCoursePartTopics = $departmentCoursePart->department_course_part_topics()->pluck('topic_id')->toArray();
+            foreach ($request->topics_ids as $topicId) {
+                if(in_array($topicId, $departmentCoursePartTopics)){
+                    $departmentCoursePart->department_course_part_topics()->where('topic_id', '=', $topicId)->delete();
+                }else {
+                    $departmentCoursePart->department_course_part_topics()->create([
+                        'topic_id' => $topicId
+                    ]);
                 }
-                $departmentCoursePart->department_course_part_topics()->createMany($topicsData);
             }
             DB::commit();
             return ResponseHelper::success();
@@ -45,17 +72,17 @@ class DepartmentCoursePartChapterTopicController extends Controller
         }
     }
 
-    public function deleteDepartmentCoursePartTopics(Request $request)
-    {
-        try {
-            $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
-            $departmenCoursePart->department_course_part_topics()
-                ->whereIn('topic_id', $request->topics_ids)->delete();
-            return ResponseHelper::success();
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
-    }
+    // public function deleteDepartmentCoursePartTopics(Request $request)
+    // {
+    //     try {
+    //         $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
+    //         $departmenCoursePart->department_course_part_topics()
+    //             ->whereIn('topic_id', $request->topics_ids)->delete();
+    //         return ResponseHelper::success();
+    //     } catch (\Exception $e) {
+    //         return ResponseHelper::serverError();
+    //     }
+    // } // this use case will deleted 
 
     public function retrieveDepartmentCoursePartChapters(Request $request)
     {
@@ -92,8 +119,7 @@ class DepartmentCoursePartChapterTopicController extends Controller
         }
     }
 
-
-    public function retrieveAvailableDepartmentCoursePartChapters(Request $request)
+    public function retrieveEditableDepartmentCoursePartChapters(Request $request)
     {
         try {
             $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
@@ -135,7 +161,7 @@ class DepartmentCoursePartChapterTopicController extends Controller
         }
     }
 
-    public function retrieveAvailableDepartmentCoursePartTopics(Request $request)
+    public function retrieveEditableDepartmentCoursePartTopics(Request $request)
     {
         try {
             return ResponseHelper::success();

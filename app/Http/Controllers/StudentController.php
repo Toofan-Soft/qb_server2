@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
+use App\Enums\SemesterEnum;
 use App\Helpers\NullHelper;
 use  Illuminate\Support\Facades\Validator;
 
@@ -55,15 +56,15 @@ class StudentController extends Controller
                 'gender' =>  $request->gender_id,
             ]);
 
-            // add initail student courses, that belonge to (department, level)
-            $this->addStudentCoures($student->id, $request->department_id, $request->level_id);
-            DB::commit();
+            // add initail student courses, that belonge to (department, level, semester)
+            $this->addStudentCoures($student->id, $request->department_id, $request->level_id, $request->semester_id);
             if ($request->email) {
                 if (!UserHelper::addUser($request->email, OwnerTypeEnum::STUDENT->value, $student->id)) {
                     return ResponseHelper::serverError(401);
                     // return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الطالب');
                 }
             }
+            DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -89,30 +90,40 @@ class StudentController extends Controller
                 'gender' =>  $request->gender_id ?? $student->gender,
             ]);
 
-            if ($request->level_id) {
-                $studnetDepartmentAndLevel = $this->getStudentDepartmentAndLevel($student->id);
+            if (isset($request->level_id)) {
+                if (isset($request->semester_id)) {
+                    $studnetDepartmentAndLevel = $this->getStudentDepartmentLevelSemesterIds($student->id);
 
-                if ($request->level_id <= $studnetDepartmentAndLevel->level_id) {
-                    return ResponseHelper::clientError(401);
-                    // return ResponseHelper::clientError('لا يمكنك تغيير مستوى الطالب الي مستوى ادنى من المستوى الحالي');
-                } else {
-                    // aupdate status of courses for last level
-                    $currentCourseStudents = DB::table('students')
-                        ->join('course_students', 'students.id', '=', 'course_students.student_id')
-                        ->join('department_courses', 'course_students.department_course_id', '=', 'department_courses.id')
-                        ->select('course_students.department_course_id')
-                        ->where('department_courses.level', '=', $studnetDepartmentAndLevel->level_id)
-                        ->where('students.id', '=', $student->id)
-                        ->get();
+                    if ($request->level_id <= $studnetDepartmentAndLevel->level_id) {
+                        return ResponseHelper::clientError(401);
+                        // return ResponseHelper::clientError('لا يمكنك تغيير مستوى الطالب الي مستوى ادنى من المستوى الحالي');
+                    } elseif ($request->level_id <= $studnetDepartmentAndLevel->semester_id) {
+                        return ResponseHelper::clientError(401);
+                        // return ResponseHelper::clientError('لا يمكنك تغيير فصل الطالب الي فصل ادنى من الفصل الحالي');
+                    } else {
+                        // هل صحيح اننا انجح الطالب للمقررات حق الفصل الحالي 
+                        // aupdate status of courses for last level
+                        $currentCourseStudents = DB::table('students')
+                            ->join('course_students', 'students.id', '=', 'course_students.student_id')
+                            ->join('department_courses', 'course_students.department_course_id', '=', 'department_courses.id')
+                            ->select('course_students.department_course_id')
+                            ->where('department_courses.level', '=', $studnetDepartmentAndLevel->level_id)
+                            ->where('department_courses.semester', '=', $studnetDepartmentAndLevel->semester_id)
+                            ->where('students.id', '=', $student->id)
+                            ->get();
 
-                    foreach ($currentCourseStudents as $currentCourseStudent) {
-                        $student->course_students()->where('department_course_id', '=', $currentCourseStudent->department_course_id)
-                            ->update([
-                                'status' => CourseStudentStatusEnum::PASSED->value
-                            ]);
+                        foreach ($currentCourseStudents as $currentCourseStudent) {
+                            $student->course_students()->where('department_course_id', '=', $currentCourseStudent->department_course_id)
+                                ->update([
+                                    'status' => CourseStudentStatusEnum::PASSED->value
+                                ]);
+                        }
+                        // add new level courses
+                        $this->addStudentCoures($student->id, $studnetDepartmentAndLevel->department_id, $request->level_id, $request->semester_id);
                     }
-                    // add new level courses
-                    $this->addStudentCoures($student->id, $studnetDepartmentAndLevel->department_id, $request->level_id);
+                } else {
+                    return ResponseHelper::clientError(401);
+                    // semester id is required 
                 }
             }
             DB::commit();
@@ -148,6 +159,7 @@ class StudentController extends Controller
                 ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'gender as gender_name', 'image_url')
                 ->where('departments.id', '=', $request->department_id)
                 ->where('department_courses.level', '=', $request->level_id)
+                ->where('department_courses.semester', '=', $request->semester_id)
                 ->distinct()
                 ->get();
 
@@ -166,6 +178,7 @@ class StudentController extends Controller
     {
         try {
             // return ResponseHelper::success();
+            // $student = Student::findOrFail($request->id);
             $student = Student::where('id', $request->id)
                 ->firstOrFail();
 
@@ -174,20 +187,24 @@ class StudentController extends Controller
                 'arabic_name' => $student->arabic_name,
                 'english_name' => $student->english_name,
                 'gender_name' => $student->gender,
-                'email' => $student->user->email,
+                'email' => $student->user()->email,
+                'user_id' => $student->user_id,
                 'image_url' => $student->image_url,
                 'birthdate' => $student->birthdate,
                 'phone' => $student->phone,
-                'department_name' => $student->course_students->first()->department_course->department->arabic_name,
-                'college_name' => $student->course_students->first()->department_course->department->college->arabic_name,
+                'department_name' => $student->course_students()->first()->department_course()->department()->arabic_name,
+                'college_name' => $student->course_students()->first()->department_course()->department()->college()->arabic_name,
             ];
             $studentData = NullHelper::filter($studentData);
-            $studentData['level_name'] = $this->getStudentDepartmentAndLevel($request->id)->level_id;
+            $departmentLevelSemesterIds = $this->getStudentDepartmentLevelSemesterIds($request->id);
+            $studentData['level_name'] = $departmentLevelSemesterIds->level_id;
+            $studentData['semester_name'] = $departmentLevelSemesterIds->semester_id;
 
             // Enum replacements
             $enumReplacements = [
                 new EnumReplacement('gender_name', GenderEnum::class),
                 new EnumReplacement('level_name', LevelsEnum::class),
+                new EnumReplacement('semester_name', SemesterEnum::class),
             ];
 
             $studentData = ProcessDataHelper::enumsConvertIdToName((object) $studentData, $enumReplacements);
@@ -242,21 +259,22 @@ class StudentController extends Controller
         try {
             $student = Student::findOrFail($request->id, $attributes);
             $student = NullHelper::filter($student);
-            $studnetDepartmentAndLevel = $this->getStudentDepartmentAndLevel($request->id);
-            if ($studnetDepartmentAndLevel !==  null) {
-                $student['level_id'] = $studnetDepartmentAndLevel->level_id;
-            }
+            $departmentLevelSemesterIds = $this->getStudentDepartmentLevelSemesterIds($request->id);
+            $student['level_id'] = $departmentLevelSemesterIds->level_id;
+            $student['semester_id'] = $departmentLevelSemesterIds->semester_id;
             return ResponseHelper::successWithData($student);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
     }
 
-    private function addStudentCoures($studnetId, $departmentId, $levelId)
+    private function addStudentCoures($studnetId, $departmentId, $levelId, $semesterId)
     {
         try {
             $departmentCourses = DepartmentCourse::where('department_id', '=', $departmentId)
-                ->where('level', '=', $levelId)->get();
+                ->where('level', '=', $levelId)
+                ->where('semester', '=', $semesterId)
+                ->get();
             foreach ($departmentCourses as $departmentCourse) {
                 $departmentCourse->course_students()->create([
                     'student_id' => $studnetId,
@@ -265,15 +283,15 @@ class StudentController extends Controller
                 ]);
             }
         } catch (\Exception $e) {
-            return ResponseHelper::serverError();
+            throw $e;
         }
     }
 
-    private function getStudentDepartmentAndLevel($studnetId)
+    private function getStudentDepartmentLevelSemesterIds($studnetId)
     {
         try {
             return ResponseHelper::success();
-            $studnetDepartmentAndLevel =  DB::table('students')
+            $studentDepartmentLevelSemesterIds =  DB::table('students')
                 ->join('course_students', 'students.id', '=', 'course_students.student_id')
                 ->join('department_courses', 'course_students.department_course_id', '=', 'department_courses.id')
                 // ->join('courses', 'department_courses.course_id', '=', 'courses.id')
@@ -281,14 +299,15 @@ class StudentController extends Controller
                 // ->join('departments', 'department_courses.department_id', '=', 'departments.id')
                 ->select(
                     'department_courses.level as level_id',
+                    'department_courses.semester as semester_id',
                     'department_courses.department_id as department_id',
                 )
                 ->where('students.id', '=', $studnetId)
                 // ->where('course_parts.status', '=', CourseStatusEnum::AVAILABLE->value) // Assuming there's a column indicating if the course is active
-                ->orderBy('department_courses.level', 'desc') // Order by level in descending order
+                ->orderBy(['department_courses.level', 'department_courses.semester'], 'desc') // Order by level in descending order
                 ->first();
 
-            return $studnetDepartmentAndLevel;
+            return $studentDepartmentLevelSemesterIds;
         } catch (\Exception $e) {
             throw $e;
         }
@@ -307,10 +326,10 @@ class StudentController extends Controller
             'birthdate' => 'nullable|integer',
             'department_id' => 'required|exists:departments,id',
             'level_id' => ['required', new Enum(LevelsEnum::class)], // Assuming LevelsEnum holds valid values
-
+            'semester_id' => ['required', new Enum(SemesterEnum::class)],
             // 'user_id' => 'nullable|uuid|unique:users,id',
             // يتم اضافة الايميل وجعله قابل للنل ، وفريد
-
+            // التحقق من ان رقم المستوى المرسل موجود في القسم، اي يتوافق مع عدد المستويات، وليس في الاينم 
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

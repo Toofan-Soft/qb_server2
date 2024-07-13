@@ -22,82 +22,93 @@ use App\Helpers\ResponseHelper;
 use App\Enums\QualificationEnum;
 use App\Enums\FormNameMethodEnum;
 use App\Enums\QuestionStatusEnum;
+use App\Enums\CoursePartStatusEnum;
 use App\Enums\ExamConductMethodEnum;
 use App\Enums\AccessibilityStatusEnum;
+use App\Enums\ChapterStatusEnum;
 use App\Enums\CourseStudentStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
 use App\Enums\OnlineExamTakingStatusEnum;
 use App\Enums\FormConfigurationMethodEnum;
+use App\Enums\LevelsCountEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
 
 class EnumsController extends Controller
 {
-    public function retrieveCourseStatus  ()
+    public function retrieveCoursePartStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(CourseStatusEnum::class));
+        return ResponseHelper::successWithData(EnumTraits::getEnum(CoursePartStatusEnum::class));
+    }
+    public function retrieveChapterStatus()
+    {
+        return ResponseHelper::successWithData(EnumTraits::getEnum(ChapterStatusEnum::class));
     }
 
-    public function retrieveCourseParts  ()
+    public function retrieveCourseParts()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(CoursePartsEnum::class));
     }
 
-    public function retrieveLanguages   ()
+    public function retrieveLanguages()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(LanguageEnum::class));
     }
 
-    public function retrieveDifficultyLevels   ()
+    public function retrieveDifficultyLevels()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(ExamDifficultyLevelEnum::class));
     }
 
-    public function  retrieveQuestionTypes    ()
+    public function  retrieveQuestionTypes()
     {
 
         return ResponseHelper::successWithData(EnumTraits::getEnum(QuestionTypeEnum::class));
     }
 
-    public function  retrieveAccessibilityStatus    ()
+    public function  retrieveAccessibilityStatus()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(AccessibilityStatusEnum::class));
     }
 
-    public function  retrieveQuestionStatus     ()
+    public function  retrieveQuestionStatus()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(QuestionStatusEnum::class));
     }
 
-    public function  retrieveAcceptanceStatus     ()
-    {
-        // enum not found
-        //return response()->json(['data' => AcceptanceStatusEnum::getEnum()], 200);
-    }
+    // public function  retrieveAcceptanceStatus()
+    // {
+    //     // enum not found
+    //     // return response()->json(['data' => AcceptanceStatusEnum::getEnum()], 200);
+    // }
 
-    public function  retrieveSemesters    ()
+    public function  retrieveSemesters()
     {
-
         return ResponseHelper::successWithData(EnumTraits::getEnum(SemesterEnum::class));
     }
 
-    public function  retrieveJobTypes    ()
+    public function  retrieveLevelsCounts()
+    {
+        return ResponseHelper::successWithData(EnumTraits::getEnum(LevelsCountEnum::class));
+    }
+
+    public function  retrieveJobTypes()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(JobTypeEnum::class));
     }
 
-    public function  retrieveQualifications     ()
+    public function  retrieveQualifications()
     {
 
         return ResponseHelper::successWithData(EnumTraits::getEnum(QualificationEnum::class));
     }
 
-    public function  retrieveGenders ()
+    public function  retrieveGenders()
     {
 
         return ResponseHelper::successWithData(EnumTraits::getEnum(GenderEnum::class));
     }
 
-    public function  retrieveCourseStudentStatus     ()
+    public function  retrieveCourseStudentStatus()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(CourseStudentStatusEnum::class));
     }
@@ -110,50 +121,43 @@ class EnumsController extends Controller
         // return ResponseHelper::successWithData(EnumTraits::getEnum(OwnerTypeEnum::class));
     }
 
-    public function  retrieveUserStatus     ()
+    public function  retrieveUserStatus()
     {
-
         return ResponseHelper::successWithData(EnumTraits::getEnum(UserStatusEnum::class));
     }
 
-    public function  retrieveConductMethods     ()
+    public function  retrieveConductMethods()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(ExamConductMethodEnum::class));
     }
 
-    public function  retrieveExamTypes    ()
+    public function  retrieveExamTypes()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(ExamTypeEnum::class));
     }
 
-    public function  retrieveformConfigurationMethods    ()
+    public function  retrieveformConfigurationMethods()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(FormConfigurationMethodEnum::class));
-
     }
 
-    public function  retrieveformNameMethods   ()
+    public function  retrieveformNameMethods()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(FormNameMethodEnum::class));
-
     }
 
-    public function  retrieveOnlineExamStatus     ()
+    public function  retrieveOnlineExamStatus()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(ExamStatusEnum::class));
-
     }
 
-    public function  retrieveStudentOnlineExamStatus    ()
+    public function  retrieveStudentOnlineExamStatus()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(StudentOnlineExamStatusEnum::class));
-
     }
 
-    public function  retrieveOnlineExamTakingStatus    ()
+    public function  retrieveOnlineExamTakingStatus()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(OnlineExamTakingStatusEnum::class));
-
     }
-
 }

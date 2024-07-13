@@ -120,7 +120,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('add', [CollegeController::class, 'addCollege']);
         Route::put('modify', [CollegeController::class, 'modifyCollege']);
         Route::delete('delete', [CollegeController::class, 'deleteCollege']);
-        Route::get('retrieve', [CollegeController::class, 'retrieveCollege']); //http://127.0.0.1:8000/api/colleges/1
+        Route::get('retrieve', [CollegeController::class, 'retrieveCollege']);
+        Route::get('retrieve-editable', [CollegeController::class, 'retrieveCollege']); // حالي تعتبر نفس الاجراع الفردي
         Route::get('retrieve-list', [CollegeController::class, 'retrieveColleges']);
         Route::get('retrieve-basic-info-list', [CollegeController::class, 'retrieveBasicCollegesInfo']);
     });
