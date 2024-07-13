@@ -37,9 +37,6 @@ def __run_model(population, difficulty_coefficient, estimated_time):
 
     best_solution = None
 
-    # print("******************************")
-    # print('\nstart :)')
-
     for i_gen in range(__generations_count):
         fitness_vals = calc(population, difficulty_coefficient, estimated_time)
 
@@ -49,19 +46,13 @@ def __run_model(population, difficulty_coefficient, estimated_time):
         if best_fitness_overall is None or best_fitness > best_fitness_overall:
             best_fitness_overall = best_fitness
             best_solution = population.individuals[best_i]
-            # print(f'\t\t\t-f={best_fitness_overall}')
-
-        # print(f'\ri_gen = {i_gen:06}   -f={-best_fitness_overall:03}', end='')
 
         if best_fitness >= 0.95:
-            # print('\nFound optimal solution')
             break
+        
         selected_pop = select(population, fitness_vals)
         crossover_mutation(selected_pop, __pc, __pm)
-
-    # print('\nend :)')
-    # print("******************************")
-
+    
     return best_solution
 
 

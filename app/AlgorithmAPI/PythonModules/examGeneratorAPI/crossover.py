@@ -1,6 +1,6 @@
 import numpy as np
 
-from model.dataset import dataset, get_best_questions
+from model.dataset import get_best_questions
 
 
 def __crossover(first_genes, second_genes, type_id):

@@ -3,7 +3,6 @@ from typing import List
 from model.gene import Gene
 from model.trait import Trait, Code
 
-
 global best_questions
 
 
@@ -39,6 +38,10 @@ class Dataset:
         self.ls_max = 0
 
         self.topics = []
+        self.a_count = 0
+
+        self.optimal_percentage_distribution = []
+        self.topics_fitness = []
 
     def add(self, question: Question):
         self.questions.append(question)
@@ -53,22 +56,27 @@ class Dataset:
         levels = set(question.selection_times for question in self.questions)
 
         for i, level in enumerate(levels):
-            self.st_levels.append(Level((i + 1), level))
+            self.st_levels.append(Level(i, level))
 
-        self.st_max = max(level.value for level in self.st_levels)
+        if len(self.st_levels) == 1:
+            self.st_max = 1
+        else:
+            self.st_max = max(level.id for level in self.st_levels)
 
     def __build_ls_utilities(self):
         levels = set(question.last_selection for question in self.questions)
 
-        for i, level in enumerate(levels):
-            self.ls_levels.append(Level((i + 1), level))
+        if len(levels) == 1:
+            for i, level in enumerate(levels):
+                self.ls_levels.append(Level((i + 1), level))
+        else:
+            for i, level in enumerate(levels):
+                self.ls_levels.append(Level(i, level))
 
-        self.ls_max = max(level.value for level in self.ls_levels)
+        self.ls_max = max(level.id for level in self.ls_levels)
 
     def __build_topics_utilities(self):
         self.topics = list(set(question.topic_id for question in self.questions))
-
-
 
 
 class Level:
@@ -80,12 +88,13 @@ class Level:
 dataset = Dataset([])
 
 
+
 def get_best_questions(type_id):
     return [question for question in dataset.questions if question.type_id == type_id]
 
 
 def st_prob_of(value):
-    prob = 0
+    prob = 2.0
     for level in dataset.st_levels:
         if level.value == value:
             prob = level.id / dataset.st_max
@@ -94,7 +103,7 @@ def st_prob_of(value):
 
 
 def ls_prob_of(value):
-    prob = 0
+    prob = -1.0
     for level in dataset.ls_levels:
         if level.value == value:
             prob = level.id / dataset.ls_max

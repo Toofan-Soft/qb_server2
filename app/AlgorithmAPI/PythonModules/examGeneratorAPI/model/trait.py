@@ -3,8 +3,6 @@ from enum import Enum
 
 class Code(Enum):
     DIFFICULTY_LEVEL = 1
-    # DF_R = 2
-    # DF_L = 3
     SELECTION_TIMES = 2
     LAST_SELECTION = 3
     ANSWER_TIME = 4
