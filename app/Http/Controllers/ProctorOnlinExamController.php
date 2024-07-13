@@ -77,14 +77,26 @@ class ProctorOnlinExamController extends Controller
                 'id', 'datetime', 'duration',
                 'type as type_name', 'note as special_note', 'course_lecturer_id'
             ]);
+
             $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
                 new EnumReplacement('type_name', ExamTypeEnum::class)
             ]);
+
             $jsonData = Storage::disk('local')->get('generalNotes.json'); // get notes from json file
             $general_note = json_decode($jsonData, true);
             $realExam['general_note'] =  $general_note;        //// Done
 
             $realExam = ExamHelper::getRealExamsScore($realExam);
+
+            $onlineExamStatus = OnlineExam::findOrFail($request->id)
+                ->first(['status']);
+            
+            if (intval($onlineExamStatus) === ExamStatusEnum::COMPLETE->value) {
+                $realExam->is_complete = true;
+            } else {
+                $realExam->is_takable = $realExam->datetime <= now();
+            }
+
             $courselecturer = $realExam->course_lecturer()->first();
             $lecturer =  Employee::where('id', $courselecturer->lecturer_id)->first(['arabic_name as lecturer_name']);
             $departmentCoursePart = $courselecturer->department_course_part()->first();
@@ -116,7 +128,6 @@ class ProctorOnlinExamController extends Controller
             unset($realExam['id']);
 
             $realExam =
-
                 $realExam  +
                 $lecturer->toArray() +
                 $coursePart->toArray() +

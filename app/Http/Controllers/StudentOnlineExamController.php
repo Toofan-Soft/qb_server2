@@ -63,8 +63,8 @@ class StudentOnlineExamController extends Controller
 
     public function retrieveOnlineExam(Request $request)
     {
-
         $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
+
         try {
             $exam = DB::table('real_exams as res')
                 ->join('online_exams as oes', 'res.id', '=', 'oes.id')
@@ -102,9 +102,39 @@ class StudentOnlineExamController extends Controller
                     'e.arabic_name as lecturer_name',
                     DB::raw("(SELECT SUM(questions_count * question_score)
                             FROM public.real_exam_question_types
-                            WHERE real_exam_id = res.id) as total_score")
+                            WHERE real_exam_id = res.id) as total_score"),
+                    'res.status'
                 )
                 ->first();
+            
+            $studentOnlinExam = StudentOnlineExam::where('online_exam_id', $request->id)->first();
+
+            if ($exam->datetime <= now() &&
+                intval($exam->status) === ExamStatusEnum::ACTIVE->value
+            ) {
+                if ($studentOnlinExam) {
+                    $takingStatus = intval($studentOnlinExam->status);
+    
+                    if ($takingStatus === StudentOnlineExamStatusEnum::ACTIVE->value) {
+                        $exam->is_takable = true;
+                    } elseif ($takingStatus === StudentOnlineExamStatusEnum::SUSPENDED->value) {
+                        $exam->is_suspended = true;
+                    } elseif ($takingStatus === StudentOnlineExamStatusEnum::CANCELED->value) {
+                        $exam->is_canceled = true;
+                    } elseif ($takingStatus === StudentOnlineExamStatusEnum::COMPLETE->value) {
+                        // student finish exam..
+                        $exam->is_complete = true;
+                    }
+                } else {
+                    // default..
+                    $exam->is_takable = false;
+                }
+            } elseif (intval($exam->status) === ExamStatusEnum::COMPLETE->value) {
+                // exam complete..
+                $exam->is_complete = true;
+            }
+
+            unset($exam['status']);
 
             // $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
 
@@ -206,46 +236,42 @@ class StudentOnlineExamController extends Controller
     public function retrieveOnlineExamQuestions(Request $request)
     {
         try {
-            // $realExam = RealExam::findOrFail($request->id);
-            // $formId = self::selectStudentForm($realExam)['id'];
-            // $formId = self::selectStudentForm($realExam);
-            $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
-            $formId = StudentOnlineExam::where('online_exam_id', $request->id)
-                ->where('student_id', $studentId)
-                ->first(['form_id']);
-            $questions = $this->getFormQuestions($formId);
-            $questions = NullHelper::filter($questions);
-            return ResponseHelper::successWithData($questions);
+            $exam = OnlineExam::findOrFail($request->id)
+                ->first(['datetime', 'status']);
+            
+            if ($exam->datetime <= now() &&
+                intval($exam->status) === ExamStatusEnum::ACTIVE->value
+            ) {
+                $studentId = Student::where('user_id', auth()->user()->id)
+                    ->first()['id'];
 
-            // $formQuestions = [];
+                $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->id)
+                    ->where('student_id', $studentId)
+                    ->first(['status', 'form_id']);
+                
+                if ($studentOnlineExam->status === StudentOnlineExamStatusEnum::ACTIVE->value) {
+                    $questions = $this->getFormQuestions($studentOnlineExam->form_id);
 
-            // $queationsTypes = $realExam->real_exam_question_types()->get(['question_type as type_name']);
+                    $questions = NullHelper::filter($questions);
+                    
+                    return ResponseHelper::successWithData($questions);        
+                }
+            }
 
-            // foreach ($queationsTypes as $type) {
-            //     $questions = DB::table('forms')
-            //         ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
-            //         ->join('questions', 'form_questions.question_id', '=', 'questions.id')
-            //         ->select(
-            //             'questions.id',
-            //             'questions.content',
-            //             'questions.attachment as attachment_url',
-            //             'form_questions.combination_id',
-            //         )
-            //         ->where('forms.id', '=', $formId)
-            //         ->where('questions.type', '=', $type->type_name)
-            //         ->get();
+            // $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
+            // $formId = StudentOnlineExam::where('online_exam_id', $request->id)
+            //     ->where('student_id', $studentId)
+            //     ->first(['form_id']);
+            
+            // $questions = $this->getFormQuestions($formId);
 
-            //     $questions = QuestionHelper::retrieveStudentExamQuestions($questions, $type->type_name);
-            //     // $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
-            //     $formQuestions[ EnumTraits::getNameByNumber($type->type_name, QuestionTypeEnum::class)] = $questions;
-            // }
-
-            // return ResponseHelper::successWithData($formQuestions);
+            // $questions = NullHelper::filter($questions);
+            
+            // return ResponseHelper::successWithData($questions);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
     }
-
 
     private function getFormQuestions($formId)
     {
@@ -258,7 +284,8 @@ class StudentOnlineExamController extends Controller
             foreach ($formQuestions as $formQuestion) {
                 $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
                 if ($formQuestion->combination_id) {
-                    $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
+                    // $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
+                    $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, true, false);
                 }
                 array_push($questions, $question);
             }
@@ -418,7 +445,7 @@ class StudentOnlineExamController extends Controller
             $examScores = $this->getRealExamQuestionScore($onlineExamId);
 
             $StudentScore = 0;
-            
+
             foreach ($questionsAnswers as $questionAnswer) {
                 $question = Question::findOrFail($questionAnswer->questoin_id);
                 if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {

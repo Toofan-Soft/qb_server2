@@ -492,11 +492,11 @@ class PaperExamController extends Controller
             if (intval($realExam->form_configuration_methode) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
                 $i = 0;
                 foreach ($examForms as $formId) {
-                    $formQuestions = $this->getFormQuestions($formId->id, $request->with_answered_mirror);
+                    $formQuestions = $this->getFormQuestions($formId->id, $request->with_answer_mirror);
                     array_push($examFormsQuestions, [$formsNames[$i++], $formQuestions]);
                 }
             } else {
-                $formQuestions = $this->getFormQuestions($examForms->id, $request->with_answered_mirror);
+                $formQuestions = $this->getFormQuestions($examForms->id, $request->with_answer_mirror);
                 array_push($examFormsQuestions, $formsNames);
                 array_push($examFormsQuestions, $formQuestions);
             }
@@ -525,7 +525,13 @@ class PaperExamController extends Controller
 
             $realExam['score'] = $totalScore;
             $realExam['university_name'] = $universityName;
-            $realExam['forms'] = $examFormsQuestions;
+            // $realExam['forms'] = $examFormsQuestions;
+
+            if ($examForms->count() === 1) {
+                $realExam['questions'] = $examFormsQuestions[0];
+            } else {
+                $realExam['forms'] = $examFormsQuestions;
+            }
 
             return ResponseHelper::successWithData($realExam);
         } catch (\Exception $e) {

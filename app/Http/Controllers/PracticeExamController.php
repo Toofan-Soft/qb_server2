@@ -277,53 +277,61 @@ class PracticeExamController extends Controller
     private function getQuestions($examId, $withAnswer = false)
     {
         // return questoin as [content, attachment, is_true, choices[content, attachment, is_true]]
-        
         $questions = [];
+
         try {
-        $examQuestions = PracticeExamQuestion::where('practice_exam_id', '=', $examId)->get();
+            $examQuestions = PracticeExamQuestion::where('practice_exam_id', '=', $examId)->get();
 
-        foreach ($examQuestions as $examQuestion) {
-            // $question = $examQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
-            $question = $examQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
-            $answer = $examQuestion->answer;
+            foreach ($examQuestions as $examQuestion) {
+                $question = $examQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
+                $answer = $examQuestion->answer;
 
-            if ($examQuestion->combination_id) {
-                if ($withAnswer) {
-                    $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, true);
-                } else {
-                    $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, false);
-                }
-
-                $question->choices = collect($question->choices)->map(function ($choice) use ($answer) {
-                    if ($choice['id'] === $answer) {
-                        $choice['is_selected'] = true;
-                    }
-
-                    return $choice;
-                });
-            } else {
-                if ($withAnswer) {
-                    $trueFalseQuestion = TrueFalseQuestion::findOrFail($examQuestion->question_id)->first(['answer']);
-                    if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
-                        $question['is_true'] = true;
+                if ($examQuestion->combination_id) {
+                    if ($withAnswer) {
+                        $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, true);
                     } else {
-                        $question['is_true'] = false;
+                        $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, false);
                     }
 
-                    if ($answer === TrueFalseAnswerEnum::TRUE->value) {
-                        $question->user_answer = true;
-                    } elseif ($answer === TrueFalseAnswerEnum::FALSE->value) {
-                        $question->user_answer = false;
+                    $question->choices = collect($question->choices)->map(function ($choice) use ($answer) {
+                        if ($choice['id'] === $answer) {
+                            $choice['is_selected'] = true;
+                        }
+
+                        return $choice;
+                    });
+                } else {
+                    if ($withAnswer) {
+                        $trueFalseQuestion = TrueFalseQuestion::findOrFail($examQuestion->question_id)->first(['answer']);
+
+                        if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
+                            $question['is_true'] = true;
+                        } else {
+                            $question['is_true'] = false;
+                        }
+
+                        if ($answer === TrueFalseAnswerEnum::TRUE->value) {
+                            $question->user_answer = true;
+                        } elseif ($answer === TrueFalseAnswerEnum::FALSE->value) {
+                            $question->user_answer = false;
+                        }
                     }
                 }
-            }
-            array_push($questions, $question);
-        }
 
-        return $questions;
-    } catch (\Exception $e) {
-        throw $e;
-    }
+                array_push($questions, $question);
+            }
+
+            if ($withAnswer) {
+                $questions = array_map(function ($question) {
+                    unset($question['id']);
+                    return $question;
+                }, $questions);
+            }
+            
+            return $questions;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public function retrievePracticeExamsResult(Request $request)
@@ -345,14 +353,17 @@ class PracticeExamController extends Controller
             $practiceExam = PracticeExam::findOrFail($request->id, [
                 // 'datetime'
                 'id', 'title', 'duration', 'language as language_name',
-                'conduct_method as is_mandatory_question_sequence', 'status as is_complete', 'department_course_part_id'
+                'conduct_method as is_mandatory_question_sequence', 'status', 'department_course_part_id'
             ]);
 
             $practiceExam = ProcessDataHelper::enumsConvertIdToName($practiceExam, [
                 new EnumReplacement('language_name', LanguageEnum::class)
             ]);
 
-            $practiceExam->is_complete = (intval($practiceExam->is_complete) === PracticeExamStatusEnum::COMPLETE->value) ? true : false;
+            $practiceExam->is_started = (intval($practiceExam->status) === PracticeExamStatusEnum::ACTIVE->value) ? true : false;
+            $practiceExam->is_suspended = (intval($practiceExam->status) === PracticeExamStatusEnum::SUSPENDED->value) ? true : false;
+            $practiceExam->is_complete = (intval($practiceExam->status) === PracticeExamStatusEnum::COMPLETE->value) ? true : false;
+            
             $practiceExam->is_mandatory_question_sequence = ($practiceExam->is_mandatory_question_sequence === ExamConductMethodEnum::MANDATORY->value) ? true : false;
 
             $departmentCoursePart = DepartmentCoursePart::findOrFail($practiceExam->department_course_part_id);
