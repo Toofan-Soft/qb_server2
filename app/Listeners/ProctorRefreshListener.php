@@ -3,9 +3,9 @@
 namespace App\Listeners;
 
 use Pusher\Pusher;
-use App\Events\StudentRefreshEvevnt;
+use App\Events\ProctorRefreshEvevnt;
 
-class StudentRefreshListener
+class ProctorRefreshListener
 {
     /**
      * Create the event listener.
@@ -25,9 +25,14 @@ class StudentRefreshListener
     /**
      * Handle the event.
      */
-    public function handle(StudentRefreshEvevnt $event): void
+    public function handle(ProctorRefreshEvevnt $event): void
     {
         $this->pusher->trigger('qb_server', 'student.refresh.' . $event->uid, $event->data);
+        
+        // $uid = auth()->user()->id;
+        // $this->pusher->trigger('qb_server', 'student.refresh.' . $uid, $event->data);
+
+        // $this->pusher->trigger('qb_server', 'student.refreshed.' . $token, $event->data);
         // $this->pusher->trigger('qb_server', 'student.refreshed', $event->data);
     }
 }

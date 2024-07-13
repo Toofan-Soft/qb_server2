@@ -2,21 +2,10 @@
 
 namespace App\Helpers;
 
-use App\Models\User;
-use App\Enums\RoleEnum;
-use App\Enums\GenderEnum;
-use App\Enums\JobTypeEnum;
-use Illuminate\Support\Str;
-use App\Enums\OwnerTypeEnum;
-use App\Helpers\ImageHelper;
-use Illuminate\Http\Request;
-use App\Enums\UserStatusEnum;
 use App\Models\UserRole;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Notifications\EmaiVerificationNotification;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ValidateHelper
 {
@@ -36,14 +25,23 @@ class ValidateHelper
         // }
     }
 
-    public static function validatePolicy($roles = []): bool
-    {
-        $userRoles = UserRole::where('user_id', '=', auth()->user()->id)->pluck('role_id')->toArray();
-        foreach ($userRoles as $userRole) {
-            if (in_array(intval($userRole), $roles)) {
+    public static function validatePolicy($roles = []) : bool {
+        $user = auth()->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        $userRoleIds = UserRole::where('user_id', $user->id)
+            ->pluck('role_id')
+            ->toArray();
+
+        foreach ($roles as $role) {
+            if (in_array($role->value, $userRoleIds)) {
                 return true;
             }
         }
+
         return false;
     }
 }

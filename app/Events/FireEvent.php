@@ -21,7 +21,8 @@ class FireEvent implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct(College $college)
+    // public function __construct(College $college)
+    public function __construct(string $college)
     {
         $this->college = $college;
     }

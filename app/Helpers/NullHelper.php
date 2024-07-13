@@ -210,4 +210,15 @@ class NullHelper
         $filteredArray = self::filterArray($array);
         return (object) $filteredArray;
     }
+
+
+    public static function is_null($parent, $children)
+    {
+        foreach ($children as $child) {
+            if (!isset($parent[$child]) || is_null($parent[$child]) || $parent[$child] === 'null') {
+                return true;
+            }
+        }
+        return false;
+    }
 }

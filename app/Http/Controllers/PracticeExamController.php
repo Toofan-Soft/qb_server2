@@ -277,8 +277,8 @@ class PracticeExamController extends Controller
     private function getQuestions($examId, $withAnswer = false)
     {
         // return questoin as [content, attachment, is_true, choices[content, attachment, is_true]]
-
         $questions = [];
+
         try {
             $examQuestions = PracticeExamQuestion::where('practice_exam_id', '=', $examId)->get();
 
@@ -303,6 +303,7 @@ class PracticeExamController extends Controller
                 } else {
                     if ($withAnswer) {
                         $trueFalseQuestion = TrueFalseQuestion::findOrFail($examQuestion->question_id)->first(['answer']);
+
                         if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
                             $question['is_true'] = true;
                         } else {
@@ -316,9 +317,17 @@ class PracticeExamController extends Controller
                         }
                     }
                 }
+
                 array_push($questions, $question);
             }
 
+            if ($withAnswer) {
+                $questions = array_map(function ($question) {
+                    unset($question['id']);
+                    return $question;
+                }, $questions);
+            }
+            
             return $questions;
         } catch (\Exception $e) {
             throw $e;
@@ -344,14 +353,17 @@ class PracticeExamController extends Controller
             $practiceExam = PracticeExam::findOrFail($request->id, [
                 // 'datetime'
                 'id', 'title', 'duration', 'language as language_name',
-                'conduct_method as is_mandatory_question_sequence', 'status as is_complete', 'department_course_part_id'
+                'conduct_method as is_mandatory_question_sequence', 'status', 'department_course_part_id'
             ]);
 
             $practiceExam = ProcessDataHelper::enumsConvertIdToName($practiceExam, [
                 new EnumReplacement('language_name', LanguageEnum::class)
             ]);
 
-            $practiceExam->is_complete = (intval($practiceExam->is_complete) === PracticeExamStatusEnum::COMPLETE->value) ? true : false;
+            $practiceExam->is_started = (intval($practiceExam->status) === PracticeExamStatusEnum::ACTIVE->value) ? true : false;
+            $practiceExam->is_suspended = (intval($practiceExam->status) === PracticeExamStatusEnum::SUSPENDED->value) ? true : false;
+            $practiceExam->is_complete = (intval($practiceExam->status) === PracticeExamStatusEnum::COMPLETE->value) ? true : false;
+            
             $practiceExam->is_mandatory_question_sequence = ($practiceExam->is_mandatory_question_sequence === ExamConductMethodEnum::MANDATORY->value) ? true : false;
 
             $departmentCoursePart = DepartmentCoursePart::findOrFail($practiceExam->department_course_part_id);

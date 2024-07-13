@@ -14,6 +14,7 @@ use App\Enums\ExamTypeEnum;
 use App\Enums\SemesterEnum;
 use App\Helpers\ExamHelper;
 use App\Helpers\NullHelper;
+use App\Models\FormQuestion;
 use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
 use App\Models\StudentAnswer;
@@ -30,8 +31,8 @@ use App\Events\StudentRefreshEvevnt;
 use App\Http\Controllers\Controller;
 use App\Enums\CourseStudentStatusEnum;
 use Illuminate\Support\Facades\Storage;
+use App\Helpers\OnlineExamListenerHelper;
 use App\Enums\StudentOnlineExamStatusEnum;
-use App\Models\FormQuestion;
 
 class ProctorOnlinExamController extends Controller
 {
@@ -76,14 +77,26 @@ class ProctorOnlinExamController extends Controller
                 'id', 'datetime', 'duration',
                 'type as type_name', 'note as special_note', 'course_lecturer_id'
             ]);
+
             $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
                 new EnumReplacement('type_name', ExamTypeEnum::class)
             ]);
+
             $jsonData = Storage::disk('local')->get('generalNotes.json'); // get notes from json file
             $general_note = json_decode($jsonData, true);
             $realExam['general_note'] =  $general_note;        //// Done
 
             $realExam = ExamHelper::getRealExamsScore($realExam);
+
+            $onlineExamStatus = OnlineExam::findOrFail($request->id)
+                ->first(['status']);
+            
+            if (intval($onlineExamStatus) === ExamStatusEnum::COMPLETE->value) {
+                $realExam->is_complete = true;
+            } else {
+                $realExam->is_takable = $realExam->datetime <= now();
+            }
+
             $courselecturer = $realExam->course_lecturer()->first();
             $lecturer =  Employee::where('id', $courselecturer->lecturer_id)->first(['arabic_name as lecturer_name']);
             $departmentCoursePart = $courselecturer->department_course_part()->first();
@@ -115,7 +128,6 @@ class ProctorOnlinExamController extends Controller
             unset($realExam['id']);
 
             $realExam =
-
                 $realExam  +
                 $lecturer->toArray() +
                 $coursePart->toArray() +
@@ -393,6 +405,8 @@ class ProctorOnlinExamController extends Controller
             });
 
             // refresh proctor and student
+            OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id, $studentOnlineExam->form_id);
+
             DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
@@ -447,6 +461,9 @@ class ProctorOnlinExamController extends Controller
 
                 // $studentInfo = $this->refreshOnlineExamStudents($studentOnlineExam);
                 // event(new StudentRefreshEvevnt($studentInfo)); // execute event
+
+                OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id, $studentOnlineExam->form_id);
+
                 return ResponseHelper::success();
             }
         } catch (\Exception $e) {
@@ -476,6 +493,8 @@ class ProctorOnlinExamController extends Controller
                 //     ]);
 
                 // refresh studnet and proctor 
+                OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id, $studentOnlineExam->form_id);
+
                 return ResponseHelper::success();
             }
         } catch (\Exception $e) {
@@ -506,6 +525,8 @@ class ProctorOnlinExamController extends Controller
                 //     ]);
 
                 // refresh student and proctor
+                OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id, $studentOnlineExam->form_id);
+                
                 return ResponseHelper::success();
             }
         } catch (\Exception $e) {

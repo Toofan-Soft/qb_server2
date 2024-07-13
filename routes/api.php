@@ -65,11 +65,16 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
 
-Route::post('user/register', [GuestController::class, 'addGuest']);
+// Route::post('user/register', [GuestController::class, 'addGuest']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);
 Route::post('user/login', [UserController::class, 'login']);
 Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
 Route::put('user/change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+
+Route::prefix('guest/')->group(function () {
+    Route::post('add', [GuestController::class, 'addGuest']);
+});
+
 // Route::post('forget_password',[ForgetPasswordController::class,'forget_password']);
 // Route::post('password_reset',[ResetPasswordController::class,'password_reset']);
 // Route::get('logout',[UserController::class,'logout']);
@@ -97,6 +102,7 @@ Route::middleware('auth:api')->group(function () {
 
     // user
     Route::get('user/retrieve-profile', [UserController::class, 'retrieveProfile']);
+    // Route::get('user/login1', [UserController::class, 'login1']);
     // Route::get('filter/retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
 
 // });///

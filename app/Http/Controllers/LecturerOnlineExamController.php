@@ -296,7 +296,9 @@ class LecturerOnlineExamController extends Controller
                 'forms_count', 'form_configuration_method as form_configuration_method_name', 'form_name_method as form_name_method_name',
                 'datetime', 'duration', 'type as type_name', 'note as special_note', 'course_lecturer_id'
             ]);
+            
             $realExam = NullHelper::filter($realExam);
+
             $lecturer_id = CourseLecturer::findOrFail($realExam->course_lecturer_id)
                 ->first(['lecturer_id'])['lecturer_id'];
 
@@ -319,6 +321,11 @@ class LecturerOnlineExamController extends Controller
                 'exam_datetime_notification_datetime as datetime_notification_datetime',
                 'result_notification_datetime'
             ]);
+
+            $onlineExam->is_suspended = intval($onlineExam->status_name) === ExamStatusEnum::SUSPENDED->value;
+            $onlineExam->is_complete = intval($onlineExam->status_name) === ExamStatusEnum::COMPLETE->value;
+            $onlineExam->is_editable = $realExam->datetime > now();
+            // $onlineExam->is_deletable = $realExam->datetime > now();
 
             $onlineExam = ProcessDataHelper::enumsConvertIdToName($onlineExam, [
                 new EnumReplacement('status_name', ExamStatusEnum::class),
@@ -480,15 +487,16 @@ class LecturerOnlineExamController extends Controller
     {
         try {
             $onlineExam = OnlineExam::findOrFail($request->id);
-            if (!(intval($onlineExam->status) === ExamStatusEnum::COMPLETE->value)) {
+            $realExam = RealExam::findOrFail($request->id);
 
+            if (!(intval($onlineExam->status) === ExamStatusEnum::COMPLETE->value) ||
+                $realExam->datetime > now()
+            ) {
                 if (intval($onlineExam->status) === ExamStatusEnum::SUSPENDED->value) {
-
                     $onlineExam->update([
                         'status' => ExamStatusEnum::ACTIVE->value,
                     ]);
                 } else {
-
                     $onlineExam->update([
                         'status' => ExamStatusEnum::SUSPENDED->value,
                     ]);
