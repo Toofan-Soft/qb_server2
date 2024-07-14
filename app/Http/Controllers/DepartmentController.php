@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
 use App\Enums\LevelsCountEnum;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
@@ -22,15 +23,14 @@ use Illuminate\Support\Facades\Validator;
 
 class DepartmentController extends Controller
 {
-
-
     public function addDepartment(Request $request)
     {
+        Gate::authorize('addDepartment', DepartmentController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
 
-        // Gate::authorize('create', Department::class);
         try {
             $college = College::findOrFail($request->college_id);
             $college->departments()->create([
@@ -48,11 +48,11 @@ class DepartmentController extends Controller
 
     public function modifyDepartment(Request $request)
     {
+        Gate::authorize('modifyDepartment', DepartmentController::class);
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
 
-        // Gate::authorize('update', Department::class);
         try {
             $department = Department::findOrFail($request->id);
             $department->update([
@@ -70,7 +70,7 @@ class DepartmentController extends Controller
 
     public function deleteDepartment(Request $request)
     {
-        // Gate::authorize('delete', Department::class);
+        Gate::authorize('deleteDepartment', DepartmentController::class);
         try {
             $department = Department::findOrFail($request->id);
             $department->delete();
@@ -82,6 +82,7 @@ class DepartmentController extends Controller
 
     public function retrieveDepartments(Request $request)
     {
+        Gate::authorize('retrieveDepartments', DepartmentController::class);
         try {
             $attributes = ['id', 'arabic_name', 'english_name', 'levels_count as levels_count_name', 'logo_url'];
             $conditionAttribute = ['college_id' => $request->college_id];
@@ -99,9 +100,10 @@ class DepartmentController extends Controller
 
     public function retrieveBasicDepartmentsInfo(Request $request)
     {
+        Gate::authorize('retrieveBasicDepartmentsInfo', DepartmentController::class);
         try {
-        $attributes = ['id', 'arabic_name as name', 'logo_url'];
-        $conditionAttribute = ['college_id' => $request->college_id];
+            $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name'), 'logo_url'];
+            $conditionAttribute = ['college_id' => $request->college_id];
             $departments = GetHelper::retrieveModels(Department::class, $attributes, $conditionAttribute);
             $departments = NullHelper::filter($departments);
             return ResponseHelper::successWithData($departments);
@@ -113,6 +115,7 @@ class DepartmentController extends Controller
 
     public function retrieveDepartment(Request $request)
     {
+        Gate::authorize('retrieveDepartment', DepartmentController::class);
         try {
             $attributes = ['arabic_name', 'english_name', 'levels_count as levels_count_name', 'logo_url', 'description'];
             $conditionAttribute = ['id' => $request->id];
@@ -126,8 +129,10 @@ class DepartmentController extends Controller
             return ResponseHelper::serverError();
         }
     }
+
     public function retrieveEditableDepartment(Request $request)
     {
+        Gate::authorize('retrieveEditableDepartment', DepartmentController::class);
         try {
             $attributes = ['arabic_name', 'english_name', 'levels_count as levels_count_id', 'logo_url', 'description'];
             $conditionAttribute = ['id' => $request->id];

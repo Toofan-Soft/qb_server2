@@ -12,15 +12,15 @@ class DepartmentCoursePartChapterTopicPolicy
         RoleEnum::DATA_ENTRY
     ];
 
-    public function addDepartmentCoursePartTopics(): bool
+    public function modifyDepartmentCoursePartTopics(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function deleteDepartmentCoursePartTopics(): bool
-    {
-        return ValidateHelper::validatePolicy(self::$validRoles);
-    }
+    // public function deleteDepartmentCoursePartTopics(): bool
+    // {
+    //     return ValidateHelper::validatePolicy(self::$validRoles);
+    // }
 
     public function retrieveDepartmentCoursePartChapters(): bool
     {
@@ -32,12 +32,12 @@ class DepartmentCoursePartChapterTopicPolicy
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
     
-    public function retrieveAvailableDepartmentCoursePartChapters(): bool
+    public function retrieveEditableDepartmentCoursePartChapters(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
     
-    public function retrieveAvailableDepartmentCoursePartTopics(): bool
+    public function retrieveEditableDepartmentCoursePartTopics(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }

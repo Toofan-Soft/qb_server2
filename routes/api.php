@@ -65,11 +65,13 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
 
-// Route::post('user/register', [GuestController::class, 'addGuest']);
+Route::post('user/register', [GuestController::class, 'addGuest']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);
 Route::post('user/login', [UserController::class, 'login']);
+Route::put('user/change-password', [UserController::class, 'changePassword']);
 Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
 Route::put('user/change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+// Route::post('user-management/add', [UserManagementController::class, 'addUser']);
 
 Route::prefix('guest/')->group(function () {
     Route::post('add', [GuestController::class, 'addGuest']);
@@ -105,7 +107,7 @@ Route::middleware('auth:api')->group(function () {
     // Route::get('user/login1', [UserController::class, 'login1']);
     // Route::get('filter/retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
 
-// });///
+    // });///
 
     //univercity
     Route::prefix('university/')->group(function () {
@@ -121,7 +123,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('modify', [CollegeController::class, 'modifyCollege']);
         Route::delete('delete', [CollegeController::class, 'deleteCollege']);
         Route::get('retrieve', [CollegeController::class, 'retrieveCollege']);
-        Route::get('retrieve-editable', [CollegeController::class, 'retrieveCollege']); // حالي تعتبر نفس الاجراع الفردي
+        Route::get('retrieve-editable', [CollegeController::class, 'retrieveEditableCollege']); // حالي تعتبر نفس الاجراع الفردي
         Route::get('retrieve-list', [CollegeController::class, 'retrieveColleges']);
         Route::get('retrieve-basic-info-list', [CollegeController::class, 'retrieveBasicCollegesInfo']);
     });
@@ -131,7 +133,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('add', [DepartmentController::class, 'addDepartment']);
         Route::put('modify', [DepartmentController::class, 'modifyDepartment']);
         Route::delete('delete', [DepartmentController::class, 'deleteDepartment']);
-        Route::get('retrieve', [DepartmentController::class, 'retrieveDepartment']); //http://127.0.0.1:8000/api/colleges/1
+        Route::get('retrieve', [DepartmentController::class, 'retrieveDepartment']);
+        Route::get('retrieve-editable', [DepartmentController::class, 'retrieveEditableDepartment']);
         Route::get('retrieve-list', [DepartmentController::class, 'retrieveDepartments']);
         Route::get('retrieve-basic-info-list', [DepartmentController::class, 'retrieveBasicDepartmentsInfo']);
     });
@@ -141,8 +144,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('add', [CourseController::class, 'addCourse']);
         Route::put('modify', [CourseController::class, 'modifyCourse']);
         Route::delete('delete', [CourseController::class, 'deleteCourse']);
+        Route::get('retrieve', [CourseController::class, 'retrieveCourse']);
         Route::get('retrieve-editable', [CourseController::class, 'retrieveEditableCourse']);
-        // Route::get('retrieve-editable', [CourseController::class, 'retrieveEditableCourse']); //http://127.0.0.1:8000/api/colleges/1
         Route::get('retrieve-list', [CourseController::class, 'retrieveCourses']);
     });
 
@@ -175,6 +178,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('modify', [TopicController::class, 'modifyTopic']);
         Route::delete('delete', [TopicController::class, 'deleteTopic']);
         Route::get('retrieve', [TopicController::class, 'retrieveTopic']);
+        Route::get('retrieve-editable', [TopicController::class, 'retrieveEditableTopic']);
         Route::get('retrieve-description', [TopicController::class, 'retrieveTopicDescription']);
         Route::get('retrieve-list', [TopicController::class, 'retrieveTopics']);
         Route::get('retrieve-available-list', [TopicController::class, 'retrieveAvailableTopics']);
@@ -186,6 +190,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('add', [QuestionController::class, 'addQuestion']);
         Route::put('modify', [QuestionController::class, 'modifyQuestion']);
         Route::put('submit', [QuestionController::class, 'submitQuestionReviewRequest']);
+        Route::put('withdraw-submit', [QuestionController::class, 'withdrawSubmitQuestionReviewRequest']);
         Route::put('accept', [QuestionController::class, 'acceptQuestion']);
         Route::put('reject', [QuestionController::class, 'rejectQuestion']);
         Route::delete('delete', [QuestionController::class, 'deleteQuestion']);
@@ -196,15 +201,13 @@ Route::middleware('auth:api')->group(function () {
 
 
     //question choice
-    Route::prefix('question-choice/')->group(function () {
-        Route::post('add', [QuestionChoiceController::class, 'addQuestionChoice']);
-        Route::put('modify', [QuestionChoiceController::class, 'modifyQuestionChoice']);
-        Route::delete('delete', [QuestionChoiceController::class, 'deleteQuestionChoice']);
-        // Route::get('retrieve', [QuestionChoiceController::class, 'retrieveQuestionChoice']);
-        Route::get('retrieve-editable', [QuestionChoiceController::class, 'retrieveEditableQuestionChoice']);
-    });
-
-
+    // Route::prefix('question-choice/')->group(function () {
+    //     Route::post('add', [QuestionChoiceController::class, 'addQuestionChoice']);
+    //     Route::put('modify', [QuestionChoiceController::class, 'modifyQuestionChoice']);
+    //     Route::delete('delete', [QuestionChoiceController::class, 'deleteQuestionChoice']);
+    //     // Route::get('retrieve', [QuestionChoiceController::class, 'retrieveQuestionChoice']);
+    //     Route::get('retrieve-editable', [QuestionChoiceController::class, 'retrieveEditableQuestionChoice']);
+    // });
 
     //department course
     Route::prefix('department-course/')->group(function () {
@@ -226,17 +229,14 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-editable', [DepartmentCoursePartController::class, 'retrieveEditableDepartmentCoursePart']);
     });
 
-
     // department-course-part-chapter-and-topic
     Route::prefix('department-course-part-chapter-and-topic/')->group(function () {
-        Route::post('add-topic-list', [DepartmentCoursePartChapterTopicController::class, 'addDepartmentCoursePartTopics']);
-        Route::delete('delete-topic-list', [DepartmentCoursePartChapterTopicController::class, 'deleteDepartmentCoursePartTopics']);
+        Route::put('modify-topic-list', [DepartmentCoursePartChapterTopicController::class, 'modifyDepartmentCoursePartTopics']);
         Route::get('retrieve-chapter-list', [DepartmentCoursePartChapterTopicController::class, 'retrieveDepartmentCoursePartChapters']);
         Route::get('retrieve-topic-list', [DepartmentCoursePartChapterTopicController::class, 'retrieveDepartmentCoursePartChapterTopics']);
-        Route::get('retrieve-available-chapter-list', [DepartmentCoursePartChapterTopicController::class, 'retrieveAvailableDepartmentCoursePartChapters']);
-        Route::get('retrieve-available-topic-list', [DepartmentCoursePartChapterTopicController::class, 'retrieveAvailableDepartmentCoursePartTopics']);
+        Route::get('retrieve-editable-chapter-list', [DepartmentCoursePartChapterTopicController::class, 'retrieveEditableDepartmentCoursePartChapters']);
+        Route::get('retrieve-editable-topic-list', [DepartmentCoursePartChapterTopicController::class, 'retrieveEditableDepartmentCoursePartTopics']);
     });
-
 
 
     //employee
@@ -248,7 +248,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-editable', [EmployeeController::class, 'retrieveEditableEmployee']);
         Route::get('retrieve-list', [EmployeeController::class, 'retrieveEmployees']);
     });
-
 
 
     //course lecturer
@@ -277,15 +276,13 @@ Route::middleware('auth:api')->group(function () {
     //course student
     Route::prefix('course-student/')->group(function () {
         Route::post('add-list', [CourseStudentController::class, 'addCourseStudents']);
-        Route::put('modify', [CourseStudentController::class, 'modifyCourseStudent']);
         Route::put('pass', [CourseStudentController::class, 'passCourseStudent']);
         Route::put('suspend', [CourseStudentController::class, 'suspendCourseStudent']);
+        Route::put('unsuspend', [CourseStudentController::class, 'unsuspendCourseStudent']);
         Route::delete('delete', [CourseStudentController::class, 'deleteCourseStudent']);
-        Route::get('retrieve-editable', [CourseStudentController::class, 'retrieveEditableCourseStudent']);
         Route::get('retrieve-list', [CourseStudentController::class, 'retrieveCourseStudents']);
         Route::get('retrieve-unlink-list', [CourseStudentController::class, 'retrieveUnlinkCourceStudents']);
     });
-
 
 
     //guest
@@ -294,7 +291,6 @@ Route::middleware('auth:api')->group(function () {
         Route::put('modify', [GuestController::class, 'modifyGuest']);
         Route::get('retrieve-editable', [GuestController::class, 'retrieveEditableGuestProfile']);
     });
-
 
 
     // user management
@@ -309,18 +305,18 @@ Route::middleware('auth:api')->group(function () {
     });
 
 
-
     //user
     Route::prefix('user/')->group(function () {
         // Route::post('verify', [UserController::class, 'verifyAccount']);
         // Route::post('login', [UserController::class, 'login']);
+        Route::post('resend-code', [UserController::class, 'resendCode']);
         Route::post('logout', [UserController::class, 'logout']);
         Route::put('change-password', [UserController::class, 'changePassword']);
-        // Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
-        // Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
-        // Route::get('retrieve-profile', [UserController::class, 'retrieveProfile']);
+        Route::put('change-language', [UserController::class, 'changeLanguage']);
+        Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
+        Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+        Route::get('retrieve-profile', [UserController::class, 'retrieveProfile']);
     });
-
 
 
     //lecturer online exam
@@ -360,7 +356,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve', [ProctorOnlinExamController::class, 'retrieveOnlineExam']);
         Route::get('retrieve-list', [ProctorOnlinExamController::class, 'retrieveOnlineExams']);
         Route::get('retrieve-student-list', [ProctorOnlinExamController::class, 'retrieveOnlineExamStudents']);
-        Route::get('refresh-student-list', [ProctorOnlinExamController::class, 'refreshOnlineExamStudents']);
     });
 
 
@@ -402,81 +397,82 @@ Route::middleware('auth:api')->group(function () {
     /// for test just
     Route::post('test', function (Request $request) {
         return User::all();
-           });
+    });
 
-// }); ////
+    // }); ////
 
-//favorite question
-Route::prefix('favorite-question/')->group(function () {
-    Route::post('add', [FavoriteQuestionController::class, '']);
-    Route::delete('delete', [FavoriteQuestionController::class, '']);
-    Route::get('retrieve', [FavoriteQuestionController::class, '']);
-    Route::get('check', [FavoriteQuestionController::class, '']);
-    Route::get('retrieve-list', [FavoriteQuestionController::class, '']);
-});
-
-
-
-//enum
-Route::prefix('enum/')->group(function () {
-    Route::get('retrieve-course-status-list', [EnumsController::class, 'retrieveCourseStatus']);
-    Route::get('retrieve-course-part-list', [EnumsController::class, 'retrieveCourseParts']);
-    Route::get('retrieve-language-list', [EnumsController::class, 'retrieveLanguages']);
-    Route::get('retrieve-difficulty-level-list', [EnumsController::class, 'retrieveDifficultyLevels']);
-    Route::get('retrieve-question-type-list', [EnumsController::class, 'retrieveQuestionTypes']);
-    Route::get('retrieve-question-status-list', [EnumsController::class, 'retrieveQuestionStatus']);
-    Route::get('retrieve-acceptance-status-list', [EnumsController::class, 'retrieveAcceptanceStatus']);
-    Route::get('retrieve-accessibility-status-list', [EnumsController::class, 'retrieveAccessibilityStatus']);
-    Route::get('retrieve-semester-list', [EnumsController::class, 'retrieveSemesters']);
-    Route::get('retrieve-job-type-list', [EnumsController::class, 'retrieveJobTypes']);
-    Route::get('retrieve-qualification-list', [EnumsController::class, 'retrieveQualifications']);
-    // Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
-    Route::get('retrieve-course-student-status-list', [EnumsController::class, 'retrieveCourseStudentStatus']);
-    Route::get('retrieve-owner-type-list', [EnumsController::class, 'retrieveOwnerTypes']);
-    Route::get('retrieve-user-status-list', [EnumsController::class, 'retrieveUserStatus']);
-    Route::get('retrieve-conduct-method-list', [EnumsController::class, 'retrieveConductMethods']);
-    Route::get('retrieve-exam-type-list', [EnumsController::class, 'retrieveExamTypes']);
-    Route::get('retrieve-form-configuration-method-list', [EnumsController::class, 'retrieveformConfigurationMethods']);
-    Route::get('retrieve-form-name-method-list', [EnumsController::class, 'retrieveformNameMethods']);
-    Route::get('retrieve-online-exam-status-list', [EnumsController::class, 'retrieveOnlineExamStatus']);
-    Route::get('retrieve-student-online-exam-status-list', [EnumsController::class, 'retrieveStudentOnlineExamStatus']);
-    Route::get('retrieve-online-exam-taking-status-list', [EnumsController::class, 'retrieveOnlineExamTakingStatus']);
-});
+    //favorite question
+    Route::prefix('favorite-question/')->group(function () {
+        Route::post('add', [FavoriteQuestionController::class, '']);
+        Route::delete('delete', [FavoriteQuestionController::class, '']);
+        Route::get('retrieve', [FavoriteQuestionController::class, '']);
+        Route::get('check', [FavoriteQuestionController::class, '']);
+        Route::get('retrieve-list', [FavoriteQuestionController::class, '']);
+    });
 
 
 
-//filter
-Route::prefix('filter/')->group(function () {
-    Route::get('retrieve-course-list', [FilterController::class, 'retrieveCourses']);
-    Route::get('retrieve-course-part-list', [FilterController::class, 'retrieveCourseParts']);
-    Route::get('retrieve-chapter-list', [FilterController::class, 'retrieveChapters']);
-    Route::get('retrieve-topic-list', [FilterController::class, 'retrieveTopics']);
-    Route::get('retrieve-college-list', [FilterController::class, 'retrieveColleges']);
-    Route::get('retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
-    Route::get('retrieve-lecturer-current-college-list', [FilterController::class, 'retrieveLecturerCurrentColleges']);
-    Route::get('retrieve-department-list', [FilterController::class, 'retrieveDepartments']);
-    Route::get('retrieve-lecturer-department-list', [FilterController::class, 'retrieveLecturerDepartments']);
-    Route::get('retrieve-lecturer-current-department-list', [FilterController::class, 'retrieveLecturerCurrentDepartments']);
-    Route::get('retrieve-department-level-list', [FilterController::class, 'retrieveDepartmentLevels']);
-    Route::get('retrieve-department-course-list', [FilterController::class, 'retrieveDepartmentCourses']);
-    Route::get('retrieve-department-level-course-list', [FilterController::class, 'retrieveDepartmentLevelCourses']);
-    Route::get('retrieve-department-level-semester-course-list', [FilterController::class, 'retrieveDepartmentLevelSemesterCourses']);
-    Route::get('retrieve-department-course-part-list', [FilterController::class, 'retrieveDepartmentCourseParts']);
-    Route::get('retrieve-department-lecturer-course-list', [FilterController::class, 'retrieveDepartmentLecturerCourses']);
-    Route::get('retrieve-department-lecturer-current-course-list', [FilterController::class, 'retrieveDepartmentLecturerCurrentCourses']);
-    Route::get('retrieve-department-lecturer-course-part-list', [FilterController::class, 'retrieveDepartmentLecturerCourseParts']);
-    Route::get('retrieve-department-lecturer-current-course-part-list', [FilterController::class, 'retrieveDepartmentLecturerCurrentCourseParts']);
-    Route::get('retrieve-employee-list', [FilterController::class, 'retrieveEmployees']);
-    Route::get('retrieve-lecturer-list', [FilterController::class, 'retrieveLecturers']);
-    Route::get('retrieve-employee-of-job-list', [FilterController::class, 'retrieveEmployeesOfJob']);
-    Route::get('retrieve-academic-year-list', [FilterController::class, 'retrieveAcademicYears']);
-    Route::get('retrieve-owner-list', [FilterController::class, 'retrieveOwners']);
-    Route::get('retrieve-role-list', [FilterController::class, 'retrieveRoles']);
-    Route::get('retrieve-proctor-list', [FilterController::class, 'retrieveProctors']);
-});
+    //enum
+    Route::prefix('enum/')->group(function () {
+        Route::get('retrieve-course-part-status-list', [EnumsController::class, 'retrieveCoursePartStatus']);
+        Route::get('retrieve-chapter-status-list', [EnumsController::class, 'retrieveChapterStatus']);
+        Route::get('retrieve-course-part-list', [EnumsController::class, 'retrieveCourseParts']);
+        Route::get('retrieve-language-list', [EnumsController::class, 'retrieveLanguages']);
+        Route::get('retrieve-difficulty-level-list', [EnumsController::class, 'retrieveDifficultyLevels']);
+        Route::get('retrieve-question-type-list', [EnumsController::class, 'retrieveQuestionTypes']);
+        Route::get('retrieve-question-status-list', [EnumsController::class, 'retrieveQuestionStatus']);
+        // Route::get('retrieve-acceptance-status-list', [EnumsController::class, 'retrieveAcceptanceStatus']);
+        Route::get('retrieve-accessibility-status-list', [EnumsController::class, 'retrieveAccessibilityStatus']);
+        Route::get('retrieve-semester-list', [EnumsController::class, 'retrieveSemesters']);
+        Route::get('retrieve-level-list', [EnumsController::class, 'retrieveLevelsCounts']);
+        Route::get('retrieve-job-type-list', [EnumsController::class, 'retrieveJobTypes']);
+        Route::get('retrieve-qualification-list', [EnumsController::class, 'retrieveQualifications']);
+        Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
+        Route::get('retrieve-course-student-status-list', [EnumsController::class, 'retrieveCourseStudentStatus']);
+        Route::get('retrieve-owner-type-list', [EnumsController::class, 'retrieveOwnerTypes']);
+        Route::get('retrieve-user-status-list', [EnumsController::class, 'retrieveUserStatus']);
+        Route::get('retrieve-conduct-method-list', [EnumsController::class, 'retrieveConductMethods']);
+        Route::get('retrieve-exam-type-list', [EnumsController::class, 'retrieveExamTypes']);
+        Route::get('retrieve-form-configuration-method-list', [EnumsController::class, 'retrieveformConfigurationMethods']);
+        Route::get('retrieve-form-name-method-list', [EnumsController::class, 'retrieveformNameMethods']);
+        Route::get('retrieve-online-exam-status-list', [EnumsController::class, 'retrieveOnlineExamStatus']);
+        Route::get('retrieve-student-online-exam-status-list', [EnumsController::class, 'retrieveStudentOnlineExamStatus']);
+        Route::get('retrieve-online-exam-taking-status-list', [EnumsController::class, 'retrieveOnlineExamTakingStatus']);
+    });
 
 
-});///
+
+    //filter
+    Route::prefix('filter/')->group(function () {
+        Route::get('retrieve-course-list', [FilterController::class, 'retrieveCourses']);
+        Route::get('retrieve-course-part-list', [FilterController::class, 'retrieveCourseParts']);
+        Route::get('retrieve-chapter-list', [FilterController::class, 'retrieveChapters']);
+        Route::get('retrieve-topic-list', [FilterController::class, 'retrieveTopics']);
+        Route::get('retrieve-college-list', [FilterController::class, 'retrieveColleges']);
+        Route::get('retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
+        Route::get('retrieve-lecturer-current-college-list', [FilterController::class, 'retrieveLecturerCurrentColleges']);
+        Route::get('retrieve-department-list', [FilterController::class, 'retrieveDepartments']);
+        Route::get('retrieve-lecturer-department-list', [FilterController::class, 'retrieveLecturerDepartments']);
+        Route::get('retrieve-lecturer-current-department-list', [FilterController::class, 'retrieveLecturerCurrentDepartments']);
+        Route::get('retrieve-department-level-list', [FilterController::class, 'retrieveDepartmentLevels']);
+        Route::get('retrieve-department-course-list', [FilterController::class, 'retrieveDepartmentCourses']);
+        Route::get('retrieve-department-level-course-list', [FilterController::class, 'retrieveDepartmentLevelCourses']);
+        Route::get('retrieve-department-level-semester-course-list', [FilterController::class, 'retrieveDepartmentLevelSemesterCourses']);
+        Route::get('retrieve-department-course-part-list', [FilterController::class, 'retrieveDepartmentCourseParts']);
+        Route::get('retrieve-department-lecturer-course-list', [FilterController::class, 'retrieveDepartmentLecturerCourses']);
+        Route::get('retrieve-department-lecturer-current-course-list', [FilterController::class, 'retrieveDepartmentLecturerCurrentCourses']);
+        Route::get('retrieve-department-lecturer-course-part-list', [FilterController::class, 'retrieveDepartmentLecturerCourseParts']);
+        Route::get('retrieve-department-lecturer-current-course-part-list', [FilterController::class, 'retrieveDepartmentLecturerCurrentCourseParts']);
+        Route::get('retrieve-employee-list', [FilterController::class, 'retrieveEmployees']);
+        Route::get('retrieve-lecturer-list', [FilterController::class, 'retrieveLecturers']);
+        Route::get('retrieve-employee-of-job-list', [FilterController::class, 'retrieveEmployeesOfJob']);
+        Route::get('retrieve-academic-year-list', [FilterController::class, 'retrieveAcademicYears']);
+        Route::get('retrieve-non-owner-employee-list', [FilterController::class, 'retrieveNonOwnerEmployees']);
+        Route::get('retrieve-non-owner-student-list', [FilterController::class, 'retrieveNonOwnerStudents']);
+        Route::get('retrieve-role-list', [FilterController::class, 'retrieveRoles']);
+        Route::get('retrieve-proctor-list', [FilterController::class, 'retrieveProctors']);
+    });
+}); ///
 
 //for test with out need to login
 Route::prefix('test/')->group(function () {
@@ -490,7 +486,7 @@ Route::prefix('test/')->group(function () {
 
 //enum
 Route::prefix('enum/')->group(function () {
-    Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
+    Route::get('retrieve-login-gender-list', [EnumsController::class, 'retrieveLoginGenders']);
 });
 
 
@@ -542,14 +538,13 @@ Route::get('execute-python', function () {
 });
 
 Route::get('test', function () {
- return DB::table('true_false_questions')
-//  ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
-//  ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
-//  ->join('students', 'course_students.student_id', '=', 'students.id')
-//  ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'gender as gender_name', 'image_url')
-//  ->where('departments.id', '=', 1)
-//  ->where('department_courses.level', '=', 1)
-//  ->distinct()
- ->get();
+    return DB::table('true_false_questions')
+        //  ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
+        //  ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
+        //  ->join('students', 'course_students.student_id', '=', 'students.id')
+        //  ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'gender as gender_name', 'image_url')
+        //  ->where('departments.id', '=', 1)
+        //  ->where('department_courses.level', '=', 1)
+        //  ->distinct()
+        ->get();
 });
-

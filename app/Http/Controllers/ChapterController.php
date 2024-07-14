@@ -16,12 +16,15 @@ use App\Enums\ChapterStatusEnum;
 use App\Helpers\EnumReplacement;
 use App\Helpers\EnumReplacement1;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
 class ChapterController extends Controller
 {
     public function addChapter(Request $request)
     {
+        Gate::authorize('addChapter', ChapterController::class);
+
         try {
             return AddHelper::addModel($request, CoursePart::class,  $this->rules($request), 'chapters', $request->course_part_id);
         } catch (\Exception $e) {
@@ -31,9 +34,12 @@ class ChapterController extends Controller
 
     public function modifyChapter(Request $request)
     {
+        Gate::authorize('modifyChapter', ChapterController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
+
         try {
             $chapter = Chapter::findOrFail($request->id);
             $chapter->update([
@@ -50,6 +56,7 @@ class ChapterController extends Controller
 
     public function deleteChapter(Request $request)
     {
+        Gate::authorize('deleteChapter', ChapterController::class);
         try {
             $chapter = Chapter::findOrFail($request->id);
             $chapter->delete();
@@ -61,6 +68,7 @@ class ChapterController extends Controller
 
     public function retrieveChapters(Request $request)
     {
+        Gate::authorize('retrieveChapters', ChapterController::class);
         try {
             $attributes = ['id', 'arabic_title', 'english_title', 'status as status_name', 'description'];
             $conditionAttribute = ['course_part_id' => $request->course_part_id];
@@ -79,12 +87,13 @@ class ChapterController extends Controller
 
     public function retrieveAvailableChapters(Request $request)
     {
+        Gate::authorize('retrieveAvailableChapters', ChapterController::class);
         try {
-        $attributes = ['id', 'arabic_title', 'english_title'];
-        $conditionAttribute = [
-            'course_part_id' => $request->course_part_id,
-            'status' => ChapterStatusEnum::AVAILABLE->value,
-        ];
+            $attributes = ['id', 'arabic_title', 'english_title'];
+            $conditionAttribute = [
+                'course_part_id' => $request->course_part_id,
+                'status' => ChapterStatusEnum::AVAILABLE->value,
+            ];
             $chapters = GetHelper::retrieveModels(Chapter::class, $attributes, $conditionAttribute);
             return ResponseHelper::successWithData($chapters);
         } catch (\Exception $e) {
@@ -94,6 +103,7 @@ class ChapterController extends Controller
 
     public function retrieveChapter(Request $request)
     {
+        Gate::authorize('retrieveChapter', ChapterController::class);
         try {
             $attributes = ['arabic_title', 'english_title', 'status as status_name', 'description'];
             $conditionAttribute = ['id' => $request->id];
@@ -112,6 +122,7 @@ class ChapterController extends Controller
 
     public function retrieveEditableChapter(Request $request)
     {
+        Gate::authorize('retrieveEditableChapter', ChapterController::class);
         $attributes = ['arabic_title', 'english_title', 'status as status_id', 'description'];
         $conditionAttribute = ['id' => $request->id];
         try {
@@ -125,6 +136,7 @@ class ChapterController extends Controller
 
     public function retrieveChapterDescription(Request $request)
     {
+        Gate::authorize('retrieveChapterDescription', ChapterController::class);
         $attributes = ['description'];
         $conditionAttribute = ['id' => $request->id];
         try {

@@ -33,6 +33,15 @@ class QuestionPolicy
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
+    
+    public function withdrawSubmitQuestionReviewRequest(): bool
+    {
+        $validRoles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::QUESTION_ENTRY
+        ];
+        return ValidateHelper::validatePolicy($validRoles);
+    }
 
     public function acceptQuestion(): bool
     {

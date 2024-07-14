@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\ImageHelper;
 use App\Helpers\NullHelper;
+use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,8 +15,10 @@ class UniversityController extends Controller
 {
     public function configureUniversityData(Request $request)
     {
+        Gate::authorize('configureUniversityData', UniversityController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         $updatedAttributes = $request->all();
         try {
@@ -35,8 +38,10 @@ class UniversityController extends Controller
 
     public function modifyUniversityData(Request $request)
     {
+        Gate::authorize('modifyUniversityData', UniversityController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         $updatedAttributes = $request->all();
         try {
@@ -61,6 +66,8 @@ class UniversityController extends Controller
 
     public function retrieveUniversityInfo()
     {
+        Gate::authorize('retrieveUniversityInfo', UniversityController::class);
+
         try {
             $jsonData = Storage::disk('local')->get('university.json');
             $universityData = json_decode($jsonData, true);
@@ -76,6 +83,8 @@ class UniversityController extends Controller
 
     public function retrieveBasicUniversityInfo()
     {
+        Gate::authorize('retrieveBasicUniversityInfo', UniversityController::class);
+
         try {
             $jsonData = Storage::disk('local')->get('university.json');
             $universityData = json_decode($jsonData, true);

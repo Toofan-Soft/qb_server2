@@ -7,6 +7,8 @@ use  App\Models\Student;
 use App\Enums\GenderEnum;
 use App\Enums\LevelsEnum;
 use App\Helpers\GetHelper;
+use App\Enums\SemesterEnum;
+use App\Helpers\NullHelper;
 use App\Helpers\UserHelper;
 use \Illuminate\Support\Str;
 use App\Enums\OwnerTypeEnum;
@@ -19,6 +21,7 @@ use App\Enums\CoursePartsEnum;
 use App\Enums\StudentTypeEnum;
 use App\Enums\CourseStatusEnum;
 use App\Helpers\DatetimeHelper;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Enums\QualificationEnum;
@@ -30,10 +33,9 @@ use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
-use App\Enums\SemesterEnum;
-use App\Helpers\NullHelper;
 use  Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
@@ -41,8 +43,10 @@ class StudentController extends Controller
 
     public function addStudent(Request $request)
     {
+        Gate::authorize('addStudent', StudentController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError1(401);
+            return  ResponseHelper::clientError();
         }
         DB::beginTransaction();
         try {
@@ -60,7 +64,7 @@ class StudentController extends Controller
             $this->addStudentCoures($student->id, $request->department_id, $request->level_id, $request->semester_id);
             if ($request->email) {
                 if (!UserHelper::addUser($request->email, OwnerTypeEnum::STUDENT->value, $student->id)) {
-                    return ResponseHelper::serverError(401);
+                    return ResponseHelper::serverError();
                     // return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الطالب');
                 }
             }
@@ -74,8 +78,10 @@ class StudentController extends Controller
 
     public function modifyStudent(Request $request, Student $student)
     {
+        Gate::authorize('modifyStudent', StudentController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         DB::beginTransaction();
         try {
@@ -95,10 +101,10 @@ class StudentController extends Controller
                     $studnetDepartmentAndLevel = $this->getStudentDepartmentLevelSemesterIds($student->id);
 
                     if ($request->level_id <= $studnetDepartmentAndLevel->level_id) {
-                        return ResponseHelper::clientError(401);
+                        return ResponseHelper::clientError();
                         // return ResponseHelper::clientError('لا يمكنك تغيير مستوى الطالب الي مستوى ادنى من المستوى الحالي');
                     } elseif ($request->level_id <= $studnetDepartmentAndLevel->semester_id) {
-                        return ResponseHelper::clientError(401);
+                        return ResponseHelper::clientError();
                         // return ResponseHelper::clientError('لا يمكنك تغيير فصل الطالب الي فصل ادنى من الفصل الحالي');
                     } else {
                         // هل صحيح اننا انجح الطالب للمقررات حق الفصل الحالي 
@@ -122,7 +128,7 @@ class StudentController extends Controller
                         $this->addStudentCoures($student->id, $studnetDepartmentAndLevel->department_id, $request->level_id, $request->semester_id);
                     }
                 } else {
-                    return ResponseHelper::clientError(401);
+                    return ResponseHelper::clientError();
                     // semester id is required 
                 }
             }
@@ -136,6 +142,8 @@ class StudentController extends Controller
 
     public function deleteStudent(Request $request)
     {
+        Gate::authorize('deleteStudent', StudentController::class);
+
         DB::beginTransaction();
         try {
             $student = Student::findOrFail($request->id);
@@ -151,12 +159,14 @@ class StudentController extends Controller
 
     public function retrieveStudents(Request $request)
     {
+        Gate::authorize('retrieveStudents', StudentController::class);
+
         try {
             $students = DB::table('departments')
                 ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
                 ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
                 ->join('students', 'course_students.student_id', '=', 'students.id')
-                ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'gender as gender_name', 'image_url')
+                ->select('students.id', 'students.academic_id', LanguageHelper::getNameColumnName('students', 'name'), 'gender as gender_name', 'image_url')
                 ->where('departments.id', '=', $request->department_id)
                 ->where('department_courses.level', '=', $request->level_id)
                 ->where('department_courses.semester', '=', $request->semester_id)
@@ -176,6 +186,8 @@ class StudentController extends Controller
 
     public function retrieveStudent(Request $request)
     {
+        Gate::authorize('retrieveStudent', StudentController::class);
+
         try {
             // return ResponseHelper::success();
             // $student = Student::findOrFail($request->id);
@@ -192,8 +204,8 @@ class StudentController extends Controller
                 'image_url' => $student->image_url,
                 'birthdate' => $student->birthdate,
                 'phone' => $student->phone,
-                'department_name' => $student->course_students()->first()->department_course()->department()->arabic_name,
-                'college_name' => $student->course_students()->first()->department_course()->department()->college()->arabic_name,
+                'department_name' => $student->course_students()->first()->department_course()->department()->LanguageHelper::getNameColumnName(null, null),
+                'college_name' => $student->course_students()->first()->department_course()->department()->college()->LanguageHelper::getNameColumnName(null, null),
             ];
             $studentData = NullHelper::filter($studentData);
             $departmentLevelSemesterIds = $this->getStudentDepartmentLevelSemesterIds($request->id);
@@ -255,6 +267,8 @@ class StudentController extends Controller
 
     public function retrieveEditableStudent(Request $request)
     {
+        Gate::authorize('retrieveEditableStudent', StudentController::class);
+
         $attributes = ['academic_id', 'arabic_name', 'english_name', 'gender as gender_id', 'phone', 'birthdate', 'image_url'];
         try {
             $student = Student::findOrFail($request->id, $attributes);

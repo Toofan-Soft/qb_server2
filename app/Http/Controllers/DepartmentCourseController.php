@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
 use App\Enums\CoursePartsEnum;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
@@ -23,14 +24,17 @@ use App\Models\DepartmentCourse;
 use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
 class DepartmentCourseController extends Controller
 {
     public function addDepartmentCourse(Request $request)
     {
+        Gate::authorize('addDepartmentCourse', DepartmentCourseController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $departmentCourse = DepartmentCourse::create([
@@ -47,8 +51,10 @@ class DepartmentCourseController extends Controller
 
     public function modifyDepartmentCourse(Request $request)
     {
+        Gate::authorize('modifyDepartmentCourse', DepartmentCourseController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $departmentCourse = DepartmentCourse::findOrFail($request->id);
@@ -64,10 +70,11 @@ class DepartmentCourseController extends Controller
 
     public function deleteDepartmentCourse(Request  $request)
     {
+        Gate::authorize('deleteDepartmentCourse', DepartmentCourseController::class);
+
         try {
             $departmentCourse = DepartmentCourse::findOrFail($request->id);
             $departmentCourse->delete();
-            // return DeleteHelper::deleteModel($departmentCourse);
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -76,6 +83,8 @@ class DepartmentCourseController extends Controller
 
     public function retrieveDepartmentCourses(Request $request)
     {
+        Gate::authorize('retrieveDepartmentCourses', DepartmentCourseController::class);
+
         $attributes = ['id', 'course_id as course_name', 'level as level_name', 'semester as semester_name'];
         $conditionAttribute = ['department_id' => $request->department_id];
         $enumReplacements = [
@@ -83,7 +92,7 @@ class DepartmentCourseController extends Controller
             new EnumReplacement('semester_name', SemesterEnum::class),
         ];
         $columnReplacement = [
-            new ColumnReplacement('course_name', 'arabic_name', Course::class),
+            new ColumnReplacement('course_name', LanguageHelper::getNameColumnName(), Course::class),
         ];
         try {
             $departmentCourses = GetHelper::retrieveModels(DepartmentCourse::class, $attributes, $conditionAttribute, $enumReplacements, $columnReplacement);
@@ -108,6 +117,8 @@ class DepartmentCourseController extends Controller
     ////// **** NEED TO GOIN BETWEEN MORE THAN ONEW
     public function retrieveCourseDepartments(Request $request)
     {
+        Gate::authorize('retrieveCourseDepartments', DepartmentCourseController::class);
+
         try {
             $coursesDepartments =  DB::table('courses')
                 ->join('department_courses', 'courses.id', '=', 'department_courses.course_id')
@@ -117,8 +128,10 @@ class DepartmentCourseController extends Controller
                     'department_courses.id as department_course_id ',
                     'department_courses.level as level_name',
                     'semester as semester_name',
-                    'departments.arabic_name as department_name',
-                    'colleges.arabic_name as college_name'
+                    LanguageHelper::getNameColumnName('departments', 'department_name'),
+                    // 'departments.arabic_name as department_name',
+                    LanguageHelper::getNameColumnName('colleges', 'college_name'),
+                    // 'colleges.arabic_name as college_name'
                 )
                 ->where('courses.id', '=', $request->course_id)
                 ->get();
@@ -161,6 +174,8 @@ class DepartmentCourseController extends Controller
 
     public function retrieveDepartmentLevelCourses(Request $request)
     {
+        Gate::authorize('retrieveDepartmentLevelCourses', DepartmentCourseController::class);
+
         try {
             $semesters = DepartmentCourse::where('department_id', $request->department_id)
                 ->where('level', $request->level_id)->get(['semester']);
@@ -169,7 +184,7 @@ class DepartmentCourseController extends Controller
             foreach ($semesters as $semester) {
                 $departmentCourse = [
                     'id' => $semester['semester'],
-                    'name' =>  EnumTraits::getNameByNumber($semester->semester, SemesterEnum::class)
+                    'name' =>  EnumTraits::getNameByNumber($semester->semester, SemesterEnum::class, LanguageHelper::getEnumLanguageName())
                 ];
                 $semestersCourses = DepartmentCourse::where('department_id', $request->department_id)
                     ->where('level', $request->level_id)
@@ -177,7 +192,7 @@ class DepartmentCourseController extends Controller
                     ->get(['id', 'course_id as name']);
 
                 $columnReplacement = [
-                    new ColumnReplacement('name', 'arabic_name', Course::class),
+                    new ColumnReplacement('name', LanguageHelper::getNameColumnName(), Course::class),
                 ];
 
                 $semestersCourses = ProcessDataHelper::columnConvertIdToName($semestersCourses, $columnReplacement);
@@ -217,11 +232,13 @@ class DepartmentCourseController extends Controller
 
     public function retrieveDepartmentCourse(Request $request)
     {
+        Gate::authorize('retrieveDepartmentCourse', DepartmentCourseController::class);
+
         try {
             $departmentCourse = DepartmentCourse::findOrFail($request->id); //updated successfull
-            $course = $departmentCourse->course()->first(['arabic_name']);
-            $department = $departmentCourse->department()->first(['college_id', 'arabic_name']);
-            $college = $department->college()->first(['arabic_name']);
+            $course = $departmentCourse->course()->first([LanguageHelper::getNameColumnName(null, 'course_name')]);
+            $department = $departmentCourse->department()->first(['college_id', LanguageHelper::getNameColumnName(null, 'department_name')]);
+            $college = $department->college()->first([LanguageHelper::getNameColumnName(null, 'college_name')]);
 
             $departmentCourseParts = $departmentCourse->department_course_parts()->get([
                 'id', 'course_part_id as name', 'score', 'lectures_count', 'lecture_duration', 'note'
@@ -250,11 +267,11 @@ class DepartmentCourseController extends Controller
             );
 
             $data = [
-                'college_name' => $college->arabic_name,
-                'department_name' => $department->arabic_name,
+                'college_name' => $college->college_name,
+                'department_name' => $department->department_name,
                 'level_name' => $departmentCourse->level,
                 'semester_name' => $departmentCourse->semester,
-                'course_name' => $course->arabic_name,
+                'course_name' => $course->course_name,
                 'course_parts' => $departmentCourseParts
             ];
 
@@ -266,6 +283,8 @@ class DepartmentCourseController extends Controller
 
     public function retrieveEditableDepartmentCourse(Request $request)
     {
+        Gate::authorize('retrieveEditableDepartmentCourse', DepartmentCourseController::class);
+
         $attributes = ['level as level_id', 'semester as semester_id'];
         try {
             $departmentCourse = DepartmentCourse::findOrFail($request->id, $attributes); //updated successfull

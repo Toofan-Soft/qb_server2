@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Guest;
 use App\Enums\GenderEnum;
+use App\Helpers\NullHelper;
 use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\ModifyHelper;
-use App\Helpers\NullHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
 class GuestController extends Controller
@@ -25,11 +26,14 @@ class GuestController extends Controller
         // }
         // return ResponseHelper::successWithData(ValidateHelper::validateData($request, $this->rules($request)));
         // return 5;
-        if ($x = ValidateHelper::validateData($request, $this->rules($request))) {
-            return ResponseHelper::clientError1($x);
+
+        Gate::authorize('addGuest', GuestController::class);
+
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return ResponseHelper::clientError();
         }
         DB::beginTransaction();
-        // try {
+        try {
 
             $guest =  Guest::create([
                 'name' => $request->name,
@@ -44,26 +48,27 @@ class GuestController extends Controller
             // return ResponseHelper::successWithData(UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password));
 
             if (!UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password)) {
-                return ResponseHelper::serverError1("hellow");
+                return ResponseHelper::serverError();
+                // return ResponseHelper::serverError1("hellow");
                 // return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
             }
             DB::commit();
             return ResponseHelper::success();
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyGuest(Request $request)
     {
+        Gate::authorize('modifyGuest', GuestController::class);
 
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $guest = Guest::where('user_id', auth()->user()->id)->first();
-            // return Guest::all();
             $guest->update([
                 'name' => $request->name ??  $guest->name,
                 'phone' => $request->phone ?? $guest->phone,
@@ -78,6 +83,8 @@ class GuestController extends Controller
 
     public function retrieveEditableGuestProfile()
     {
+        Gate::authorize('retrieveEditableGuestProfile', GuestController::class);
+
         $attributes = ['name', 'gender as gender_id', 'phone', 'image_url'];
         try {
             $guest = Guest::where('user_id', '=', auth()->user()->id)->get($attributes);

@@ -17,6 +17,7 @@ use App\Helpers\DeleteHelper;
 use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Helpers\DatetimeHelper;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
@@ -32,6 +33,7 @@ use Illuminate\Support\Facades\Log;
 use App\Enums\ExamConductMethodEnum;
 use App\Models\DepartmentCoursePart;
 use App\Models\PracticeExamQuestion;
+use Illuminate\Support\Facades\Gate;
 use App\Enums\PracticeExamStatusEnum;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
@@ -42,8 +44,10 @@ class PracticeExamController extends Controller
 {
     public function addPracticeExam(Request $request)
     {
+        Gate::authorize('addPracticeExam', PracticeExamController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $algorithmData = $this->getAlgorithmData($request);
@@ -102,6 +106,8 @@ class PracticeExamController extends Controller
 
     public function modifyPracticeExam(Request $request)
     {
+        Gate::authorize('modifyPracticeExam', PracticeExamController::class);
+
         try {
             $params = ParamHelper::getParams(
                 $request,
@@ -121,6 +127,8 @@ class PracticeExamController extends Controller
 
     public function deletePracticeExam(Request $request)
     {
+        Gate::authorize('deletePracticeExam', PracticeExamController::class);
+
         try {
             $practiceExam = PracticeExam::findOrFail($request->id);
             if ((intval($practiceExam->status) != PracticeExamStatusEnum::SUSPENDED->value) || (intval($practiceExam->status) != PracticeExamStatusEnum::NEW->value)) {
@@ -136,6 +144,7 @@ class PracticeExamController extends Controller
 
     public function retrievePracticeExams(Request $request)
     {
+        Gate::authorize('retrievePracticeExams', PracticeExamController::class);
         /**
          * parameters:  
          * request {department_course_part_id, status_id? }
@@ -149,7 +158,7 @@ class PracticeExamController extends Controller
                 ->join('courses', 'department_courses.course_id', '=', 'courses.id')
                 ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
                 ->select(
-                    'courses.arabic_name as course_name',
+                    LanguageHelper::getNameColumnName('courses', 'course_name'),
                     'course_parts.part_id as course_part_name',
                     'practice_exams.id',
                     'practice_exams.title',
@@ -196,6 +205,8 @@ class PracticeExamController extends Controller
 
     public function retrievePracticeExamsAndroid(Request $request)
     {
+        Gate::authorize('retrievePracticeExamsAndroid', PracticeExamController::class);
+
         /**
          * parameters:  
          * request {department_course_part_id?, status_id? }
@@ -210,7 +221,7 @@ class PracticeExamController extends Controller
                 ->join('courses', 'department_courses.course_id', '=', 'courses.id')
                 ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
                 ->select(
-                    'courses.arabic_name as course_name',
+                    LanguageHelper::getNameColumnName('courses', 'course_name'),
                     'course_parts.part_id as course_part_name',
                     'practice_exams.id',
                     'practice_exams.title',
@@ -261,6 +272,8 @@ class PracticeExamController extends Controller
 
     public function retrievePracticeExamQuestions(Request $request)
     {
+        Gate::authorize('retrievePracticeExamQuestions', PracticeExamController::class);
+
         try {
             $practiceExam = PracticeExam::findOrFail($request->exam_id);
 
@@ -327,7 +340,7 @@ class PracticeExamController extends Controller
                     return $question;
                 }, $questions);
             }
-            
+
             return $questions;
         } catch (\Exception $e) {
             throw $e;
@@ -336,6 +349,7 @@ class PracticeExamController extends Controller
 
     public function retrievePracticeExamsResult(Request $request)
     {
+        Gate::authorize('retrievePracticeExamsResult', PracticeExamController::class);
         try {
             $practiceExam = PracticeExam::findOrFail($request->id);
             if ($practiceExam->status === PracticeExamStatusEnum::COMPLETE->value) {
@@ -349,6 +363,8 @@ class PracticeExamController extends Controller
 
     public function retrievePracticeExam(Request $request)
     {
+        Gate::authorize('retrievePracticeExam', PracticeExamController::class);
+
         try {
             $practiceExam = PracticeExam::findOrFail($request->id, [
                 // 'datetime'
@@ -363,7 +379,7 @@ class PracticeExamController extends Controller
             $practiceExam->is_started = (intval($practiceExam->status) === PracticeExamStatusEnum::ACTIVE->value) ? true : false;
             $practiceExam->is_suspended = (intval($practiceExam->status) === PracticeExamStatusEnum::SUSPENDED->value) ? true : false;
             $practiceExam->is_complete = (intval($practiceExam->status) === PracticeExamStatusEnum::COMPLETE->value) ? true : false;
-            
+
             $practiceExam->is_mandatory_question_sequence = ($practiceExam->is_mandatory_question_sequence === ExamConductMethodEnum::MANDATORY->value) ? true : false;
 
             $departmentCoursePart = DepartmentCoursePart::findOrFail($practiceExam->department_course_part_id);
@@ -379,11 +395,11 @@ class PracticeExamController extends Controller
                 new EnumReplacement('semester_name', SemesterEnum::class)
             ]);
 
-            $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
+            $department = $departmentCourse->department()->first([LanguageHelper::getNameColumnName(null, 'department_name'), 'college_id']);
 
-            $college = $department->college()->first(['arabic_name as college_name']);
+            $college = $department->college()->first([LanguageHelper::getNameColumnName(null, 'college_name')]);
 
-            $course = $departmentCourse->course()->first(['arabic_name as course_name']);
+            $course = $departmentCourse->course()->first([LanguageHelper::getNameColumnName(null, 'course_name')]);
 
             $departmentCourse = $departmentCourse->toArray();
             unset($departmentCourse['department_id']);
@@ -412,6 +428,8 @@ class PracticeExamController extends Controller
 
     public function retrieveEditablePracticeExam(Request $request)
     {
+        Gate::authorize('retrieveEditablePracticeExam', PracticeExamController::class);
+
         try {
             $practiceExam = PracticeExam::findOrFail($request->id, ['title']);
 
@@ -425,6 +443,8 @@ class PracticeExamController extends Controller
 
     public function savePracticeExamQuestionAnswer(Request $request)
     {
+        Gate::authorize('savePracticeExamQuestionAnswer', PracticeExamController::class);
+
         try {
             $questionType = Question::findOrFail($request->question_id, ['type']);
 
@@ -450,6 +470,7 @@ class PracticeExamController extends Controller
 
     public function finishPracticeExam(Request $request)
     {
+        Gate::authorize('finishPracticeExam', PracticeExamController::class);
         try {
             $practiceExam = PracticeExam::findOrFail($request->id);
             $practiceExam->update([
@@ -464,6 +485,7 @@ class PracticeExamController extends Controller
 
     public function suspendPracticeExam(Request $request)
     {
+        Gate::authorize('suspendPracticeExam', PracticeExamController::class);
         try {
             $practiceExam = PracticeExam::findOrFail($request->id);
 

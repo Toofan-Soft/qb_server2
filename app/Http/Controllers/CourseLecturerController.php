@@ -8,28 +8,32 @@ use App\Enums\LevelsEnum;
 use App\Models\CoursePart;
 use App\Models\Department;
 use App\Enums\SemesterEnum;
+use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
 use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Enums\QualificationEnum;
 use App\Helpers\EnumReplacement;
 use App\Helpers\ColumnReplacement;
-use App\Helpers\NullHelper;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\DepartmentCoursePart;
+use Illuminate\Support\Facades\Gate;
 
 class CourseLecturerController extends Controller
 {
     public function addCourseLecturer(Request $request)
     {
+        Gate::authorize('addCourseLecturer', CourseLecturerController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             CourseLecturer::create([
@@ -45,10 +49,10 @@ class CourseLecturerController extends Controller
 
     public function deleteCourseLecturer(Request $request)
     {
+        Gate::authorize('deleteCourseLecturer', CourseLecturerController::class);
         try {
             $courseLecturer = CourseLecturer::findOrFail($request->id);
             $courseLecturer->delete();
-            // return DeleteHelper::deleteModel($courseLecturer);
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -57,6 +61,8 @@ class CourseLecturerController extends Controller
 
     public function retrieveCourseLecturers(Request $request)
     {
+        Gate::authorize('retrieveCourseLecturers', CourseLecturerController::class);
+
         try {
             $courseLecturers = DB::table('department_course_parts')
                 ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
@@ -65,10 +71,13 @@ class CourseLecturerController extends Controller
                 ->join('course_lecturers', 'department_course_parts.id', '=', 'course_lecturers.department_course_part_id')
                 ->join('employees', 'course_lecturers.lecturer_id', '=', 'employees.id')
                 ->select(
-                    'departments.arabic_name as department_name',
-                    'colleges.arabic_name as college_name',
+                    LanguageHelper::getNameColumnName('departments', 'department_name'),
+                    LanguageHelper::getNameColumnName('colleges', 'college_name'),
+                    LanguageHelper::getNameColumnName('employees', 'lecturer_name'),
+                    // 'departments.arabic_name as department_name',
+                    // 'colleges.arabic_name as college_name',
                     'course_lecturers.id as course_lecturer_id',
-                    'employees.arabic_name as lecturer_name'
+                    // 'employees.arabic_name as lecturer_name'
                 )
                 ->Where('department_course_parts.course_part_id', '=', $request->course_part_id)
                 ->when(is_null($request->academic_year), function ($query) {
@@ -86,6 +95,7 @@ class CourseLecturerController extends Controller
 
     public function retrieveLecturerCourses(Request $request)
     {
+        Gate::authorize('retrieveLecturerCourses', CourseLecturerController::class);
         try {
             $lecturerCourses =  DB::table('course_lecturers')
                 ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
@@ -100,9 +110,12 @@ class CourseLecturerController extends Controller
                     'course_parts.part_id as course_part_name',
                     'department_courses.level as level_name',
                     'department_courses.semester as semester_name',
-                    'courses.arabic_name as course_name',
-                    'departments.arabic_name as department_name',
-                    'colleges.arabic_name as college_name',
+                    LanguageHelper::getNameColumnName('courses', 'course_name'),
+                    LanguageHelper::getNameColumnName('departments', 'department_name'),
+                    LanguageHelper::getNameColumnName('colleges', 'college_name'),
+                    // 'courses.arabic_name as course_name',
+                    // 'departments.arabic_name as department_name',
+                    // 'colleges.arabic_name as college_name',
                 )
                 ->where('course_lecturers.lecturer_id', '=', $request->employee_id)
                 // ->where('course_lecturers.academic_year', '=', now()->format('Y')) // سؤال محمود والعيال عنها
@@ -122,6 +135,7 @@ class CourseLecturerController extends Controller
 
     public function retrieveCourseLecturer(Request $request)
     {
+        Gate::authorize('retrieveCourseLecturer', CourseLecturerController::class);
         ///eagear loading
         // $courseLecturer = CourseLecturer::with([
         //     'employee:arabic_name as name,phone,email,specialization,qualification as qualification_name,image_url', // Eager load with required attributes
@@ -140,7 +154,8 @@ class CourseLecturerController extends Controller
                 ->join('departments', 'department_courses.department_id', '=', 'departments.id')
                 ->join('colleges', 'departments.college_id', '=', 'colleges.id')
                 ->select(
-                    'employees.arabic_name as name',
+                    LanguageHelper::getNameColumnName('employees', 'name'),
+                    // 'employees.arabic_name as name',
                     'employees.phone',
                     'employees.user_id as email',
                     'employees.specialization',
@@ -153,9 +168,12 @@ class CourseLecturerController extends Controller
                     'course_parts.part_id as course_part_name',
                     'department_courses.level as level_name',
                     'department_courses.semester as semester_name',
-                    'courses.arabic_name as course_name',
-                    'departments.arabic_name as department_name',
-                    'colleges.arabic_name as college_name',
+                    LanguageHelper::getNameColumnName('courses', 'course_name'),
+                    // 'courses.arabic_name as course_name',
+                    LanguageHelper::getNameColumnName('departments', 'department_name'),
+                    // 'departments.arabic_name as department_name',
+                    LanguageHelper::getNameColumnName('colleges', 'college_name'),
+                    // 'colleges.arabic_name as college_name',
                 )
                 ->where('course_lecturers.id', '=', $request->id)
                 ->get();
@@ -177,7 +195,7 @@ class CourseLecturerController extends Controller
             return ResponseHelper::serverError();
         }
     }
-    
+
     public function rules(Request $request): array
     {
         $rules = [

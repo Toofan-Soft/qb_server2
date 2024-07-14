@@ -7,7 +7,17 @@
         "qualification_id": 5,
         "specialization": "System Administrator",
         "gender_id": 0,
-        "phone": "111222333"
+        "phone": 111222333
+    },
+    {
+        "comment": "employee::add",
+        "arabic_name": "اياد مدير النظام",
+        "english_name": "Eead Admin",
+        "job_type_id": 2,
+        "qualification_id": 4,
+        "specialization": "System Administrator",
+        "gender_id": 1,
+        "phone": 111222333
     },
     {
         "comment": "university::add",
@@ -17,9 +27,16 @@
     {
         "comment": "user management : add",
         "email": "fadiadmin@gmail.com",
-        "owner_type_id": 3,
+        "owner_type_id": 2,
         "owner_id": 1,
-        "roles_ids": [2, 3, 4, 5, 6, 7]
+        "roles_ids": [3, 4, 5, 6, 7]
+    },
+    {
+        "comment": "user management : add",
+        "email": "eeadadmin@gmail.com",
+        "owner_type_id": 2,
+        "owner_id": 2,
+        "roles_ids": [3, 4, 5, 6, 7]
     },
     {
         "comment": "department course : add",

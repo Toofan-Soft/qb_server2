@@ -15,7 +15,7 @@ class ModifyHelper
     {
 
         if(ValidateHelper::validateData($request,$rules)){
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
             $updatedAttributes = $request->all();
             foreach ($rules as $fileKey ) {

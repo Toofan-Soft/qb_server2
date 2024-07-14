@@ -16,6 +16,7 @@ use App\Helpers\ImageHelper;
 use App\Helpers\ParamHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ModifyHelper;
 use App\Helpers\ResponeHelper;
 use App\Helpers\ResponseHelper;
@@ -33,10 +34,10 @@ class CollegeController extends Controller
 
     public function addCollege(Request $request)
     {
-        // Gate::authorize('addCollege', CollegeController::class);
+        Gate::authorize('addCollege', CollegeController::class);
 
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
 
         try {
@@ -60,9 +61,9 @@ class CollegeController extends Controller
 
     public function modifyCollege(Request $request)
     {
-
+        Gate::authorize('modifyCollege', CollegeController::class);
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $college = College::findOrFail($request->id);
@@ -88,6 +89,7 @@ class CollegeController extends Controller
 
     public function deleteCollege(Request $request)
     {
+        Gate::authorize('deleteCollege', CollegeController::class);
         try {
             $college = College::findOrFail($request->id);
             $college->delete();
@@ -100,8 +102,7 @@ class CollegeController extends Controller
 
     public function retrieveColleges()
     {
-        // Gate::authorize('retrieveColleges', CollegeController::class);
-       
+        Gate::authorize('retrieveColleges', CollegeController::class);
         $attributes = ['id', 'arabic_name', 'english_name', 'phone', 'email', 'logo_url'];
         try {
             $colleges = GetHelper::retrieveModels(College::class, $attributes);
@@ -113,9 +114,12 @@ class CollegeController extends Controller
             return ResponseHelper::serverError();
         }
     }
+
     public function retrieveBasicCollegesInfo()
     {
-        $attributes = ['id', 'arabic_name as name', 'logo_url'];
+        Gate::authorize('retrieveBasicCollegesInfo', CollegeController::class);
+
+        $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name'), 'logo_url'];
         try {
             $colleges = GetHelper::retrieveModels(College::class, $attributes);
             $colleges = NullHelper::filter($colleges);
@@ -125,9 +129,9 @@ class CollegeController extends Controller
         }
     }
 
-
     public function retrieveCollege(Request $request)
     {
+        Gate::authorize('retrieveCollege', CollegeController::class);
         $attributes = ['arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
         $conditionAttribute = ['id' => $request->id];
         try {
@@ -138,8 +142,10 @@ class CollegeController extends Controller
             return ResponseHelper::serverError();
         }
     }
+    
     public function retrieveEditableCollege(Request $request)
     {
+        Gate::authorize('retrieveEditableCollege', CollegeController::class);
         $attributes = ['arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
         $conditionAttribute = ['id' => $request->id];
         try {

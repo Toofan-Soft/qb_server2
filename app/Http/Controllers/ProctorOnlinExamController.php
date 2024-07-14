@@ -21,6 +21,7 @@ use App\Models\StudentAnswer;
 use App\Enums\CoursePartsEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\DatetimeHelper;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\EnumReplacement;
 use App\Helpers\EnumReplacement1;
@@ -29,6 +30,7 @@ use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Events\StudentRefreshEvevnt;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use App\Enums\CourseStudentStatusEnum;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\OnlineExamListenerHelper;
@@ -38,6 +40,8 @@ class ProctorOnlinExamController extends Controller
 {
     public function retrieveOnlineExams()
     {
+        Gate::authorize('retrieveOnlineExams', ProctorOnlinExamController::class);
+
         try {
             $proctor = Employee::where('user_id', auth()->user()->id)->first();
 
@@ -72,6 +76,8 @@ class ProctorOnlinExamController extends Controller
 
     public function retrieveOnlineExam(Request $request)
     {
+        Gate::authorize('retrieveOnlineExam', ProctorOnlinExamController::class);
+
         try {
             $realExam = RealExam::findOrFail($request->id, [
                 'id', 'datetime', 'duration',
@@ -90,7 +96,7 @@ class ProctorOnlinExamController extends Controller
 
             $onlineExamStatus = OnlineExam::findOrFail($request->id)
                 ->first(['status']);
-            
+
             if (intval($onlineExamStatus) === ExamStatusEnum::COMPLETE->value) {
                 $realExam->is_complete = true;
             } else {
@@ -98,7 +104,7 @@ class ProctorOnlinExamController extends Controller
             }
 
             $courselecturer = $realExam->course_lecturer()->first();
-            $lecturer =  Employee::where('id', $courselecturer->lecturer_id)->first(['arabic_name as lecturer_name']);
+            $lecturer =  Employee::where('id', $courselecturer->lecturer_id)->first([LanguageHelper::getNameColumnName(null, 'lecturer_name')]);
             $departmentCoursePart = $courselecturer->department_course_part()->first();
             $coursePart = $departmentCoursePart->course_part()->first(['part_id as course_part_name']);
             $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
@@ -111,9 +117,9 @@ class ProctorOnlinExamController extends Controller
                 new EnumReplacement('semester_name', SemesterEnum::class),
             ]);
 
-            $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
-            $college = $department->college()->first(['arabic_name as college_name']);
-            $course = $departmentCourse->course()->first(['arabic_name as course_name']);
+            $department = $departmentCourse->department()->first([LanguageHelper::getNameColumnName(null, 'department_name'), 'college_id']);
+            $college = $department->college()->first([LanguageHelper::getNameColumnName(null, 'college_name')]);
+            $course = $departmentCourse->course()->first([LanguageHelper::getNameColumnName(null, 'course_name')]);
 
             //*** make unset to : 'department_id', 'course_id', 'college_id', 'course_lecturer_id' , 'id'
             $departmentCourse = $departmentCourse->toArray();
@@ -146,9 +152,11 @@ class ProctorOnlinExamController extends Controller
 
     public function retrieveOnlineExamStudents(Request $request)
     {
+        Gate::authorize('retrieveOnlineExamStudents', ProctorOnlinExamController::class);
+
         try {
             $results = DB::table('real_exams')
-                ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'students.gender as gender_name', 'students.image_url')
+                ->select('students.id', 'students.academic_id', LanguageHelper::getNameColumnName('students', 'name'), 'students.gender as gender_name', 'students.image_url')
                 ->join('online_exams', 'real_exams.id', '=', 'online_exams.id')
                 ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
                 ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
@@ -386,6 +394,8 @@ class ProctorOnlinExamController extends Controller
 
     public function startStudentOnlineExam(Request $request)
     {
+        Gate::authorize('startStudentOnlineExam', ProctorOnlinExamController::class);
+
         try {
             // rule: exam_id, student_id
             $formId = $this->selectStudentFormId($request->exam_id);
@@ -398,11 +408,11 @@ class ProctorOnlinExamController extends Controller
                 'form_id' => $formId
             ]);
             $formQuestions = FormQuestion::where('form_id', $studentOnlineExam->form_id)
-            ->map(function ($formQuestions) use ($studentOnlineExam) {
-                $formQuestions->student_answers->create([
-                    'student_id' => $studentOnlineExam->student_id
-                ]);
-            });
+                ->map(function ($formQuestions) use ($studentOnlineExam) {
+                    $formQuestions->student_answers->create([
+                        'student_id' => $studentOnlineExam->student_id
+                    ]);
+                });
 
             // refresh proctor and student
             OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id, $studentOnlineExam->form_id);
@@ -416,7 +426,7 @@ class ProctorOnlinExamController extends Controller
     }
 
     private function selectStudentFormId($examId)
-    {
+    {        
         try {
             $realExam = RealExam::findOrFail($examId);
             $examFormsIds = $realExam->forms()->pluck('id')->toArray();
@@ -438,6 +448,8 @@ class ProctorOnlinExamController extends Controller
 
     public function suspendStudentOnlineExam(Request $request)
     {
+        Gate::authorize('suspendStudentOnlineExam', ProctorOnlinExamController::class);
+
         try {
             // rule : exam_id, student_id
             $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
@@ -473,6 +485,7 @@ class ProctorOnlinExamController extends Controller
 
     public function continueStudentOnlineExam(Request $request)
     {
+        Gate::authorize('continueStudentOnlineExam', ProctorOnlinExamController::class);
         try {
             // rule : exam_id, studnet_id
             $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
@@ -504,6 +517,8 @@ class ProctorOnlinExamController extends Controller
 
     public function finishStudentOnlineExam(Request $request)
     {
+        Gate::authorize('finishStudentOnlineExam', ProctorOnlinExamController::class);
+
         try {
             $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
                 ->where('student_id', $request->student_id)
@@ -526,7 +541,7 @@ class ProctorOnlinExamController extends Controller
 
                 // refresh student and proctor
                 OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id, $studentOnlineExam->form_id);
-                
+
                 return ResponseHelper::success();
             }
         } catch (\Exception $e) {

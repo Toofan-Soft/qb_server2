@@ -91,9 +91,9 @@ public static function enumsConvertIdToName($data, $enumReplacements)
     foreach ($dataToProcess as $item) {
         foreach ($enumReplacements as $enumReplacement) {
             if (is_array($item)) {
-                $item[$enumReplacement->columnName] = EnumTraits::getNameByNumber(intval($item[$enumReplacement->columnName]), $enumReplacement->enumClass);
+                $item[$enumReplacement->columnName] = EnumTraits::getNameByNumber(intval($item[$enumReplacement->columnName]), $enumReplacement->enumClass, LanguageHelper::getEnumLanguageName());
             } else {
-                $item->{$enumReplacement->columnName} = EnumTraits::getNameByNumber(intval($item->{$enumReplacement->columnName}), $enumReplacement->enumClass);
+                $item->{$enumReplacement->columnName} = EnumTraits::getNameByNumber(intval($item->{$enumReplacement->columnName}), $enumReplacement->enumClass, LanguageHelper::getEnumLanguageName());
             }
         }
         $newData[] = $item; // Add the processed item to the new array

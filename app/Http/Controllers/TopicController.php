@@ -12,11 +12,14 @@ use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
+use Illuminate\Support\Facades\Gate;
 
 class TopicController extends Controller
 {
     public function addTopic(Request $request)
     {
+        Gate::authorize('addTopic', TopicController::class);
+
         try {
             return AddHelper::addModel($request, Chapter::class,  $this->rules($request), 'topics', $request->chapter_id);
         } catch (\Exception $e) {
@@ -26,8 +29,10 @@ class TopicController extends Controller
 
     public function modifyTopic(Request $request)
     {
+        Gate::authorize('modifyTopic', TopicController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $topic = Topic::findOrFail($request->id);
@@ -44,6 +49,8 @@ class TopicController extends Controller
 
     public function deleteTopic(Request $request)
     {
+        Gate::authorize('deleteTopic', TopicController::class);
+
         try {
             $topic = Topic::findOrFail($request->id);
             $topic->delete();
@@ -55,6 +62,8 @@ class TopicController extends Controller
 
     public function retrieveTopics(Request $request)
     {
+        Gate::authorize('retrieveTopics', TopicController::class);
+
         try {
             $attributes = ['id', 'arabic_title', 'english_title', 'description'];
             $conditionAttribute = ['chapter_id' => $request->chapter_id];
@@ -68,6 +77,8 @@ class TopicController extends Controller
 
     public function retrieveTopic(Request $request)
     {
+        Gate::authorize('retrieveTopic', TopicController::class);
+
         try {
             $attributes = ['arabic_title', 'english_title', 'description'];
             $conditionAttribute = ['id' => $request->id];
@@ -81,6 +92,8 @@ class TopicController extends Controller
 
     public function retrieveEditableTopic(Request $request)
     {
+        Gate::authorize('retrieveEditableTopic', TopicController::class);
+
         try {
             $attributes = ['arabic_title', 'english_title', 'description'];
             $conditionAttribute = ['id' => $request->id];
@@ -94,6 +107,8 @@ class TopicController extends Controller
 
     public function retrieveTopicDescription(Request $request)
     {
+        Gate::authorize('retrieveTopicDescription', TopicController::class);
+
         try {
             $attributes = ['description'];
             $conditionAttribute = ['id' => $request->id];
@@ -107,6 +122,8 @@ class TopicController extends Controller
 
     public function retrieveAvailableTopics(Request $request)
     {
+        Gate::authorize('retrieveAvailableTopics', TopicController::class);
+
         try {
             $attributes = ['id', 'arabic_title', 'english_title'];
             $conditionAttribute = [

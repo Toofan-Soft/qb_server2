@@ -43,13 +43,12 @@ class UserController extends Controller
     {
         try {
             $otp2 = $this->otp->validate($request->code);
-
+            
             if (!$otp2->status) {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
             }
 
             $user = User::where('email', $otp2->email)->first();
-            
             $user->update(['email_verified_at' => now()]);
 
             return ResponseHelper::success();
@@ -154,9 +153,9 @@ class UserController extends Controller
             ]);
 
             if ($validation->fails()) {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
             }
-
+            
             if (auth()->attempt($input)) {
                 $user = Auth::user();
                 
@@ -177,10 +176,10 @@ class UserController extends Controller
                     ];
                     return ResponseHelper::successWithTokenAndUserType($token, $user->owner_type);
                 } else {
-                    return ResponseHelper::clientError(401);
+                    return ResponseHelper::clientError();
                 }
             } else {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
             }
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

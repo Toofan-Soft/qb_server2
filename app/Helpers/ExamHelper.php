@@ -161,7 +161,7 @@ class ExamHelper
                 ->join('questions', 'form_questions.question_id', '=', 'questions.id')
                 ->join('topics', 'questions.topic_id', '=', 'topics.id')
                 ->join('chapters', 'topics.chapter_id', '=', 'chapters.id')
-                ->select('chapters.id', 'chapters.arabic_title as title')
+                ->select('chapters.id', LanguageHelper::getTitleColumnName('chapters', 'title'))
                 ->where('real_exams.id', '=', $realExamId)
                 ->distinct()
                 ->get();
@@ -180,7 +180,7 @@ class ExamHelper
                 ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
                 ->join('questions', 'form_questions.question_id', '=', 'questions.id')
                 ->join('topics', 'questions.topic_id', '=', 'topics.id')
-                ->select('topics.arabic_title as title')
+                ->select(LanguageHelper::getTitleColumnName('topics', 'title'))
                 ->where('real_exams.id', '=', $realExamId)
                 ->where('topics.chapter_id', '=', $chapterId)
                 ->distinct()
@@ -345,13 +345,13 @@ class ExamHelper
         foreach ($formQuestions as $formQuestion) {
             $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url', 'topic_id', 'type as type_name']);
 
-            $topic = $question->topic()->first(['arabic_title', 'chapter_id']);
+            $topic = $question->topic()->first([LanguageHelper::getTitleColumnName(null, null), 'chapter_id']);
 
-            $chapter_title = $topic->chapter()->first()['arabic_title'];
-            $topic_title = $topic->arabic_title;
+            $chapter_title = $topic->chapter()->first()[LanguageHelper::getTitleColumnName(null, null)];
+            $topic_title = $topic->LanguageHelper::getTitleColumnName(null, null);
 
-            $question->chapter_name = $chapter_title;
-            $question->topic_name = $topic_title;
+            $question->chapter_title = $chapter_title;
+            $question->topic_title = $topic_title;
 
             unset($question['topic_id']);
 

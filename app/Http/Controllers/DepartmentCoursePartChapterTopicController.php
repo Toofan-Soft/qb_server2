@@ -11,6 +11,7 @@ use App\Helpers\ValidateHelper;
 use App\Enums\ChapterStatusEnum;
 use Illuminate\Support\Facades\DB;
 use App\Models\DepartmentCoursePart;
+use Illuminate\Support\Facades\Gate;
 use App\Models\DepartmentCoursePartTopic;
 
 class DepartmentCoursePartChapterTopicController extends Controller
@@ -48,8 +49,10 @@ class DepartmentCoursePartChapterTopicController extends Controller
 
     public function modifyDepartmentCoursePartTopics(Request $request)
     {
+        Gate::authorize('modifyDepartmentCoursePartTopics', DepartmentCoursePartChapterTopicController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         DB::beginTransaction();
         try {
@@ -86,6 +89,8 @@ class DepartmentCoursePartChapterTopicController extends Controller
 
     public function retrieveDepartmentCoursePartChapters(Request $request)
     {
+        Gate::authorize('retrieveDepartmentCoursePartChapters', DepartmentCoursePartChapterTopicController::class);
+
         try {
             $chapters = DB::table('department_course_parts')
                 ->join('department_course_part_topics', 'department_course_parts.id', '=', 'department_course_part_topics.department_course_part_id')
@@ -105,6 +110,8 @@ class DepartmentCoursePartChapterTopicController extends Controller
 
     public function retrieveDepartmentCoursePartChapterTopics(Request $request)
     {
+        Gate::authorize('retrieveDepartmentCoursePartChapterTopics', DepartmentCoursePartChapterTopicController::class);
+
         try {
             $topics = DB::table('department_course_parts')
                 ->join('department_course_part_topics', 'department_course_parts.id', '=', 'department_course_part_topics.department_course_part_id')
@@ -121,15 +128,14 @@ class DepartmentCoursePartChapterTopicController extends Controller
 
     public function retrieveEditableDepartmentCoursePartChapters(Request $request)
     {
+        Gate::authorize('retrieveEditableDepartmentCoursePartChapters', DepartmentCoursePartChapterTopicController::class);
+
         try {
             $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
             $coursePart = CoursePart::findOrFail($departmenCoursePart->course_part_id);
             $coursePartChapters = $coursePart->chapters()->where('status', ChapterStatusEnum::AVAILABLE->value)->get(['id', 'arabic_title', 'english_title']);
 
-            foreach ($coursePartChapters as $coursePartChapter) {
-                $coursePartChapter['topics_count'] = $coursePartChapter->topics()->count();
-            }
-            // coursePartChapters : [id, arabic_title, english_title, topics_count]
+            // coursePartChapters : [id, arabic_title, english_title]
 
             $departmenCoursePartChapters = DB::table('department_course_parts')
                 ->join('department_course_part_topics', 'department_course_parts.id', '=', 'department_course_part_topics.department_course_part_id')
@@ -143,9 +149,9 @@ class DepartmentCoursePartChapterTopicController extends Controller
             // departmenCoursePartChapters : [id, count]
 
             foreach ($coursePartChapters as $coursePartChapter) {
-                $departmenCoursePartChapter = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first();
+                // $departmenCoursePartChapter = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first();
                 $isNon = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first()->count === 0;
-                $isFull = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first()->count === $coursePartChapter->topics_count;
+                $isFull = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first()->count === $coursePartChapter->topics()->count();
                 $isHalf = !$isNon && !$isFull;
 
                 $coursePartChapter['selection_status'] = [
@@ -153,7 +159,6 @@ class DepartmentCoursePartChapterTopicController extends Controller
                     'is_full' => $isFull,
                     'is_half' => $isHalf
                 ];
-                unset($coursePartChapter['topics_count']);
             }
             return ResponseHelper::successWithData($coursePartChapters);
         } catch (\Exception $e) {
@@ -163,6 +168,7 @@ class DepartmentCoursePartChapterTopicController extends Controller
 
     public function retrieveEditableDepartmentCoursePartTopics(Request $request)
     {
+        Gate::authorize('retrieveEditableDepartmentCoursePartTopics', DepartmentCoursePartChapterTopicController::class);
         try {
             return ResponseHelper::success();
             ////////////////////

@@ -12,6 +12,7 @@ use App\Helpers\ModifyHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Http\Requests\CourseRequest;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
@@ -19,8 +20,10 @@ class CourseController extends Controller
 
     public function addCourse(Request $request)
     {
+        Gate::authorize('addCourse', CourseController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $course = Course::create([
@@ -36,6 +39,8 @@ class CourseController extends Controller
 
     public function modifyCourse(Request $request)
     {
+        Gate::authorize('modifyCourse', CourseController::class);
+
         try {
             $course = Course::findOrFail($request->id);
             return ModifyHelper::modifyModel($request, $course,  $this->rules($request));
@@ -47,6 +52,8 @@ class CourseController extends Controller
 
     public function deleteCourse(Request $request)
     {
+        Gate::authorize('deleteCourse', CourseController::class);
+
         try {
             $course = Course::findOrFail($request->id);
             $course->delete();
@@ -58,6 +65,8 @@ class CourseController extends Controller
 
     public function retrieveCourses()
     {
+        Gate::authorize('retrieveCourses', CourseController::class);
+
         $attributes = ['id', 'arabic_name', 'english_name'];
         try {
             $courses = GetHelper::retrieveModels(Course::class, $attributes);
@@ -69,6 +78,8 @@ class CourseController extends Controller
 
     public function retrieveCourse(Request $request)
     {
+        Gate::authorize('retrieveCourse', CourseController::class);
+
         $attributes = ['arabic_name', 'english_name'];
         $conditionAttribute = ['id' => $request->id];
         try {
@@ -80,6 +91,8 @@ class CourseController extends Controller
     }
     public function retrieveEditableCourse(Request $request)
     {
+        Gate::authorize('retrieveEditableCourse', CourseController::class);
+        
         $attributes = ['arabic_name', 'english_name'];
         $conditionAttribute = ['id' => $request->id];
         try {

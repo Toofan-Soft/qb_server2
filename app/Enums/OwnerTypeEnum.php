@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 use App\Traits\EnumTraits;
+use App\Helpers\LanguageHelper;
 use Kongulov\Traits\InteractWithEnum;
 enum OwnerTypeEnum: INT {
     use InteractWithEnum;
@@ -20,7 +21,7 @@ enum OwnerTypeEnum: INT {
     }
 
     public static function getAvailableValues() {
-        $types = EnumTraits::getEnum(OwnerTypeEnum::class);
+        $types = EnumTraits::getEnum(OwnerTypeEnum::class, LanguageHelper::getEnumLanguageName());
 
         $availableTypes = [];
 

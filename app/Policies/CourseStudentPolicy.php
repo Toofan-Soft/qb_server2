@@ -16,12 +16,7 @@ class CourseStudentPolicy
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-
-    public function modifyCourseStudent(): bool
-    {
-        return ValidateHelper::validatePolicy(self::$validRoles);
-    }
-
+    
     public function passCourseStudent(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
@@ -31,16 +26,21 @@ class CourseStudentPolicy
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
+    
+    public function unsuspendCourseStudent(): bool
+    {
+        return ValidateHelper::validatePolicy(self::$validRoles);
+    }
 
     public function deleteCourseStudent(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
     
-    public function retrieveEditableCourseStudent(): bool
-    {
-        return ValidateHelper::validatePolicy(self::$validRoles);
-    }
+    // public function retrieveEditableCourseStudent(): bool
+    // {
+    //     return ValidateHelper::validatePolicy(self::$validRoles);
+    // }
 
     public function retrieveCourseStudents(): bool
     {

@@ -23,18 +23,21 @@ use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
-use App\Helpers\Roles\ByteArrayValidationRule;
 use App\Models\QuestionChoicesCombination;
+use App\Helpers\Roles\ByteArrayValidationRule;
 
 class QuestionController extends Controller
 {
     public function addQuestion(Request $request)
     {
+        Gate::authorize('addQuestion', QuestionController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
 
         DB::beginTransaction();
@@ -95,8 +98,10 @@ class QuestionController extends Controller
 
     public function modifyQuestion(Request $request)
     {
+        Gate::authorize('modifyQuestion', QuestionController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             // $params = ParamHelper::getParams(
@@ -193,10 +198,6 @@ class QuestionController extends Controller
         }
     }
 
-
-
-
-
     public function addQuestion1(Request $request)
     {
         if (ValidateHelper::validateData($request, $this->rules($request))) {
@@ -275,6 +276,8 @@ class QuestionController extends Controller
 
     public function deleteQuestion(Request $request)
     {
+        Gate::authorize('deleteQuestion', QuestionController::class);
+
         try {
             $question = Question::findOrFail($request->id);
             return ResponseHelper::success();
@@ -285,6 +288,8 @@ class QuestionController extends Controller
 
     public function retrieveQuestions(Request $request)
     {
+        Gate::authorize('retrieveQuestions', QuestionController::class);
+        
         $attributes = ['id', 'content'];
         $conditionAttribute = [
             'topic_id' => $request->topic_id,
@@ -315,6 +320,8 @@ class QuestionController extends Controller
 
     public function retrieveQuestion(Request $request)
     {
+        Gate::authorize('retrieveQuestion', QuestionController::class);
+
         $attributes = [
             'id', 'type', 'difficulty_level as difficulty_level_name', 'status',
             'accessibility_status as accessibility_status_name',
@@ -390,6 +397,8 @@ class QuestionController extends Controller
 
     public function retrieveEditableQuestion(Request $request)
     {
+        Gate::authorize('retrieveEditableQuestion', QuestionController::class);
+
         $attributes = [
             'id', 'type', 'difficulty_level as difficulty_level_id',
             'accessibility_status as accessibility_status_id',
@@ -432,6 +441,8 @@ class QuestionController extends Controller
 
     public function submitQuestionReviewRequest(Request $request)
     {
+        Gate::authorize('submitQuestionReviewRequest', QuestionController::class);
+
         try {
             $this->modifyQuestionStatus($request->id, QuestionStatusEnum::REQUESTED->value);
             return ResponseHelper::success();
@@ -439,9 +450,22 @@ class QuestionController extends Controller
             return ResponseHelper::serverError();
         }
     }
+    public function withdrawSubmitQuestionReviewRequest(Request $request)
+    {
+        Gate::authorize('withdrawSubmitQuestionReviewRequest', QuestionController::class);
+
+        // try {
+            // $this->modifyQuestionStatus($request->id, QuestionStatusEnum::REQUESTED->value);
+        //     return ResponseHelper::success();
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
+    }
 
     public function acceptQuestion(Request $request)
     {
+        Gate::authorize('acceptQuestion', QuestionController::class);
+
         DB::beginTransaction();
         try {
             $this->modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
@@ -464,6 +488,8 @@ class QuestionController extends Controller
 
     public function rejectQuestion(Request $request)
     {
+        Gate::authorize('rejectQuestion', QuestionController::class);
+
         try {
             $this->modifyQuestionStatus($request->id, QuestionStatusEnum::REJECTED->value);
             return ResponseHelper::success();

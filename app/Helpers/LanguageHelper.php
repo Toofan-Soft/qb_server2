@@ -7,37 +7,56 @@ use App\Enums\LanguageEnum;
 class LanguageHelper
 {
 
-    //getTitleColumnName
-    //getEnumLanguageName
     /**
-     * $model object of model
-     * delete one raw
+     * 
+     * 
      */
-    public static function getNameColumnName($model): string
+    public static function getNameColumnName(string $tableName = null, string $aliasName = null): string
     {
+        // استدعاء دالة تقوم بتخلص من الفراغات في اسم الجدول والاسم المستعار المرسل
+
         try {
+            $statement = '';
             if (intval(auth()->user()->language_id) === LanguageEnum::ARABIC->value) {
-                return 'arabic_name as name';
+                $statement = 'arabic_name';
             } else {
-                return 'english_name as name';
+                $statement = 'english_name';
             }
+            if(!is_null($tableName)){
+                $statement = $tableName + '.' + $statement;
+            }
+            if(!is_null($aliasName)){
+                $statement = $statement + ' as ' + $aliasName;
+            }
+            return $statement;
         } catch (\Exception $e) {
             throw $e;
         }
     }
-    public static function getTitleColumnName($model): string
+
+    public static function getTitleColumnName(string $tableName = null, string $aliasName = null): string
     {
-        try {
+         // استدعاء دالة تقوم بتخلص من الفراغات في اسم الجدول والاسم المستعار المرسل
+         try {
+            $statement = '';
             if (intval(auth()->user()->language_id) === LanguageEnum::ARABIC->value) {
-                return 'arabic_title as title';
+                $statement = 'arabic_title';
             } else {
-                return 'english_title as title';
+                $statement = 'english_title';
             }
+            if(!is_null($tableName)){
+                $statement = $tableName + '.' + $statement;
+            }
+            if(!is_null($aliasName)){
+                $statement = $statement + ' as ' + $aliasName;
+            }
+            return $statement;
         } catch (\Exception $e) {
             throw $e;
         }
     }
-    public static function getEnumLanguageName($model): string
+
+    public static function getEnumLanguageName(): string
     {
         try {
             if (intval(auth()->user()->language_id) === LanguageEnum::ARABIC->value) {

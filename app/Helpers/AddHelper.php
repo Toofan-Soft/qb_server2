@@ -24,7 +24,7 @@ class AddHelper
     {
         // return ResponseHelper::successWithData(ValidateHelper::validateData($request,$rules));
         if(ValidateHelper::validateData($request,$rules)){
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
            $updatedAttributes = $request->all();
            foreach (['image_url', 'logo_url', 'attachment'] as $fileKey) {

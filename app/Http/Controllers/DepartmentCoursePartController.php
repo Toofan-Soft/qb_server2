@@ -5,21 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
+use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
-use App\Helpers\NullHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Models\DepartmentCourse;
 use App\Models\DepartmentCoursePart;
+use Illuminate\Support\Facades\Gate;
 
 class DepartmentCoursePartController extends Controller
 {
-    public function addDepartmentCoursePart(Request $request)
+    public function addDeaprtmentCoursePart(Request $request)
     {
+        Gate::authorize('addDeaprtmentCoursePart', DepartmentCoursePartController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $departmentCoursePart = DepartmentCoursePart::create([
@@ -38,6 +41,8 @@ class DepartmentCoursePartController extends Controller
 
     public function modifyDepartmentCoursePart(Request $request)
     {
+        Gate::authorize('modifyDepartmentCoursePart', DepartmentCoursePartController::class);
+
         try {
             $departmentCoursePart = DepartmentCoursePart::findOrFail($request->id);
             return ModifyHelper::modifyModel($request, $departmentCoursePart,  $this->rules($request));
@@ -48,10 +53,11 @@ class DepartmentCoursePartController extends Controller
 
     public function deleteDepartmentCoursePart(Request $request)
     {
+        Gate::authorize('deleteDepartmentCoursePart', DepartmentCoursePartController::class);
+
         try {
             $departmentCoursePart = DepartmentCoursePart::findOrFail($request->id);
             $departmentCoursePart->delete();
-            // return DeleteHelper::deleteModel($departmentCoursePart);
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -60,6 +66,8 @@ class DepartmentCoursePartController extends Controller
 
     public function retrieveEditableDepartmentCoursePart(Request $request)
     {
+        Gate::authorize('retrieveEditableDepartmentCoursePart', DepartmentCoursePartController::class);
+        
         $attributes = ['score', 'lectures_count', 'lecture_duration', 'note'];
         try {
             $departmentCourse = DepartmentCoursePart::findOrFail($request->id, $attributes); // edited

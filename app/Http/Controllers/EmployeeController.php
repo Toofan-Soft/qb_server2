@@ -15,6 +15,7 @@ use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Enums\QualificationEnum;
@@ -24,14 +25,17 @@ use Illuminate\Http\JsonResponse;
 use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
 class EmployeeController extends Controller
 {
     public function addEmployee(Request $request)
     {
+        Gate::authorize('addEmployee', EmployeeController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $employee =  Employee::create([
@@ -48,7 +52,7 @@ class EmployeeController extends Controller
             if ($request->email) {
                 if (!UserHelper::addUser($request->email, OwnerTypeEnum::EMPLOYEE->value, $employee->id)) {
                     //  return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
-                    return ResponseHelper::serverError(401);
+                    return ResponseHelper::serverError();
                 }
 
                 //!!!!!!!!!!** this two lines only for test , then will delete them
@@ -63,8 +67,10 @@ class EmployeeController extends Controller
 
     public function modifyEmployee(Request $request)
     {
+        Gate::authorize('modifyEmployee', EmployeeController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $employee = Employee::findOrFail($request->id);
@@ -87,6 +93,8 @@ class EmployeeController extends Controller
 
     public function deleteEmployee(Request $request)
     {
+        Gate::authorize('deleteEmployee', EmployeeController::class);
+
         DB::beginTransaction();
         try {
             $employee = Employee::findOrFail($request->id);
@@ -102,7 +110,9 @@ class EmployeeController extends Controller
 
     public function retrieveEmployees(Request $request)
     {
-        $attributes = ['id', 'arabic_name as name', 'gender as gender_name', 'phone', 'user_id as email', 'qualification as qualification_name', 'image_url'];
+        Gate::authorize('retrieveEmployees', EmployeeController::class);
+
+        $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name'), 'gender as gender_name', 'phone', 'user_id as email', 'qualification as qualification_name', 'image_url'];
         $conditionAttribute = ['job_type' => $request->job_type_id];
         $enumReplacements = [
             new EnumReplacement('gender_name', GenderEnum::class),
@@ -125,6 +135,8 @@ class EmployeeController extends Controller
 
     public function retrieveEmployee(Request $request)
     {
+        Gate::authorize('retrieveEmployee', EmployeeController::class);
+
         $attributes = ['arabic_name', 'english_name', 'gender as gender_name', 'phone', 'user_id', 'job_type as job_type_name', 'specialization', 'qualification as qualification_name', 'image_url'];
         $enumReplacements = [
             new EnumReplacement('gender_name', GenderEnum::class),
@@ -149,6 +161,8 @@ class EmployeeController extends Controller
 
     public function retrieveEditableEmployee(Request $request)
     {
+        Gate::authorize('retrieveEditableEmployee', EmployeeController::class);
+        
         $attributes = ['arabic_name', 'english_name', 'gender as gender_id', 'phone', 'job_type as job_type_id', 'specialization', 'qualification as qualification_id', 'image_url'];
         $conditionAttribute = ['id' => $request->id];
         try {
@@ -167,7 +181,7 @@ class EmployeeController extends Controller
         $rules = [
             'arabic_name' => 'required|string',
             'english_name' => 'required|string',
-            'phone' => 'nullable|integer|unique:employee,phone',
+            'phone' => 'nullable|integer|unique:employees,phone',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'job_type_id' => ['required', new Enum(JobTypeEnum::class)], // Assuming JobTypeEnum holds valid values
             'qualification_id' => ['required', new Enum(QualificationEnum::class)], // Assuming QualificationEnum holds valid values

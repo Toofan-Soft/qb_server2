@@ -16,12 +16,8 @@ class ValidateHelper
             return  $validator->errors()->first();
             // return false;
         }
-        // if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
-        //     if (count($rules) > 0) {
-        //         return true;
-        //     } else {
-        //         return false;
-        //     }
+        // else{
+        //     return true;
         // }
     }
 

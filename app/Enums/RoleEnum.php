@@ -2,6 +2,7 @@
 
 namespace App\Enums;
 
+use App\Helpers\LanguageHelper;
 use App\Traits\EnumTraits;
 use Kongulov\Traits\InteractWithEnum;
 
@@ -48,7 +49,7 @@ enum RoleEnum: int
             ]
         };
 
-        $roles = collect(EnumTraits::getEnum(RoleEnum::class));
+        $roles = collect(EnumTraits::getEnum(RoleEnum::class, LanguageHelper::getEnumLanguageName()));
 
         $filteredRoles = $roles->filter(function ($role) use ($rolesIds) {
             return in_array($role['id'], $rolesIds);
@@ -61,94 +62,88 @@ enum RoleEnum: int
         $roles = match ($ownerTypeId) {
             OwnerTypeEnum::GUEST->value => [
                 'id' => RoleEnum::GUEST->value,
-                'name' => EnumTraits::getNameByNumber(RoleEnum::GUEST->value, RoleEnum::class),
+                'name' => EnumTraits::getNameByNumber(RoleEnum::GUEST->value, RoleEnum::class, LanguageHelper::getEnumLanguageName(), LanguageHelper::getEnumLanguageName()),
                 'is_mandatory' => true
             ],
             OwnerTypeEnum::STUDENT->value => [
                 'id' => RoleEnum::STUDENT->value,
-                'name' => EnumTraits::getNameByNumber(RoleEnum::STUDENT->value, RoleEnum::class),
+                'name' => EnumTraits::getNameByNumber(RoleEnum::STUDENT->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                 'is_mandatory' => true
             ],
             OwnerTypeEnum::EMPLOYEE->value => match ($jobTypeId) {
                 JobTypeEnum::LECTURER->value => [
                     [
                         'id' => RoleEnum::LECTURER->value,
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::LECTURER->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::LECTURER->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => true
                     ],
                     [
                         'id' => RoleEnum::QUESTION_ENTRY->value,
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ],
                     [
                         'id' => RoleEnum::PROCTOR->value,
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ]
                 ],
                 JobTypeEnum::EMPLOYEE_LECTURE->value => [
                     [
                         'id' => RoleEnum::LECTURER->value,
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::LECTURER->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::LECTURER->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => true
                     ],
                     [
                         'id' => RoleEnum::QUESTION_REVIEWER->value,
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ],
                     [
                         'id' => RoleEnum::QUESTION_ENTRY->value,
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ],
                     [
                         'id' => RoleEnum::PROCTOR->value,
-                        // 'name' =>RoleEnum::getNameByNumber(RoleEnum::PROCTOR->value),
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ],
                     [
                         'id' => RoleEnum::SYSTEM_ADMINISTRATOR->value,
-                        // 'name' =>RoleEnum::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value),
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ],
                     [
                         'id' => RoleEnum::DATA_ENTRY->value,
-                        // 'name' =>RoleEnum::getNameByNumber(RoleEnum::DATA_ENTRY->value),
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::DATA_ENTRY->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::DATA_ENTRY->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ]
                 ],
                 JobTypeEnum::EMPLOYEE->value => [
                     [
                         'id' => RoleEnum::QUESTION_REVIEWER->value,
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_REVIEWER->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ],
                     [
                         'id' => RoleEnum::QUESTION_ENTRY->value,
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::QUESTION_ENTRY->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ],
                     [
                         'id' => RoleEnum::PROCTOR->value,
-                        // 'name' =>RoleEnum::getNameByNumber(RoleEnum::PROCTOR->value),
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ],
                     [
                         'id' => RoleEnum::SYSTEM_ADMINISTRATOR->value,
-                        // 'name' =>RoleEnum::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value),
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::SYSTEM_ADMINISTRATOR->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ],
                     [
                         'id' => RoleEnum::DATA_ENTRY->value,
-                        // 'name' =>RoleEnum::getNameByNumber(RoleEnum::DATA_ENTRY->value),
-                        'name' => EnumTraits::getNameByNumber(RoleEnum::DATA_ENTRY->value, RoleEnum::class),
+                        'name' => EnumTraits::getNameByNumber(RoleEnum::DATA_ENTRY->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                         'is_mandatory' => false
                     ]
                 ]

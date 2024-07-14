@@ -25,6 +25,7 @@ use App\Models\CourseLecturer;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\DatetimeHelper;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
@@ -38,6 +39,7 @@ use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\DepartmentCoursePart;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
@@ -48,9 +50,10 @@ class PaperExamController extends Controller
 {
     public function addPaperExam(Request $request)
     {
+        Gate::authorize('addPaperExam', PaperExamController::class);
 
-        if ($x = ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError1($x);
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError();
         }
 
         try {
@@ -130,6 +133,8 @@ class PaperExamController extends Controller
 
     public function modifyPaperExam(Request $request)
     {
+        Gate::authorize('modifyPaperExam', PaperExamController::class);
+
         try {
             $params = ParamHelper::getParams(
                 $request,
@@ -163,6 +168,7 @@ class PaperExamController extends Controller
 
     public function deletePaperExam(Request $request)
     {
+        Gate::authorize('deletePaperExam', PaperExamController::class);
         // دراسة كيفية امكانية انقاص بيانات استخدام الاسئلة
         try {
             $realExam = RealExam::findOrFail($request->id);
@@ -176,6 +182,8 @@ class PaperExamController extends Controller
 
     public function retrievePaperExams(Request $request) ////**** يتم اضافة شرط ان يتم ارجاع الاختبارات التي تنتمي الى المستخدم الحالي
     {
+        Gate::authorize('retrievePaperExams', PaperExamController::class);
+
         $enumReplacements  = [];
         try {
             $lecturer_id = Employee::where('user_id', '=', auth()->user()->id)->first(['id'])['id'];
@@ -220,6 +228,8 @@ class PaperExamController extends Controller
 
     public function retrievePaperExamsAndroid(Request $request) ////////** this attribute department_course_part_id can be null
     {
+        Gate::authorize('retrievePaperExamsAndroid', PaperExamController::class);
+
         $enumReplacements  = [
             new EnumReplacement('type_name', ExamTypeEnum::class),
             new EnumReplacement('course_part_name', CoursePartsEnum::class),
@@ -236,7 +246,7 @@ class PaperExamController extends Controller
                 ->join('courses', 'department_courses.course_id', '=', 'courses.id')
                 ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
                 ->select(
-                    'courses.arabic_name as course_name',
+                    LanguageHelper::getNameColumnName('courses', 'course_name'),
                     'course_parts.part_id as course_part_name',
                     'real_exams.id',
                     'real_exams.datetime',
@@ -267,6 +277,8 @@ class PaperExamController extends Controller
 
     public function retrievePaperExam(Request $request)
     {
+        Gate::authorize('retrievePaperExam', PaperExamController::class);
+
         try {
             $realExam = RealExam::findOrFail($request->id, [
                 'id', 'language as language_name', 'difficulty_level as difficulty_level_name',
@@ -295,9 +307,9 @@ class PaperExamController extends Controller
                 new EnumReplacement('level_name', LevelsEnum::class),
                 new EnumReplacement('semester_name', SemesterEnum::class),
             ]);
-            $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
-            $college = $department->college()->first(['arabic_name as college_name']);
-            $course = $departmentCourse->course()->first(['arabic_name as course_name']);
+            $department = $departmentCourse->department()->first([LanguageHelper::getNameColumnName(null, 'department_name'), 'college_id']);
+            $college = $department->college()->first([LanguageHelper::getNameColumnName(null, 'college_name')]);
+            $course = $departmentCourse->course()->first([LanguageHelper::getNameColumnName(null, 'course_name')]);
             $questionTypes = $realExam->real_exam_question_types()->get(['question_type as type_name', 'questions_count', 'question_score']);
             $questionTypes = ProcessDataHelper::enumsConvertIdToName($questionTypes, [
                 new EnumReplacement('type_name', QuestionTypeEnum::class),
@@ -347,6 +359,8 @@ class PaperExamController extends Controller
 
     public function retrieveEditablePaperExam(Request $request)
     {
+        Gate::authorize('retrieveEditablePaperExam', PaperExamController::class);
+
         try {
             $realExam = RealExam::findOrFail($request->id, [
                 'id', 'form_name_method as form_name_method_id',
@@ -371,6 +385,8 @@ class PaperExamController extends Controller
 
     public function retrievePaperExamChapters(Request $request)
     {
+        Gate::authorize('retrievePaperExamChapters', PaperExamController::class);
+
         try {
             $chapters = ExamHelper::retrieveRealExamChapters($request->exam_id);
             return ResponseHelper::successWithData($chapters);
@@ -381,6 +397,8 @@ class PaperExamController extends Controller
 
     public function retrievePaperExamChapterTopics(Request $request)
     {
+        Gate::authorize('retrievePaperExamChapterTopics', PaperExamController::class);
+
         try {
             $topics = ExamHelper::retrieveRealExamChapterTopics($request->exam_id, $request->chapter_id);
             return ResponseHelper::successWithData($topics);
@@ -391,6 +409,8 @@ class PaperExamController extends Controller
 
     public function retrievePaperExamForms(Request $request)
     {
+        Gate::authorize('retrievePaperExamForms', PaperExamController::class);
+
         try {
             $forms = ExamHelper::retrieveRealExamForms($request->exam_id);
             return ResponseHelper::successWithData($forms);
@@ -401,6 +421,8 @@ class PaperExamController extends Controller
 
     public function retrievePaperExamFormQuestions(Request $request)
     {
+        Gate::authorize('retrievePaperExamFormQuestions', PaperExamController::class);
+
         try {
             $questions = ExamHelper::getFormQuestionsWithDetails($request->form_id, false, false, true);
             return ResponseHelper::successWithData($questions);
@@ -411,6 +433,8 @@ class PaperExamController extends Controller
 
     public function exportPaperExamToPDF(Request $request)
     {
+        Gate::authorize('exportPaperExamToPDF', PaperExamController::class);
+
         // id, with mirror?, with answered mirror?
         /* Data:
         *   .
@@ -540,7 +564,7 @@ class PaperExamController extends Controller
     }
 
     private function getFormQuestions($formId, bool $withAnsweredMirror)
-    {
+    {        
         // return form questoin as [content, attachment, is_true, choices[content, attachment, is_true]]
         $questions = [];
 

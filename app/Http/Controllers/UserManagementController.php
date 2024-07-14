@@ -4,29 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Guest;
+use App\Enums\RoleEnum;
+use App\Helpers\NullHelper;
 use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
-use App\Enums\RoleEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Enums\UserStatusEnum;
 use App\Helpers\DeleteHelper;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
 use App\Helpers\EnumReplacement1;
-use App\Helpers\NullHelper;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
 class UserManagementController extends Controller
 {
     public function addUser(Request $request)
     {
+        Gate::authorize('addUser', UserManagementController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             if (UserHelper::addUser($request->email, $request->owner_type_id,  $request->owner_id, null, $request->roles_ids)) {
@@ -42,8 +46,10 @@ class UserManagementController extends Controller
 
     public function modifyUserRoles(Request $request)
     {
+        Gate::authorize('modifyUserRoles', UserManagementController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         DB::beginTransaction();
         try {
@@ -68,6 +74,7 @@ class UserManagementController extends Controller
 
     public function changeUserStatus(Request $request)
     {
+        Gate::authorize('changeUserStatus', UserManagementController::class);
         try {
             $user = User::findOrFail($request->id);
             if (intval($user->status) === UserStatusEnum::ACTIVATED->value) {
@@ -87,6 +94,8 @@ class UserManagementController extends Controller
 
     public function deleteUser(Request $request)
     {
+        Gate::authorize('deleteUser', UserManagementController::class);
+
         try {
             $user = User::findOrFail($request->id);
             $user->delete();
@@ -98,9 +107,11 @@ class UserManagementController extends Controller
 
     public function retrieveUsers(Request $request)
     {
+        Gate::authorize('retrieveUsers', UserManagementController::class);
+
         $users = [];
         $ownerTable = '';
-        $nameColumn = 'arabic_name';
+        $nameColumn = LanguageHelper::getNameColumnName(null, null);
         if (intval($request->owner_type_id) === OwnerTypeEnum::GUEST->value) {
             $ownerTable = 'guests';
             $nameColumn = 'name';
@@ -138,6 +149,8 @@ class UserManagementController extends Controller
 
     public function retrieveUser(Request $request)
     {
+        Gate::authorize('retrieveUser', UserManagementController::class);
+
         try {
             $userData = User::findOrFail(
                 $request->id,
@@ -148,10 +161,10 @@ class UserManagementController extends Controller
                 $ownerData = $userData->guest()->get(['name', 'image_url']);
                 $userRoles = RoleEnum::getOwnerRolesWithMandatory(intval($userData->owner_type_name));
             } elseif (intval($userData->owner_type_name) === OwnerTypeEnum::STUDENT->value) {
-                $ownerData = $userData->student()->get(['arabic_name as name', 'image_url']);
+                $ownerData = $userData->student()->get([LanguageHelper::getNameColumnName(null, 'name'), 'image_url']);
                 $userRoles = RoleEnum::getOwnerRolesWithMandatory(intval($userData->owner_type_name));
             } elseif (intval($userData->owner_type_name) === OwnerTypeEnum::EMPLOYEE->value) {
-                $ownerData = $userData->employee()->get(['arabic_name as name', 'image_url', 'job_type']);
+                $ownerData = $userData->employee()->get([LanguageHelper::getNameColumnName(null, 'name'), 'image_url', 'job_type']);
                 $userRoles = RoleEnum::getOwnerRolesWithMandatory(intval($userData->owner_type_name), intval($ownerData->job_type));
                 unset($ownerData['job_type']);
             } 
@@ -186,6 +199,8 @@ class UserManagementController extends Controller
 
     public function retrieveOwnerRoles(Request $request)
     {
+        Gate::authorize('retrieveOwnerRoles', UserManagementController::class);
+
         try {
             $ownerRoles = RoleEnum::getOwnerRolesWithMandatory($request->owner_type_id, $request->job_type_id);
             return ResponseHelper::successWithData($ownerRoles);

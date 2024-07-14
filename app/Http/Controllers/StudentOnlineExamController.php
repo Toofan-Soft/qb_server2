@@ -23,6 +23,7 @@ use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\DatetimeHelper;
+use App\Helpers\LanguageHelper;
 use App\Helpers\QuestionHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\EnumReplacement;
@@ -34,6 +35,7 @@ use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Enums\ExamConductMethodEnum;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
@@ -47,6 +49,8 @@ class StudentOnlineExamController extends Controller
 {
     public function retrieveOnlineExams(Request $request)
     {
+        Gate::authorize('retrieveOnlineExams', StudentOnlineExamController::class);
+
         try {
             $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
             $onlineExams = [];
@@ -63,47 +67,50 @@ class StudentOnlineExamController extends Controller
 
     public function retrieveOnlineExam(Request $request)
     {
+        Gate::authorize('retrieveOnlineExam', StudentOnlineExamController::class);
+
         $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
 
         try {
-            $exam = DB::table('real_exams as res')
-                ->join('online_exams as oes', 'res.id', '=', 'oes.id')
-                ->join('course_lecturers as cl', 'res.course_lecturer_id', '=', 'cl.id')
-                ->join('employees as e', 'cl.lecturer_id', '=', 'e.id')
-                ->join('department_course_parts as dcp', 'cl.department_course_part_id', '=', 'dcp.id')
-                ->join('department_courses as dc', 'dcp.department_course_id', '=', 'dc.id')
-                ->join('departments as dep', 'dc.department_id', '=', 'dep.id')
-                ->join('colleges as col', 'dep.college_id', '=', 'col.id')
-                ->join('course_students as cs', 'dcp.department_course_id', '=', 'cs.department_course_id')
-                ->join('course_parts as cp', 'dcp.course_part_id', '=', 'cp.id')
-                ->join('courses as c', 'cp.course_id', '=', 'c.id')
-                ->where('res.id', $request->id)
-                ->where('res.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
-                // ->where('res.datetime', '>', now()) // Not-Taken
-                // ->where('oes.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
-                ->where('oes.exam_datetime_notification_datetime', '<=', now()) // VISIBLE
-                ->where('cs.student_id', $studentId)
-                // ->where('cs.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
-                // ->where('cs.academic_year', '=', date('Y')) // CURRENT YEAR
-                // ->where('cl.academic_year', '=', date('Y')) // CURRENT YEAR
+            $exam = DB::table('real_exams')
+                ->join('online_exams', 'real_exams.id', '=', 'online_exams.id')
+                ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
+                ->join('employees', 'course_lecturers.lecturer_id', '=', 'employees.id')
+                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
+                ->join('departments', 'department_courses.department_id', '=', 'departments.id')
+                ->join('colleges', 'departments.college_id', '=', 'colleges.id')
+                ->join('course_students', 'department_course_parts.department_course_id', '=', 'course_students.department_course_id')
+                ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+                ->join('courses', 'course_parts.course_id', '=', 'courses.id')
+                ->where('real_exams.id', $request->id)
+                ->where('real_exams.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
+                // ->where('real_exams.datetime', '>', now()) // Not-Taken
+                // ->where('online_exams.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
+                ->where('online_exams.exam_datetime_notification_datetime', '<=', now()) // VISIBLE
+                ->where('course_students.student_id', $studentId)
+                // ->where('course_students.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
+                // ->where('course_students.academic_year', '=', date('Y')) // CURRENT YEAR
+                // ->where('course_lecturers.academic_year', '=', date('Y')) // CURRENT YEAR
                 ->select(
-                    'col.arabic_name as college_name',
-                    'dep.arabic_name as department_name',
-                    'dc.level as level_name',
-                    'dc.semester as semester_name',
-                    'res.datetime',
-                    'res.type as type_name',
-                    'res.language as language_name',
-                    'res.note as special_note',
-                    'res.duration',
-                    DB::raw("CASE WHEN oes.conduct_method = '" . ExamConductMethodEnum::MANDATORY->value . "' THEN true ELSE false END as is_mandatory_question_sequence"),
-                    'c.arabic_name as course_name',
-                    'cp.part_id as course_part_name',
-                    'e.arabic_name as lecturer_name',
+                    LanguageHelper::getNameColumnName('colleges', 'college_name'),
+                    // 'colleges.arabic_name as college_name',
+                    LanguageHelper::getNameColumnName('departments', 'department_name'),
+                    'department_courses.level as level_name',
+                    'department_courses.semester as semester_name',
+                    'real_exams.datetime',
+                    'real_exams.type as type_name',
+                    'real_exams.language as language_name',
+                    'real_exams.note as special_note',
+                    'real_exams.duration',
+                    DB::raw("CASE WHEN online_exams.conduct_method = '" . ExamConductMethodEnum::MANDATORY->value . "' THEN true ELSE false END as is_mandatory_question_sequence"),
+                    LanguageHelper::getNameColumnName('courses', 'course_name'),
+                    'course_parts.part_id as course_part_name',
+                    LanguageHelper::getNameColumnName('employees', 'lecturer_name'),
                     DB::raw("(SELECT SUM(questions_count * question_score)
                             FROM public.real_exam_question_types
-                            WHERE real_exam_id = res.id) as total_score"),
-                    'res.status'
+                            WHERE real_exam_id = real_exams.id) as total_score"),
+                    'real_exams.status'
                 )
                 ->first();
             
@@ -159,6 +166,7 @@ class StudentOnlineExamController extends Controller
 
     public function retrieveOnlineExam1(Request $request)
     {
+        Gate::authorize('retrieveOnlineExam', StudentOnlineExamController::class);
         // تستخدم هذه الدالة لارجاع الاختبارات الغير مكتملة فقط
         try {
             $studentonlinExam = StudentOnlineExam::where('online_exam_id', $request->id)->first();
@@ -235,6 +243,7 @@ class StudentOnlineExamController extends Controller
 
     public function retrieveOnlineExamQuestions(Request $request)
     {
+        Gate::authorize('retrieveOnlineExamQuestions', StudentOnlineExamController::class);
         try {
             $exam = OnlineExam::findOrFail($request->id)
                 ->first(['datetime', 'status']);
@@ -297,6 +306,8 @@ class StudentOnlineExamController extends Controller
 
     public function finishOnlineExam(Request $request)
     {
+        Gate::authorize('finishOnlineExam', StudentOnlineExamController::class);
+
         try {
             $student = Student::where('user_id', auth()->user()->id)->first();
             $studentOnlineExam = StudentOnlineExam::where('student_id', $student->id)
@@ -324,6 +335,8 @@ class StudentOnlineExamController extends Controller
 
     public function saveOnlineExamQuestionAnswer(Request $request)
     {
+        Gate::authorize('saveOnlineExamQuestionAnswer', StudentOnlineExamController::class);
+
         try {
             // يتم تحديث بيانات استخدام السؤال
             // $student = Student::where('user_id', auth()->user()->id)->first();

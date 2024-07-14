@@ -8,6 +8,7 @@ use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
 use App\Models\CourseStudent;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
@@ -16,6 +17,7 @@ use App\Helpers\EnumReplacement1;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
 
@@ -23,8 +25,10 @@ class CourseStudentController extends Controller
 {
     public function addCourseStudents(Request $request)
     {
+        Gate::authorize('addCourseStudents', CourseStudentController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         DB::beginTransaction();
         try {
@@ -84,8 +88,10 @@ class CourseStudentController extends Controller
 
     public function passCourseStudent(Request $request)
     {
+        Gate::authorize('passCourseStudent', CourseStudentController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $courseStudent = CourseStudent::where('department_course_id', '=', $request->department_course_id)
@@ -97,7 +103,7 @@ class CourseStudentController extends Controller
                 ]);
                 return ResponseHelper::success();
             } else {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
                 // غير مسموح تمرير الكرس وهو معلق او ممرر
             }
         } catch (\Exception $e) {
@@ -107,8 +113,10 @@ class CourseStudentController extends Controller
 
     public function suspendCourseStudent(Request $request)
     {
+        Gate::authorize('suspendCourseStudent', CourseStudentController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             return ResponseHelper::success();
@@ -121,17 +129,20 @@ class CourseStudentController extends Controller
                 ]);
                 return ResponseHelper::success();
             } else {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
                 // غير مسموح تعليق الكرس وهو معلق او مكتمل
             }
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
     }
+
     public function unsuspendCourseStudent(Request $request)
     {
+        Gate::authorize('unsuspendCourseStudent', CourseStudentController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             return ResponseHelper::success();
@@ -145,7 +156,7 @@ class CourseStudentController extends Controller
                 ]);
                 return ResponseHelper::success();
             } else {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
                 // غير مسموح فك تعليق الكرس وهو غير معلق
             }
         } catch (\Exception $e) {
@@ -155,6 +166,8 @@ class CourseStudentController extends Controller
 
     public function deleteCourseStudent(Request $request)
     {
+        Gate::authorize('deleteCourseStudent', CourseStudentController::class);
+
         // هل هناك قيود لحذف المقرر بناء على حالته الحالية او لا
         try {
             $courseStudent = CourseStudent::where('department_course_id', '=', $request->department_course_id)
@@ -163,7 +176,7 @@ class CourseStudentController extends Controller
                 $courseStudent->delete();
                 return ResponseHelper::success();
             } else {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
                 // غير مسموح حذف الكرس وهو معلق او مكتمل
             }
         } catch (\Exception $e) {
@@ -173,6 +186,8 @@ class CourseStudentController extends Controller
 
     public function retrieveCourseStudents(Request $request)
     {
+        Gate::authorize('retrieveCourseStudents', CourseStudentController::class);
+
         // request : {department_course_id, academic_year, status_id?}
         // return : {}
         try {
@@ -183,7 +198,8 @@ class CourseStudentController extends Controller
                     'students.id',
                     'students.academic_id',
                     'students.image_url',
-                    'students.arabic_name as name'
+                    LanguageHelper::getNameColumnName('students', 'name')
+                    // 'students.arabic_name as name'
                 )
                 ->Where('course_students.department_course_id', '=', $request->department_course_id)
                 ->Where('course_students.academic_year', '=', $request->academic_year)
@@ -219,6 +235,8 @@ class CourseStudentController extends Controller
 
     public function retrieveUnlinkCourceStudents(Request $request)
     {
+        Gate::authorize('retrieveUnlinkCourceStudents', CourseStudentController::class);
+        
         // هذا المتطلب ناقص ، ويتحاج الي ان يتم ايضا التركيز على المستوى الذي يدرس فيه الطالب واستثناء الطلاب الذين في مستويات اقل
         try {
             $department = DepartmentCourse::findOrFail($request->department_course_id, ['department_id']);
@@ -228,7 +246,7 @@ class CourseStudentController extends Controller
                 ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
                 ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
                 ->join('students', 'course_students.student_id', '=', 'students.id')
-                ->select('students.id', 'students.academic_id', 'students.arabic_name as name', 'students.image_url')
+                ->select('students.id', 'students.academic_id', LanguageHelper::getNameColumnName('students', 'name'), 'students.image_url')
                 ->where('departments.id', '=', $department->department_id)
                 ->distinct()
                 ->get();

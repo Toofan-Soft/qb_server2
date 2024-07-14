@@ -20,6 +20,7 @@ use App\Helpers\EnumReplacement;
 use App\Helpers\EnumReplacement1;
 use App\Enums\CoursePartStatusEnum;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 
 class CoursePartController extends Controller
@@ -27,8 +28,10 @@ class CoursePartController extends Controller
 
     public function addCoursePart(Request $request)
     {
+        Gate::authorize('addCoursePart', CoursePartController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $course = Course::findOrFail($request->course_id);
@@ -45,8 +48,10 @@ class CoursePartController extends Controller
 
     public function modifyCoursePart(Request $request)
     {
+        Gate::authorize('modifyCoursePart', CoursePartController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError(401);
+            return  ResponseHelper::clientError();
         }
         try {
             $coursePart = CoursePart::findOrFail($request->id);
@@ -63,6 +68,7 @@ class CoursePartController extends Controller
 
     public function deleteCoursePart(Request $request)
     {
+        Gate::authorize('deleteCoursePart', CoursePartController::class);
         try {
             $coursePart = CoursePart::findOrFail($request->id);
             $coursePart->delete();
@@ -74,6 +80,7 @@ class CoursePartController extends Controller
 
     public function retrieveCourseParts(Request $request)
     {
+        Gate::authorize('retrieveCourseParts', CoursePartController::class);
         try {
             $attributes = ['id', 'part_id as name', 'status as status_name', 'description'];
             $conditionAttribute = ['course_id' => $request->course_id];
@@ -92,6 +99,7 @@ class CoursePartController extends Controller
 
     public function retrieveEditableCoursePart(Request $request)
     {
+        Gate::authorize('retrieveEditableCoursePart', CoursePartController::class);
         try {
             $attributes = ['status as status_id', 'description'];
             $conditionAttribute = ['id' => $request->id];

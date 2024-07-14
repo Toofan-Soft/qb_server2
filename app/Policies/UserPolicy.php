@@ -42,4 +42,8 @@ class UserPolicy
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
+    public function resendCode(): bool
+    {
+        return ValidateHelper::validatePolicy(self::$validRoles);
+    }
 }

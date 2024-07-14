@@ -27,6 +27,10 @@ class CoursePolicy
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
     
+    public function retrieveCourse(): bool
+    {
+        return ValidateHelper::validatePolicy(self::$validRoles);
+    }
     public function retrieveEditableCourse(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);

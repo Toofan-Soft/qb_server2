@@ -31,6 +31,10 @@ class CollegePolicy
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
+    public function retrieveEditableCollege(): bool
+    {
+        return ValidateHelper::validatePolicy(self::$validRoles);
+    }
 
     public function retrieveColleges(): bool
     {

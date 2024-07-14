@@ -3,12 +3,81 @@
         "arabic_name": "الهندسة وتقنية المعلومات",
         "english_name": "Engineering and Infromation Technology", 
         "phone": "777000001",
-        "email": "engineering@gmail.com"
+        "email": "engineering@gmail.com",
+        "departments": [
+            {
+                "arabic_name": "هندسة البرمجيات",
+                "english_name": "software engineering", 
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "تقنية المعلومات",
+                "english_name": "Infromation Technology", 
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الشبكات",
+                "english_name": "network", 
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الاتصالات",
+                "english_name": "communication", 
+                "levels_count": 5
+            },
+            {
+                "arabic_name": "هندسة صناعية",
+                "english_name": "indestry engineering", 
+                "levels_count": 5
+            },
+            {
+                "arabic_name": "الميكترونكس",
+                "english_name": "mectronks", 
+                "levels_count": 5
+            },
+            {
+                "arabic_name": "الذكاء الصناعي",
+                "english_name": "artifail inteligent", 
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الطاقة المتجددة",
+                "english_name": "modren energy", 
+                "levels_count": 4
+            }
+        ]
     },
     {
         "arabic_name": "الطب",
         "english_name": "Medical", 
         "phone": "7770000002",
-        "email": "medical@gmail.com"
+        "email": "medical@gmail.com",
+        "departments": [
+            {
+                "arabic_name": "طب الفهم والاسنان",
+                "english_name": "Dentist", 
+                "levels_count": 5
+            },
+            {
+                "arabic_name": "طب عام وجراحة",
+                "english_name": "Medicine", 
+                "levels_count": 6
+            },
+            {
+                "arabic_name": "صيدلة",
+                "english_name": "Pharmacy", 
+                "levels_count": 5
+            },
+            {
+                "arabic_name": "مختبرات طبية",
+                "english_name": "laboratory", 
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "تمريض عالي",
+                "english_name": "mursing", 
+                "levels_count": 4
+            }
+        ]
     }
 ]

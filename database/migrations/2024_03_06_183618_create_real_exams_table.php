@@ -24,9 +24,9 @@ return new class extends Migration
             $table->id();
             $table->enum('language', LanguageEnum::values());
             $table->enum('difficulty_level', ExamDifficultyLevelEnum::values());
-            $table->enum('form_configuration_method', FormConfigurationMethodEnum::values());
+            $table->enum('form_configuration_method', FormConfigurationMethodEnum::values())->nullable();
             $table->integer('forms_count');
-            $table->enum('form_name_method', FormNameMethodEnum::values());
+            $table->enum('form_name_method', FormNameMethodEnum::values())->nullable();
             $table->timestamp('datetime');
             $table->integer('duration');
             $table->enum('type', ExamTypeEnum::values());

@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Enums;
+
+use App\Helpers\LanguageHelper;
 use App\Traits\EnumTraits;
 use Kongulov\Traits\InteractWithEnum;
 enum LevelsEnum: int {
@@ -28,7 +30,7 @@ enum LevelsEnum: int {
     }
 
     public static function getLevelsTo(int $value) {
-        $levels = EnumTraits::getEnum(LevelsEnum::class);
+        $levels = EnumTraits::getEnum(LevelsEnum::class, LanguageHelper::getEnumLanguageName());
 
         $filteredLevels = array_filter($levels, function($level) use ($value) {
             return $level['id'] <= $value;

@@ -5,29 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Topic;
 use App\Models\Course;
+use App\Enums\RoleEnum;
+use App\Models\Chapter;
 use App\Models\College;
+use App\Models\Student;
 use App\Models\Employee;
+use App\Enums\LevelsEnum;
 use App\Enums\JobTypeEnum;
 use App\Helpers\GetHelper;
 use App\Models\CoursePart;
 use App\Models\Department;
+use App\Enums\OwnerTypeEnum;
 use Illuminate\Http\Request;
 use App\Enums\CoursePartsEnum;
-use App\Enums\LevelsEnum;
-use App\Enums\OwnerTypeEnum;
-use App\Enums\RoleEnum;
+use App\Helpers\LanguageHelper;
+use App\Helpers\ResponseHelper;
 use App\Helpers\EnumReplacement;
 use App\Helpers\ProcessDataHelper;
-use App\Helpers\ResponseHelper;
-use App\Models\Chapter;
-use App\Models\Student;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class FilterController extends Controller
 {
     public function retrieveCourses()
     {
-        $attributes = ['id', 'arabic_name as name'];
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
+        $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
         try {
             $courses = GetHelper::retrieveModels(Course::class, $attributes, null);
 
@@ -39,6 +43,8 @@ class FilterController extends Controller
 
     public function retrieveCourseParts(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         $attributes = ['id', 'part_id as name'];
         $conditionAttribute = ['course_id'  => $request->course_id];
         $enumReplacements = [
@@ -55,7 +61,9 @@ class FilterController extends Controller
 
     public function retrieveChapters(Request $request)
     {
-        $attributes = ['id', 'arabic_title as title'];
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
+        $attributes = ['id', LanguageHelper::getTitleColumnName(null, 'title')];
         $conditionAttribute = ['course_part_id'  => $request->course_part_id];
         try {
             $chapters = GetHelper::retrieveModels(Chapter::class, $attributes,  $conditionAttribute);
@@ -68,7 +76,9 @@ class FilterController extends Controller
 
     public function retrieveTopics(Request $request)
     {
-        $attributes = ['id', 'arabic_title as title'];
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
+        $attributes = ['id', LanguageHelper::getTitleColumnName(null, 'title')];
         $conditionAttribute = ['chapter_id'  => $request->chapter_id];
         try {
 
@@ -82,7 +92,9 @@ class FilterController extends Controller
 
     public function retrieveColleges()
     {
-        $attributes = ['id', 'arabic_name as name'];
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
+        $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
         try {
             $colleges = GetHelper::retrieveModels(College::class, $attributes, null);
 
@@ -94,6 +106,8 @@ class FilterController extends Controller
 
     public function retrieveLecturerColleges()
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -104,14 +118,14 @@ class FilterController extends Controller
                     ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
                     ->join('departments', 'department_courses.department_id', '=', 'departments.id')
                     ->join('colleges', 'departments.college_id', '=', 'colleges.id')
-                    ->select('colleges.id', 'colleges.arabic_name as name')
+                    ->select('colleges.id', LanguageHelper::getNameColumnName('colleges', 'name'))
                     ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
                     ->distinct()
                     ->get();
 
                 return ResponseHelper::successWithData($lecturerColleges);
             } else {
-                return ResponseHelper::clientError(402);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'lectuer not authorized'], 401);
             }
         } catch (\Exception $e) {
@@ -121,6 +135,8 @@ class FilterController extends Controller
 
     public function retrieveLecturerCurrentColleges()
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -131,7 +147,7 @@ class FilterController extends Controller
                     ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
                     ->join('departments', 'department_courses.department_id', '=', 'departments.id')
                     ->join('colleges', 'departments.college_id', '=', 'colleges.id')
-                    ->select('colleges.id', 'colleges.arabic_name as name')
+                    ->select('colleges.id', LanguageHelper::getNameColumnName('colleges', 'name'))
                     ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
                     ->where('course_lecturers.academic_year', '=', now()->format('Y'))
                     ->distinct()
@@ -139,7 +155,7 @@ class FilterController extends Controller
 
                 return ResponseHelper::successWithData($lecturerColleges);
             } else {
-                return ResponseHelper::clientError(402);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'lectuer not authorized'], 401);
             }
         } catch (\Exception $e) {
@@ -149,8 +165,10 @@ class FilterController extends Controller
 
     public function retrieveDepartments(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
-            $attributes = ['id', 'arabic_name as name'];
+            $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
             $conditionAttribute = ['college_id'  => $request->college_id];
 
             $departments = GetHelper::retrieveModels(Department::class, $attributes,  $conditionAttribute);
@@ -163,6 +181,8 @@ class FilterController extends Controller
 
     public function retrieveLecturerDepartments(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -172,7 +192,7 @@ class FilterController extends Controller
                     ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
                     ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
                     ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-                    ->select('departments.id', 'departments.arabic_name as name')
+                    ->select('departments.id', LanguageHelper::getNameColumnName('departments', 'name'))
                     ->where('departments.college_id', '=', $request->college_id)
                     ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
                     ->distinct()
@@ -180,7 +200,7 @@ class FilterController extends Controller
 
                 return ResponseHelper::successWithData($lecturerDepartments);
             } else {
-                return ResponseHelper::clientError(402);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'lectuer not authorized'], 401);
             }
         } catch (\Exception $e) {
@@ -190,6 +210,8 @@ class FilterController extends Controller
 
     public function retrieveLecturerCurrentDepartments(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -199,7 +221,7 @@ class FilterController extends Controller
                     ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
                     ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
                     ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-                    ->select('departments.id', 'departments.arabic_name as name')
+                    ->select('departments.id', LanguageHelper::getNameColumnName('departments', 'name'))
                     ->where('departments.college_id', '=', $request->college_id)
                     ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
                     ->where('course_lecturers.academic_year', '=', now()->format('Y'))
@@ -208,7 +230,7 @@ class FilterController extends Controller
 
                 return ResponseHelper::successWithData($lecturerDepartments);
             } else {
-                return ResponseHelper::clientError(402);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'lectuer not authorized'], 401);
             }
         } catch (\Exception $e) {
@@ -218,6 +240,8 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLevels(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $attributes = ['levels_count'];
 
@@ -233,18 +257,20 @@ class FilterController extends Controller
 
     public function retrieveDepartmentCourses(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             if ($request->department_id) {
                 $departmentCourses =  DB::table('departments')
                     ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
                     ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                    ->select('department_courses.id', 'courses.arabic_name as name')
+                    ->select('department_courses.id', LanguageHelper::getNameColumnName('courses', 'name'))
                     ->where('departments.id', '=', $request->department_id)
                     ->get();
 
                 return ResponseHelper::successWithData($departmentCourses);
             } else {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'department_id is empty'], 401);
             }
         } catch (\Exception $e) {
@@ -254,6 +280,8 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLevelCourses(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             if ($request->department_id && $request->level_id) {
                 // // Fetch department with related department courses and courses
@@ -275,14 +303,14 @@ class FilterController extends Controller
                 $departmentCourses =  DB::table('departments')
                     ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
                     ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                    ->select('department_courses.id', 'courses.arabic_name as name')
+                    ->select('department_courses.id', LanguageHelper::getNameColumnName('courses', 'name'))
                     ->where('departments.id', '=', $request->department_id)
                     ->where('department_courses.level', '=', $request->level_id)
                     ->get();
 
                 return ResponseHelper::successWithData($departmentCourses);
             } else {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'department_id or level_id is empty'], 401);
             }
         } catch (\Exception $e) {
@@ -292,12 +320,14 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLevelSemesterCourses(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             if ($request->department_id && $request->level_id && $request->semester_id) {
                 $departmentCourses =  DB::table('departments')
                     ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
                     ->join('courses', 'department_courses.course_id', '=', 'courses.id')
-                    ->select('department_courses.id', 'courses.arabic_name as name')
+                    ->select('department_courses.id', LanguageHelper::getNameColumnName('courses', 'name'))
                     ->where('departments.id', '=', $request->department_id)
                     ->where('department_courses.level', '=', $request->level_id)
                     ->where('department_courses.semester', '=', $request->semester_id)
@@ -305,7 +335,7 @@ class FilterController extends Controller
 
                 return ResponseHelper::successWithData($departmentCourses);
             } else {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'department_id or level_id or semester_id is empty'], 401);
             }
         } catch (\Exception $e) {
@@ -315,6 +345,8 @@ class FilterController extends Controller
 
     public function retrieveDepartmentCourseParts(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             if ($request->department_course_id) {
                 $departmentCourseParts =  DB::table('department_course_parts')
@@ -332,7 +364,7 @@ class FilterController extends Controller
 
                 return ResponseHelper::successWithData($departmentCourseParts);
             } else {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'department_course_id is empty'], 401);
             }
         } catch (\Exception $e) {
@@ -342,6 +374,8 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLecturerCourses(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -356,7 +390,7 @@ class FilterController extends Controller
                     ->join('courses', 'department_courses.course_id', '=', 'courses.id')
                     ->select(
                         'department_courses.id',
-                        'courses.arabic_name as name'
+                        LanguageHelper::getNameColumnName('courses', 'name')
                     )
                     ->where('departments.id', '=', $request->department_id)
                     ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
@@ -364,7 +398,7 @@ class FilterController extends Controller
 
                 return ResponseHelper::successWithData($departmentLecturerCourses);
             } else {
-                return ResponseHelper::clientError(402);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
             }
         } catch (\Exception $e) {
@@ -374,6 +408,8 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLecturerCurrentCourses(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -388,7 +424,7 @@ class FilterController extends Controller
                     ->join('courses', 'department_courses.course_id', '=', 'courses.id')
                     ->select(
                         'department_courses.id',
-                        'courses.arabic_name as name'
+                        LanguageHelper::getNameColumnName('courses', 'name')
                     )
                     ->where('departments.id', '=', $request->department_id)
                     ->where('course_lecturers.lecturer_id', '=', $lecturer->id)
@@ -396,7 +432,7 @@ class FilterController extends Controller
                     ->get();
                 return ResponseHelper::successWithData($departmentLecturerCourses);
             } else {
-                return ResponseHelper::clientError(402);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
             }
         } catch (\Exception $e) {
@@ -406,6 +442,8 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLecturerCourseParts(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -434,7 +472,7 @@ class FilterController extends Controller
 
                 return ResponseHelper::successWithData($departmentLecturerCourseParts);
             } else {
-                return ResponseHelper::clientError(402);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
             }
         } catch (\Exception $e) {
@@ -444,6 +482,8 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLecturerCurrentCourseParts(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -473,7 +513,7 @@ class FilterController extends Controller
 
                 return ResponseHelper::successWithData($departmentLecturerCourseParts);
             } else {
-                return ResponseHelper::clientError(402);
+                return ResponseHelper::clientError();
                 // return response()->json(['error_message' => 'lectuer not authorized or department_id is empty'], 401);
             }
         } catch (\Exception $e) {
@@ -484,9 +524,11 @@ class FilterController extends Controller
 
     public function retrieveEmployees()
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         // هل يتم ارجاع كل الموظفين (موظف ومحاضر) او موظف فقط؟؟؟؟؟؟؟؟؟؟؟
         // يجب ان اسال العيال على هذه ايش المقصود فيها
-        $attributes = ['id', 'arabic_name as name'];
+        $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
         try {
             $employees = GetHelper::retrieveModels(Employee::class, $attributes, null);
 
@@ -498,7 +540,9 @@ class FilterController extends Controller
 
     public function retrieveLecturers()
     {
-        $attributes = ['id', 'arabic_name as name'];
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
+        $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
         try {
             $lecturers = Employee::whereIn(
                 'job_type',
@@ -513,7 +557,9 @@ class FilterController extends Controller
 
     public function retrieveEmployeesOfJob(Request $request)
     {
-        $attributes = ['id', 'arabic_name as name'];
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
+        $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
         $conditionAttribute = ['job_type' => $request->job_type_id];
         try {
             $employees = GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute);
@@ -526,6 +572,8 @@ class FilterController extends Controller
 
     public function retrieveAcademicYears()
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         // need to overview
         // $attributes = ['id', 'arabic_name as name'];
         // $conditionAttribute = [ 'job_type' => $request->job_type_id];
@@ -558,10 +606,12 @@ class FilterController extends Controller
 
     public function retrieveNonOwnerEmployees(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $nonOwnerEmployees = Employee::where('user_id', '=', null)
                 ->where('job_type', '=', $request->job_type_id)
-                ->get(['id', 'arabic_name as name']);
+                ->get(['id', LanguageHelper::getNameColumnName(null, 'name')]);
             return ResponseHelper::successWithData($nonOwnerEmployees);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -569,12 +619,14 @@ class FilterController extends Controller
     }
     public function retrieveNonOwnerStudents(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
 
             $nonOwnerStudents = DB::table('department_courses')
             ->join('course_students', 'department_courses.id', '=', 'course_students.department_course_id')
             ->join('students', 'course_students.student_id', '=', 'students.id')
-            ->select('students.id', 'students.arabic_name as name')
+            ->select('students.id', LanguageHelper::getNameColumnName('students', 'name'),)
             ->where('department_courses.department_id', '=', $request->department_id)
             ->where('department_courses.level', '=', $request->level_id)
             ->where('department_courses.semester', '=', $request->semester_id)
@@ -589,6 +641,8 @@ class FilterController extends Controller
 
     public function retrieveRoles(Request $request)
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $roles = RoleEnum::getOwnerRoles($request->owner_type_id);
             return ResponseHelper::successWithData($roles);
@@ -599,11 +653,13 @@ class FilterController extends Controller
 
     public function retrieveProctors()
     {
+        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+
         try {
             $proctors =  DB::table('employees')
                 ->join('users', 'employees.user_id', '=', 'users.id')
                 ->join('user_roles', 'users.id', '=', 'user_roles.user_id')
-                ->select('employees.id', 'employees.arabic_name as name')
+                ->select('employees.id', LanguageHelper::getNameColumnName('employees', 'name'))
                 ->where('user_roles.role_id', '=', RoleEnum::PROCTOR->value)
                 ->get();
 
