@@ -23,10 +23,10 @@ class LanguageHelper
                 $statement = 'english_name';
             }
             if(!is_null($tableName)){
-                $statement = $tableName + '.' + $statement;
+                $statement = $tableName . '.' . $statement;
             }
             if(!is_null($aliasName)){
-                $statement = $statement + ' as ' + $aliasName;
+                $statement = $statement . ' as ' . $aliasName;
             }
             return $statement;
         } catch (\Exception $e) {
@@ -45,10 +45,10 @@ class LanguageHelper
                 $statement = 'english_title';
             }
             if(!is_null($tableName)){
-                $statement = $tableName + '.' + $statement;
+                $statement = $tableName . '.' . $statement;
             }
             if(!is_null($aliasName)){
-                $statement = $statement + ' as ' + $aliasName;
+                $statement = $statement . ' as ' . $aliasName;
             }
             return $statement;
         } catch (\Exception $e) {

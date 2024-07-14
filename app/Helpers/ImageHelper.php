@@ -45,13 +45,17 @@ class ImageHelper
 
     public static function updateImage($newImage, $oldImageName, $folder = 'images')
     {
-        // Delete old image if it exists
-        if ($oldImageName !== null) {
-            self::deleteImage($oldImageName, $folder);
+        if(is_null($newImage)){
+            return $oldImageName;
+        }else{
+            // Delete old image if it exists
+            if ($oldImageName !== null) {
+                self::deleteImage($oldImageName, $folder);
+            }
+    
+            // Upload new image
+            return self::uploadImage($newImage, $folder);
         }
-
-        // Upload new image
-        return self::uploadImage($newImage, $folder);
     }
 
     private static function deleteImage($imageName, $folder = 'images')

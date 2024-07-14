@@ -107,7 +107,7 @@ class EnumsController extends Controller
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(GenderEnum::class, LanguageHelper::getEnumLanguageName()));
     }
-    public function  retrieveLoginGenders()
+    public function  retrieveRegisterGenders()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(GenderEnum::class));
     }

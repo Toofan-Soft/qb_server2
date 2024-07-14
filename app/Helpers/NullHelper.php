@@ -99,6 +99,7 @@ class NullHelper
 
     public static function filter($value)
     {
+        return $value;
         if (is_array($value)) {
             return self::filterArray($value);
         } elseif (is_object($value)) {
@@ -159,6 +160,7 @@ class NullHelper
 
     public static function filter1($value)
     {
+        return $value;
         if (is_array($value)) {
             // return 5;
             return self::filterArray1($value);

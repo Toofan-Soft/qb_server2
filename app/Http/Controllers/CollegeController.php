@@ -16,9 +16,9 @@ use App\Helpers\ImageHelper;
 use App\Helpers\ParamHelper;
 use Illuminate\Http\Request;
 use App\Helpers\DeleteHelper;
-use App\Helpers\LanguageHelper;
 use App\Helpers\ModifyHelper;
 use App\Helpers\ResponeHelper;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Models\DepartmentCourse;
@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use League\CommonMark\Node\Query\OrExpr;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\Roles\ByteArrayValidationRule;
 
 class CollegeController extends Controller
 {
@@ -86,7 +87,6 @@ class CollegeController extends Controller
         }
     }
 
-
     public function deleteCollege(Request $request)
     {
         Gate::authorize('deleteCollege', CollegeController::class);
@@ -107,7 +107,7 @@ class CollegeController extends Controller
         try {
             $colleges = GetHelper::retrieveModels(College::class, $attributes);
 
-            $colleges = NullHelper::filter1($colleges);
+            $colleges = NullHelper::filter($colleges);
 
             return ResponseHelper::successWithData($colleges);
         } catch (\Exception $e) {
@@ -163,7 +163,7 @@ class CollegeController extends Controller
         $rules = [
             'arabic_name' => 'required|string|unique:colleges,arabic_name|max:255',
             'english_name' => 'required|string|unique:colleges,english_name|max:255',
-            'logo' =>  'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust max size as needed
+            'logo' =>  ['nullable', new ByteArrayValidationRule], // Adjust max size as needed
             'description' => 'nullable|string',
             'phone' => 'nullable|integer',
             'email' => 'nullable|email',
