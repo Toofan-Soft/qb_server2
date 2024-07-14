@@ -42,61 +42,90 @@ class InitialDatabaseController extends Controller
 
     public function initialDatabase(Request $request)
     {
-        // InitialDatabaseHelper::colleges();
-        // InitialDatabaseHelper::departments();
+        $this->colleges();
         // $this->courses();
-        // $this->chapters(6);
-        // $this->topics($request->id);
-        // $this->questionsChoice($request->id);
-        // $this->questionsTrueFalse($request->id);
-        return $this->acceptQuestions();
+        // $this->chapters($request->course_part_id);
+        // $this->questionsChoices($request->topic_id);
+        // $this->questionsTrueFalse($request->topic_id);
+        // return $this->acceptQuestions();
         // $this->acceptQuestions();
 
         return ResponseHelper::success();
+    }
+
+    private function colleges()
+    {
+        $jsonFilePath = base_path() . '/app/InitialDatabase/colleges.json';
+        $rows = $this->readDataFromJson($jsonFilePath);
+        $temp = [];
+        DB::beginTransaction();
+        foreach ($rows as $row) {
+            $college = College::create([
+                'arabic_name' => $row['arabic_name'],
+                'english_name' => $row['english_name'],
+                'phone' => $row['phone'],
+                'email' => $row['email']
+            ]);
+            foreach ($row['departments'] as $department) {
+                $college->departments()->create([
+                    'arabic_name' => $department['arabic_name'],
+                    'english_name' => $department['english_name'],
+                    'levels_count' => $department['levels_count']
+                ]);
+            }
+        }
+        DB::commit();
     }
 
     private function courses()
     {
         $jsonFilePath = base_path() . '/app/InitialDatabase/courses.json';
         $rows = $this->readDataFromJson($jsonFilePath);
-        $temp = [];
+        DB::beginTransaction();
         foreach ($rows as $row) {
-            Course::create([]);
+            $course = Course::create([
+                'arabic_name' => $row['arabic_name'],
+                'english_name' => $row['english_name'],
+            ]);
+            foreach ($row['course_parts'] as $course_part) {
+                $course->course_parts()->create([
+                    'part_id' => $course_part['part_id'],
+                    'description' => $course_part['description'],
+                ]);
+            }
         }
+        DB::commit();
     }
+
     private function chapters($coursePartId)
     {
         $jsonFilePath = base_path() . '/app/InitialDatabase/chapters.json';
         $rows = $this->readDataFromJson($jsonFilePath);
         $coursePart = CoursePart::findOrFail($coursePartId);
+        DB::beginTransaction();
         foreach ($rows as $row) {
-            // return $row;
-            $coursePart->chapters()->create([
-                "arabic_title" => $row['arabic_title'],
-                "english_title" => $row['english_title'],
-                "description" => $row['description']
+            $chapter = $coursePart->chapters()->create([
+                'arabic_title' => $row['arabic_title'],
+                'english_title' => $row['english_title'],
+                'description' => $row['description'],
             ]);
+            foreach ($row['topics'] as $topic) {
+                $chapter->topics()->create([
+                    'arabic_title' => $topic['arabic_title'],
+                    'english_title' => $topic['english_title'],
+                    'description' => $topic['description'],
+                ]);
+            }
         }
+        DB::commit();
     }
-    private function topics($chapterId)
-    {
-        $jsonFilePath = base_path() . '/app/InitialDatabase/topics.json';
-        $rows = $this->readDataFromJson($jsonFilePath);
-        $chapter = Chapter::findOrFail($chapterId);
-        foreach ($rows as $row) {
-            // return $row;
-            $chapter->topics()->create([
-                "arabic_title" => $row['arabic_title'],
-                "english_title" => $row['english_title'],
-                "description" => $row['description']
-            ]);
-        }
-    }
-    private function questionsChoice($topicId)
+
+    private function questionsChoices($topicId)
     {
         $jsonFilePath = base_path() . '/app/InitialDatabase/questions.json';
         $rows = $this->readDataFromJson($jsonFilePath);
         $topic = Topic::findOrFail($topicId);
+        DB::beginTransaction();
         foreach ($rows as $row) {
             $question = $topic->questions()->create([
                 'type' => QuestionTypeEnum::MULTIPLE_CHOICE->value,
@@ -111,12 +140,25 @@ class InitialDatabaseController extends Controller
             ]);
             $this->saveQuestionChoices($question, $row['choices']);
         }
+        DB::commit();
     }
+
+    private function saveQuestionChoices(Question $question, $choices)
+    {
+        foreach ($choices as $choice) {
+            $question->choices()->create([
+                'content' => $choice['content'],
+                'status' => ($choice['isCorrect']) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value
+            ]);
+        }
+    }
+
     private function questionsTrueFalse($topicId)
     {
         $jsonFilePath = base_path() . '/app/InitialDatabase/questionsTrueFalse.json';
         $rows = $this->readDataFromJson($jsonFilePath);
         $topic = Topic::findOrFail($topicId);
+        DB::beginTransaction();
         foreach ($rows as $row) {
             $question = $topic->questions()->create([
                 'type' => QuestionTypeEnum::TRUE_FALSE->value,
@@ -133,7 +175,9 @@ class InitialDatabaseController extends Controller
                 'answer' => ($row['isCorrect']) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
             ]);
         }
+        DB::commit();
     }
+
     private function acceptQuestions()
     {
         DB::beginTransaction();
@@ -192,14 +236,5 @@ class InitialDatabaseController extends Controller
         $maxSeconds = 10 * 60; // 10 minutes in seconds
         $randomSeconds = mt_rand($minSeconds, $maxSeconds);
         return $randomSeconds;
-    }
-    private function saveQuestionChoices(Question $question, $choices)
-    {
-        foreach ($choices as $choice) {
-            $question->choices()->create([
-                'content' => $choice['content'],
-                'status' => ($choice['isCorrect']) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value
-            ]);
-        }
     }
 }
