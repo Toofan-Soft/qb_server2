@@ -24,7 +24,8 @@ def __init_dataset(json_data):
             model.dataset.Question(id, difficulty_level, selection_times, last_selection, answer_time, topic_id,
                                    type_id)
         )
-        model.dataset.dataset.build()
+    
+    model.dataset.dataset.build()
 
 
 def __init_population(chromosomes_count, chromatids_and_gens):

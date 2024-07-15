@@ -36,7 +36,6 @@ class ImageHelper
 
             file_put_contents($filePath, implode(array_map("chr", $fileData)));
 
-            // return $folder . '/' . $fileName;
             return $fileName;
         }
         

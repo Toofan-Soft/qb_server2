@@ -38,7 +38,8 @@ class GetHelper
     public static function retrieveModels($model, $attributes = null, $conditionAttributes = [], $enumReplacements = null, $columnReplacements = null)
     {
         $query = $model::query();
-        $rows = null;
+        // $rows = null;
+        $rows = [];
         if (empty($conditionAttributes)) {
             if (empty($attributes)) {
                 $rows = $model::all();
@@ -66,15 +67,16 @@ class GetHelper
             }
         }
 
-        foreach ($rows as $row) {
-            if (isset($row->logo_url)) {
-                $row->logo_url = asset($row->logo_url);
-            } elseif (isset($row->image_url)) {
-                $row->image_url = asset($row->image_url);
-            } elseif (isset($row->attachmetn_url)) {
-                $row->attachmetn_url = asset($row->attachmetn_url);
-            }
-        }
+        // foreach ($rows as $row) {
+        //     if (isset($row->logo_url)) {
+        //         $row->logo_url = asset($row->logo_url);
+        //     } elseif (isset($row->image_url)) {
+        //         $row->image_url = asset($row->image_url);
+        //     } elseif (isset($row->attachmetn_url)) {
+        //         $row->attachmetn_url = asset($row->attachmetn_url);
+        //     }
+        // }
+        
         if ($enumReplacements) {
             $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
         }
@@ -82,14 +84,10 @@ class GetHelper
         if ($columnReplacements) {
             $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
         }
-        // if (count($rows) === 1) {
-        //     return ResponseHelper::successWithData($rows->first());
-        //   }
-        // return ResponseHelper::successWithData($rows);
-        if(is_array($rows) || $rows instanceof Traversable){
+
+        if (is_array($rows)) {
             return $rows;
-        }else{
-            // return (array) $rows;
+        } else {
             return $rows->toArray();
         }
     }
@@ -126,13 +124,13 @@ class GetHelper
             }
         }
 
-        if (isset($row->logo_url)) {
-            $row->logo_url = asset($row->logo_url);
-        } elseif (isset($row->image_url)) {
-            $row->image_url = asset($row->image_url);
-        } elseif (isset($row->attachmetn_url)) {
-            $row->attachmetn_url = asset($row->attachmetn_url);
-        }
+        // if (isset($row->logo_url)) {
+        //     $row->logo_url = asset($row->logo_url);
+        // } elseif (isset($row->image_url)) {
+        //     $row->image_url = asset($row->image_url);
+        // } elseif (isset($row->attachmetn_url)) {
+        //     $row->attachmetn_url = asset($row->attachmetn_url);
+        // }
 
         if ($enumReplacements) {
             $row = ProcessDataHelper::enumsConvertIdToName($row, $enumReplacements);

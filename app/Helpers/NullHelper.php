@@ -99,7 +99,7 @@ class NullHelper
 
     public static function filter($value)
     {
-        return $value;
+        // return $value;
         if (is_array($value)) {
             return self::filterArray($value);
         } elseif (is_object($value)) {
@@ -112,7 +112,7 @@ class NullHelper
     private static function filterArray(array $array)
     {
         $filteredArray = [];
-        $imageFields = ['image_url', 'attachment', 'logo_url'];
+        // $imageFields = ['image_url', 'attachment', 'logo_url'];
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 $filteredValue = self::filterArray($value);
@@ -126,11 +126,11 @@ class NullHelper
                 $filteredArray[$key] = $filteredValue;
             }
 
-            foreach ($imageFields as $field) {
-                if ($key === $field) {
-                    $filteredArray[$key] = asset($filteredValue);
-                }
-            }
+            // foreach ($imageFields as $field) {
+            //     if ($key === $field) {
+            //         $filteredArray[$key] = asset($filteredValue);
+            //     }
+            // }
         }
 
         return $filteredArray;
@@ -158,60 +158,58 @@ class NullHelper
     }
 
 
-    public static function filter1($value)
-    {
-        return $value;
-        if (is_array($value)) {
-            // return 5;
-            return self::filterArray1($value);
-        } elseif (is_object($value)) {
-            return self::filterObject1($value);
-        } else {
-            throw new \InvalidArgumentException("Value must be an array or object");
-        }
-    }
+    // public static function filter1($value)
+    // {
+    //     if (is_array($value)) {
+    //         return self::filterArray1($value);
+    //     } elseif (is_object($value)) {
+    //         return self::filterObject1($value);
+    //     } else {
+    //         throw new \InvalidArgumentException("Value must be an array or object");
+    //     }
+    // }
 
-    private static function filterArray1(array $array)
-    {
-        $filteredArray = [];
+    // private static function filterArray1(array $array)
+    // {
+    //     $filteredArray = [];
 
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $filteredValue = self::filterArray1($value);
-            } elseif (is_object($value)) {
-                $filteredValue = self::filterObject1($value);
-            } else {
-                $filteredValue = $value;
-            }
+    //     foreach ($array as $key => $value) {
+    //         if (is_array($value)) {
+    //             $filteredValue = self::filterArray1($value);
+    //         } elseif (is_object($value)) {
+    //             $filteredValue = self::filterObject1($value);
+    //         } else {
+    //             $filteredValue = $value;
+    //         }
 
-            if (!is_null($filteredValue)) {
-                $filteredArray[$key] = $filteredValue;
-            }
-        }
+    //         if (!is_null($filteredValue)) {
+    //             $filteredArray[$key] = $filteredValue;
+    //         }
+    //     }
 
-        return $filteredArray;
-    }
+    //     return $filteredArray;
+    // }
 
-    private static function filterObject1($object)
-    {
-        // $array = (array) $object;
-        // $array = $object->toArray();
-        // $filteredArray = self::filterArray($array);
-        // return (object) $filteredArray;
+    // private static function filterObject1($object)
+    // {
+    //     // $array = (array) $object;
+    //     // $array = $object->toArray();
+    //     // $filteredArray = self::filterArray($array);
+    //     // return (object) $filteredArray;
 
-        $array = [];
+    //     $array = [];
 
-        if (method_exists($object, 'toArray')) {
-            // Handle Eloquent models
-            $array = $object->toArray();
-        } else {
-            // Handle stdClass objects and other objects
-            $array = (array) $object;
-        }
+    //     if (method_exists($object, 'toArray')) {
+    //         // Handle Eloquent models
+    //         $array = $object->toArray();
+    //     } else {
+    //         // Handle stdClass objects and other objects
+    //         $array = (array) $object;
+    //     }
 
-        $filteredArray = self::filterArray($array);
-        return (object) $filteredArray;
-    }
+    //     $filteredArray = self::filterArray($array);
+    //     return (object) $filteredArray;
+    // }
 
 
     public static function is_null($parent, $children)

@@ -54,6 +54,7 @@ class CollegeController extends Controller
                 'telegram' => $request->telegram ?? null,
                 'logo_url' => ImageHelper::uploadImage($request->logo)
             ]);
+
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -131,12 +132,12 @@ class CollegeController extends Controller
 
     public function retrieveCollege(Request $request)
     {
-        Gate::authorize('retrieveCollege', CollegeController::class);
+        // Gate::authorize('retrieveCollege', CollegeController::class);
         $attributes = ['arabic_name', 'english_name', 'phone', 'email', 'description', 'youtube', 'x_platform', 'facebook', 'telegram', 'logo_url'];
         $conditionAttribute = ['id' => $request->id];
         try {
             $college = GetHelper::retrieveModel(College::class, $attributes, $conditionAttribute);
-            $college = NullHelper::filter($college);
+            // $college = NullHelper::filter($college);
             return ResponseHelper::successWithData($college);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

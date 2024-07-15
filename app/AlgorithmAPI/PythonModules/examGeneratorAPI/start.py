@@ -41,9 +41,9 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: python example.py <method_name>")
         sys.exit(1)
-
+    
     method_name = sys.argv[1]
-
+    
     try:
         # Read JSON data from stdin
         json_data = sys.stdin.read()

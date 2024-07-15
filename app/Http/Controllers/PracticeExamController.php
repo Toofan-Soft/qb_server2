@@ -49,12 +49,12 @@ class PracticeExamController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
-        try {
+        // try {
             $algorithmData = $this->getAlgorithmData($request);
-
+            
             $examQuestions = (new GenerateExam())->execute($algorithmData);
 
-            if (is_null($examQuestions)) { // modify to use has function
+            if (!is_null($examQuestions)) { // modify to use has function
 
                 $user = User::findOrFail(auth()->user()->id);
                 DB::beginTransaction();
@@ -63,7 +63,8 @@ class PracticeExamController extends Controller
                     'department_course_part_id' => $request->department_course_part_id,
                     'title' => $request->title ?? null,
                     'language' => $request->language_id,
-                    'datetime' => now()->getTimestamp(), // can make defult value in migration 
+                    // 'datetime' => now()->getTimestamp(), // can make defult value in migration 
+                    'datetime' => now(), // can make defult value in migration 
                     'duration' => $request->duration,
                     'difficulty_level' => $request->difficulty_level_id,
                     'conduct_method' => $request->conduct_method_id,
@@ -99,9 +100,9 @@ class PracticeExamController extends Controller
                 DB::rollBack();
                 return ResponseHelper::serverError();
             }
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function modifyPracticeExam(Request $request)
@@ -363,11 +364,11 @@ class PracticeExamController extends Controller
 
     public function retrievePracticeExam(Request $request)
     {
-        Gate::authorize('retrievePracticeExam', PracticeExamController::class);
+        // Gate::authorize('retrievePracticeExam', PracticeExamController::class);
 
         try {
             $practiceExam = PracticeExam::findOrFail($request->id, [
-                // 'datetime'
+                'datetime',
                 'id', 'title', 'duration', 'language as language_name',
                 'conduct_method as is_mandatory_question_sequence', 'status', 'department_course_part_id'
             ]);
