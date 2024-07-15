@@ -72,13 +72,13 @@ class ProctorOnlineExamPolicy
         return ValidateHelper::validatePolicy($validRoles);
     }
     
-    public function refreshOnlineExamStudents(): bool
-    {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::PROCTOR
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
-    }
+    // public function refreshOnlineExamStudents(): bool
+    // {
+    //     $validRoles = [
+    //         RoleEnum::SYSTEM_ADMINISTRATOR,
+    //         RoleEnum::PROCTOR
+    //     ];
+    //     return ValidateHelper::validatePolicy($validRoles);
+    // }
 
 }

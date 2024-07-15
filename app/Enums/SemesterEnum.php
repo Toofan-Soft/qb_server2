@@ -12,8 +12,8 @@ enum SemesterEnum: INT   {
 
     public function getValues(): array {
         return match ($this) {
-            self::FIRST => [1, 'FIRST', 'الاول'],
-            self::SECOND => [2, 'SECOND', 'الثاني'],
+            self::FIRST => [1, 'First', 'الاول'],
+            self::SECOND => [2, 'Second', 'الثاني'],
         };
     }
 

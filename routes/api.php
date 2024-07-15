@@ -67,6 +67,7 @@ use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
 
 Route::post('user/register', [GuestController::class, 'addGuest']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);
+Route::post('user/verify-account-after-recovery', [UserController::class, 'verifyAccountAfterRecvery']);
 Route::post('user/login', [UserController::class, 'login']);
 Route::put('user/change-password', [UserController::class, 'changePassword']);
 Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
@@ -231,13 +232,12 @@ Route::middleware('auth:api')->group(function () {
 
     // department-course-part-chapter-and-topic
     Route::prefix('department-course-part-chapter-and-topic/')->group(function () {
-        Route::put('modify-topic-list', [DepartmentCoursePartChapterTopicController::class, 'modifyDepartmentCoursePartTopics']);
+        Route::post('modify-topic-list', [DepartmentCoursePartChapterTopicController::class, 'modifyDepartmentCoursePartTopics']);
         Route::get('retrieve-chapter-list', [DepartmentCoursePartChapterTopicController::class, 'retrieveDepartmentCoursePartChapters']);
         Route::get('retrieve-topic-list', [DepartmentCoursePartChapterTopicController::class, 'retrieveDepartmentCoursePartChapterTopics']);
         Route::get('retrieve-editable-chapter-list', [DepartmentCoursePartChapterTopicController::class, 'retrieveEditableDepartmentCoursePartChapters']);
         Route::get('retrieve-editable-topic-list', [DepartmentCoursePartChapterTopicController::class, 'retrieveEditableDepartmentCoursePartTopics']);
     });
-
 
     //employee
     Route::prefix('employee/')->group(function () {
@@ -309,8 +309,8 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('user/')->group(function () {
         // Route::post('verify', [UserController::class, 'verifyAccount']);
         // Route::post('login', [UserController::class, 'login']);
-        Route::post('resend-code', [UserController::class, 'resendCode']);
         Route::post('logout', [UserController::class, 'logout']);
+        Route::put('resend-code', [UserController::class, 'resendCode']);
         Route::put('change-password', [UserController::class, 'changePassword']);
         Route::put('change-language', [UserController::class, 'changeLanguage']);
         Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
@@ -364,7 +364,6 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('paper-exam/')->group(function () {
         Route::post('add', [PaperExamController::class, 'addPaperExam']);
         Route::put('modify', [PaperExamController::class, 'modifyPaperExam']);
-        // Route::put('change-status', [PaperExamController::class, 'modifyPaperExam']);
         Route::delete('delete', [PaperExamController::class, 'deletePaperExam']);
         Route::get('retrieve', [PaperExamController::class, 'retrievePaperExam']);
         Route::get('retrieve-editable', [PaperExamController::class, 'retrieveEditablePaperExam']);
@@ -394,13 +393,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-question-list', [PracticeExamController::class, 'retrievePracticeExamQuestions']);
     });
 
-    /// for test just
-    Route::post('test', function (Request $request) {
-        return User::all();
-    });
-
-    // }); ////
-
     //favorite question
     Route::prefix('favorite-question/')->group(function () {
         Route::post('add', [FavoriteQuestionController::class, '']);
@@ -409,7 +401,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('check', [FavoriteQuestionController::class, '']);
         Route::get('retrieve-list', [FavoriteQuestionController::class, '']);
     });
-
 
 
     //enum
@@ -424,10 +415,10 @@ Route::middleware('auth:api')->group(function () {
         // Route::get('retrieve-acceptance-status-list', [EnumsController::class, 'retrieveAcceptanceStatus']);
         Route::get('retrieve-accessibility-status-list', [EnumsController::class, 'retrieveAccessibilityStatus']);
         Route::get('retrieve-semester-list', [EnumsController::class, 'retrieveSemesters']);
-        Route::get('retrieve-level-list', [EnumsController::class, 'retrieveLevelsCounts']);
+        Route::get('retrieve-levels-count-list', [EnumsController::class, 'retrieveLevelsCounts']);
         Route::get('retrieve-job-type-list', [EnumsController::class, 'retrieveJobTypes']);
         Route::get('retrieve-qualification-list', [EnumsController::class, 'retrieveQualifications']);
-        Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
+        // Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
         Route::get('retrieve-course-student-status-list', [EnumsController::class, 'retrieveCourseStudentStatus']);
         Route::get('retrieve-owner-type-list', [EnumsController::class, 'retrieveOwnerTypes']);
         Route::get('retrieve-user-status-list', [EnumsController::class, 'retrieveUserStatus']);
@@ -476,19 +467,18 @@ Route::middleware('auth:api')->group(function () {
 
 //for test with out need to login
 Route::prefix('test/')->group(function () {
-    Route::post('add', [LecturerOnlineExamController::class, 'addOnlineExam']);
-    Route::put('modify', [QuestionController::class, 'acceptQuestion']);
+    Route::post('add', [InitialDatabaseController::class, 'initialDatabase']);
+    // Route::put('modify', [QuestionController::class, 'acceptQuestion']);
     // Route::put('change-status', [UserManagementController::class, 'changeUserStatus']);
     // Route::delete('delete', [UserManagementController::class, 'deleteUser']);
-    Route::get('retrieve', [UserManagementController::class, 'retrieveUser']);
-    Route::get('retrieve-list', [UserManagementController::class, 'retrieveUsers']);
+    // Route::get('retrieve', [UserManagementController::class, 'retrieveUser']);
+    // Route::get('retrieve-list', [UserManagementController::class, 'retrieveUsers']);
 });
 
 //enum
 Route::prefix('enum/')->group(function () {
-    Route::get('retrieve-login-gender-list', [EnumsController::class, 'retrieveLoginGenders']);
+    Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveRegisterGenders']);
 });
-
 
 
 //test enum

@@ -16,11 +16,11 @@ enum QualificationEnum: INT {
 
     public function getValues(): array {
         return match ($this) {
-            self::DIPLOMA => [0, 'Guest', 'دبلوم'],
-            self::BACHALOR_DEGREE => [1, 'Bachalor_degree', 'بكلاريوس'],
-            self::MASTER_DEGREE => [2, 'Master_degree', 'ماجستير'],
-            self::ASSISTANT_PROFESSOR => [3, 'Assistant_professor', 'استاذ مشارك '],
-            self::ASSOCIATE_PROFESSOR => [4, 'Associate_professor', ' استاذ مساعد '],
+            self::DIPLOMA => [0, 'Diploma', 'دبلوم'],
+            self::BACHALOR_DEGREE => [1, 'Bachalor Degree', 'بكلاريوس'],
+            self::MASTER_DEGREE => [2, 'Master Degree', 'ماجستير'],
+            self::ASSISTANT_PROFESSOR => [3, 'Assistant Professor', 'استاذ مشارك '],
+            self::ASSOCIATE_PROFESSOR => [4, 'Associate Professor', ' استاذ مساعد '],
             self::PROFESSOR => [5, 'Professor', 'بروفسور '],
         };
     }

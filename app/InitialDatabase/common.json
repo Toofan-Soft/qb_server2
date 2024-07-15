@@ -20,6 +20,18 @@
         "phone": 111222333
     },
     {
+        "comment": "student::add",
+        "arabic_name": "الطالب 1",
+        "english_name": "student 1",
+        "academic_id": 112233,
+        "phone": 111222001,
+        "birthdate": 1719588018327,
+        "gender_id": 1,
+        "department_id": 1,
+        "level_id": 1,
+        "semester_id": 1
+    },
+    {
         "comment": "university::add",
         "arabic_name": "تعز",
         "english_name": "taiz"
@@ -29,14 +41,26 @@
         "email": "fadiadmin@gmail.com",
         "owner_type_id": 2,
         "owner_id": 1,
-        "roles_ids": [3, 4, 5, 6, 7]
+        "roles_ids": [
+            3,
+            4,
+            5,
+            6,
+            7
+        ]
     },
     {
         "comment": "user management : add",
         "email": "eeadadmin@gmail.com",
         "owner_type_id": 2,
         "owner_id": 2,
-        "roles_ids": [3, 4, 5, 6, 7]
+        "roles_ids": [
+            3,
+            4,
+            5,
+            6,
+            7
+        ]
     },
     {
         "comment": "department course : add",
@@ -57,8 +81,33 @@
     {
         "comment": "department course part topic : add",
         "department_course_part_id": 1,
-        "topics_ids": [1,2,3,4,5, 11, 12, 13, 14, 15, 21, 22, 23, 24, 25, 31, 32, 33, 34, 35, 
-        41, 42, 43, 44, 45]
+        "topics_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            11,
+            12,
+            13,
+            14,
+            15,
+            21,
+            22,
+            23,
+            24,
+            25,
+            31,
+            32,
+            33,
+            34,
+            35,
+            41,
+            42,
+            43,
+            44,
+            45
+        ]
     },
     {
         "comment": "course lecturer : add",
@@ -92,8 +141,33 @@
                 "question_score": 1
             }
         ],
-        "topics_ids": [1,2,3,4,5, 11, 12, 13, 14, 15, 21, 22, 23, 24, 25, 31, 32, 33, 34, 35, 
-        41, 42, 43, 44, 45],
+        "topics_ids": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            11,
+            12,
+            13,
+            14,
+            15,
+            21,
+            22,
+            23,
+            24,
+            25,
+            31,
+            32,
+            33,
+            34,
+            35,
+            41,
+            42,
+            43,
+            44,
+            45
+        ],
         "department_course_part_id": 1
     }
 ]

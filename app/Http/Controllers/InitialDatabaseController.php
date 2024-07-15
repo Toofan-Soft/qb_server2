@@ -178,12 +178,12 @@ class InitialDatabaseController extends Controller
         DB::commit();
     }
 
-    private function acceptQuestions()
+    private function acceptQuestions($topicId)
     {
         DB::beginTransaction();
         $questions = Question::where('type', '=', QuestionTypeEnum::MULTIPLE_CHOICE->value)
             ->where('status', '=', 1)
-            ->where('id', '<=', 600)
+            ->where('topic_id', '=', $topicId)
             ->get();
         // return $questions;
         foreach ($questions as $question) {

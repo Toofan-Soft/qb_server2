@@ -12,8 +12,8 @@ enum ChoiceStatusEnum: INT {
 
     public function getValues(): array {
         return match ($this) {
-            self::INCORRECT_ANSWER => [0, 'Incorrect_answer', 'اجابة غير صحيحه '],
-            self::CORRECT_ANSWER => [1, 'Correct_answer',  'اجابة صحيحه '],
+            self::INCORRECT_ANSWER => [0, 'Incorrect Answer', 'اجابة غير صحيحه '],
+            self::CORRECT_ANSWER => [1, 'Correct Answer',  'اجابة صحيحه '],
         };
     }
 

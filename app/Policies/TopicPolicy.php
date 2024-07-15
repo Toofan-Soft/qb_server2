@@ -33,6 +33,11 @@ class TopicPolicy
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
     
+    public function retrieveEditableTopic(): bool
+    {
+        return ValidateHelper::validatePolicy(self::$validRoles);
+    }
+    
     public function retrieveTopicDescription(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
