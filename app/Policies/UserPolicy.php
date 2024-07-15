@@ -8,6 +8,7 @@ use App\Helpers\ValidateHelper;
 class UserPolicy
 {
     private static $validRoles = [];
+
     public function verifyAccount(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
@@ -18,7 +19,12 @@ class UserPolicy
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function logou(): bool
+    public function resendCode(): bool
+    {
+        return ValidateHelper::validatePolicy(self::$validRoles);
+    }
+    
+    public function logout(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
@@ -28,21 +34,22 @@ class UserPolicy
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
     
+    public function changeLanguage(): bool
+    {
+        return ValidateHelper::validatePolicy(self::$validRoles);
+    }
+    
     public function requestAccountReovery(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    
+
     public function changePasswordAfterAccountReovery(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    
+
     public function retrieveProfile(): bool
-    {
-        return ValidateHelper::validatePolicy(self::$validRoles);
-    }
-    public function resendCode(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }

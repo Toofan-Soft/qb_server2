@@ -44,10 +44,11 @@ class StudentController extends Controller
     public function addStudent(Request $request)
     {
         Gate::authorize('addStudent', StudentController::class);
-
+        
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
+
         DB::beginTransaction();
         try {
             $student =  Student::create([
@@ -55,7 +56,8 @@ class StudentController extends Controller
                 'arabic_name' =>  $request->arabic_name,
                 'english_name' =>  $request->english_name,
                 'phone' => $request->phone ?? null,
-                'image_url' => $request->hasFile('image') ? ImageHelper::uploadImage($request->file('image')) : null,
+                'image_url' => ImageHelper::uploadImage($request->image),
+                // 'image_url' => $request->hasFile('image') ? ImageHelper::uploadImage($request->file('image')) : null,
                 'birthdate' =>  $request->birthdate ?? null,
                 'gender' =>  $request->gender_id,
             ]);
@@ -189,23 +191,22 @@ class StudentController extends Controller
         Gate::authorize('retrieveStudent', StudentController::class);
 
         try {
-            // return ResponseHelper::success();
             // $student = Student::findOrFail($request->id);
             $student = Student::where('id', $request->id)
-                ->firstOrFail();
-
+            ->firstOrFail();
+            
             $studentData = [
                 'academic_id' => $student->academic_id,
                 'arabic_name' => $student->arabic_name,
                 'english_name' => $student->english_name,
                 'gender_name' => $student->gender,
-                'email' => $student->user()->email,
+                'email' => $student->user()->first()->email,
                 'user_id' => $student->user_id,
                 'image_url' => $student->image_url,
                 'birthdate' => $student->birthdate,
                 'phone' => $student->phone,
-                'department_name' => $student->course_students()->first()->department_course()->department()->LanguageHelper::getNameColumnName(null, null),
-                'college_name' => $student->course_students()->first()->department_course()->department()->college()->LanguageHelper::getNameColumnName(null, null),
+                'department_name' => $student->course_students()->first()->department_course()->first()->department()->first()[LanguageHelper::getNameColumnName(null, null)],
+                'college_name' => $student->course_students()->first()->department_course()->first()->department()->first()->college()->first()[LanguageHelper::getNameColumnName(null, null)]
             ];
             $studentData = NullHelper::filter($studentData);
             $departmentLevelSemesterIds = $this->getStudentDepartmentLevelSemesterIds($request->id);
@@ -304,7 +305,7 @@ class StudentController extends Controller
     private function getStudentDepartmentLevelSemesterIds($studnetId)
     {
         try {
-            return ResponseHelper::success();
+            // return ResponseHelper::success();
             $studentDepartmentLevelSemesterIds =  DB::table('students')
                 ->join('course_students', 'students.id', '=', 'course_students.student_id')
                 ->join('department_courses', 'course_students.department_course_id', '=', 'department_courses.id')
@@ -318,7 +319,8 @@ class StudentController extends Controller
                 )
                 ->where('students.id', '=', $studnetId)
                 // ->where('course_parts.status', '=', CourseStatusEnum::AVAILABLE->value) // Assuming there's a column indicating if the course is active
-                ->orderBy(['department_courses.level', 'department_courses.semester'], 'desc') // Order by level in descending order
+                ->orderBy('department_courses.level', 'desc') // Order by level in descending order
+                ->orderBy('department_courses.semester', 'desc') // Order by level in descending order
                 ->first();
 
             return $studentDepartmentLevelSemesterIds;

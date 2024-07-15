@@ -13,9 +13,9 @@ enum AccessibilityStatusEnum: int {
 
     public function getValues(): array {
         return match ($this) {
-            self::PRACTICE_EXAM => [0, 'Practice_exam', 'اختبار تجريبي'],
-            self::REALEXAM => [1, 'Realexam', 'اختبار فعلي'],
-            self::PRACTICE_REALEXAM => [2, 'Practice_realexam', 'اختبار فعلي وتجريبي'],
+            self::PRACTICE_EXAM => [0, 'Practice Exam', 'اختبار تجريبي'],
+            self::REALEXAM => [1, 'Real Exam', 'اختبار فعلي'],
+            self::PRACTICE_REALEXAM => [2, 'Practice and Real Exam', 'اختبار فعلي وتجريبي'],
         };
     }
 

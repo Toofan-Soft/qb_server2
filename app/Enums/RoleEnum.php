@@ -29,7 +29,7 @@ enum RoleEnum: int
             self::QUESTION_ENTRY => [3, 'Question Entry', 'مدخل سؤال'],
             self::QUESTION_REVIEWER => [4, 'Question Reviewer', 'مراجع سؤال'],
             self::SYSTEM_ADMINISTRATOR => [5, 'System Administrator', 'مدير النظام'],
-            self::DATA_ENTRY => [6, 'Data_entry', 'مدخل بيانات'],
+            self::DATA_ENTRY => [6, 'Data Entry', 'مدخل بيانات'],
             self::PROCTOR => [7, 'Proctor', 'مراقب '],
         };
     }

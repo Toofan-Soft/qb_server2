@@ -16,12 +16,12 @@ enum LevelsCountEnum: int {
 
     public function getValues(): array {
         return match ($this) {
-            self::TWO => [2, 'TOW', 'اثنين'],
+            self::TWO => [2, 'Tow', 'اثنين'],
             self::THREE => [3, 'Three', 'ثلاثة'],
             self::FOUR => [4, 'Four', 'أربعه'],
-            self::FIVE => [5, 'FIVE', 'خمسة '],
-            self::SIX => [6, 'SIX', ' ستة'],
-            self::SEVEN => [7, 'SEVEN', ' سبعة'],
+            self::FIVE => [5, 'Five', 'خمسة '],
+            self::SIX => [6, 'Six', ' ستة'],
+            self::SEVEN => [7, 'Seve', ' سبعة'],
         };
     }
 

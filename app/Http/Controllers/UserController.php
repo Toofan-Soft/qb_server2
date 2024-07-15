@@ -18,6 +18,7 @@ use App\Enums\OwnerTypeEnum;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHelper;
 use App\Enums\QualificationEnum;
+use App\Helpers\ColumnReplacement;
 use App\Helpers\EnumReplacement;
 use App\Helpers\ProcessDataHelper;
 use App\Models\UserRole;
@@ -43,7 +44,7 @@ class UserController extends Controller
     {
         try {
             $otp2 = $this->otp->validate($request->code);
-            
+
             if (!$otp2->status) {
                 return ResponseHelper::clientError();
             }
@@ -57,92 +58,6 @@ class UserController extends Controller
         }
     }
 
-    // public function customValidate(string $code)
-    // {
-    //     $otp = Otp::where('token', $code)->first();
-
-    //     if ($otp) {
-    //         if ($otp->valid) {
-    //             $now = Carbon::now();
-    //             $validity = $otp->created_at->addMinutes($otp->validity);
-
-    //             $otp->update(['valid' => false]);
-
-    //             if (strtotime($validity) < strtotime($now)) {
-    //                 return (object)[
-    //                     'status' => false,
-    //                     'message' => 'OTP Expired'
-    //                 ];
-    //             }
-
-    //             $otp->update(['valid' => false]);
-
-    //             return (object)[
-    //                 'status' => true,
-    //                 'message' => 'OTP is valid',
-    //                 'email' => $otp->identifier
-    //             ];
-    //         }
-
-    //         $otp->update(['valid' => false]);
-
-    //         return (object)[
-    //             'status' => false,
-    //             'message' => 'OTP is not valid'
-    //         ];
-    //     } else {
-    //         return (object)[
-    //             'status' => false,
-    //             'message' => 'OTP does not exist'
-    //         ];
-    //     }
-    // }
-
-    // public function login1()
-    // {
-    //     // User::
-    //     $user = User::findOrFail(auth()->user()->id);
-    //     // return $user->tokens();
-
-    //     // $tokens = $user->tokens; // Retrieve the tokens as a collection
-        
-    //     // $tokens = $user->tokens()->get(['id', 'client_id', 'name', 'scopes', 'revoked', 'created_at', 'updated_at', 'expires_at', 'user_id']);    
-    //     // return response()->json($tokens); // Return the collection as JSON
-    //     // return response()->json($tokens->first()); // Return the collection as JSON
-    //     // return response()->json($tokens->first()->accessToken); // Return the collection as JSON
-
-    //     // Retrieve non-revoked tokens where the name matches 'quesionbanklaravelapi'
-    //     $tokens = $user->tokens()
-    //         ->where('name', 'quesionbanklaravelapi')
-    //         ->where('revoked', false)
-    //         ->get(['id', 'client_id', 'name', 'scopes', 'revoked', 'created_at', 'updated_at', 'expires_at', 'user_id']);
-
-    //     if ($tokens->isEmpty()) {
-    //         return response()->json(['error' => 'No tokens found'], 404);
-    //     }
-
-    //     // // Decrypt tokens if necessary and prepare the response
-    //     // $tokensWithAccess = $tokens->map(function ($token) {
-    //     // return [
-    //     //     'id' => $token->id,
-    //     //     'accessToken' => Crypt::decrypt($token->id) // Assuming the access token is stored in the 'id' column and encrypted
-    //     //     ];
-    //     // });
-
-    //     // return response()->json($tokensWithAccess);
-
-    //     // Fetch JWT tokens from a custom field
-    //     $tokensWithAccess = $tokens->map(function ($token) {
-    //         $accessToken = DB::table('oauth_access_tokens')->where('id', $token->id)->value('jwt_token'); // Adjust the column name as needed
-    //         return [
-    //             'id' => $token->id,
-    //             'accessToken' => $accessToken
-    //         ];
-    //     });
-
-    //     return response()->json($tokensWithAccess);
-    // }
-
     public function login(Request $request)
     {
         try {
@@ -155,10 +70,10 @@ class UserController extends Controller
             if ($validation->fails()) {
                 return ResponseHelper::clientError();
             }
-            
+
             if (auth()->attempt($input)) {
                 $user = Auth::user();
-                
+
                 if ($user->email_verified_at !== false) {
                     $token =  $user->createToken('quesionbanklaravelapi')->accessToken;
                     $rolesIds = UserRole::where('user_id', $user->id)
@@ -166,7 +81,7 @@ class UserController extends Controller
                         ->map(function ($role) {
                             return $role->role_id;
                         });
-                    
+
                     return [
                         "uid" => $user->id,
                         "user_type_id" => $user->owner_type,
@@ -213,21 +128,23 @@ class UserController extends Controller
     {
         try {
             $user = auth()->user();
-
             $owner = null;
             $enumReplacements = [
                 new EnumReplacement('gender_name', GenderEnum::class)
             ];
+            $columRemplacements = [
+                new ColumnReplacement('email', 'email', User::class)
+            ];
 
             if (intval($user->owner_type) === OwnerTypeEnum::GUEST->value) {
-                $attributes = ['name', 'email', 'phone', 'gender as gender_name', 'image_url'];
+                $attributes = ['name', 'user_id as email', 'phone', 'gender as gender_name', 'image_url'];
                 $owner = Guest::where('user_id', $user->id)->first($attributes);
             } elseif (intval($user->owner_type) === OwnerTypeEnum::STUDENT->value) {
-                $attributes = ['arabic_name', 'english_name', 'email', 'phone', 'birthdate', 'gender as gender_name', 'image_url'];
+                $attributes = ['arabic_name', 'english_name', 'user_id as email', 'phone', 'birthdate', 'gender as gender_name', 'image_url'];
                 $owner = Student::where('user_id', $user->id)->first($attributes);
             } else {
                 $attributes = [
-                    'arabic_name', 'english_name', 'email', 'phone', 'gender as gender_name', 'image_url', 'specialization',
+                    'arabic_name', 'english_name', 'user_id as email', 'phone', 'gender as gender_name', 'image_url', 'specialization',
                     'qualification as qualification_name', 'job_type as job_type_name'
                 ];
                 $owner = Employee::where('user_id', $user->id)->first($attributes);
@@ -236,7 +153,7 @@ class UserController extends Controller
             }
 
             $owner = ProcessDataHelper::enumsConvertIdToName($owner, $enumReplacements);
-
+            $owner = ProcessDataHelper::columnConvertIdToName($owner, $columRemplacements);
             $owner = NullHelper::filter($owner);
 
             return ResponseHelper::successWithData($owner);
@@ -244,7 +161,6 @@ class UserController extends Controller
             return ResponseHelper::serverError();
         }
     }
-
 
     public function changePassword(Request $request)
     {
@@ -286,7 +202,7 @@ class UserController extends Controller
             return ResponseHelper::serverError();
         }
     }
-    public function verifyAccountAfterReovery(Request $request)
+    public function verifyAccountAfterRecvery(Request $request)
     {
         try {
             $otp2 = $this->otp->validate($request->code);

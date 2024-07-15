@@ -11,8 +11,8 @@ enum UserStatusEnum: int {
 
     public function getValues(): array {
         return match ($this) {
-            self::INACTIVE => [0, 'INACTIVATED', ' غير نشط'],
-            self::ACTIVATED => [1, 'ACTIVATED', 'نشط'],
+            self::INACTIVE => [0, 'Unavailable', ' غير نشط'],
+            self::ACTIVATED => [1, 'Available', 'نشط'],
         };
     }
 

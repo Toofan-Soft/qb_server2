@@ -16,7 +16,7 @@ enum ExamDifficultyLevelEnum: int {
 
     public function getValues(): array {
         return match ($this) {
-            self::VERY_DIFFICULT => [0, 'Very difficult', ' صعب جدا'],
+            self::VERY_DIFFICULT => [0, 'Very Difficult', ' صعب جدا'],
             self::DIFFICULT => [1, 'Difficult', ' صعب'],
             self::MODERATE => [2, 'Moderate', ' متوسط'],
             self::EASY => [3, 'Easy', ' سهل'],

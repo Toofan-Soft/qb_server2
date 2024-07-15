@@ -16,7 +16,7 @@ enum JobTypeEnum: int {
         return match ($this) {
             self::EMPLOYEE => [0, 'Employee', 'موظف '],
             self::LECTURER => [1, 'Lecturer', 'محاضر'],
-            self::EMPLOYEE_LECTURE => [2, 'employee_lecture', 'موظف ومحاضر'],
+            self::EMPLOYEE_LECTURE => [2, 'Employee and Lecture', 'موظف ومحاضر'],
 
         };
     }

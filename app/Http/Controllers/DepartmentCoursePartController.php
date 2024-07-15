@@ -17,9 +17,9 @@ use Illuminate\Support\Facades\Gate;
 
 class DepartmentCoursePartController extends Controller
 {
-    public function addDeaprtmentCoursePart(Request $request)
+    public function addDepartmentCoursePart(Request $request)
     {
-        Gate::authorize('addDeaprtmentCoursePart', DepartmentCoursePartController::class);
+        Gate::authorize('addDepartmentCoursePart', DepartmentCoursePartController::class);
 
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();

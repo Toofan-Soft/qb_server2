@@ -12,8 +12,8 @@ enum QuestionTypeEnum: int {
 
     public function getValues(): array {
         return match ($this) {
-            self::TRUE_FALSE => [0, 'True_false', 'صح وخطأ'],
-            self::MULTIPLE_CHOICE => [1, 'Multiple_choice', 'اختيار متعدد'],
+            self::TRUE_FALSE => [0, 'True False', 'صح وخطأ'],
+            self::MULTIPLE_CHOICE => [1, 'Multiple Choice', 'اختيار متعدد'],
         };
     }
 
