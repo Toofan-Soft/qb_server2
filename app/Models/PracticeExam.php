@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\LanguageEnum;
 use App\Enums\ExamStateEnum;
 use App\Enums\ExamStatusEnum;
+use App\Helpers\DatetimeHelper;
 use App\Enums\ExamConductMethodEnum;
 use App\Enums\ExamDifficultyLevelEnum;
 use App\Enums\ExamProcedureMethodEnum;
@@ -39,6 +40,15 @@ class PracticeExam extends Model
         // 'status' =>ExamStatusEnum::class,
     ];
 
+    public function getDateTimeAttribute($value)
+    {
+        return DatetimeHelper::convertDateTimeToLong($value);
+    }
+
+    // public function setDateTimeAttribute($value)
+    // {
+    //     $this->attributes['datetime'] = DatetimeHelper::convertLongToDateTime($value);
+    // }
 
     public function user() : BelongsTo {
         return $this->BelongsTo(User::class);

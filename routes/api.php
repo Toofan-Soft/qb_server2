@@ -50,6 +50,7 @@ use App\Http\Controllers\CourseLecturerController;
 use App\Http\Controllers\QuestionChoiceController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\InitialDatabaseController;
+use App\Http\Controllers\TestDataAndTimeController;
 use App\Http\Controllers\DepartmentCourseController;
 use App\Http\Controllers\FavoriteQuestionController;
 use App\Http\Controllers\ProctorOnlinExamController;
@@ -64,6 +65,8 @@ use App\Http\Controllers\DepartmentCoursePartController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
+
+Route::post('datetime/test', [TestDataAndTimeController::class, 'test']);
 
 Route::post('user/register', [GuestController::class, 'addGuest']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);

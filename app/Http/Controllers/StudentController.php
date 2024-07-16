@@ -273,10 +273,12 @@ class StudentController extends Controller
         $attributes = ['academic_id', 'arabic_name', 'english_name', 'gender as gender_id', 'phone', 'birthdate', 'image_url'];
         try {
             $student = Student::findOrFail($request->id, $attributes);
-            $student = NullHelper::filter($student);
             $departmentLevelSemesterIds = $this->getStudentDepartmentLevelSemesterIds($request->id);
             $student['level_id'] = $departmentLevelSemesterIds->level_id;
             $student['semester_id'] = $departmentLevelSemesterIds->semester_id;
+
+            $student = NullHelper::filter($student);
+
             return ResponseHelper::successWithData($student);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

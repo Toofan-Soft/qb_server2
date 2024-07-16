@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Exception;
-use App\Models\Form;
-use App\Models\User;
 use App\Helpers\Param;
 use App\Models\Employee;
 use App\Models\Question;
@@ -206,19 +203,20 @@ class PaperExamController extends Controller
                 })
                 ->where('department_course_parts.id', '=', $request->department_course_part_id)
                 ->where('course_lecturers.lecturer_id', '=', $lecturer_id)
-                ->get();
-                // ->map(function ($exam) {
-                //     $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-                //     return $exam;
-                // });
+                ->get()
+                ->map(function ($exam) {
+                    $exam->datetime = DatetimeHelper::convertDateTimeToLong($exam->datetime);
+                    return $exam;
+                });
 
             if (!isset($request->type_id)) {
                 array_push($enumReplacements,  new EnumReplacement('type_name', ExamTypeEnum::class));
             }
-            $paperExams = NullHelper::filter($paperExams);
             $paperExams = ProcessDataHelper::enumsConvertIdToName($paperExams, $enumReplacements);
 
             $paperExams =  ExamHelper::getRealExamsScore($paperExams); // sum score of
+            
+            $paperExams = NullHelper::filter($paperExams);
 
             return ResponseHelper::successWithData($paperExams);
         } catch (\Exception $e) {
@@ -261,13 +259,15 @@ class PaperExamController extends Controller
                     return $query->where('real_exams.type', '=', $request->type_id);
                 })
                 ->where('course_lecturers.lecturer_id', '=', $lecturer_id)
-                ->get();
-                // ->map(function ($exam) {
-                //     $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-                //     return $exam;
-                // });
-            $paperExams = NullHelper::filter($paperExams);
+                ->get()
+                ->map(function ($exam) {
+                    $exam->datetime = DatetimeHelper::convertDateTimeToLong($exam->datetime);
+                    return $exam;
+                });
+
             $paperExams = ProcessDataHelper::enumsConvertIdToName($paperExams, $enumReplacements);
+
+            $paperExams = NullHelper::filter($paperExams);
 
             return ResponseHelper::successWithData($paperExams);
         } catch (\Exception $e) {
@@ -335,8 +335,6 @@ class PaperExamController extends Controller
             unset($realExam['course_lecturer_id']);
             unset($realExam['id']);
 
-            $realExam = NullHelper::filter($realExam);
-
             $realExam =
                 $realExam +
                 $coursePart->toArray() +
@@ -347,7 +345,7 @@ class PaperExamController extends Controller
 
             $realExam['questions_types'] = $questionTypes;
 
-            // $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
+            $realExam['datetime'] = DatetimeHelper::convertDateTimeToLong($realExam['datetime']);
 
             $realExam = NullHelper::filter($realExam);
 
@@ -373,7 +371,7 @@ class PaperExamController extends Controller
             unset($realExam['id']);
             $realExam = $realExam + $paperExam->toArray();
 
-            // $realExam['datetime'] = DatetimeHelper::convertTimestampToMilliseconds($realExam['datetime']);
+            $realExam['datetime'] = DatetimeHelper::convertDateTimeToLong($realExam['datetime']);
 
             $exam = NullHelper::filter($realExam);
 
@@ -516,11 +514,11 @@ class PaperExamController extends Controller
             if (intval($realExam->form_configuration_methode) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
                 $i = 0;
                 foreach ($examForms as $formId) {
-                    $formQuestions = $this->getFormQuestions($formId->id, $request->with_answer_mirror);
+                    $formQuestions = $this->getFormQuestions($formId->id, $request->with_answer_mirror, $realExam->language);
                     array_push($examFormsQuestions, [$formsNames[$i++], $formQuestions]);
                 }
             } else {
-                $formQuestions = $this->getFormQuestions($examForms->id, $request->with_answer_mirror);
+                $formQuestions = $this->getFormQuestions($examForms->id, $request->with_answer_mirror, $realExam->language);
                 array_push($examFormsQuestions, $formsNames);
                 array_push($examFormsQuestions, $formQuestions);
             }
@@ -563,9 +561,10 @@ class PaperExamController extends Controller
         }
     }
 
-    private function getFormQuestions($formId, bool $withAnsweredMirror)
+    private function getFormQuestions($formId, bool $withAnsweredMirror, $language)
     {        
         // return form questoin as [content, attachment, is_true, choices[content, attachment, is_true]]
+        $language = LanguageEnum::symbolOf($language);
         $questions = [];
 
         // $form = Form::findOrFail($formId);
@@ -577,9 +576,9 @@ class PaperExamController extends Controller
                 $question = $formQuestion->question()->first(['content', 'attachment as attachment_url']);
                 if ($formQuestion->combination_id) {
                     if ($withAnsweredMirror) {
-                        $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, true);
+                        $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, true, $language);
                     } else {
-                        $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
+                        $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false, $language);
                     }
                 } else {
                     if ($withAnsweredMirror) {

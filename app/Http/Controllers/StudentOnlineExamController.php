@@ -92,7 +92,7 @@ class StudentOnlineExamController extends Controller
                 // ->where('course_students.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
                 // ->where('course_students.academic_year', '=', date('Y')) // CURRENT YEAR
                 // ->where('course_lecturers.academic_year', '=', date('Y')) // CURRENT YEAR
-                ->select(
+                ->select([
                     LanguageHelper::getNameColumnName('colleges', 'college_name'),
                     // 'colleges.arabic_name as college_name',
                     LanguageHelper::getNameColumnName('departments', 'department_name'),
@@ -110,55 +110,59 @@ class StudentOnlineExamController extends Controller
                     DB::raw("(SELECT SUM(questions_count * question_score)
                             FROM public.real_exam_question_types
                             WHERE real_exam_id = real_exams.id) as total_score"),
-                    'real_exams.status'
-                )
+                    'online_exams.status'
+                ])
                 ->first();
             
-            $studentOnlinExam = StudentOnlineExam::where('online_exam_id', $request->id)->first();
+            if ($exam) {
+                $studentOnlinExam = StudentOnlineExam::where('online_exam_id', $request->id)->first();
 
-            if ($exam->datetime <= now() &&
-                intval($exam->status) === ExamStatusEnum::ACTIVE->value
-            ) {
-                if ($studentOnlinExam) {
-                    $takingStatus = intval($studentOnlinExam->status);
-    
-                    if ($takingStatus === StudentOnlineExamStatusEnum::ACTIVE->value) {
-                        $exam->is_takable = true;
-                    } elseif ($takingStatus === StudentOnlineExamStatusEnum::SUSPENDED->value) {
-                        $exam->is_suspended = true;
-                    } elseif ($takingStatus === StudentOnlineExamStatusEnum::CANCELED->value) {
-                        $exam->is_canceled = true;
-                    } elseif ($takingStatus === StudentOnlineExamStatusEnum::COMPLETE->value) {
-                        // student finish exam..
-                        $exam->is_complete = true;
+                if ($exam->datetime <= now() &&
+                    intval($exam->status) === ExamStatusEnum::ACTIVE->value
+                ) {
+                    if ($studentOnlinExam) {
+                        $takingStatus = intval($studentOnlinExam->status);
+        
+                        if ($takingStatus === StudentOnlineExamStatusEnum::ACTIVE->value) {
+                            $exam->is_takable = true;
+                        } elseif ($takingStatus === StudentOnlineExamStatusEnum::SUSPENDED->value) {
+                            $exam->is_suspended = true;
+                        } elseif ($takingStatus === StudentOnlineExamStatusEnum::CANCELED->value) {
+                            $exam->is_canceled = true;
+                        } elseif ($takingStatus === StudentOnlineExamStatusEnum::COMPLETE->value) {
+                            // student finish exam..
+                            $exam->is_complete = true;
+                        }
+                    } else {
+                        // default..
+                        $exam->is_takable = false;
                     }
-                } else {
-                    // default..
-                    $exam->is_takable = false;
+                } elseif (intval($exam->status) === ExamStatusEnum::COMPLETE->value) {
+                    // exam complete..
+                    $exam->is_complete = true;
                 }
-            } elseif (intval($exam->status) === ExamStatusEnum::COMPLETE->value) {
-                // exam complete..
-                $exam->is_complete = true;
+    
+                unset($exam->status);
+    
+                $exam->datetime = DatetimeHelper::convertDateTimeToLong($exam->datetime);
+    
+                $exam = ProcessDataHelper::enumsConvertIdToName(
+                    $exam,
+                    [
+                        new EnumReplacement('level_name', LevelsEnum::class),
+                        new EnumReplacement('semester_name', SemesterEnum::class),
+                        new EnumReplacement('course_part_name', CoursePartsEnum::class),
+                        new EnumReplacement('language_name', LanguageEnum::class),
+                        new EnumReplacement('type_name', ExamTypeEnum::class)
+                    ]
+                );
+    
+                $exam = NullHelper::filter($exam);
+    
+                return ResponseHelper::successWithData($exam);
+            } else {
+                return ResponseHelper::clientError();
             }
-
-            unset($exam['status']);
-
-            // $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-
-            $exam = ProcessDataHelper::enumsConvertIdToName(
-                $exam,
-                [
-                    new EnumReplacement('level_name', LevelsEnum::class),
-                    new EnumReplacement('semester_name', SemesterEnum::class),
-                    new EnumReplacement('course_part_name', CoursePartsEnum::class),
-                    new EnumReplacement('language_name', LanguageEnum::class),
-                    new EnumReplacement('type_name', ExamTypeEnum::class)
-                ]
-            );
-
-            $exam = NullHelper::filter($exam);
-
-            return ResponseHelper::successWithData($exam);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -245,8 +249,7 @@ class StudentOnlineExamController extends Controller
     {
         Gate::authorize('retrieveOnlineExamQuestions', StudentOnlineExamController::class);
         try {
-            $exam = OnlineExam::findOrFail($request->id)
-                ->first(['datetime', 'status']);
+            $exam = OnlineExam::findOrFail($request->id);
             
             if ($exam->datetime <= now() &&
                 intval($exam->status) === ExamStatusEnum::ACTIVE->value
@@ -258,12 +261,16 @@ class StudentOnlineExamController extends Controller
                     ->where('student_id', $studentId)
                     ->first(['status', 'form_id']);
                 
-                if ($studentOnlineExam->status === StudentOnlineExamStatusEnum::ACTIVE->value) {
-                    $questions = $this->getFormQuestions($studentOnlineExam->form_id);
-
-                    $questions = NullHelper::filter($questions);
-                    
-                    return ResponseHelper::successWithData($questions);        
+                if ($studentOnlineExam) {
+                    if ($studentOnlineExam->status === StudentOnlineExamStatusEnum::ACTIVE->value) {
+                        $questions = $this->getFormQuestions($studentOnlineExam->form_id);
+    
+                        $questions = NullHelper::filter($questions);
+                        
+                        return ResponseHelper::successWithData($questions);        
+                    }
+                } else {
+                    return ResponseHelper::clientError();
                 }
             }
 
@@ -287,14 +294,16 @@ class StudentOnlineExamController extends Controller
         $questions = [];
         try {
             $form = Form::findOrFail($formId);
-
+            $realExam = RealExam::findOrFail($form->real_exam_id);
+            $language = LanguageEnum::symbolOf($realExam->language);
+    
             $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
 
             foreach ($formQuestions as $formQuestion) {
                 $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
                 if ($formQuestion->combination_id) {
                     // $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
-                    $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, true, false);
+                    $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, true, false, $language);
                 }
                 array_push($questions, $question);
             }
@@ -550,11 +559,11 @@ class StudentOnlineExamController extends Controller
                     'c.arabic_name as course_name',
                     'cp.part_id as course_part_name'
                 )
-                ->get();
-            // ->map(function ($exam) {
-            //     $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-            //     return $exam;
-            // });
+                ->get()
+                ->map(function ($exam) {
+                    $exam->datetime = DatetimeHelper::convertDateTimeToLong($exam->datetime);
+                    return $exam;
+                });
 
             $exams = ProcessDataHelper::enumsConvertIdToName($exams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
 

@@ -174,7 +174,11 @@ class PracticeExamController extends Controller
                 })
                 ->where('practice_exams.department_course_part_id', '=', $request->department_course_part_id)
                 ->where('practice_exams.user_id', '=', $userId)
-                ->get();
+                ->get()
+                ->map(function ($exam) {
+                    $exam->datetime = DatetimeHelper::convertDateTimeToLong($exam->datetime);
+                    return $exam;
+                });
 
             $enumReplacements = [
                 new EnumReplacement('course_part_name', CoursePartsEnum::class),
@@ -239,7 +243,11 @@ class PracticeExamController extends Controller
                     return  $query->where('practice_exams.department_course_part_id', '=', $request->department_course_part_id);
                 })
                 ->where('practice_exams.user_id', '=', $userId)
-                ->get();
+                ->get()
+                ->map(function ($exam) {
+                    $exam->datetime = DatetimeHelper::convertDateTimeToLong($exam->datetime);
+                    return $exam;
+                });
 
 
             $enumReplacements = [
@@ -280,7 +288,9 @@ class PracticeExamController extends Controller
 
             $is_complete = (intval($practiceExam->status) === PracticeExamStatusEnum::COMPLETE->value) ? true : false;
 
-            $questions = $this->getQuestions($request->exam_id, $is_complete);
+            $questions = $this->getQuestions($request->exam_id, $is_complete, $practiceExam->language);
+
+            $questions = NullHelper::filter($questions);
 
             return ResponseHelper::successWithData($questions);
         } catch (\Exception $e) {
@@ -288,9 +298,10 @@ class PracticeExamController extends Controller
         }
     }
 
-    private function getQuestions($examId, $withAnswer = false)
+    private function getQuestions($examId, $withAnswer = false, $language)
     {
         // return questoin as [content, attachment, is_true, choices[content, attachment, is_true]]
+        $language = LanguageEnum::symbolOf($language);
         $questions = [];
 
         try {
@@ -302,9 +313,9 @@ class PracticeExamController extends Controller
 
                 if ($examQuestion->combination_id) {
                     if ($withAnswer) {
-                        $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, true);
+                        $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, true, $language);
                     } else {
-                        $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, false);
+                        $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, false, $language);
                     }
 
                     $question->choices = collect($question->choices)->map(function ($choice) use ($answer) {
@@ -313,7 +324,7 @@ class PracticeExamController extends Controller
                         }
 
                         return $choice;
-                    });
+                    })->toArray();
                 } else {
                     if ($withAnswer) {
                         $trueFalseQuestion = TrueFalseQuestion::findOrFail($examQuestion->question_id)->first(['answer']);
@@ -459,7 +470,8 @@ class PracticeExamController extends Controller
             $practiceExamQuestion = PracticeExamQuestion::where('practice_exam_id', $request->exam_id)
                 ->where('question_id', $request->question_id)
                 ->update([
-                    'answer' =>  $request->is_true,
+                    'answer' =>  $answerId,
+                    // 'answer' =>  $request->is_true,
                     // 'answer_duration' => $request->answer_duration ?? null,
                 ]);
 

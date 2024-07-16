@@ -44,6 +44,7 @@ class ProctorOnlinExamController extends Controller
 
         try {
             $proctor = Employee::where('user_id', auth()->user()->id)->first();
+            // return $proctor;
 
             $onlineExams = DB::table('online_exams')
                 ->join('real_exams', 'online_exams.id', '=', 'real_exams.id')
@@ -60,11 +61,11 @@ class ProctorOnlinExamController extends Controller
                 )
                 ->where('online_exams.proctor_id', '=', $proctor->id)
                 ->where('online_exams.status', '=', ExamStatusEnum::ACTIVE->value)
-                ->get();
-            // ->map(function ($exam) {
-            //     // $exam->datetime = DatetimeHelper::convertTimestampToMilliseconds($exam->datetime);
-            //     return $exam;
-            // });
+                ->get()
+                ->map(function ($exam) {
+                    $exam->datetime = DatetimeHelper::convertDateTimeToLong($exam->datetime);
+                    return $exam;
+                });
 
             $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
 
@@ -95,12 +96,12 @@ class ProctorOnlinExamController extends Controller
             $realExam = ExamHelper::getRealExamsScore($realExam);
 
             $onlineExamStatus = OnlineExam::findOrFail($request->id)
-                ->first(['status']);
+                ->first(['status'])['status'];
 
             if (intval($onlineExamStatus) === ExamStatusEnum::COMPLETE->value) {
                 $realExam->is_complete = true;
             } else {
-                $realExam->is_takable = $realExam->datetime <= now();
+                $realExam->is_takable = DatetimeHelper::convertLongToDateTime($realExam->datetime) <= now();
             }
 
             $courselecturer = $realExam->course_lecturer()->first();
@@ -142,6 +143,8 @@ class ProctorOnlinExamController extends Controller
                 $college->toArray() +
                 $course->toArray();
 
+            $realExam['datetime'] = DatetimeHelper::convertDateTimeToLong($realExam['datetime']);
+
             $realExam = NullHelper::filter($realExam);
 
             return ResponseHelper::successWithData($realExam);
@@ -172,6 +175,8 @@ class ProctorOnlinExamController extends Controller
                 ->where('course_students.academic_year', '=', date('Y')) // CURRENT YEAR
                 // ->where('course_lecturers.academic_year', '=', date('Y')) // CURRENT YEAR
                 ->get();
+
+            return $results;
 
             // $results->transform(function ($item) use ($request) {
             //     $soe = StudentOnlineExam::where('student_id', $item->id)

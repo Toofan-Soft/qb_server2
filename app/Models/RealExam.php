@@ -40,11 +40,12 @@ class RealExam extends Model
         // 'datetime' => 'datetime',
     ];
 
-    // public function getDateTimeAttribute($value)
-    // {
-    //     // return strtotime($value); // previous (NSR)
-    //     return date('Y-m-d H:i:s', strtotime($value)); // new (M7D)
-    // }
+    public function getDateTimeAttribute($value)
+    {
+        // return strtotime($value); // previous (NSR)
+        // return date('Y-m-d H:i:s', strtotime($value)); // new (M7D)
+        return DatetimeHelper::convertDateTimeToLong($value);
+    }
 
     // previous (NSR)
     // public function setDateTimeAttribute($value)
@@ -52,11 +53,12 @@ class RealExam extends Model
     //     $this->attributes['datetime'] = date('Y-m-d H:i:s', $value);
     // }
 
-    // new (M7D)
-    // public function setDateTimeAttribute($value)
-    // {
-    //     $this->attributes['datetime'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
-    // }
+    public function setDateTimeAttribute($value)
+    {
+        // $this->attributes['datetime'] = date('Y-m-d H:i:s', $value); // previous (NSR)
+        // $this->attributes['datetime'] = DatetimeHelper::convertMillisecondsToTimestamp($value); // new (M7D)
+        $this->attributes['datetime'] = DatetimeHelper::convertLongToDateTime($value);
+    }
 
     public function course_lecturer() : BelongsTo {
         return $this->BelongsTo(CourseLecturer::class);

@@ -60,16 +60,16 @@ enum RoleEnum: int
     public static function getOwnerRolesWithMandatory(int $ownerTypeId, int $jobTypeId = null): array
     {
         $roles = match ($ownerTypeId) {
-            OwnerTypeEnum::GUEST->value => [
+            OwnerTypeEnum::GUEST->value => [[
                 'id' => RoleEnum::GUEST->value,
                 'name' => EnumTraits::getNameByNumber(RoleEnum::GUEST->value, RoleEnum::class, LanguageHelper::getEnumLanguageName(), LanguageHelper::getEnumLanguageName()),
                 'is_mandatory' => true
-            ],
-            OwnerTypeEnum::STUDENT->value => [
+            ]],
+            OwnerTypeEnum::STUDENT->value => [[
                 'id' => RoleEnum::STUDENT->value,
                 'name' => EnumTraits::getNameByNumber(RoleEnum::STUDENT->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
                 'is_mandatory' => true
-            ],
+            ]],
             OwnerTypeEnum::EMPLOYEE->value => match ($jobTypeId) {
                 JobTypeEnum::LECTURER->value => [
                     [

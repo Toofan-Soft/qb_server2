@@ -13,8 +13,8 @@ class PracticeExamPolicy
         RoleEnum::LECTURER,
         RoleEnum::QUESTION_ENTRY,
         RoleEnum::QUESTION_REVIEWER,
-        RoleEnum::DATA_ENTRY,
         RoleEnum::SYSTEM_ADMINISTRATOR,
+        RoleEnum::DATA_ENTRY,
         RoleEnum::PROCTOR
 
     ];
@@ -29,15 +29,15 @@ class PracticeExamPolicy
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
-    public function finishPractiseExam(): bool
+    public function finishPracticeExam(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    public function savePractiseExamQuestionAnswer(): bool
+    public function savePracticeExamQuestionAnswer(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    public function suspendPractiseExam(): bool
+    public function suspendPracticeExam(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
@@ -45,7 +45,7 @@ class PracticeExamPolicy
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    public function retrievePractiseExam(): bool
+    public function retrievePracticeExam(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
@@ -53,7 +53,7 @@ class PracticeExamPolicy
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    public function retrievePractiseExamsResult(): bool
+    public function retrievePracticeExamsResult(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
@@ -61,11 +61,11 @@ class PracticeExamPolicy
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    public function retrievePractiseExamsAndroid(): bool
+    public function retrievePracticeExamsAndroid(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
-    public function retrievePractiseExamsQuestions(): bool
+    public function retrievePracticeExamQuestions(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }

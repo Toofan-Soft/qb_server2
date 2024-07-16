@@ -339,6 +339,8 @@ class ExamHelper
     {
         $questions = [];
         $form = Form::findOrFail($formId);
+        $realExam = RealExam::findOrFail($form->real_exam_id);
+        $language = LanguageEnum::symbolOf($realExam->language);
 
         $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
 
@@ -348,34 +350,39 @@ class ExamHelper
             $topic = $question->topic()->first([LanguageHelper::getTitleColumnName(null, null), 'chapter_id']);
 
             $chapter_title = $topic->chapter()->first()[LanguageHelper::getTitleColumnName(null, null)];
-            $topic_title = $topic->LanguageHelper::getTitleColumnName(null, null);
+            $topic_title = $topic[LanguageHelper::getTitleColumnName(null, null)];
 
             $question->chapter_title = $chapter_title;
             $question->topic_title = $topic_title;
 
             unset($question['topic_id']);
 
-            $question = NullHelper::filter($question);
+            // $question = NullHelper::filter($question);
 
             if ($formQuestion->combination_id) {
                 if ($withAnswer) {
-                    $question['choices'] = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, true);
+                    // $question['choices'] = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, true, $language);
+                    $question->choices = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, true, $language);
                 } else {
-                    $question['choices'] = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, false);
+                    // $question['choices'] = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, false, $language);
+                    $question->choices = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, false, $language);
                 }
             } else {
                 if ($withAnswer) {
                     $trueFalseQuestion = TrueFalseQuestion::findOrFail($formQuestion->question_id)->first(['answer']);
                     if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
-                        $question['is_true'] = true;
+                        // $question['is_true'] = true;
+                        $question->is_true = true;
                     } else {
-                        $question['is_true'] = false;
+                        // $question['is_true'] = false;
+                        $question->is_true = false;
                     }
                 }
             }
 
             if (!$withQuestionId) {
-                unset($question['id']);
+                // unset($question['id']);
+                unset($question->id);
             }
 
             array_push($questions, $question);
@@ -384,7 +391,8 @@ class ExamHelper
         $groupedQuestions = [];
 
         foreach ($questions as $question) {
-            $typeName = $question['type_name'];
+            // $typeName = $question['type_name'];
+            $typeName = $question->type_name;
             if (!isset($groupedQuestions[$typeName])) {
                 $groupedQuestions[$typeName] = [
                     'type_name' => $typeName,
@@ -392,7 +400,8 @@ class ExamHelper
                 ];
             }
 
-            unset($question['type_name']);
+            // unset($question['type_name']);
+            unset($question->type_name);
 
             $groupedQuestions[$typeName]['questions'][] = $question;
         }
@@ -406,11 +415,11 @@ class ExamHelper
             ]
         );
 
+        $groupedQuestions = NullHelper::filter($groupedQuestions);
+
         return $groupedQuestions;
     }
-
-
-
+    
     public static function retrieveRealExamFormQuestions($formId) //////////////////////*********** More condition needed
     {
         $form = Form::findOrFail($formId);
@@ -584,7 +593,8 @@ class ExamHelper
      ***** return: 
      * choices [id, content, attachment, is_true]
      */
-    public static function retrieveCombinationChoices($qeustionId, $combinationId, bool $withChoiceId, bool $withAnswer)
+    // public static function retrieveCombinationChoices($qeustionId, $combinationId, bool $withChoiceId, bool $withAnswer)
+    public static function retrieveCombinationChoices($qeustionId, $combinationId, bool $withChoiceId, bool $withAnswer, string $language = 'ar')
     {
         $result = null;
         $choices = self::uncombinateCombination($qeustionId, $combinationId);
@@ -610,16 +620,16 @@ class ExamHelper
             $temp = [];
 
             if (property_exists($choice, 'ids')) {
-                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
+                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class, $language);
 
                 if ($withChoiceId) {
                     $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
                 }
             } else {
                 if ($choice->id == -1) {
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class, $language);
                 } elseif ($choice->id == -2) {
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class, $language);
                 } else {
                     $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
                 }

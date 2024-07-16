@@ -17,5 +17,13 @@ enum LanguageEnum: int {
         };
     }
 
-
+    public static function symbolOf(int $value) {
+        if ($value === LanguageEnum::ARABIC->value) {
+            return 'ar';
+        } elseif ($value === LanguageEnum::ENGLISH->value) {
+            return 'en';
+        } else {
+            return null;
+        }
+    }
 }

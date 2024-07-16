@@ -169,7 +169,6 @@ class UserManagementController extends Controller
                 unset($ownerData['job_type']);
             } 
 
-            $ownerData = NullHelper::filter($ownerData);
             $currentUserRoles = $userData->user_roles()->pluck('role_id')->toArray();
             $resultRoles = [];
             foreach ($userRoles as $userRole) {
@@ -187,10 +186,15 @@ class UserManagementController extends Controller
                 new EnumReplacement('status_name', UserStatusEnum::class)
             ]);
             unset($userData['id']);
-            $userData = $userData + $ownerData->toArray();
+
+            $userData = $userData->toArray() + $ownerData->first()->toArray();
+            // $userData = $userData + $ownerData->toArray();
             // $userData = $userData->toArray() + $ownerData->toArray();
             // array_merge($userData->toArray(), $ownerData->toArray());
             $userData['roles'] = $resultRoles;
+
+            $userData = NullHelper::filter($userData);
+            
             return ResponseHelper::successWithData($userData);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -201,13 +205,13 @@ class UserManagementController extends Controller
     {
         Gate::authorize('retrieveOwnerRoles', UserManagementController::class);
 
-        try {
+        // try {
             $ownerRoles = RoleEnum::getOwnerRolesWithMandatory($request->owner_type_id, $request->job_type_id);
             return ResponseHelper::successWithData($ownerRoles);
             // $attributes = ['id, name, is_mandatory'];
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+            // return ResponseHelper::serverError();
+        // }
     }
 
 
