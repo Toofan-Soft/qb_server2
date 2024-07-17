@@ -66,8 +66,6 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
 
-Route::post('datetime/test', [TestDataAndTimeController::class, 'test']);
-
 Route::post('user/register', [GuestController::class, 'addGuest']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);
 Route::post('user/verify-account-after-recovery', [UserController::class, 'verifyAccountAfterRecvery']);
