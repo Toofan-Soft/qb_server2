@@ -101,7 +101,7 @@ class ProctorOnlinExamController extends Controller
             if (intval($onlineExamStatus) === ExamStatusEnum::COMPLETE->value) {
                 $realExam->is_complete = true;
             } else {
-                $realExam->is_takable = DatetimeHelper::convertLongToDateTime($realExam->datetime) <= now();
+                $realExam->is_takable = DatetimeHelper::convertLongToDateTime($realExam->datetime) <= DatetimeHelper::now();
             }
 
             $courselecturer = $realExam->course_lecturer()->first();
@@ -169,14 +169,12 @@ class ProctorOnlinExamController extends Controller
                 ->where('real_exams.id', $request->exam_id)
                 // ->where('real_exams.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
                 // ->where('real_exams.datetime', '>', now()) // Not-Taken
-                ->where('real_exams.datetime', '<=', now()) // ACTIVE-NOW
+                ->where('real_exams.datetime', '<=', DatetimeHelper::now()) // ACTIVE-NOW
                 ->where('online_exams.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
                 ->where('course_students.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
                 ->where('course_students.academic_year', '=', date('Y')) // CURRENT YEAR
                 // ->where('course_lecturers.academic_year', '=', date('Y')) // CURRENT YEAR
                 ->get();
-
-            return $results;
 
             // $results->transform(function ($item) use ($request) {
             //     $soe = StudentOnlineExam::where('student_id', $item->id)
@@ -270,7 +268,7 @@ class ProctorOnlinExamController extends Controller
             ->where('res.id', $request->exam_id)
             // ->where('res.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
             // ->where('res.datetime', '>', now()) // Not-Taken
-            ->where('res.datetime', '<=', now()) // ACTIVE-NOW
+            ->where('res.datetime', '<=', DatetimeHelper::now()) // ACTIVE-NOW
             ->where('oes.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
             ->where('cs.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
             ->where('cs.academic_year', '=', date('Y')) // CURRENT YEAR
@@ -408,7 +406,7 @@ class ProctorOnlinExamController extends Controller
             $studentOnlineExam = StudentOnlineExam::create([
                 'online_exam_id' => $request->exam_id,
                 'student_id' => $request->student_id,
-                'start_datetime' => now()->getTimestamp(),
+                'start_datetime' => DatetimeHelper::now(),
                 'status' => StudentOnlineExamStatusEnum::ACTIVE->value,
                 'form_id' => $formId
             ]);
@@ -535,7 +533,7 @@ class ProctorOnlinExamController extends Controller
             } else {
                 $studentOnlineExam->update([
                     'status' => StudentOnlineExamStatusEnum::CANCELED->value,
-                    'end_datetime' => now()->getTimestamp(),
+                    'end_datetime' => DatetimeHelper::now(),
                 ]);
                 // StudentOnlineExam::where('online_exam_id', $request->exam_id)
                 //     ->where('student_id', $request->student_id)

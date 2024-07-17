@@ -54,6 +54,18 @@ class PaperExamController extends Controller
         }
 
         try {
+            $formConfigurationMethodId = FormConfigurationMethodEnum::SIMILAR_FORMS->value;
+            $formNameMethodId = FormNameMethodEnum::DECIMAL_NUMBERING->value;
+
+            if ($request->forms_count > 1) {
+                if ($request->has("form_configuration_method_id") && $request->has("form_name_method_id")) {
+                    $formConfigurationMethodId = $request->form_configuration_method_id;
+                    $formNameMethodId = $request->form_name_method_id;
+                } else {
+                    return ResponseHelper::clientError();
+                }
+            }
+
             $algorithmData = $this->getAlgorithmData($request);
 
             $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
@@ -76,8 +88,8 @@ class PaperExamController extends Controller
                     'note' => $request->special_note ?? null,
                     'difficulty_level' => $request->difficulty_level_id,
                     'forms_count' => $request->forms_count,
-                    'form_configuration_method' => $request->form_configuration_method_id,
-                    'form_name_method' => $request->form_name_method_id,
+                    'form_configuration_method' => $formConfigurationMethodId,
+                    'form_name_method' => $formNameMethodId,
                     'exam_type' => RealExamTypeEnum::PAPER->value,
                 ]);
 
@@ -143,9 +155,15 @@ class PaperExamController extends Controller
                 ]
             );
             DB::beginTransaction();
-            RealExam::findOrFail($request->id)
-                ->update($params);
 
+            $realExam = RealExam::findOrFail($request->id);
+
+            if (isset($params['form_name_method']) && $realExam->forms_count === 1) {
+                return ResponseHelper::clientError();
+            }
+
+            $realExam->update($params);
+            
             $params = ParamHelper::getParams(
                 $request,
                 [
@@ -291,10 +309,18 @@ class PaperExamController extends Controller
             $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
                 new EnumReplacement('language_name', LanguageEnum::class),
                 new EnumReplacement('difficulty_level_name', ExamDifficultyLevelEnum::class),
-                new EnumReplacement('form_configuration_method_name', FormConfigurationMethodEnum::class),
-                new EnumReplacement('form_name_method_name', FormNameMethodEnum::class),
                 new EnumReplacement('type_name', ExamTypeEnum::class),
             ]);
+
+            if ($realExam->forms_count > 1) {
+                $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
+                    new EnumReplacement('form_configuration_method_name', FormConfigurationMethodEnum::class),
+                    new EnumReplacement('form_name_method_name', FormNameMethodEnum::class),
+                ]);    
+            } else {
+                unset($realExam->form_configuration_method_name);
+                unset($realExam->form_name_method_name);
+            }
 
             $courseLecturer = $realExam->course_lecturer()->first();
             $departmentCoursePart = $courseLecturer->department_course_part()->first();
@@ -361,9 +387,14 @@ class PaperExamController extends Controller
 
         try {
             $realExam = RealExam::findOrFail($request->id, [
-                'id', 'form_name_method as form_name_method_id',
+                'id', 'forms_count', 'form_name_method as form_name_method_id',
                 'datetime', 'type as type_id', 'note as special_note'
             ]);
+
+            if ($realExam->forms_count === 1) {
+                unset($realExam->form_name_method_id);
+            }
+            unset($realExam->forms_count);
 
             $paperExam =  PaperExam::where('id', $realExam->id)->first(['course_lecturer_name as lecturer_name']);
             $realExam = $realExam->toArray();
@@ -698,8 +729,8 @@ class PaperExamController extends Controller
             'type_id' => ['required', new Enum(ExamTypeEnum::class)],
             'special_note' => 'nullable|string',
             'forms_count' => 'required|integer',
-            'form_configuration_method_id' => ['required', new Enum(FormConfigurationMethodEnum::class)],
-            'form_name_method_id' => ['required', new Enum(FormNameMethodEnum::class)],
+            'form_configuration_method_id' => ['nullable', new Enum(FormConfigurationMethodEnum::class)],
+            'form_name_method_id' => ['nullable', new Enum(FormNameMethodEnum::class)],
 
             // real_exam_question_types
             'questions_types' => 'required|array|min:1',

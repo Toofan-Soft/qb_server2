@@ -193,14 +193,14 @@ class StudentController extends Controller
         try {
             // $student = Student::findOrFail($request->id);
             $student = Student::where('id', $request->id)
-            ->firstOrFail();
+                ->firstOrFail();
             
             $studentData = [
                 'academic_id' => $student->academic_id,
                 'arabic_name' => $student->arabic_name,
                 'english_name' => $student->english_name,
                 'gender_name' => $student->gender,
-                'email' => $student->user()->first()->email,
+                // 'email' => $student->user()->first()->email,
                 'user_id' => $student->user_id,
                 'image_url' => $student->image_url,
                 'birthdate' => $student->birthdate,
@@ -208,7 +208,10 @@ class StudentController extends Controller
                 'department_name' => $student->course_students()->first()->department_course()->first()->department()->first()[LanguageHelper::getNameColumnName(null, null)],
                 'college_name' => $student->course_students()->first()->department_course()->first()->department()->first()->college()->first()[LanguageHelper::getNameColumnName(null, null)]
             ];
-            $studentData = NullHelper::filter($studentData);
+
+            $studentData['email'] = $student->user_id ? $student->user()->first()->email : null;
+
+
             $departmentLevelSemesterIds = $this->getStudentDepartmentLevelSemesterIds($request->id);
             $studentData['level_name'] = $departmentLevelSemesterIds->level_id;
             $studentData['semester_name'] = $departmentLevelSemesterIds->semester_id;
@@ -221,6 +224,8 @@ class StudentController extends Controller
             ];
 
             $studentData = ProcessDataHelper::enumsConvertIdToName((object) $studentData, $enumReplacements);
+
+            $studentData = NullHelper::filter($studentData);
 
             return ResponseHelper::successWithData($studentData);
         } catch (\Exception $e) {

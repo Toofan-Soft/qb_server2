@@ -31,6 +31,7 @@ use App\Enums\ExamDifficultyLevelEnum;
 use App\Enums\OnlineExamTakingStatusEnum;
 use App\Enums\FormConfigurationMethodEnum;
 use App\Enums\LevelsCountEnum;
+use App\Enums\PracticeExamStatusEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
 use App\Helpers\LanguageHelper;
 
@@ -153,6 +154,11 @@ class EnumsController extends Controller
     public function  retrieveOnlineExamStatus()
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(ExamStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+    }
+
+    public function retrievePracticeExamStatus()
+    {
+        return ResponseHelper::successWithData(EnumTraits::getEnum(PracticeExamStatusEnum::class, LanguageHelper::getEnumLanguageName()));
     }
 
     public function  retrieveStudentOnlineExamStatus()

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use DateTime;
+use DateTimeZone;
 use App\Models\Form;
 use App\Models\User;
 use App\Models\Topic;
@@ -51,7 +53,20 @@ class LecturerOnlineExamController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError();
         }
+
         try {
+            $formConfigurationMethodId = FormConfigurationMethodEnum::SIMILAR_FORMS->value;
+            $formNameMethodId = FormNameMethodEnum::DECIMAL_NUMBERING->value;
+
+            if ($request->forms_count > 1) {
+                if ($request->has("form_configuration_method_id") && $request->has("form_name_method_id")) {
+                    $formConfigurationMethodId = $request->form_configuration_method_id;
+                    $formNameMethodId = $request->form_name_method_id;
+                } else {
+                    return ResponseHelper::clientError();
+                }
+            }
+
             $algorithmData = $this->getAlgorithmData($request);
             
             $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
@@ -73,8 +88,8 @@ class LecturerOnlineExamController extends Controller
                     'note' => $request->special_note ?? null,
                     'difficulty_level' => $request->difficulty_level_id,
                     'forms_count' => $request->forms_count,
-                    'form_configuration_method' => $request->form_configuration_method_id,
-                    'form_name_method' => $request->form_name_method_id,
+                    'form_configuration_method' => $formConfigurationMethodId,
+                    'form_name_method' => $formNameMethodId,
                     'exam_type' => RealExamTypeEnum::ONLINE->value,
                     // 'course_lecturer_id' => $courseLecturer->id,
                 ]);
@@ -151,9 +166,16 @@ class LecturerOnlineExamController extends Controller
                     new Param('form_name_method_id', 'form_name_method')
                 ]
             );
+
             DB::beginTransaction();
-            RealExam::findOrFail($request->id)
-                ->update($params);
+
+            $realExam = RealExam::findOrFail($request->id);
+
+            if (isset($params['form_name_method']) && $realExam->forms_count === 1) {
+                return ResponseHelper::clientError();
+            }
+
+            $realExam->update($params);
 
             $params = ParamHelper::getParams(
                 $request,
@@ -324,10 +346,18 @@ class LecturerOnlineExamController extends Controller
             $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
                 new EnumReplacement('language_name', LanguageEnum::class),
                 new EnumReplacement('difficulty_level_name', ExamDifficultyLevelEnum::class),
-                new EnumReplacement('form_configuration_method_name', FormConfigurationMethodEnum::class),
-                new EnumReplacement('form_name_method_name', FormNameMethodEnum::class),
                 new EnumReplacement('type_name', ExamTypeEnum::class),
             ]);
+
+            if ($realExam->forms_count > 1) {
+                $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
+                    new EnumReplacement('form_configuration_method_name', FormConfigurationMethodEnum::class),
+                    new EnumReplacement('form_name_method_name', FormNameMethodEnum::class),
+                ]);    
+            } else {
+                unset($realExam->form_configuration_method_name);
+                unset($realExam->form_name_method_name);
+            }
 
             // $onlineExam = OnlineExam::where('id', $realExam->id)->first(['conduct_method as conduct_method_name', 'status as status_name', 'proctor_id as proctor_name', 'exam_datetime_notification_datetime as datetime_notification_datetime', 'result_notification_datetime']);
             $onlineExam = OnlineExam::where('id', $realExam->id)->first([
@@ -344,9 +374,10 @@ class LecturerOnlineExamController extends Controller
 
             $onlineExam->is_suspended = intval($onlineExam->status_name) === ExamStatusEnum::SUSPENDED->value;
             $onlineExam->is_complete = intval($onlineExam->status_name) === ExamStatusEnum::COMPLETE->value;
-            $onlineExam->is_editable = DatetimeHelper::convertLongToDateTime($realExam->datetime) > now();
+            
+            $onlineExam->is_editable = DatetimeHelper::convertLongToDateTime($realExam->datetime) > DatetimeHelper::now();
             // $onlineExam->is_deletable = $realExam->datetime > now();
-
+            
             $onlineExam = ProcessDataHelper::enumsConvertIdToName($onlineExam, [
                 new EnumReplacement('status_name', ExamStatusEnum::class),
                 new EnumReplacement('conduct_method_name', ExamStatusEnum::class),
@@ -443,6 +474,7 @@ class LecturerOnlineExamController extends Controller
                 ->join('online_exams', 'real_exams.id', '=', 'online_exams.id')
                 ->where('real_exams.id', $request->id)
                 ->select(
+                    'real_exams.forms_count',
                     'real_exams.form_name_method as form_name_method_id',
                     'real_exams.datetime',
                     'real_exams.duration',
@@ -454,6 +486,11 @@ class LecturerOnlineExamController extends Controller
                     'online_exams.result_notification_datetime'
                 )
                 ->first();
+
+            if ($exam->forms_count === 1) {
+                unset($exam->form_name_method_id);
+            }
+            unset($exam->forms_count);
 
             $exam->datetime = DatetimeHelper::convertDateTimeToLong($exam->datetime);
             $exam->datetime_notification_datetime = DatetimeHelper::convertDateTimeToLong($exam->datetime_notification_datetime);
@@ -511,12 +548,12 @@ class LecturerOnlineExamController extends Controller
     {
         Gate::authorize('retrieveOnlineExamFormQuestions', LecturerOnlineExamController::class);
 
-        // try {
+        try {
             $questions = ExamHelper::getFormQuestionsWithDetails($request->form_id, false, false, true);
             return ResponseHelper::successWithData($questions);
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function changeOnlineExamStatus(Request $request)
@@ -528,7 +565,7 @@ class LecturerOnlineExamController extends Controller
             $realExam = RealExam::findOrFail($request->id);
 
             if (!(intval($onlineExam->status) === ExamStatusEnum::COMPLETE->value) ||
-                $realExam->datetime > now()
+                $realExam->datetime > DatetimeHelper::now()
             ) {
                 if (intval($onlineExam->status) === ExamStatusEnum::SUSPENDED->value) {
                     $onlineExam->update([
@@ -737,8 +774,8 @@ class LecturerOnlineExamController extends Controller
             'type_id' => ['required', new Enum(ExamTypeEnum::class)],
             'special_note' => 'nullable|string',
             'forms_count' => 'required|integer',
-            'form_configuration_method_id' => ['required', new Enum(FormConfigurationMethodEnum::class)],
-            'form_name_method_id' => ['required', new Enum(FormNameMethodEnum::class)],
+            'form_configuration_method_id' => ['nullable', new Enum(FormConfigurationMethodEnum::class)],
+            'form_name_method_id' => ['nullable', new Enum(FormNameMethodEnum::class)],
 
             // online exam table 
             'conduct_method_id' => ['required', new Enum(ExamConductMethodEnum::class)],

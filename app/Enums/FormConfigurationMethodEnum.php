@@ -19,5 +19,12 @@ enum FormConfigurationMethodEnum: int {
         };
     }
 
-
+    public static function hasValue(int $id): bool {
+        foreach (self::cases() as $case) {
+            if ($case->value === $id) {
+                return true;
+            }
+        }
+        return false;
+        }
 }

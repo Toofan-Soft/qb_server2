@@ -64,7 +64,7 @@ class PracticeExamController extends Controller
                     'title' => $request->title ?? null,
                     'language' => $request->language_id,
                     // 'datetime' => now()->getTimestamp(), // can make defult value in migration 
-                    'datetime' => now(), // can make defult value in migration 
+                    'datetime' => DatetimeHelper::now(), // can make defult value in migration 
                     'duration' => $request->duration,
                     'difficulty_level' => $request->difficulty_level_id,
                     'conduct_method' => $request->conduct_method_id,
@@ -231,14 +231,15 @@ class PracticeExamController extends Controller
                     'practice_exams.id',
                     'practice_exams.title',
                     'practice_exams.language as language_name',
-                    'practice_exams.datetime'
+                    'practice_exams.datetime',
+                    'practice_exams.status as status_name'
                 )
                 ->when(isset($request->status_id), function ($query) use ($request) {
                     return  $query->where('practice_exams.status', '=', $request->status_id);
                 })
-                ->when(is_null($request->status_id), function ($query) {
-                    return  $query->selectRaw('practice_exams.status as status_name');
-                })
+                // ->when(is_null($request->status_id), function ($query) {
+                //     return  $query->selectRaw('practice_exams.status as status_name');
+                // })
                 ->when(isset($request->department_course_part_id), function ($query) use ($request) {
                     return  $query->where('practice_exams.department_course_part_id', '=', $request->department_course_part_id);
                 })
@@ -249,19 +250,14 @@ class PracticeExamController extends Controller
                     return $exam;
                 });
 
-
             $enumReplacements = [
                 new EnumReplacement('course_part_name', CoursePartsEnum::class),
                 new EnumReplacement('language_name', LanguageEnum::class),
+                new EnumReplacement('status_name', PracticeExamStatusEnum::class)
             ];
 
-            if (is_null($request->status_id)) {
-                array_push($enumReplacements, new EnumReplacement('status_name', PracticeExamStatusEnum::class));
-            }
-
             $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, $enumReplacements);
-
-
+            
             foreach ($practiceExams as $practiceExam) {
                 $examResult = $this->getPracticeExamResult($practiceExam->id);
 
@@ -488,7 +484,7 @@ class PracticeExamController extends Controller
             $practiceExam = PracticeExam::findOrFail($request->id);
             $practiceExam->update([
                 'status' => PracticeExamStatusEnum::COMPLETE->value,
-                // 'end_datetime' => now(),
+                'end_datetime' => DatetimeHelper::now(),
             ]);
             return ResponseHelper::success();
         } catch (\Exception $e) {

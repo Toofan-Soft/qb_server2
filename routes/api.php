@@ -430,6 +430,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-form-configuration-method-list', [EnumsController::class, 'retrieveformConfigurationMethods']);
         Route::get('retrieve-form-name-method-list', [EnumsController::class, 'retrieveformNameMethods']);
         Route::get('retrieve-online-exam-status-list', [EnumsController::class, 'retrieveOnlineExamStatus']);
+        Route::get('retrieve-practice-exam-status-list', [EnumsController::class, 'retrievePracticeExamStatus']);
         Route::get('retrieve-student-online-exam-status-list', [EnumsController::class, 'retrieveStudentOnlineExamStatus']);
         Route::get('retrieve-online-exam-taking-status-list', [EnumsController::class, 'retrieveOnlineExamTakingStatus']);
     });

@@ -90,6 +90,10 @@ class DatetimeHelper
 
 
 
+    public static function now() {
+        return (new DateTime('now', new DateTimeZone('Etc/GMT-3')))->format('Y-m-d H:i:s');
+    }
+
     public static function convertLongToDateTime($value)
     {
         if ($value == null) {

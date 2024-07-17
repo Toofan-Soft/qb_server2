@@ -87,7 +87,7 @@ class StudentOnlineExamController extends Controller
                 ->where('real_exams.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
                 // ->where('real_exams.datetime', '>', now()) // Not-Taken
                 // ->where('online_exams.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
-                ->where('online_exams.exam_datetime_notification_datetime', '<=', now()) // VISIBLE
+                ->where('online_exams.exam_datetime_notification_datetime', '<=', DatetimeHelper::now()) // VISIBLE
                 ->where('course_students.student_id', $studentId)
                 // ->where('course_students.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
                 // ->where('course_students.academic_year', '=', date('Y')) // CURRENT YEAR
@@ -117,7 +117,7 @@ class StudentOnlineExamController extends Controller
             if ($exam) {
                 $studentOnlinExam = StudentOnlineExam::where('online_exam_id', $request->id)->first();
 
-                if ($exam->datetime <= now() &&
+                if ($exam->datetime <= DatetimeHelper::now() &&
                     intval($exam->status) === ExamStatusEnum::ACTIVE->value
                 ) {
                     if ($studentOnlinExam) {
@@ -251,7 +251,7 @@ class StudentOnlineExamController extends Controller
         try {
             $exam = OnlineExam::findOrFail($request->id);
             
-            if ($exam->datetime <= now() &&
+            if ($exam->datetime <= DatetimeHelper::now() &&
                 intval($exam->status) === ExamStatusEnum::ACTIVE->value
             ) {
                 $studentId = Student::where('user_id', auth()->user()->id)
@@ -323,7 +323,7 @@ class StudentOnlineExamController extends Controller
                 ->where('online_exam_id', $request->id)->firstOrFail();
             $studentOnlineExam->update([
                 'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
-                'end_datetime' => now()->getTimestamp(),
+                'end_datetime' => DatetimeHelper::now(),
             ]);
             // StudentOnlineExam::where('student_id', $student->id)
             //     ->where('online_exam_id', $request->id)
@@ -546,9 +546,9 @@ class StudentOnlineExamController extends Controller
                 ->join('course_parts as cp', 'dcp.course_part_id', '=', 'cp.id')
                 ->join('courses as c', 'cp.course_id', '=', 'c.id')
                 ->where('res.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
-                ->where('res.datetime', '>', now()) // Not-Taken
+                ->where('res.datetime', '>', DatetimeHelper::now()) // Not-Taken
                 ->where('oes.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
-                ->where('oes.exam_datetime_notification_datetime', '<=', now()) // VISIBLE
+                ->where('oes.exam_datetime_notification_datetime', '<=', DatetimeHelper::now()) // VISIBLE
                 ->where('cs.student_id', $studentId)
                 ->where('cs.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
                 ->where('cs.academic_year', '=', date('Y')) // CURRENT YEAR

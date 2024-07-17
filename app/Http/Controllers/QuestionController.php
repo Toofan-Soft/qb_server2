@@ -42,9 +42,8 @@ class QuestionController extends Controller
 
         DB::beginTransaction();
         try {
-            $topic = Topic::findOrFail($request->topic_id);
-            
-            $question =  $topic->questions()->create([
+            $question =  Question::create([
+                'topic_id' => $request->topic_id,
                 'type' => $request->type_id,
                 'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id),
                 'accessibility_status' => $request->accessibility_status_id,
