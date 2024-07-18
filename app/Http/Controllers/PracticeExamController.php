@@ -276,7 +276,7 @@ class PracticeExamController extends Controller
     {
         Gate::authorize('retrievePracticeExamQuestions', PracticeExamController::class);
 
-        try {
+        // try {
             $practiceExam = PracticeExam::findOrFail($request->exam_id);
             if ((intval($practiceExam->status) ===  PracticeExamStatusEnum::NEW->value) || (intval($practiceExam->status) ===  PracticeExamStatusEnum::SUSPENDED->value)) {
                 return ResponseHelper::clientError();
@@ -285,12 +285,12 @@ class PracticeExamController extends Controller
 
             $questions = $this->getQuestions($request->exam_id, $is_complete, $practiceExam->language);
 
-            $questions = NullHelper::filter($questions);
+            // $questions = NullHelper::filter($questions);
 
             return ResponseHelper::successWithData($questions);
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     private function getQuestions($examId, $withAnswer = false, $language)
@@ -307,19 +307,42 @@ class PracticeExamController extends Controller
                 $answer = $examQuestion->answer;
 
                 if ($examQuestion->combination_id) {
-                    if ($withAnswer) {
-                        $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, true, $language);
-                    } else {
-                        $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, false, $language);
-                    }
-
-                    $question->choices = collect($question->choices)->map(function ($choice) use ($answer) {
-                        if ($choice['id'] === $answer) {
-                            $choice['is_selected'] = true;
+                    $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, $withAnswer, $language);
+                    // if ($withAnswer) {
+                    //     $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, true, $language);
+                    // } else {
+                    //     $question['choices'] = ExamHelper::retrieveCombinationChoices($examQuestion->question_id, $examQuestion->combination_id, true, false, $language);
+                    // }
+                    
+                    if (!is_null($answer)) {
+                        $choices = $question->choices; // Retrieve the choices array
+                        
+                        if (isset($choices['mixed'])) {
+                            if ($choices['mixed']['id'] === $answer) {
+                                $choices['mixed']['is_selected'] = true;
+                            } else {
+                                $choices['mixed']['choices'] = collect($choices['mixed']['choices'])->map(function ($choice) use ($answer) {
+                                    if ($choice['id'] === $answer) {
+                                        $choice['is_selected'] = true;
+                                    }
+            
+                                    return $choice;
+                                })->toArray();
+                            }
                         }
 
-                        return $choice;
-                    })->toArray();
+                        if (isset($choices['unmixed'])) {
+                            $choices['unmixed'] = collect($choices['unmixed'])->map(function ($choice) use ($answer) {
+                                if ($choice['id'] === $answer) {
+                                    $choice['is_selected'] = true;
+                                }
+        
+                                return $choice;
+                            })->toArray();
+                        }
+
+                        $question->choices = $choices; // Set the modified choices array back to the property
+                    }
                 } else {
                     if ($withAnswer) {
                         $trueFalseQuestion = TrueFalseQuestion::findOrFail($examQuestion->question_id)->first(['answer']);
@@ -346,6 +369,29 @@ class PracticeExamController extends Controller
                     unset($question['id']);
                     return $question;
                 }, $questions);
+
+                $questions = collect($questions)->map(function($question) {
+                    $choices = $question->choices; // Retrieve the choices array
+                            
+                    if (isset($choices['mixed'])) {
+                        unset($choices['mixed']['id']);
+
+                        $choices['mixed']['choices'] = collect($choices['mixed']['choices'])->map(function ($choice) {
+                            unset($choice['id']);
+                            return $choice;
+                        })->toArray();
+                    }
+    
+                    if (isset($choices['unmixed'])) {
+                        $choices['unmixed'] = collect($choices['unmixed'])->map(function ($choice) {
+                            unset($choice['id']);
+                            return $choice;
+                        })->toArray();
+                    }
+    
+                    $question->choices = $choices; // Set the modified choices array back to the property
+                    return $question;
+                });
             }
 
             return $questions;
