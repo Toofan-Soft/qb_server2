@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Enums\LanguageEnum;
+use App\Models\RealExam;
 
 class LanguageHelper
 {
@@ -64,6 +65,25 @@ class LanguageHelper
             } else {
                 return 'en';
             }
+        } catch (\Exception $e) {
+            throw $e;
+        }
+    }
+
+    public static function getEmployeeNameColumnName($RealExamId, string $aliasName = 'lecturer_name'): string
+    {
+        // استدعاء دالة تقوم بتخلص من الفراغات في اسم الجدول والاسم المستعار المرسل
+
+        try {
+            $realExam = RealExam::findOrFail($RealExamId);
+            $statement = '';
+            if (intval($realExam->language) === LanguageEnum::ARABIC->value) {
+                $statement = 'arabic_name';
+            } else {
+                $statement = 'english_name';
+            }
+            $statement = $statement . ' as ' . $aliasName;
+            return $statement;
         } catch (\Exception $e) {
             throw $e;
         }

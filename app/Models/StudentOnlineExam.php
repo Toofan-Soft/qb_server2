@@ -12,7 +12,7 @@ class StudentOnlineExam extends Model
     use HasFactory;
     public $timestamps = false;
     public $incrementing = false;
-    protected $dateFormat = 'U';
+    // protected $dateFormat = 'U';
     protected $primaryKey = ['student_id','online_exam_id'];
     protected $fillable = [
         'student_id',

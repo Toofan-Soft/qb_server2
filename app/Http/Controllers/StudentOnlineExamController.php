@@ -34,6 +34,7 @@ use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Enums\ExamConductMethodEnum;
+use App\Helpers\QuestionUsageHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
@@ -321,22 +322,21 @@ class StudentOnlineExamController extends Controller
             $student = Student::where('user_id', auth()->user()->id)->first();
             $studentOnlineExam = StudentOnlineExam::where('student_id', $student->id)
                 ->where('online_exam_id', $request->id)->firstOrFail();
+
+            DB::beginTransaction();
             $studentOnlineExam->update([
                 'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
                 'end_datetime' => DatetimeHelper::now(),
             ]);
-            // StudentOnlineExam::where('student_id', $student->id)
-            //     ->where('online_exam_id', $request->id)
-            //     ->update([
-            //         'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
-            //         'end_datetime' => now(),
-            //     ]);
+        
+            QuestionUsageHelper::updateOnlineExamQuestionsAnswerUsage($studentOnlineExam);
 
             // refresh student and proctor
             OnlineExamListenerHelper::refreshProctor($student->id, $request->exam_id, $studentOnlineExam->form_id);
-
+            DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
+            DB::rollBack();
             return ResponseHelper::serverError();
         }
     }

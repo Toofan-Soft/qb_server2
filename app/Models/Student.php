@@ -14,7 +14,7 @@ class Student extends Model
     use HasFactory;
 
     public $timestamps = false;
-    protected $dateFormat = 'U';
+    // protected $dateFormat = 'U';
     protected $fillable = [
         'arabic_name',
         'english_name',
