@@ -14,7 +14,12 @@ def combine(json_data):
 def uncombine(value):
     combination = Combination.uncombine(value)
     return [choice.to_dict() for choice in combination.choices]
-    
+
+def check(json_data):
+    combination = json_data['combination']
+    answer = json_data['answer']
+
+    return Combination.check(combination, answer)
 
 def main():
     if len(sys.argv) != 3:
@@ -29,6 +34,8 @@ def main():
         result = combine(data)
     elif method_name == 'uncombine':
         result = uncombine(data)
+    elif method_name == 'check':
+        result = check(data)
     else:
         print(f"Unknown method: {method_name}")
         sys.exit(1)

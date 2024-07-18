@@ -72,6 +72,24 @@ class Combination:
         combination = Combination([Combination.Choice.Compound([choices[sub_index].id for sub_index in choice.ids], choice.is_correct)
                     if isinstance(choice,Combination.Choice.Compound) else choice for choice in choices])
         return combination
+    
+    @staticmethod
+    def check(combination, answer):
+        combination = Combination.uncombine(combination)
+        choices = [choice for choice in combination.choices]
+
+        isCorrect = False
+
+        for choice in choices:
+            if choice.is_correct:
+                if isinstance(choice, Combination.Choice.Basic):
+                    isCorrect = answer == choice.id
+                elif isinstance(choice, Combination.Choice.Compound):
+                    if choice.is_correct:
+                        isCorrect = answer == -3
+                break
+
+        return isCorrect
 
     def combine(self):
         combined_str = ""
