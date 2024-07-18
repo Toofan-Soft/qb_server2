@@ -250,7 +250,7 @@ class StudentOnlineExamController extends Controller
     {
         Gate::authorize('retrieveOnlineExamQuestions', StudentOnlineExamController::class);
         try {
-            $exam = OnlineExam::findOrFail($request->id);
+            $exam = OnlineExam::findOrFail($request->exam_id);
             
             if ($exam->datetime <= DatetimeHelper::now() &&
                 intval($exam->status) === ExamStatusEnum::ACTIVE->value
@@ -258,13 +258,14 @@ class StudentOnlineExamController extends Controller
                 $studentId = Student::where('user_id', auth()->user()->id)
                     ->first()['id'];
 
-                $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->id)
+                $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
                     ->where('student_id', $studentId)
                     ->first(['status', 'form_id']);
                 
                 if ($studentOnlineExam) {
                     if ($studentOnlineExam->status === StudentOnlineExamStatusEnum::ACTIVE->value) {
-                        $questions = $this->getFormQuestions($studentOnlineExam->form_id);
+                        // $questions = $this->getFormQuestions($studentOnlineExam->form_id);
+                        $questions = ExamHelper::getFormQuestionsWithDetails($studentOnlineExam->form_id, false, false, false);
     
                         $questions = NullHelper::filter($questions);
                         

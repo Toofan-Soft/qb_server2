@@ -496,7 +496,7 @@ class PaperExamController extends Controller
         *   .
         * */
         // تبقى جزء فحص اذا كان يشتي مع اجابة او لا
-        try {
+        // try {
             $realExam = RealExam::findOrFail($request->id, [
                 'id', 'datetime', 'duration', 'type as type_name', 'course_lecturer_id',
                 'forms_count', 'form_name_method', 'form_configuration_method'
@@ -537,11 +537,11 @@ class PaperExamController extends Controller
                 $totalScore += ($questionType->questions_count * $questionType->question_score);
             }
             // university name 
-            $jsonData = Storage::disk('local')->get('university.json');
-            $universityData = json_decode($jsonData, true);
-            $universityName = [
-                'arabic_name' => $universityData['arabic_name'],
-            ];
+            // $jsonData = Storage::disk('local')->get('university.json');
+            // $universityData = json_decode($jsonData, true);
+            // $universityName = [
+            //     'arabic_name' => $universityData['arabic_name'],
+            // ];
 
             // form and form questions 
             // as [formName, questions[], .....] or [formsName[name,...], questoins[]]
@@ -551,7 +551,8 @@ class PaperExamController extends Controller
             if (intval($realExam->form_configuration_methode) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
                 $i = 0;
                 foreach ($examForms as $formId) {
-                    $formQuestions = $this->getFormQuestions($formId->id, $request->with_answer_mirror, $realExam->language);
+                    // $formQuestions = $this->getFormQuestions($formId->id, $request->with_answer_mirror, $realExam->language);
+                    $formQuestions = ExamHelper::getFormQuestionsWithDetails($formId->id, false, false, true);
                     array_push($examFormsQuestions, [$formsNames[$i++], $formQuestions]);
                 }
             } else {
@@ -583,7 +584,7 @@ class PaperExamController extends Controller
                 $course->toArray();
 
             $realExam['score'] = $totalScore;
-            $realExam['university_name'] = $universityName;
+            // $realExam['university_name'] = $universityName;
             // $realExam['forms'] = $examFormsQuestions;
 
             if ($examForms->count() === 1) {
@@ -593,9 +594,9 @@ class PaperExamController extends Controller
             }
 
             return ResponseHelper::successWithData($realExam);
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     private function getFormQuestions($formId, bool $withAnsweredMirror, $language)
