@@ -16,10 +16,14 @@ class DatetimeHelper
      * return long
      * it using in lecturer online exam -> getAlgorithmData
      */
-    public static function getDifferenceInSeconds($date1, $date2): int // يتم حذفها  
+    public static function getDifferenceInSeconds($datetime1, $datetime2): int 
     {
         // $date2 = self::convertMillisecondsToTimestamp($date2);
-        return ($date1->getTimestamp() - $date2->getTimestamp());
+        $carbon1 = Carbon::parse($datetime1);
+        $carbon2 = Carbon::parse($datetime2);
+        
+        return $carbon1->diffInSeconds($carbon2);
+
     }
     /**
      * $date1 and date2 are objects of datetime

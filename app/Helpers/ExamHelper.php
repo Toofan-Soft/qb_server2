@@ -461,7 +461,7 @@ class ExamHelper
         try {
             $question = Question::findOrFail($questionId);
             if(intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value){
-                $trueFalseQuestion = $question->true_false_question();
+                $trueFalseQuestion = $question->true_false_question()->first();
                 if(intval($trueFalseQuestion->answer) === $answer){
                     return true;
                 }else{
@@ -470,14 +470,10 @@ class ExamHelper
             }else{
                 $data = [
                     'combination_choices' => $question->question_choices_combinations()->where('combination_id', '=', $combinationId)->first(['combination_choices'])['combination_choices'], 
-                    'answerId' => $answer
+                    'answer_id' => $answer
                 ];
-                $result = (new CheckQuestionChoicesCombinationAnswer())->execute($data);
-                if($result->is_true){
-                    return true;
-                }else{
-                    return false;
-                }
+
+                return (new CheckQuestionChoicesCombinationAnswer())->execute($data);
             }
             
         } catch (\Exception $e) {
@@ -655,7 +651,7 @@ class ExamHelper
         })->first();
 
         $isMixTrue = collect($result)->filter(function ($item) {
-            if (isset($item['ids'])) {
+            if (isset($item['is_true']) && isset($item['ids'])) {
                 return $item;
             }
         })->map(function ($item) {

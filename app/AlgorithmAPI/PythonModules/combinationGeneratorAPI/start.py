@@ -16,8 +16,8 @@ def uncombine(value):
     return [choice.to_dict() for choice in combination.choices]
 
 def check(json_data):
-    combination = json_data['combination']
-    answer = json_data['answer']
+    combination = json_data['combination_choices']
+    answer = json_data['answer_id']
 
     return Combination.check(combination, answer)
 
