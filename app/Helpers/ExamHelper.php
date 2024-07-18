@@ -617,6 +617,124 @@ class ExamHelper
         // $result = null;
         $choices = self::uncombinateCombination($qeustionId, $combinationId);
 
+        $result = [];
+
+        foreach ($choices as $choice) {
+            $temp = [];
+
+            if (property_exists($choice, 'ids')) {
+                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class, $language);
+                $temp['ids'] = $choice->ids;
+            } else {
+                if ($choice->id == -1) {
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class, $language);
+                } elseif ($choice->id == -2) {
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class, $language);
+                } else {
+                    $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
+                }
+
+                // if ($withChoiceId) {
+                    $temp['id'] = $choice->id;
+                // }
+            }
+
+            if ($withAnswer) {
+                $temp['is_true'] = $choice->isCorrect;
+            }
+
+            array_push($result, $temp);
+        }
+
+        $mixIds = collect($result)->filter(function ($item) {
+            if (isset($item['ids'])) {
+                return $item;
+            }
+        })->map(function ($item) {
+            return collect($item['ids'])->toArray();
+        })->first();
+
+        $isMixTrue = collect($result)->filter(function ($item) {
+            if (isset($item['ids'])) {
+                return $item;
+            }
+        })->map(function ($item) {
+            return $item['is_true'];
+        })->first();
+
+        $finalChoices = [];
+
+        if (!isset($mixIds) && empty($mixIds)) {
+            $finalUnmixed = [];
+
+            foreach ($result as $item) {
+                if (!$withChoiceId) {
+                    unset($item['id']);
+                }
+                $finalUnmixed[] = $item;
+            }
+
+            $finalChoices['unmixed'] = $finalUnmixed;
+        } else {
+            $mixed = collect($result)->filter(function ($item) use ($mixIds) {
+                return !isset($item['ids']) && !is_null($mixIds) && in_array($item->id, $mixIds);
+            })->toArray();
+            
+            $unmixed = collect($result)->filter(function ($item) use ($mixIds) {
+                return !isset($item['ids']) && ((!is_null($mixIds) && !in_array($item->id, $mixIds)) || is_null($mixIds));
+            })->toArray();
+
+            if (!$withChoiceId) {
+                $mixed = collect($mixed)->map(function ($item) {
+                    unset($item['id']);
+                    return $item;
+                });
+
+                $unmixed = collect($unmixed)->map(function ($item) {
+                    unset($item['id']);
+                    return $item;
+                });
+            }
+            
+            if (!empty($mixed)) {
+                $finalMixed = [];
+                
+                foreach ($mixed as $mixedItem) {
+                    $finalMixed[] = $mixedItem;
+                }
+
+                $final['choices'] = $finalMixed;
+
+                if ($withChoiceId) {
+                    $final['id'] = CombinationChoiceTypeEnum::MIX->value;
+                }
+
+                if ($withAnswer) {
+                    $final['is_true'] = $isMixTrue;
+                }
+
+                $finalChoices['mixed'] = $final;
+            }
+
+            if (!empty($unmixed)) {
+                $finalUnmixed = [];
+                
+                foreach ($unmixed as $unmixedItem) {
+                    $finalUnmixed[] = $unmixedItem;
+                }
+
+                $finalChoices['unmixed'] = $finalUnmixed;
+            }
+        }
+
+        return $finalChoices;
+    }
+
+    public static function retrieveCombinationChoices1($qeustionId, $combinationId, bool $withChoiceId, bool $withAnswer, string $language = 'ar')
+    {
+        // $result = null;
+        $choices = self::uncombinateCombination($qeustionId, $combinationId);
+
         // 453, 454, 459, -2
 
         // return $choices;
@@ -711,7 +829,7 @@ class ExamHelper
                 });
             }
             
-            if (!empty($mixed)) {                
+            if (!empty($mixed)) {
                 $finalMixed = [];
                 
                 foreach ($mixed as $mixedItem) {
@@ -743,13 +861,26 @@ class ExamHelper
                 $finalChoices[] = $final;
             }
 
-            foreach ($unmixed as $unmixedItem) {
-                $finalChoices[] = $unmixedItem;
+            // foreach ($unmixed as $unmixedItem) {
+            //     $finalChoices[] = $unmixedItem;
+            // }
+
+            if (!empty($unmixed)) {
+                $finalUnmixed = [];
+                
+                foreach ($unmixed as $unmixedItem) {
+                    $finalUnmixed[] = $unmixedItem;
+                }
+
+                $final2['unmix'] = $finalUnmixed;
+
+                $finalChoices[] = $final2;
             }
         }
 
         return $finalChoices;
     }
+
 
     private static function uncombinateCombination($qeustionId, $combinationId)
     {
