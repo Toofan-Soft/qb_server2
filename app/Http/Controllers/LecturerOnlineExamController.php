@@ -123,7 +123,6 @@ class LecturerOnlineExamController extends Controller
                         ]);
                     }
                 }
-                ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
                 DB::commit();
                 return ResponseHelper::successWithData(['id' => $realExam->id]);
             } else {
