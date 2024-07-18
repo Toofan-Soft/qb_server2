@@ -508,6 +508,7 @@ class ExamHelper
     {
         try {
             $types = [];
+            $questionTypesIds = [];
             foreach ($request->questions_types as $type) {
                 $t = [
                     'id' => intval($type['type_id']),
@@ -515,9 +516,10 @@ class ExamHelper
                 ];
 
                 array_push($types, $t);
+                array_push($questionTypesIds, $type['type_id']);
             }
 
-            // دالة مشتركة للاختبار الالكتروني والورقي
+            // return $questionTypesIds;
             $algorithmData = [
                 'estimated_time' => intval($request->duration),
                 // 'difficulty_level' => floatval($request->difficulty_level_id),
@@ -532,10 +534,6 @@ class ExamHelper
                 // ],
             ];
 
-            $questionTypesIds = [];
-            foreach ($request->questions_types as $type) {
-                array_push($questionTypesIds, $type['type_id']);
-            }
 
             $questions =  DB::table('questions')
                 ->join('question_usages', 'questions.id', '=', 'question_usages.question_id')
@@ -563,7 +561,6 @@ class ExamHelper
                 // ->whereIn('topics.id', [3])
                 ->get()
                 ->toArray();
-
             foreach ($questions as $question) {
                 // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
 

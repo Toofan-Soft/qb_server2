@@ -8,14 +8,14 @@ enum AccessibilityStatusEnum: int {
     use EnumTraits;
 
     case PRACTICE_EXAM  = 0;
-    case REALEXAM  = 1;
-    case PRACTICE_REALEXAM  = 2;
+    case REAL_EXAM  = 1;
+    case PRACTICE_AND_REAL_EXAM  = 2;
 
     public function getValues(): array {
         return match ($this) {
             self::PRACTICE_EXAM => [0, 'Practice Exam', 'اختبار تجريبي'],
-            self::REALEXAM => [1, 'Real Exam', 'اختبار فعلي'],
-            self::PRACTICE_REALEXAM => [2, 'Practice and Real Exam', 'اختبار فعلي وتجريبي'],
+            self::REAL_EXAM => [1, 'Real Exam', 'اختبار فعلي'],
+            self::PRACTICE_AND_REAL_EXAM => [2, 'Practice and Real Exam', 'اختبار فعلي وتجريبي'],
         };
     }
 

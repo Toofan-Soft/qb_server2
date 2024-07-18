@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
 use  Illuminate\Support\Facades\Validator;
+use App\Helpers\Roles\ByteArrayValidationRule;
 
 class StudentController extends Controller
 {
@@ -344,7 +345,7 @@ class StudentController extends Controller
             'arabic_name' => 'required|string',
             'english_name' => 'required|string',
             'phone' => 'nullable|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => ['nullable', new ByteArrayValidationRule],
             'gender_id' => ['required', new Enum(GenderEnum::class)],
             'birthdate' => 'nullable|integer',
             'department_id' => 'required|exists:departments,id',

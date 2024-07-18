@@ -73,6 +73,7 @@ Route::post('user/login', [UserController::class, 'login']);
 Route::put('user/change-password', [UserController::class, 'changePassword']);
 Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
 Route::put('user/change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+// Route::post('employee/add', [EmployeeController::class, 'addEmployee']);
 // Route::post('user-management/add', [UserManagementController::class, 'addUser']);
 
 Route::prefix('guest/')->group(function () {
@@ -382,9 +383,11 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('practice-exam/')->group(function () {
         Route::post('add', [PracticeExamController::class, 'addPracticeExam']);
         Route::put('modify', [PracticeExamController::class, 'modifyPracticeExam']);
+        Route::put('start', [PracticeExamController::class, 'startPracticeExam']);
+        Route::put('suspend', [PracticeExamController::class, 'suspendPracticeExam']);
+        Route::put('continue', [PracticeExamController::class, 'continuePracticeExam']);
         Route::put('finish', [PracticeExamController::class, 'finishPracticeExam']);
         Route::put('save-question-answer', [PracticeExamController::class, 'savePracticeExamQuestionAnswer']);
-        Route::put('suspend', [PracticeExamController::class, 'suspendPracticeExam']);
         Route::delete('delete', [PracticeExamController::class, 'deletePracticeExam']);
         Route::get('retrieve', [PracticeExamController::class, 'retrievePracticeExam']);
         Route::get('retrieve-editable', [PracticeExamController::class, 'retrieveEditablePracticeExam']);

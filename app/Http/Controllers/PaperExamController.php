@@ -641,8 +641,8 @@ class PaperExamController extends Controller
     {
         try {
             $accessabilityStatusIds = [
-                AccessibilityStatusEnum::REALEXAM->value,
-                AccessibilityStatusEnum::PRACTICE_REALEXAM->value,
+                AccessibilityStatusEnum::REAL_EXAM->value,
+                AccessibilityStatusEnum::PRACTICE_AND_REAL_EXAM->value,
             ];
             $algorithmData = ExamHelper::getAlgorithmData($request, $accessabilityStatusIds);
             return $algorithmData;

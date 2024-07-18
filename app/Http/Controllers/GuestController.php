@@ -15,6 +15,7 @@ use App\Helpers\ValidateHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
+use App\Helpers\Roles\ByteArrayValidationRule;
 
 class GuestController extends Controller
 {
@@ -103,7 +104,7 @@ class GuestController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
             'phone' => 'nullable|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => ['nullable', new ByteArrayValidationRule],
             'gender_id' => ['required', new Enum(GenderEnum::class)], // Assuming GenderEnum holds valid values
             //'user_id' => 'nullable|uuid|unique:users,id',
         ];

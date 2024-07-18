@@ -52,9 +52,8 @@ class PracticeExamController extends Controller
         }
         try {
             $algorithmData = $this->getAlgorithmData($request);
-
             $examQuestions = (new GenerateExam())->execute($algorithmData);
-
+            
             if (!is_null($examQuestions)) { // modify to use has function
 
                 $user = User::findOrFail(auth()->user()->id);
@@ -64,7 +63,6 @@ class PracticeExamController extends Controller
                     'department_course_part_id' => $request->department_course_part_id,
                     'title' => $request->title ?? null,
                     'language' => $request->language_id,
-                    // 'datetime' => now()->getTimestamp(), // can make defult value in migration 
                     'datetime' => DatetimeHelper::now(), // can make defult value in migration 
                     'duration' => $request->duration,
                     'difficulty_level' => $request->difficulty_level_id,
@@ -89,7 +87,6 @@ class PracticeExamController extends Controller
                         'combination_id' => $question['combination_id'] ?? null,
                     ]);
                 }
-                ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
 
                 DB::commit();
                 return ResponseHelper::successWithData(['id' => $practiceExam->id]);
@@ -407,7 +404,7 @@ class PracticeExamController extends Controller
     {
         Gate::authorize('retrievePracticeExam', PracticeExamController::class);
 
-        try {
+        // try {
             $practiceExam = PracticeExam::findOrFail($request->id, [
                 'datetime',
                 'id', 'title', 'duration', 'language as language_name',
@@ -424,7 +421,9 @@ class PracticeExamController extends Controller
 
             $practiceExam->is_mandatory_question_sequence = ($practiceExam->is_mandatory_question_sequence === ExamConductMethodEnum::MANDATORY->value) ? true : false;
 
-            $practiceExamUsage = $practiceExam->practice_exam_usage()->first(['remaining_duration']);
+            if(intval($practiceExam->status) != PracticeExamStatusEnum::NEW->value){
+                $practiceExam->remaining_duration = $practiceExam->practice_exam_usage()->first(['remaining_duration']);
+            }
 
             $departmentCoursePart = DepartmentCoursePart::findOrFail($practiceExam->department_course_part_id);
 
@@ -457,7 +456,6 @@ class PracticeExamController extends Controller
 
             $practiceExam = $practiceExam +
                 $coursePart->toArray() +
-                $$practiceExamUsage->toArray() +
                 $departmentCourse +
                 $department +
                 $college->toArray() +
@@ -466,9 +464,9 @@ class PracticeExamController extends Controller
             $practiceExam = NullHelper::filter($practiceExam);
 
             return ResponseHelper::successWithData($practiceExam);
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function retrieveEditablePracticeExam(Request $request)
@@ -650,8 +648,8 @@ class PracticeExamController extends Controller
     {
         try {
             $accessabilityStatusIds = [
-                AccessibilityStatusEnum::REALEXAM->value,
-                AccessibilityStatusEnum::PRACTICE_REALEXAM->value,
+                AccessibilityStatusEnum::PRACTICE_EXAM->value,
+                AccessibilityStatusEnum::PRACTICE_AND_REAL_EXAM->value,
             ];
             $algorithmData = ExamHelper::getAlgorithmData($request, $accessabilityStatusIds);
             return $algorithmData;

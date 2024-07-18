@@ -29,15 +29,24 @@ class PracticeExamPolicy
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
 
+    public function startPracticeExam(): bool
+    {
+        return ValidateHelper::validatePolicy(self::$validRoles);
+    }
+    public function continuePracticeExam(): bool
+    {
+        return ValidateHelper::validatePolicy(self::$validRoles);
+    }
+    public function suspendPracticeExam(): bool
+    {
+        return ValidateHelper::validatePolicy(self::$validRoles);
+    }
+    
     public function finishPracticeExam(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
     public function savePracticeExamQuestionAnswer(): bool
-    {
-        return ValidateHelper::validatePolicy(self::$validRoles);
-    }
-    public function suspendPracticeExam(): bool
     {
         return ValidateHelper::validatePolicy(self::$validRoles);
     }
