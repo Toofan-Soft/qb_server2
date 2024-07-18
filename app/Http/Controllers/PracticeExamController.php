@@ -31,6 +31,7 @@ use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Enums\ExamConductMethodEnum;
+use App\Helpers\QuestionUsageHelper;
 use App\Models\DepartmentCoursePart;
 use App\Models\PracticeExamQuestion;
 use Illuminate\Support\Facades\Gate;
@@ -49,9 +50,9 @@ class PracticeExamController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
-        // try {
+        try {
             $algorithmData = $this->getAlgorithmData($request);
-            
+
             $examQuestions = (new GenerateExam())->execute($algorithmData);
 
             if (!is_null($examQuestions)) { // modify to use has function
@@ -90,19 +91,15 @@ class PracticeExamController extends Controller
                 }
                 ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
 
-                $practiceExam->practice_exam_usage()->create([
-                    'remaining_duration' => $practiceExam->duration
-                ]);
-
                 DB::commit();
                 return ResponseHelper::successWithData(['id' => $practiceExam->id]);
             } else {
                 DB::rollBack();
                 return ResponseHelper::serverError();
             }
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyPracticeExam(Request $request)
@@ -257,7 +254,7 @@ class PracticeExamController extends Controller
             ];
 
             $practiceExams = ProcessDataHelper::enumsConvertIdToName($practiceExams, $enumReplacements);
-            
+
             foreach ($practiceExams as $practiceExam) {
                 $examResult = $this->getPracticeExamResult($practiceExam->id);
 
@@ -281,7 +278,9 @@ class PracticeExamController extends Controller
 
         try {
             $practiceExam = PracticeExam::findOrFail($request->exam_id);
-
+            if ((intval($practiceExam->status) ===  PracticeExamStatusEnum::NEW->value) || (intval($practiceExam->status) ===  PracticeExamStatusEnum::SUSPENDED->value)) {
+                return ResponseHelper::clientError();
+            }
             $is_complete = (intval($practiceExam->status) === PracticeExamStatusEnum::COMPLETE->value) ? true : false;
 
             $questions = $this->getQuestions($request->exam_id, $is_complete, $practiceExam->language);
@@ -355,15 +354,50 @@ class PracticeExamController extends Controller
         }
     }
 
-    public function retrievePracticeExamsResult(Request $request)
+    public function retrievePracticeExamResult(Request $request)
     {
+        //return : time spent, question average answer time, appreciation, score rate, correct answer count, incorrect answer count
+
         Gate::authorize('retrievePracticeExamsResult', PracticeExamController::class);
         try {
             $practiceExam = PracticeExam::findOrFail($request->id);
+
             if ($practiceExam->status === PracticeExamStatusEnum::COMPLETE->value) {
-                //time spent, question average answer time, appreciation, score rate, correct answer count, incorrect answer count
+                $examQuestions = $practiceExam->practice_exam_question()
+                    ->get(['question_id', 'answer', 'combination_id']);
+                    // ->get(['question_id', 'answer', 'answer_duration', 'combination_id']);
+
+                $totalScoure = $examQuestions->count();
+                $timeSpent = $practiceExam->practice_exam_usage()->first(['remaining_duration'])->remaining_duration;
+
+                $StudentScore = 0;
+
+                foreach ($examQuestions as $examQuestion) {
+                    // $timeSpent = $timeSpent + $examQuestion->answer_duration;
+
+                    if (ExamHelper::checkQuestionAnswer($examQuestion->question_id, $examQuestion->answer, $examQuestion->combination_id)) {
+                        $StudentScore++;
+                    }
+                }
+
+                $scoreRate = $StudentScore / $totalScoure * 100;
+                $appreciation = ExamHelper::getExamResultAppreciation($scoreRate);
+                $questionAverageAnswerTime = $timeSpent / $examQuestions->count();
+                $incorrectAnswerCount = $examQuestions->count() - $scoreRate;
+
+                $examResult = [
+                    'time_spent' => $timeSpent,
+                    'question_average_answer_time' => $questionAverageAnswerTime,
+                    'correct_answer_count' => $scoreRate,
+                    'incorrect_answer_count' => $incorrectAnswerCount,
+                    'score_rate' => $scoreRate,
+                    'appreciation' => $appreciation
+                ];
+
+                return $examResult;
+            } else {
+                return ResponseHelper::clientError();
             }
-            return [];
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
@@ -371,7 +405,7 @@ class PracticeExamController extends Controller
 
     public function retrievePracticeExam(Request $request)
     {
-        // Gate::authorize('retrievePracticeExam', PracticeExamController::class);
+        Gate::authorize('retrievePracticeExam', PracticeExamController::class);
 
         try {
             $practiceExam = PracticeExam::findOrFail($request->id, [
@@ -389,6 +423,8 @@ class PracticeExamController extends Controller
             $practiceExam->is_complete = (intval($practiceExam->status) === PracticeExamStatusEnum::COMPLETE->value) ? true : false;
 
             $practiceExam->is_mandatory_question_sequence = ($practiceExam->is_mandatory_question_sequence === ExamConductMethodEnum::MANDATORY->value) ? true : false;
+
+            $practiceExamUsage = $practiceExam->practice_exam_usage()->first(['remaining_duration']);
 
             $departmentCoursePart = DepartmentCoursePart::findOrFail($practiceExam->department_course_part_id);
 
@@ -421,6 +457,7 @@ class PracticeExamController extends Controller
 
             $practiceExam = $practiceExam +
                 $coursePart->toArray() +
+                $$practiceExamUsage->toArray() +
                 $departmentCourse +
                 $department +
                 $college->toArray() +
@@ -477,17 +514,31 @@ class PracticeExamController extends Controller
         }
     }
 
-    public function finishPracticeExam(Request $request)
+    public function startPracticeExam(Request $request)
     {
-        Gate::authorize('finishPracticeExam', PracticeExamController::class);
+        Gate::authorize('startPracticeExam', PracticeExamController::class);
+
         try {
             $practiceExam = PracticeExam::findOrFail($request->id);
+            if (intval($practiceExam->status) != PracticeExamStatusEnum::NEW->value) {
+                return ResponseHelper::clientError();
+            }
+
+            DB::beginTransaction();
             $practiceExam->update([
-                'status' => PracticeExamStatusEnum::COMPLETE->value,
-                'end_datetime' => DatetimeHelper::now(),
+                'status' => PracticeExamStatusEnum::ACTIVE->value
             ]);
+
+            $practiceExam->practice_exam_usage()->create([
+                'remaining_duration' => $practiceExam->duration,
+                'start_datetime' => DatetimeHelper::now()
+            ]);
+
+            QuestionUsageHelper::updatePracticeExamQuestionsUsage($practiceExam);
+            DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
+            DB::rollBack();
             return ResponseHelper::serverError();
         }
     }
@@ -495,22 +546,93 @@ class PracticeExamController extends Controller
     public function suspendPracticeExam(Request $request)
     {
         Gate::authorize('suspendPracticeExam', PracticeExamController::class);
-        try {
-            $practiceExam = PracticeExam::findOrFail($request->id);
 
-            if (intval($practiceExam->status) === PracticeExamStatusEnum::ACTIVE->value) {
+        try {
+            DB::beginTransaction();
+            $practiceExam = PracticeExam::findOrFail($request->id);
+            if ((intval($practiceExam->status) === PracticeExamStatusEnum::ACTIVE->value) && (intval($practiceExam->status) != PracticeExamStatusEnum::SUSPENDED->value)) {
                 $practiceExam->update([
-                    'status' => PracticeExamStatusEnum::SUSPENDED->value,
+                    'status' => PracticeExamStatusEnum::SUSPENDED->value
                 ]);
-                return $practiceExam;
+
+                $practiceExamUsage = $practiceExam->practice_exam_usage();
+
+                $practiceExamUsage->update([
+                    'remaining_duration' => $practiceExamUsage->remaining_duration - DatetimeHelper::getDifferenceInSeconds(DatetimeHelper::now(), $practiceExamUsage->start_datetime),
+                    'last_suspended_datetime' => DatetimeHelper::now()
+                ]);
+
+                DB::commit();
                 return ResponseHelper::success();
             } else {
-                return ResponseHelper::clientError(401);
+                DB::rollBack();
+                return ResponseHelper::clientError();
             }
         } catch (\Exception $e) {
+            DB::rollBack();
             return ResponseHelper::serverError();
         }
     }
+
+    public function continuePracticeExam(Request $request)
+    {
+        Gate::authorize('continuePracticeExam', PracticeExamController::class);
+
+        try {
+            $practiceExam = PracticeExam::findOrFail($request->id);
+            if (intval($practiceExam->status) != PracticeExamStatusEnum::SUSPENDED->value) {
+                return ResponseHelper::clientError();
+            }
+
+            DB::beginTransaction();
+            $practiceExam->update([
+                'status' => PracticeExamStatusEnum::ACTIVE->value
+            ]);
+
+            $practiceExam->practice_exam_usage()->update([
+                'start_datetime' => DatetimeHelper::now()
+            ]);
+
+            DB::commit();
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError();
+        }
+    }
+
+    public function finishPracticeExam(Request $request)
+    {
+        Gate::authorize('finishPracticeExam', PracticeExamController::class);
+
+        try {
+            DB::beginTransaction();
+            $practiceExam = PracticeExam::findOrFail($request->id);
+            if ((intval($practiceExam->status) === PracticeExamStatusEnum::ACTIVE->value) && (intval($practiceExam->status) != PracticeExamStatusEnum::COMPLETE->value)) {
+                $practiceExam->update([
+                    'status' => PracticeExamStatusEnum::COMPLETE->value
+                ]);
+
+                $practiceExamUsage = $practiceExam->practice_exam_usage();
+
+                $practiceExamUsage->update([
+                    'remaining_duration' => $practiceExamUsage->remaining_duration - DatetimeHelper::getDifferenceInSeconds(DatetimeHelper::now(), $practiceExamUsage->start_datetime)
+                ]);
+
+                QuestionUsageHelper::updatePracticeExamQuestionsAnswerUsage($practiceExam);
+
+                DB::commit();
+                return ResponseHelper::success();
+            } else {
+                DB::rollBack();
+                return ResponseHelper::clientError();
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError();
+        }
+    }
+
 
     /**
      ***** job: 
@@ -581,58 +703,6 @@ class PracticeExamController extends Controller
         return $qestionChoicesCombinationsIds[$selectedIndex];
     }
 
-    private function retrievePracticeExamResult($practiceExamId)
-    {
-        try {
-            $practiceExam = PracticeExam::findOrFail($practiceExamId);
-
-            if ($practiceExam->status === PracticeExamStatusEnum::COMPLETE->value) {
-                $examQuestions = $practiceExam->practice_exam_question()
-                    ->get(['question_id', 'answer', 'answer_duration', 'combination_id']);
-
-                $totalScoure = $examQuestions->count();
-
-                $StudentScore = 0;
-                $timeSpent = 0;
-
-                foreach ($examQuestions as $examQuestion) {
-                    $timeSpent = $timeSpent + $examQuestion->answer_duration;
-
-                    $question = Question::findOrFail($examQuestion->question_id);
-
-                    if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
-                        if (ExamHelper::checkTrueFalseQuestionAnswer($question, $examQuestion->answer)) {
-                            $StudentScore++;
-                        }
-                    } else {
-                        if (ExamHelper::checkChoicesQuestionAnswer($question, $examQuestion->answer, $examQuestion->combination_id)) {
-                            $StudentScore++;
-                        }
-                    }
-                }
-
-                $scoreRate = $StudentScore / $totalScoure * 100;
-                $appreciation = ExamHelper::getExamResultAppreciation($scoreRate);
-                $questionAverageAnswerTime = $timeSpent / $examQuestions->count();
-                $incorrectAnswerCount = $examQuestions->count() - $scoreRate;
-
-                $examResult = [
-                    'time_spent' => $timeSpent,
-                    'question_average_answer_time' => $questionAverageAnswerTime,
-                    'correct_answer_count' => $scoreRate,
-                    'incorrect_answer_count' => $incorrectAnswerCount,
-                    'score_rate' => $scoreRate,
-                    'appreciation' => $appreciation
-                ];
-
-                return $examResult;
-            } else {
-                return ResponseHelper::clientError(401);
-            }
-        } catch (\Exception $e) {
-            throw $e;
-        }
-    }
 
     private function getPracticeExamResult($practiceExamId)
     {
@@ -648,16 +718,9 @@ class PracticeExamController extends Controller
                 $StudentScore = 0;
 
                 foreach ($examQuestions as $examQuestion) {
-                    $question = Question::findOrFail($examQuestion->question_id);
 
-                    if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
-                        if (ExamHelper::checkTrueFalseQuestionAnswer($question, $examQuestion->answer)) {
-                            $StudentScore++;
-                        }
-                    } else {
-                        if (ExamHelper::checkChoicesQuestionAnswer($question, $examQuestion->answer, $examQuestion->combination_id)) {
-                            $StudentScore++;
-                        }
+                    if (ExamHelper::checkQuestionAnswer($examQuestion->question_id, $examQuestion->answer, $examQuestion->combination_id)) {
+                        $StudentScore++;
                     }
                 }
 
@@ -674,7 +737,7 @@ class PracticeExamController extends Controller
                 return null;
             }
         } catch (\Exception $e) {
-            return ResponseHelper::serverError();
+            throw $e;
         }
     }
 

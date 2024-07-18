@@ -41,6 +41,7 @@ use App\Enums\StudentOnlineExamStatusEnum;
 use App\Models\QuestionChoicesCombination;
 use Illuminate\Database\Eloquent\Collection;
 use App\AlgorithmAPI\UncombineQuestionChoicesCombination;
+use App\AlgorithmAPI\CheckQuestionChoicesCombinationAnswer;
 
 class ExamHelper
 {
@@ -455,14 +456,33 @@ class ExamHelper
         return $formQuestions;
     }
 
-
-    public static function checkTrueFalseQuestionAnswer(Question $qeustion, $answer): bool
+    public static function checkQuestionAnswer($questionId, $answer, $combinationId): bool
     {
-        return true;
-    }
-    public static function checkChoicesQuestionAnswer(Question $qeustion, $answer, $combinationId): bool
-    {
-        return true;
+        try {
+            $question = Question::findOrFail($questionId);
+            if(intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value){
+                $trueFalseQuestion = $question->true_false_question();
+                if(intval($trueFalseQuestion->answer) === $answer){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                $data = [
+                    'combination_choices' => $question->question_choices_combinations()->where('combination_id', '=', $combinationId)->first(['combination_choices'])['combination_choices'], 
+                    'answerId' => $answer
+                ];
+                $result = (new CheckQuestionChoicesCombinationAnswer())->execute($data);
+                if($result->is_true){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+            
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public static function getExamResultAppreciation($scoreRate)

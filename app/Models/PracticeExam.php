@@ -19,7 +19,7 @@ class PracticeExam extends Model
 {
     use HasFactory;
     public $timestamps = false;
-    protected $dateFormat = 'U';
+    // protected $dateFormat = 'U';
     protected $fillable = [
         'title',
         'language',

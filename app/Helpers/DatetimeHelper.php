@@ -16,7 +16,7 @@ class DatetimeHelper
      * return long
      * it using in lecturer online exam -> getAlgorithmData
      */
-    public static function getDifferenceInSeconds($date1, $date2) // يتم حذفها  
+    public static function getDifferenceInSeconds($date1, $date2): int // يتم حذفها  
     {
         // $date2 = self::convertMillisecondsToTimestamp($date2);
         return ($date1->getTimestamp() - $date2->getTimestamp());

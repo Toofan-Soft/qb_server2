@@ -35,6 +35,7 @@ use App\Enums\CourseStudentStatusEnum;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\OnlineExamListenerHelper;
 use App\Enums\StudentOnlineExamStatusEnum;
+use App\Helpers\QuestionUsageHelper;
 
 class ProctorOnlinExamController extends Controller
 {
@@ -548,6 +549,22 @@ class ProctorOnlinExamController extends Controller
                 return ResponseHelper::success();
             }
         } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
+    }
+
+    public function finishOnlineExam(Request $request)
+    {
+        Gate::authorize('finishOnlineExam', ProctorOnlinExamController::class);
+
+        try {
+           DB::beginTransaction();
+
+            QuestionUsageHelper::updateOnlineExamQuestionsUsage($request->id);
+            DB::commit();
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            DB::rollBack();
             return ResponseHelper::serverError();
         }
     }

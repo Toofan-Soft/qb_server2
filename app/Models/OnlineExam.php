@@ -13,7 +13,7 @@ class OnlineExam extends Model
     use HasFactory;
     public $timestamps = false;
     public $incrementing = false;
-    protected $dateFormat = 'U';
+    // protected $dateFormat = 'U';
     protected $fillable = [
         'id',
         'proctor_id',

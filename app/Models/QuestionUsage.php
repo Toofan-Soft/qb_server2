@@ -12,7 +12,7 @@ class QuestionUsage extends Model
     public $timestamps = false;
 
     public $incrementing = false; // This indicates that the model does not auto-increment its primary key.
-    protected $dateFormat = 'U';
+    // protected $dateFormat = 'U';
     protected $primaryKey = ['question_id'];
 
     protected $fillable = [

@@ -13,7 +13,7 @@ class PracticeExamUsage extends Model
     use HasFactory;
     public $timestamps = false;
     public $incrementing = false;
-    protected $dateFormat = 'U';
+    // protected $dateFormat = 'U';
     protected $fillable = [
         'practice_exam_id',
         'start_datetime',

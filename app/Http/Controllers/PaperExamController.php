@@ -42,6 +42,7 @@ use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
 use Illuminate\Support\Facades\Storage;
 use App\Enums\FormConfigurationMethodEnum;
+use App\Helpers\QuestionUsageHelper;
 
 class PaperExamController extends Controller
 {
@@ -95,7 +96,7 @@ class PaperExamController extends Controller
 
                 $paperExam = PaperExam::create([
                     'id' => $realExam->id,
-                    'course_lecturer_name' => $request->lecturer_name ?? $employee->arabic_name,
+                    'course_lecturer_name' => $request->lecturer_name?? null,
                 ]);
 
                 foreach ($request->questions_types as $question_type) {
@@ -125,6 +126,7 @@ class PaperExamController extends Controller
                             'question_id' => $question['question_id'],
                             'combination_id' => $question['combination_id'] ?? null,
                         ]);
+                        QuestionUsageHelper::updatePaperExamQuestionUsage($question['question_id']);
                     }
                 }
                 ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
@@ -497,7 +499,7 @@ class PaperExamController extends Controller
         // try {
             $realExam = RealExam::findOrFail($request->id, [
                 'id', 'datetime', 'duration', 'type as type_name', 'course_lecturer_id',
-                'forms_count', 'form_name_method', 'form_configuration_method',
+                'forms_count', 'form_name_method', 'form_configuration_method'
             ]);
 
             $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
@@ -506,6 +508,10 @@ class PaperExamController extends Controller
 
             $paperExam = PaperExam::where('id', $realExam->id)->first(['course_lecturer_name as lecturer_name']);
             // $paperExam = $realExam->paper_exam()->first(['course_lecturer_name as lecturer_name']);
+            if(is_null($paperExam->lecturer_name)){
+
+                $paperExam = $realExam->course_lecturer()->first()->employee()->first()[LanguageHelper::getEmployeeNameColumnName($realExam->id)];
+            }
 
             $courseLecturer = $realExam->course_lecturer()->first();
             $departmentCoursePart = $courseLecturer->department_course_part()->first();

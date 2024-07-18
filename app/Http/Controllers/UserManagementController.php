@@ -205,13 +205,13 @@ class UserManagementController extends Controller
     {
         Gate::authorize('retrieveOwnerRoles', UserManagementController::class);
 
-        // try {
+        try {
             $ownerRoles = RoleEnum::getOwnerRolesWithMandatory($request->owner_type_id, $request->job_type_id);
             return ResponseHelper::successWithData($ownerRoles);
             // $attributes = ['id, name, is_mandatory'];
-        // } catch (\Exception $e) {
-            // return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
 
