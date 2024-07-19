@@ -371,12 +371,10 @@ class ExamHelper
                 // }
             } else {
                 if ($withAnswer) {
-                    $trueFalseQuestion = TrueFalseQuestion::findOrFail($formQuestion->question_id)->first(['answer']);
+                    $trueFalseQuestion = TrueFalseQuestion::where('question_id', $formQuestion->question_id)->first(['answer']);
                     if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
-                        // $question['is_true'] = true;
                         $question->is_true = true;
                     } else {
-                        // $question['is_true'] = false;
                         $question->is_true = false;
                     }
                 }

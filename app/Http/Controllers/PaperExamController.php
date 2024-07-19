@@ -129,7 +129,6 @@ class PaperExamController extends Controller
                         QuestionUsageHelper::updatePaperExamQuestionUsage($question['question_id']);
                     }
                 }
-                ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
                 DB::commit();
                 return ResponseHelper::successWithData(['id' => $realExam->id]);
             } else {

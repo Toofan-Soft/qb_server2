@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
 use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
+use Illuminate\Support\Carbon;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\DatetimeHelper;
@@ -547,12 +548,12 @@ class LecturerOnlineExamController extends Controller
     {
         Gate::authorize('retrieveOnlineExamFormQuestions', LecturerOnlineExamController::class);
 
-        try {
+        // try {
             $questions = ExamHelper::getFormQuestionsWithDetails($request->form_id, false, false, true);
             return ResponseHelper::successWithData($questions);
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function changeOnlineExamStatus(Request $request)
