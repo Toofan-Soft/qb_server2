@@ -588,6 +588,8 @@ class PracticeExamController extends Controller
             ]);
 
             QuestionUsageHelper::updatePracticeExamQuestionsUsage($practiceExam);
+            // return [QuestionUsageHelper::updatePracticeExamQuestionsUsage($practiceExam)];
+
             DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {

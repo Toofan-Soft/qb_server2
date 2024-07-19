@@ -77,6 +77,7 @@ class UserHelper
         } catch (\Exception $e) {
             DB::rollBack();
             return false;
+            // throw $e;
         }
     }
 

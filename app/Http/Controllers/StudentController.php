@@ -51,7 +51,7 @@ class StudentController extends Controller
         }
 
         DB::beginTransaction();
-        try {
+        // try {
             $student =  Student::create([
                 'academic_id' => $request->academic_id,
                 'arabic_name' =>  $request->arabic_name,
@@ -62,21 +62,22 @@ class StudentController extends Controller
                 'birthdate' =>  $request->birthdate ?? null,
                 'gender' =>  $request->gender_id,
             ]);
-
             // add initail student courses, that belonge to (department, level, semester)
             $this->addStudentCoures($student->id, $request->department_id, $request->level_id, $request->semester_id);
+            
             if ($request->email) {
                 if (!UserHelper::addUser($request->email, OwnerTypeEnum::STUDENT->value, $student->id)) {
                     return ResponseHelper::serverError();
                     // return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الطالب');
                 }
             }
+
             DB::commit();
             return ResponseHelper::success();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function modifyStudent(Request $request, Student $student)
