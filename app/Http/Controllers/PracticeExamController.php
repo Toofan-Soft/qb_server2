@@ -461,7 +461,7 @@ class PracticeExamController extends Controller
             new EnumReplacement('language_name', LanguageEnum::class)
         ]);
 
-        $practiceExam->is_started = (intval($practiceExam->status) === PracticeExamStatusEnum::ACTIVE->value) ? true : false;
+        $practiceExam->is_started = (intval($practiceExam->status) != PracticeExamStatusEnum::NEW->value) ? true : false;
         $practiceExam->is_suspended = (intval($practiceExam->status) === PracticeExamStatusEnum::SUSPENDED->value) ? true : false;
         $practiceExam->is_complete = (intval($practiceExam->status) === PracticeExamStatusEnum::COMPLETE->value) ? true : false;
 
@@ -673,7 +673,7 @@ class PracticeExamController extends Controller
                     'remaining_duration' => $practiceExamUsage->first()->remaining_duration - DatetimeHelper::getDifferenceInSeconds(DatetimeHelper::now(), $practiceExamUsage->first()->start_datetime)
                 ]);
 
-                QuestionUsageHelper::updatePracticeExamQuestionsAnswerUsage($practiceExam);
+                QuestionUsageHelper::updatePracticeExamQuestionsUsageAnswer($practiceExam);
 
                 DB::commit();
                 return ResponseHelper::success();

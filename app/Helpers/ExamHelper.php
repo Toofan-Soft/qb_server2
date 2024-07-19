@@ -19,6 +19,7 @@ use App\Enums\ExamStatusEnum;
 use App\Models\StudentAnswer;
 use App\Enums\CoursePartsEnum;
 use Illuminate\Support\Carbon;
+use App\Enums\AppreciationEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\QuestionHelper;
@@ -481,7 +482,9 @@ class ExamHelper
 
     public static function getExamResultAppreciation($scoreRate)
     {
-        return 'exelent';
+        //for language we must choice like exam langauage or user language
+        return AppreciationEnum::getScoreRateAppreciation($scoreRate, LanguageHelper::getEnumLanguageName());
+
     }
 
     /**

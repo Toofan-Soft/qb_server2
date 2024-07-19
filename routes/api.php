@@ -67,12 +67,13 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
 
 Route::post('user/register', [GuestController::class, 'addGuest']);
+Route::put('user/resend-code', [UserController::class, 'resendCode']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);
 Route::post('user/verify-account-after-recovery', [UserController::class, 'verifyAccountAfterRecvery']);
 Route::post('user/login', [UserController::class, 'login']);
-Route::put('user/change-password', [UserController::class, 'changePassword']);
 Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
 Route::put('user/change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+Route::get('enum/retrieve-gender-list', [EnumsController::class, 'retrieveRegisterGenders']);
 // Route::post('employee/add', [EmployeeController::class, 'addEmployee']);
 // Route::post('user-management/add', [UserManagementController::class, 'addUser']);
 
@@ -309,12 +310,14 @@ Route::middleware('auth:api')->group(function () {
         // Route::post('verify', [UserController::class, 'verifyAccount']);
         // Route::post('login', [UserController::class, 'login']);
         Route::post('logout', [UserController::class, 'logout']);
-        Route::put('resend-code', [UserController::class, 'resendCode']);
+        // Route::put('resend-code', [UserController::class, 'resendCode']);
         Route::put('change-password', [UserController::class, 'changePassword']);
         Route::put('change-language', [UserController::class, 'changeLanguage']);
-        Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
-        Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+        // Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
+        // Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+        // Route::post('verify-account-after-recovery', [UserController::class, 'verifyAccountAfterRecvery']);
         Route::get('retrieve-profile', [UserController::class, 'retrieveProfile']);
+
     });
 
 
@@ -412,7 +415,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-difficulty-level-list', [EnumsController::class, 'retrieveDifficultyLevels']);
         Route::get('retrieve-question-type-list', [EnumsController::class, 'retrieveQuestionTypes']);
         Route::get('retrieve-question-status-list', [EnumsController::class, 'retrieveQuestionStatus']);
-        // Route::get('retrieve-acceptance-status-list', [EnumsController::class, 'retrieveAcceptanceStatus']);
         Route::get('retrieve-accessibility-status-list', [EnumsController::class, 'retrieveAccessibilityStatus']);
         Route::get('retrieve-semester-list', [EnumsController::class, 'retrieveSemesters']);
         Route::get('retrieve-levels-count-list', [EnumsController::class, 'retrieveLevelsCounts']);
@@ -431,7 +433,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-student-online-exam-status-list', [EnumsController::class, 'retrieveStudentOnlineExamStatus']);
         Route::get('retrieve-online-exam-taking-status-list', [EnumsController::class, 'retrieveOnlineExamTakingStatus']);
     });
-
 
 
     //filter
@@ -458,7 +459,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-employee-list', [FilterController::class, 'retrieveEmployees']);
         Route::get('retrieve-lecturer-list', [FilterController::class, 'retrieveLecturers']);
         Route::get('retrieve-employee-of-job-list', [FilterController::class, 'retrieveEmployeesOfJob']);
-        Route::get('retrieve-academic-year-list', [FilterController::class, 'retrieveAcademicYears']);
+        // Route::get('retrieve-academic-year-list', [FilterController::class, 'retrieveAcademicYears']);
         Route::get('retrieve-non-owner-employee-list', [FilterController::class, 'retrieveNonOwnerEmployees']);
         Route::get('retrieve-non-owner-student-list', [FilterController::class, 'retrieveNonOwnerStudents']);
         Route::get('retrieve-role-list', [FilterController::class, 'retrieveRoles']);
@@ -477,10 +478,6 @@ Route::prefix('test/')->group(function () {
 });
 
 //enum
-Route::prefix('enum/')->group(function () {
-    Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveRegisterGenders']);
-});
-
 
 //test enum
 Route::get('getenum', function () {

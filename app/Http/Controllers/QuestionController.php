@@ -56,26 +56,27 @@ class QuestionController extends Controller
 
             if ($request->type_id === QuestionTypeEnum::TRUE_FALSE->value) {
                 if (NullHelper::is_null($request, ['is_true'])) {
-                    return "required 'is_true'!";
+                    // return ResponseHelper::clientError1("required 'is_true'!");
+                    return ResponseHelper::clientError();
                 }
 
                 $question->true_false_question()->create([
                     'answer' => ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
                 ]);
             } elseif ($request->type_id === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
-                if (NullHelper::is_null($request, ['choices'])) {
-                    return "required 'choices'!";
-                }
+                // if (NullHelper::is_null($request, ['choices'])) {
+                //     return "required 'choices'!";
+                // }
 
-                if (!is_array($request->choices)) {
-                    return "'choices' must be an array!";
-                }
+                // if (!is_array($request->choices)) {
+                //     return "'choices' must be an array!";
+                // }
 
-                foreach ($request->choices as $choice) {
-                    if (NullHelper::is_null($choice, ['content', 'is_true'])) {
-                        return "Each item in 'choices' must have a non-null 'content' and 'is_true'!";
-                    }
-                }
+                // foreach ($request->choices as $choice) {
+                //     if (NullHelper::is_null($choice, ['content', 'is_true'])) {
+                //         return "Each item in 'choices' must have a non-null 'content' and 'is_true'!";
+                //     }
+                // }
 
                 foreach ($request->choices as $choice) {
                     $question->choice()->create([
@@ -85,7 +86,8 @@ class QuestionController extends Controller
                     ]);
                 }
             } else {
-                return "unknown 'type_id'!";
+                // return ResponseHelper::clientError1("unknown 'type_id'!");
+                return ResponseHelper::clientError();
             }
             DB::commit();
             return ResponseHelper::success();
@@ -515,25 +517,25 @@ class QuestionController extends Controller
         $rules = [
             'topic_id' => 'required|exists:topics,id',
             'content' => 'required|string',
-            // 'attachment' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'attachment' => ['nullable', new ByteArrayValidationRule],
             'title' => 'nullable|string',
             'type_id' => ['required', new Enum(QuestionTypeEnum::class)], // Assuming QuestionTypeEnum holds valid values
-            // 'difficulty_level_id' => 'required|float',
-            'difficulty_level_id' => 'required',
+            'difficulty_level_id' => 'required|numeric',
             'status' => new Enum(QuestionStatusEnum::class), // Assuming QuestionStatusEnum holds valid values
-            // 'accessability_status_id' => ['required', new Enum(AccessibilityStatusEnum::class)], // Assuming AccessibilityStatusEnum holds valid values
             'accessibility_status_id' => ['required', new Enum(AccessibilityStatusEnum::class)], // Assuming AccessibilityStatusEnum holds valid values
             'estimated_answer_time' => 'required|integer',
             'language_id' => ['required', new Enum(LanguageEnum::class)],
-            'is_true' => 'nullable',
+            'is_true' => 'nullable|boolean',
             
             // choice rules 
-            // 'question_id' => 'required|exists:questions,id',
-            // 'content' => 'required|string',
-            // 'attachment' => 'nullable|string',
-            // 'is_true' => 'required',
-            
+            // 'choices' => 'required|array|min:1',
+            // 'choices' => 'required|array|min:4',
+            // 'choices' => 'nullable|array',
+            'choices' => 'required|array',
+            'choices.*.attachment' => ['nullable', new ByteArrayValidationRule],
+            'choices.*.content' => 'required|string',
+            'choices.*.is_true' => 'required|boolean',
+
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

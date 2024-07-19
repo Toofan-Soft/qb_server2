@@ -17,7 +17,7 @@ use App\Enums\SemesterEnum;
 use App\Helpers\ExamHelper;
 use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
-use App\Enums\ExamStatusEnum;
+use App\Enums\OnlineExamStatusEnum;
 use App\Models\StudentAnswer;
 use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
@@ -88,7 +88,7 @@ class StudentOnlineExamController extends Controller
                 ->where('real_exams.id', $request->id)
                 ->where('real_exams.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
                 // ->where('real_exams.datetime', '>', now()) // Not-Taken
-                // ->where('online_exams.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
+                // ->where('online_exams.status', OnlineExamStatusEnum::ACTIVE->value) // ACTIVE
                 ->where('online_exams.exam_datetime_notification_datetime', '<=', DatetimeHelper::now()) // VISIBLE
                 ->where('course_students.student_id', $studentId)
                 // ->where('course_students.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
@@ -122,7 +122,7 @@ class StudentOnlineExamController extends Controller
                     ->first();
                 if (
                     $exam->datetime <= DatetimeHelper::now() &&
-                    intval($exam->status) === ExamStatusEnum::ACTIVE->value
+                    intval($exam->status) === OnlineExamStatusEnum::ACTIVE->value
                 ) {
                     if ($studentOnlinExam) {
                         $takingStatus = intval($studentOnlinExam->status);
@@ -141,7 +141,7 @@ class StudentOnlineExamController extends Controller
                         // default..
                         $exam->is_takable = false;
                     }
-                } elseif (intval($exam->status) === ExamStatusEnum::COMPLETE->value) {
+                } elseif (intval($exam->status) === OnlineExamStatusEnum::COMPLETE->value) {
                     // exam complete..
                     $exam->is_complete = true;
                 }
@@ -257,7 +257,7 @@ class StudentOnlineExamController extends Controller
 
             if (
                 $exam->datetime <= DatetimeHelper::now() &&
-                intval($exam->status) === ExamStatusEnum::ACTIVE->value
+                intval($exam->status) === OnlineExamStatusEnum::ACTIVE->value
             ) {
                 $studentId = Student::where('user_id', auth()->user()->id)
                     ->first()['id'];
@@ -335,10 +335,9 @@ class StudentOnlineExamController extends Controller
                     'end_datetime' => DatetimeHelper::now(),
                 ]);
 
-            // QuestionUsageHelper::updateOnlineExamQuestionsAnswerUsage($studentOnlineExam);
-
             // refresh student and proctor
-            // OnlineExamListenerHelper::refreshProctor($student->id, $request->exam_id, $studentOnlineExam->form_id);
+            // OnlineExamListenerHelper::refreshProctor($student->id, $request->exam_id);
+
             DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
@@ -374,7 +373,7 @@ class StudentOnlineExamController extends Controller
                 ]);
 
             // refresh student and proctor 
-            // OnlineExamListenerHelper::refreshProctor($studentId, $request->exam_id, $formId);
+            // OnlineExamListenerHelper::refreshProctor($studentId, $request->exam_id);
 
             return ResponseHelper::success();
         } catch (\Exception $e) {
@@ -399,15 +398,25 @@ class StudentOnlineExamController extends Controller
                     'course_parts.part_id as course_part_name ',
                     'real_exams.id',
                     'real_exams.datetime',
+                    'student_online_exams.form_id',
+                    'online_exams.result_notification_datetime',
                 )
+                // ->where('real_exams.datetime', '<=', DatetimeHelper::now()) // هل يتم اضافة هذا التحقق 
+                ->where('online_exams.status', OnlineExamStatusEnum::COMPLETE->value) // ACTIVE
+                // ->where('online_exams.exam_datetime_notification_datetime', '<=', DatetimeHelper::now()) // هل يتم اضافة هذا التحقق
+
                 ->where('student_online_exams.student_id', '=', $studentId)
-                ->where('student_online_exams.status', '=', StudentOnlineExamStatusEnum::COMPLETE->value)
+                ->where('student_online_exams.status', '=', StudentOnlineExamStatusEnum::COMPLETE->value) // هل يتم ايضا التحقق اذا كانت حالة الاختبار ملغي
                 ->get();
             $onlineExams = ProcessDataHelper::enumsConvertIdToName($onlineExams, [new EnumReplacement('course_part_name', CoursePartsEnum::class)]);
             foreach ($onlineExams as $onlineExam) {
-                $studentResult = $this->retrieveStudentOnlineExamsResult($onlineExam->id, 1, $studentId);
-                $onlineExam->score_rate = $studentResult['score_rate'];
-                $onlineExam->appreciation = $studentResult['appreciation'];
+                if(DatetimeHelper::convertDateTimeToLong($onlineExam->result_notification_datetime) <= DatetimeHelper::convertDateTimeToLong(DatetimeHelper::now())){
+                // if($onlineExam->result_notification_datetime <= DatetimeHelper::now()){
+                    $studentResult = $this->retrieveStudentOnlineExamsResult($onlineExam->id, $onlineExam->form_id, $studentId);
+                    $onlineExam->score_rate = $studentResult['score_rate'];
+                    $onlineExam->appreciation = $studentResult['appreciation'];
+                }
+                unset($onlineExam->result_notification_datetime);
             }
 
             return $onlineExams;
@@ -436,19 +445,12 @@ class StudentOnlineExamController extends Controller
             $StudentScore = 0;
 
             foreach ($questionsAnswers as $questionAnswer) {
-                $question = Question::findOrFail($questionAnswer->questoin_id);
-                if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
-                    if (ExamHelper::checkTrueFalseQuestionAnswer($question, $questionAnswer->answer)) {
-                        $StudentScore += $examScores[QuestionTypeEnum::TRUE_FALSE->value];
-                    }
-                } else {
-                    if (ExamHelper::checkChoicesQuestionAnswer($question, $questionAnswer->answer, $questionAnswer->combination_id)) {
-                        $StudentScore += $examScores[QuestionTypeEnum::MULTIPLE_CHOICE->value];
-                    }
+                if (ExamHelper::checkQuestionAnswer($questionAnswer->question_id, $questionAnswer->answer, $questionAnswer->combination_id)) {
+                    $StudentScore++;
                 }
             }
 
-            $scoreRate = $StudentScore / $examScores['totalScore'] * 100;
+            $scoreRate = $StudentScore / $examScores * 100;
             $appreciation = ExamHelper::getExamResultAppreciation($scoreRate);
 
             $studentResult = [
@@ -464,7 +466,7 @@ class StudentOnlineExamController extends Controller
 
     private function getRealExamQuestionScore($onlineExamId)
     {
-        $examScores = [];
+        // $examScores = [];
         try {
             $realExam = RealExam::findOrFail($onlineExamId);
 
@@ -473,12 +475,13 @@ class StudentOnlineExamController extends Controller
 
             $totalScore = 0;
             foreach ($realExamQuestionTypes as $realExamQuestionType) {
-                $examScores[intval($realExamQuestionType->question_type)] = $realExamQuestionType->question_score;
+                // $examScores[intval($realExamQuestionType->question_type)] = $realExamQuestionType->question_score;
                 $totalScore += $realExamQuestionType->questions_count * $realExamQuestionType->question_score;
             }
 
             $examScores['totalScore'] = $totalScore;
-            return $examScores;
+            // return $examScores;
+            return $totalScore;
         } catch (\Exception $e) {
             throw $e;
         }
@@ -505,26 +508,26 @@ class StudentOnlineExamController extends Controller
             //     ->where('student_online_exams.status', '!=', StudentOnlineExamStatusEnum::COMPLETE->value)
             //     ->get();
 
-            $exams = DB::table('real_exams as res')
-                ->join('online_exams as oes', 'res.id', '=', 'oes.id')
-                ->join('course_lecturers as cl', 'res.course_lecturer_id', '=', 'cl.id')
-                ->join('department_course_parts as dcp', 'cl.department_course_part_id', '=', 'dcp.id')
-                ->join('course_students as cs', 'dcp.department_course_id', '=', 'cs.department_course_id')
-                ->join('course_parts as cp', 'dcp.course_part_id', '=', 'cp.id')
-                ->join('courses as c', 'cp.course_id', '=', 'c.id')
-                ->where('res.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
-                ->where('res.datetime', '>', DatetimeHelper::now()) // Not-Taken
-                ->where('oes.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
-                ->where('oes.exam_datetime_notification_datetime', '<=', DatetimeHelper::now()) // VISIBLE
-                ->where('cs.student_id', $studentId)
-                ->where('cs.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
-                ->where('cs.academic_year', '=', date('Y')) // CURRENT YEAR
-                ->where('cl.academic_year', '=', date('Y')) // CURRENT YEAR
+            $exams = DB::table('real_exams')
+                ->join('online_exams', 'real_exams.id', '=', 'online_exams.id')
+                ->join('course_lecturers', 'real_exams.course_lecturer_id', '=', 'course_lecturers.id')
+                ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
+                ->join('course_students', 'department_course_parts.department_course_id', '=', 'course_students.department_course_id')
+                ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
+                ->join('courses', 'course_parts.course_id', '=', 'courses.id')
+                ->where('real_exams.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
+                ->where('real_exams.datetime', '>', DatetimeHelper::now()) // Not-Taken
+                ->where('online_exams.status', OnlineExamStatusEnum::ACTIVE->value) // ACTIVE
+                ->where('online_exams.exam_datetime_notification_datetime', '<=', DatetimeHelper::now()) // VISIBLE
+                ->where('course_students.student_id', $studentId)
+                ->where('course_students.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
+                ->where('course_students.academic_year', '=', date('Y')) // CURRENT YEAR
+                ->where('course_lecturers.academic_year', '=', date('Y')) // CURRENT YEAR
                 ->select(
-                    'res.id',
-                    'res.datetime',
-                    'c.arabic_name as course_name',
-                    'cp.part_id as course_part_name'
+                    'real_exams.id',
+                    'real_exams.datetime',
+                    'courses.arabic_name as course_name',
+                    'course_parts.part_id as course_part_name'
                 )
                 ->get()
                 ->map(function ($exam) {

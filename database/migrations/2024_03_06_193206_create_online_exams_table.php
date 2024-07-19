@@ -1,7 +1,7 @@
 <?php
 
 use App\Enums\ExamStateEnum;
-use App\Enums\ExamStatusEnum;
+use App\Enums\OnlineExamStatusEnum;
 use App\Enums\OnlineExamStateEnum;
 use Illuminate\Support\Facades\DB;
 use App\Enums\ExamConductMethodEnum;
@@ -18,7 +18,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('online_exams', function (Blueprint $table) {
-            $table->enum('status', ExamStatusEnum::values());              //***  change OnlineExamStateEnum into ExamStateEnum
+            $table->enum('status', OnlineExamStatusEnum::values());              //***  change OnlineExamStateEnum into ExamStateEnum
             $table->enum('conduct_method', ExamConductMethodEnum::values());
             $table->timestamp('exam_datetime_notification_datetime');
             $table->timestamp('result_notification_datetime');  // suggest after 1 hour by $table->timestamp('result_notification_date')->default(DB::raw('CURRENT_TIMESTAMP + INTERVAL 1 HOUR'));

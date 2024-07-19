@@ -16,7 +16,7 @@ use App\Helpers\ExamHelper;
 use App\Helpers\NullHelper;
 use App\Models\FormQuestion;
 use Illuminate\Http\Request;
-use App\Enums\ExamStatusEnum;
+use App\Enums\OnlineExamStatusEnum;
 use App\Models\StudentAnswer;
 use App\Enums\CoursePartsEnum;
 use App\Enums\RealExamTypeEnum;
@@ -61,7 +61,7 @@ class ProctorOnlinExamController extends Controller
                     'course_parts.part_id as course_part_name'
                 )
                 ->where('online_exams.proctor_id', '=', $proctor->id)
-                ->where('online_exams.status', '=', ExamStatusEnum::ACTIVE->value)
+                ->where('online_exams.status', '=', OnlineExamStatusEnum::ACTIVE->value)
                 ->get()
                 ->map(function ($exam) {
                     $exam->datetime = DatetimeHelper::convertDateTimeToLong($exam->datetime);
@@ -99,7 +99,7 @@ class ProctorOnlinExamController extends Controller
             $onlineExamStatus = OnlineExam::findOrFail($request->id)
                 ->first(['status'])['status'];
 
-            if (intval($onlineExamStatus) === ExamStatusEnum::COMPLETE->value) {
+            if (intval($onlineExamStatus) === OnlineExamStatusEnum::COMPLETE->value) {
                 $realExam->is_complete = true;
             } else {
                 $realExam->is_takable = DatetimeHelper::convertLongToDateTime($realExam->datetime) <= DatetimeHelper::now();
@@ -171,7 +171,7 @@ class ProctorOnlinExamController extends Controller
                 // ->where('real_exams.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
                 // ->where('real_exams.datetime', '>', now()) // Not-Taken
                 ->where('real_exams.datetime', '<=', DatetimeHelper::now()) // ACTIVE-NOW
-                ->where('online_exams.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
+                ->where('online_exams.status', OnlineExamStatusEnum::ACTIVE->value) // ACTIVE
                 ->where('course_students.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
                 ->where('course_students.academic_year', '=', date('Y')) // CURRENT YEAR
                 // ->where('course_lecturers.academic_year', '=', date('Y')) // CURRENT YEAR
@@ -253,6 +253,7 @@ class ProctorOnlinExamController extends Controller
 
     //     return $item;
     // }
+
     public function refreshOnlineExamStudents(Request $request)
     {
         // acepted : exam id, student id
@@ -270,7 +271,7 @@ class ProctorOnlinExamController extends Controller
             // ->where('res.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
             // ->where('res.datetime', '>', now()) // Not-Taken
             ->where('res.datetime', '<=', DatetimeHelper::now()) // ACTIVE-NOW
-            ->where('oes.status', ExamStatusEnum::ACTIVE->value) // ACTIVE
+            ->where('oes.status', OnlineExamStatusEnum::ACTIVE->value) // ACTIVE
             ->where('cs.status', CourseStudentStatusEnum::ACTIVE->value) // ACTIVE
             ->where('cs.academic_year', '=', date('Y')) // CURRENT YEAR
             // ->where('cl.academic_year', '=', date('Y')) // CURRENT YEAR
@@ -428,7 +429,7 @@ class ProctorOnlinExamController extends Controller
                 }
 
                 // refresh proctor and student
-                // OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id, $studentOnlineExam->form_id);
+                // OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id);
 
                 DB::commit();
                 return ResponseHelper::success();
@@ -481,7 +482,7 @@ class ProctorOnlinExamController extends Controller
                 // $studentInfo = $this->refreshOnlineExamStudents($studentOnlineExam);
                 // event(new StudentRefreshEvevnt($studentInfo)); // execute event
 
-                // OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id, $studentOnlineExam->form_id);
+                // OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id);
                 DB::commit();
                 return ResponseHelper::success();
             }
@@ -509,7 +510,7 @@ class ProctorOnlinExamController extends Controller
 
 
                 // refresh studnet and proctor 
-                // OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id, $studentOnlineExam->form_id);
+                // OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id);
                 DB::commit();
                 return ResponseHelper::success();
             }
@@ -536,9 +537,8 @@ class ProctorOnlinExamController extends Controller
                     'end_datetime' => DatetimeHelper::now(),
                 ]);
 
-
                 // refresh student and proctor
-                // OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id, $studentOnlineExam->form_id);
+                // OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id);
                 DB::commit();
                 return ResponseHelper::success();
             }
@@ -550,12 +550,50 @@ class ProctorOnlinExamController extends Controller
 
     public function finishOnlineExam(Request $request)
     {
+        // request {id}
         Gate::authorize('finishOnlineExam', ProctorOnlinExamController::class);
 
         try {
             DB::beginTransaction();
+            /**
+             * تغير حالة الاختبار الالكتروني الي مكتمل 
+             * تغير حالة الاختبار عند كل الطلاب الذي يختبرو 
+             * تحديث بيانات استخدام السؤال (الاختبار الالكتروني، واجابات الطلاب)
+             * استدعاء الاستماع لطلاب والمراقب
+             * 
+             */
+            $onlineExam = OnlineExam::findOrFail($request->id);
+            if(intval($onlineExam->status) != OnlineExamStatusEnum::ACTIVE->value){
+                return ResponseHelper::clientError();
+            }
+
+            
+            $studentOnlineExams = $onlineExam->student_online_exams()->get();
+            
+            return $studentOnlineExams;
+            foreach ($studentOnlineExams as $studentOnlineExam) {
+                if((intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::ACTIVE->value)
+                 || (intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value)
+                ){
+                    $studentOnlineExam->update([
+                        'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
+                        'end_datetime' => DatetimeHelper::now(),
+                    ]);
+
+                    OnlineExamListenerHelper::refreshStudent($studentOnlineExam->student_id, $studentOnlineExam->exam_id);
+                    OnlineExamListenerHelper::refreshProctor($studentOnlineExam->student_id, $studentOnlineExam->exam_id);
+
+                }
+            }
+
+            $onlineExam->update([
+                'status' => OnlineExamStatusEnum::COMPLETE->value
+            ]);
 
             QuestionUsageHelper::updateOnlineExamQuestionsUsage($request->id);
+
+            return $onlineExam;
+
             DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
@@ -564,32 +602,4 @@ class ProctorOnlinExamController extends Controller
         }
     }
 
-    // not complete
-    private function getStudentAnsweredQuestionsCount($formId, $studentId)
-    {
-
-        $formId = 1; // يتم عمل دالة لمعرفة رقم النموذج حق الطالب، او جعل هذه الدالة تستقبل رقم النموذج
-        $questionsCount = StudentAnswer::where('form_id', '=', $formId)
-            ->where('student_id', '=', $studentId)->count();
-
-        return $questionsCount;
-    }
-
-    // الدالة التالية تمثل الدالة التي سوف تقوم بعملية التحديث للمراقب 
-    // وهو مؤقته 
-
-    public function refreshProctorOnlineExamStudents(StudentOnlineExam $studentOnlineExam)
-    {
-        // return is {id, status_name, start_datetime, end_datetime, form_name, ?, answered_questions_count, is_suspended}
-        $refreshedStudentOnlineExam = [
-            'id' => $studentOnlineExam->student_id,
-            'start_datetime' => $studentOnlineExam->start_datetime,
-            'end_datetime' => $studentOnlineExam->end_datetime,
-            'is_suspended' => (intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value) ? true : false,
-            'status_name' => EnumTraits::getNameByNumber(intval($studentOnlineExam->status), StudentOnlineExamStatusEnum::class),
-            'form_name' => $studentOnlineExam->form_name, // يتم عمل دالة ترجع اسم النموذج عن طريق رقم النموذج او نشوف حل مناسب لهذه المشكةل
-            'answered_questions_count' => $studentOnlineExam->status, // يتم عمل دالة لعمل هذا الجزء 
-        ];
-        return $refreshedStudentOnlineExam;
-    }
 }

@@ -20,7 +20,7 @@ use App\Helpers\ExamHelper;
 use App\Helpers\NullHelper;
 use App\Helpers\ParamHelper;
 use Illuminate\Http\Request;
-use App\Enums\ExamStatusEnum;
+use App\Enums\OnlineExamStatusEnum;
 use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
 use Illuminate\Support\Carbon;
@@ -100,7 +100,7 @@ class LecturerOnlineExamController extends Controller
                     'exam_datetime_notification_datetime' => $request->datetime_notification_datetime,
                     'result_notification_datetime'  => $request->result_notification_datetime,
                     'proctor_id' => $request->proctor_id ?? null,
-                    'status' => ExamStatusEnum::ACTIVE->value,
+                    'status' => OnlineExamStatusEnum::ACTIVE->value,
                     'id' => $realExam->id,
                 ]);
 
@@ -250,7 +250,7 @@ class LecturerOnlineExamController extends Controller
                 });
 
             if (!isset($request->status_id)) {
-                array_push($enumReplacements,  new EnumReplacement('status_name', ExamStatusEnum::class));
+                array_push($enumReplacements,  new EnumReplacement('status_name', OnlineExamStatusEnum::class));
             }
 
             if (!isset($request->type_id)) {
@@ -273,7 +273,7 @@ class LecturerOnlineExamController extends Controller
 
         $enumReplacements  = [
             new EnumReplacement('type_name', ExamTypeEnum::class),
-            new EnumReplacement('status_name', ExamStatusEnum::class),
+            new EnumReplacement('status_name', OnlineExamStatusEnum::class),
             new EnumReplacement('course_part_name', CoursePartsEnum::class),
             new EnumReplacement('language_name', LanguageEnum::class),
         ];
@@ -372,15 +372,15 @@ class LecturerOnlineExamController extends Controller
             $onlineExam->datetime_notification_datetime = $onlineExam->exam_datetime_notification_datetime;
             unset($onlineExam['exam_datetime_notification_datetime']);
 
-            $onlineExam->is_suspended = intval($onlineExam->status_name) === ExamStatusEnum::SUSPENDED->value;
-            $onlineExam->is_complete = intval($onlineExam->status_name) === ExamStatusEnum::COMPLETE->value;
+            $onlineExam->is_suspended = intval($onlineExam->status_name) === OnlineExamStatusEnum::SUSPENDED->value;
+            $onlineExam->is_complete = intval($onlineExam->status_name) === OnlineExamStatusEnum::COMPLETE->value;
             
             $onlineExam->is_editable = DatetimeHelper::convertLongToDateTime($realExam->datetime) > DatetimeHelper::now();
             // $onlineExam->is_deletable = $realExam->datetime > now();
             
             $onlineExam = ProcessDataHelper::enumsConvertIdToName($onlineExam, [
-                new EnumReplacement('status_name', ExamStatusEnum::class),
-                new EnumReplacement('conduct_method_name', ExamStatusEnum::class),
+                new EnumReplacement('status_name', OnlineExamStatusEnum::class),
+                new EnumReplacement('conduct_method_name', OnlineExamStatusEnum::class),
             ]);
             $onlineExam = ProcessDataHelper::columnConvertIdToName($onlineExam, [ // need to fix columnConvertIdToName method
                 new ColumnReplacement('proctor_name', LanguageHelper::getNameColumnName(null, null), Employee::class),
@@ -564,16 +564,16 @@ class LecturerOnlineExamController extends Controller
             $onlineExam = OnlineExam::findOrFail($request->id);
             $realExam = RealExam::findOrFail($request->id);
 
-            if (!(intval($onlineExam->status) === ExamStatusEnum::COMPLETE->value) ||
+            if (!(intval($onlineExam->status) === OnlineExamStatusEnum::COMPLETE->value) ||
                 $realExam->datetime > DatetimeHelper::now()
             ) {
-                if (intval($onlineExam->status) === ExamStatusEnum::SUSPENDED->value) {
+                if (intval($onlineExam->status) === OnlineExamStatusEnum::SUSPENDED->value) {
                     $onlineExam->update([
-                        'status' => ExamStatusEnum::ACTIVE->value,
+                        'status' => OnlineExamStatusEnum::ACTIVE->value,
                     ]);
                 } else {
                     $onlineExam->update([
-                        'status' => ExamStatusEnum::SUSPENDED->value,
+                        'status' => OnlineExamStatusEnum::SUSPENDED->value,
                     ]);
                 }
             } else {

@@ -570,15 +570,10 @@ class FilterController extends Controller
         }
     }
 
-    public function retrieveAcademicYears()
-    {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
-        // need to overview
-        // $attributes = ['id', 'arabic_name as name'];
-        // $conditionAttribute = [ 'job_type' => $request->job_type_id];
-        // return GetHelper::retrieveModels(Employee::class, $attributes, $conditionAttribute);
-    }
+    // public function retrieveAcademicYears()
+    // {
+    //     Gate::authorize('retrieveEditableCourse', FilterController::class);
+    // }
 
     // public function retrieveDepartmentStudents(Request $request)
     // {
