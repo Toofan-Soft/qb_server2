@@ -73,6 +73,7 @@ Route::post('user/login', [UserController::class, 'login']);
 Route::put('user/change-password', [UserController::class, 'changePassword']);
 Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
 Route::put('user/change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+// Route::post('employee/add', [EmployeeController::class, 'addEmployee']);
 // Route::post('user-management/add', [UserManagementController::class, 'addUser']);
 
 Route::prefix('guest/')->group(function () {
@@ -261,7 +262,6 @@ Route::middleware('auth:api')->group(function () {
     });
 
 
-
     //student
     Route::prefix('student/')->group(function () {
         Route::post('add', [StudentController::class, 'addStudent']);
@@ -271,7 +271,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-editable', [StudentController::class, 'retrieveEditableStudent']);
         Route::get('retrieve-list', [StudentController::class, 'retrieveStudents']);
     });
-
 
 
     //course student
@@ -304,7 +303,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-list', [UserManagementController::class, 'retrieveUsers']);
         Route::get('retrieve-owner-role-list', [UserManagementController::class, 'retrieveOwnerRoles']);
     });
-
 
     //user
     Route::prefix('user/')->group(function () {
@@ -347,10 +345,10 @@ Route::middleware('auth:api')->group(function () {
     });
 
 
-
     //proctor online exam
     Route::prefix('proctor-online-exam/')->group(function () {
         Route::post('start-student', [ProctorOnlinExamController::class, 'startStudentOnlineExam']); //error not found method
+        Route::put('finish', [ProctorOnlinExamController::class, 'finishOnlineExam']); //error not found method
         Route::put('suspend-student', [ProctorOnlinExamController::class, 'suspendStudentOnlineExam']);
         Route::put('continue-student', [ProctorOnlinExamController::class, 'continueStudentOnlineExam']);
         Route::put('finish-student', [ProctorOnlinExamController::class, 'finishStudentOnlineExam']);
@@ -358,7 +356,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-list', [ProctorOnlinExamController::class, 'retrieveOnlineExams']);
         Route::get('retrieve-student-list', [ProctorOnlinExamController::class, 'retrieveOnlineExamStudents']);
     });
-
 
 
     //paper exam
@@ -382,9 +379,11 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('practice-exam/')->group(function () {
         Route::post('add', [PracticeExamController::class, 'addPracticeExam']);
         Route::put('modify', [PracticeExamController::class, 'modifyPracticeExam']);
+        Route::put('start', [PracticeExamController::class, 'startPracticeExam']);
+        Route::put('suspend', [PracticeExamController::class, 'suspendPracticeExam']);
+        Route::put('continue', [PracticeExamController::class, 'continuePracticeExam']);
         Route::put('finish', [PracticeExamController::class, 'finishPracticeExam']);
         Route::put('save-question-answer', [PracticeExamController::class, 'savePracticeExamQuestionAnswer']);
-        Route::put('suspend', [PracticeExamController::class, 'suspendPracticeExam']);
         Route::delete('delete', [PracticeExamController::class, 'deletePracticeExam']);
         Route::get('retrieve', [PracticeExamController::class, 'retrievePracticeExam']);
         Route::get('retrieve-editable', [PracticeExamController::class, 'retrieveEditablePracticeExam']);

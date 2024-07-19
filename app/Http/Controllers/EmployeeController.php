@@ -27,6 +27,7 @@ use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
+use App\Helpers\Roles\ByteArrayValidationRule;
 
 class EmployeeController extends Controller
 {
@@ -182,7 +183,7 @@ class EmployeeController extends Controller
             'arabic_name' => 'required|string',
             'english_name' => 'required|string',
             'phone' => 'nullable|integer|unique:employees,phone',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => ['nullable', new ByteArrayValidationRule],
             'job_type_id' => ['required', new Enum(JobTypeEnum::class)], // Assuming JobTypeEnum holds valid values
             'qualification_id' => ['required', new Enum(QualificationEnum::class)], // Assuming QualificationEnum holds valid values
             'specialization' => 'nullable|string',

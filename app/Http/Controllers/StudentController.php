@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
 use  Illuminate\Support\Facades\Validator;
+use App\Helpers\Roles\ByteArrayValidationRule;
 
 class StudentController extends Controller
 {
@@ -50,7 +51,7 @@ class StudentController extends Controller
         }
 
         DB::beginTransaction();
-        try {
+        // try {
             $student =  Student::create([
                 'academic_id' => $request->academic_id,
                 'arabic_name' =>  $request->arabic_name,
@@ -61,21 +62,22 @@ class StudentController extends Controller
                 'birthdate' =>  $request->birthdate ?? null,
                 'gender' =>  $request->gender_id,
             ]);
-
             // add initail student courses, that belonge to (department, level, semester)
             $this->addStudentCoures($student->id, $request->department_id, $request->level_id, $request->semester_id);
+            
             if ($request->email) {
                 if (!UserHelper::addUser($request->email, OwnerTypeEnum::STUDENT->value, $student->id)) {
                     return ResponseHelper::serverError();
                     // return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الطالب');
                 }
             }
+
             DB::commit();
             return ResponseHelper::success();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function modifyStudent(Request $request, Student $student)
@@ -344,7 +346,7 @@ class StudentController extends Controller
             'arabic_name' => 'required|string',
             'english_name' => 'required|string',
             'phone' => 'nullable|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => ['nullable', new ByteArrayValidationRule],
             'gender_id' => ['required', new Enum(GenderEnum::class)],
             'birthdate' => 'nullable|integer',
             'department_id' => 'required|exists:departments,id',

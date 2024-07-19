@@ -13,8 +13,8 @@ class GenerateQuestionChoicesCombination
             $jsonData = json_encode($data);
             $methodName = 'combine';
             $process = new Process([
-                'E:\Applications\Python\Python312\python.exe',
-                // 'C:\Users\dell\AppData\Local\Programs\Python\Python312\python.exe',
+                // 'E:\Applications\Python\Python312\python.exe',
+                'C:\Users\dell\AppData\Local\Programs\Python\Python312\python.exe',
                 base_path() . '\app\AlgorithmAPI\PythonModules\combinationGeneratorAPI\start.py',
                 $methodName,
                 $jsonData

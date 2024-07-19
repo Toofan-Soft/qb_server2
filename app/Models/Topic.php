@@ -13,29 +13,18 @@ class Topic extends Model
 {
     use HasFactory;
     public $timestamps = false;
-     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
     protected $fillable = [
-        'time',
-        'date',
-        'datetime',
-    ];
-
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'time' => 'time',
-        'date' => 'date',
-        'datetime' => 'datetime',
+        'arabic_title',
+        'english_title',
+        'description',
+        'chapter_id',
     ];
 
     public function chapter() : BelongsTo {
         return $this->BelongsTo(Chapter::class);
+    }
+
+    public function questions() : HasMany {
+        return $this->HasMany(Question::class);
     }
 }

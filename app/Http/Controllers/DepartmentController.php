@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\Roles\ByteArrayValidationRule;
 
 class DepartmentController extends Controller
 {
@@ -150,7 +151,7 @@ class DepartmentController extends Controller
         $rules = [
             'arabic_name' => 'required|string|unique:departments,arabic_name|max:255',
             'english_name' => 'required|string|unique:departments,english_name|max:255',
-            'logo' =>  'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'logo' =>  ['nullable', new ByteArrayValidationRule],
             'levels_count_id' =>  ['required', new Enum(LevelsCountEnum::class)],
             'description' => 'nullable|string',
             'college_id' => 'required|exists:colleges,id',

@@ -527,6 +527,13 @@ class QuestionController extends Controller
             'estimated_answer_time' => 'required|integer',
             'language_id' => ['required', new Enum(LanguageEnum::class)],
             'is_true' => 'nullable',
+            
+            // choice rules 
+            // 'question_id' => 'required|exists:questions,id',
+            // 'content' => 'required|string',
+            // 'attachment' => 'nullable|string',
+            // 'is_true' => 'required',
+            
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

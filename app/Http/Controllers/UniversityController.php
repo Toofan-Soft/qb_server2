@@ -10,6 +10,7 @@ use App\Helpers\ValidateHelper;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\Roles\ByteArrayValidationRule;
 
 class UniversityController extends Controller
 {
@@ -113,7 +114,8 @@ class UniversityController extends Controller
             'x_platform' => 'nullable|url',
             'facebook' => 'nullable|url',
             'telegram' => 'nullable|url',
-            'logo' => 'required|image|max:2048', // Assuming the logo is uploaded as a file
+            // 'logo' => 'required|image|max:2048', // Assuming the logo is uploaded as a file
+            'logo' => ['required', new ByteArrayValidationRule], // Assuming the logo is uploaded as a file
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

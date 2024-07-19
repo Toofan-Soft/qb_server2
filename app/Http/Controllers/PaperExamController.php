@@ -129,7 +129,6 @@ class PaperExamController extends Controller
                         QuestionUsageHelper::updatePaperExamQuestionUsage($question['question_id']);
                     }
                 }
-                ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
                 DB::commit();
                 return ResponseHelper::successWithData(['id' => $realExam->id]);
             } else {
@@ -641,8 +640,8 @@ class PaperExamController extends Controller
     {
         try {
             $accessabilityStatusIds = [
-                AccessibilityStatusEnum::REALEXAM->value,
-                AccessibilityStatusEnum::PRACTICE_REALEXAM->value,
+                AccessibilityStatusEnum::REAL_EXAM->value,
+                AccessibilityStatusEnum::PRACTICE_AND_REAL_EXAM->value,
             ];
             $algorithmData = ExamHelper::getAlgorithmData($request, $accessabilityStatusIds);
             return $algorithmData;

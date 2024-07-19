@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
 use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
+use Illuminate\Support\Carbon;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\DatetimeHelper;
@@ -123,7 +124,6 @@ class LecturerOnlineExamController extends Controller
                         ]);
                     }
                 }
-                ////////// modify question usage table يفضل ان يتم عمل دالة مشتركة حتى يتم استخدامها في الاختبار الورقي
                 DB::commit();
                 return ResponseHelper::successWithData(['id' => $realExam->id]);
             } else {
@@ -548,12 +548,12 @@ class LecturerOnlineExamController extends Controller
     {
         Gate::authorize('retrieveOnlineExamFormQuestions', LecturerOnlineExamController::class);
 
-        try {
+        // try {
             $questions = ExamHelper::getFormQuestionsWithDetails($request->form_id, false, false, true);
             return ResponseHelper::successWithData($questions);
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function changeOnlineExamStatus(Request $request)
@@ -621,8 +621,8 @@ class LecturerOnlineExamController extends Controller
 
             // $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
             $accessabilityStatusIds = [
-                AccessibilityStatusEnum::REALEXAM->value,
-                AccessibilityStatusEnum::PRACTICE_REALEXAM->value,
+                AccessibilityStatusEnum::REAL_EXAM->value,
+                AccessibilityStatusEnum::PRACTICE_AND_REAL_EXAM->value,
             ];
             // $questions =  DB::table('questions')
             //     ->join('question_usages', 'questions.id', '=', 'question_usages.question_id')

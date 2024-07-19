@@ -129,13 +129,14 @@ class OnlineExamListenerHelper
     }
 
     public static function refreshStudent($student_id, $exam_id, $form_id=null) {        
-        $uid = OnlineExam::findOrFail($exam_id)->employee()->user()->id;
+        // $uid = OnlineExam::findOrFail($exam_id)->employee()->user()->id;
         
         $exam = StudentOnlineExam::where('online_exam_id', $exam_id)
             // ->where('form_id', $form_id)
+            ->where('student_id', $student_id)
             ->first();
 
-        $uid = $exam->student()->user()->id;
+        $uid = $exam->student()->first()->user()->first()->id;
         
         // $data = [];
 
@@ -157,7 +158,7 @@ class OnlineExamListenerHelper
                 // handle error...
             }
         }
-
+        return $uid;
         event(new StudentRefreshEvevnt($data, $uid));
     }
 

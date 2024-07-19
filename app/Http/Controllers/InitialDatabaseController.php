@@ -42,12 +42,13 @@ class InitialDatabaseController extends Controller
 
     public function initialDatabase(Request $request)
     {
-        $this->colleges();
+        // $this->colleges();
         // $this->courses();
         // $this->chapters($request->course_part_id);
+        // return $this->chapters($request->course_part_id);
         // $this->questionsChoices($request->topic_id);
         // $this->questionsTrueFalse($request->topic_id);
-        // return $this->acceptQuestions();
+        // $this->acceptQuestions($request->topic_id);
         // $this->acceptQuestions();
 
         return ResponseHelper::success();
@@ -107,13 +108,13 @@ class InitialDatabaseController extends Controller
             $chapter = $coursePart->chapters()->create([
                 'arabic_title' => $row['arabic_title'],
                 'english_title' => $row['english_title'],
-                'description' => $row['description'],
+                'description' => $row['description']
             ]);
             foreach ($row['topics'] as $topic) {
                 $chapter->topics()->create([
                     'arabic_title' => $topic['arabic_title'],
                     'english_title' => $topic['english_title'],
-                    'description' => $topic['description'],
+                    'description' => $topic['description']
                 ]);
             }
         }
@@ -174,6 +175,7 @@ class InitialDatabaseController extends Controller
             $question->true_false_question()->create([
                 'answer' => ($row['isCorrect']) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
             ]);
+            $question->question_usage()->create();
         }
         DB::commit();
     }
@@ -184,6 +186,7 @@ class InitialDatabaseController extends Controller
         $questions = Question::where('type', '=', QuestionTypeEnum::MULTIPLE_CHOICE->value)
             ->where('status', '=', 1)
             ->where('topic_id', '=', $topicId)
+            // ->where('id', '<=', 230)
             ->get();
         // return $questions;
         foreach ($questions as $question) {
