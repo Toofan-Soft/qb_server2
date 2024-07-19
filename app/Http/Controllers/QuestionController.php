@@ -189,7 +189,7 @@ class QuestionController extends Controller
                                 'status' => $choice['is_true']
                             ]);
                         }
-                    }    
+                    }
                 }
             }
 
@@ -290,7 +290,7 @@ class QuestionController extends Controller
     public function retrieveQuestions(Request $request)
     {
         Gate::authorize('retrieveQuestions', QuestionController::class);
-        
+
         $attributes = ['id', 'content'];
         $conditionAttribute = [
             'topic_id' => $request->topic_id,
@@ -431,9 +431,9 @@ class QuestionController extends Controller
 
             unset($question['type']);
             unset($question['id']);
-            
+
             $question = NullHelper::filter($question);
-            
+
             return ResponseHelper::successWithData($question);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -511,7 +511,7 @@ class QuestionController extends Controller
             throw $e;
         }
     }
-    
+
     public function rules(Request $request): array
     {
         $rules = [
