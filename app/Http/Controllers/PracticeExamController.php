@@ -410,7 +410,7 @@ class PracticeExamController extends Controller
                 // ->get(['question_id', 'answer', 'answer_duration', 'combination_id']);
 
                 $totalScoure = $examQuestions->count();
-                $timeSpent = $practiceExam->practice_exam_usage()->first(['remaining_duration'])->remaining_duration;
+                $timeSpent = $practiceExam->duration - $practiceExam->practice_exam_usage()->first(['remaining_duration'])->remaining_duration;
 
                 $StudentScore = 0;
 
@@ -422,7 +422,7 @@ class PracticeExamController extends Controller
                     }
                 }
 
-                $scoreRate = $StudentScore / $totalScoure * 100;
+                $scoreRate = ($StudentScore / $totalScoure * 100) /100;
                 $appreciation = ExamHelper::getExamResultAppreciation($scoreRate);
                 $questionAverageAnswerTime = $timeSpent / $totalScoure;
                 // $incorrectAnswerCount = $examQuestions->count() - $StudentScore;
@@ -437,7 +437,7 @@ class PracticeExamController extends Controller
                     'appreciation' => $appreciation
                 ];
 
-                return $examResult;
+                return ResponseHelper::successWithData($examResult);
             } else {
                 return ResponseHelper::clientError();
             }
@@ -468,7 +468,7 @@ class PracticeExamController extends Controller
         $practiceExam->is_mandatory_question_sequence = ($practiceExam->is_mandatory_question_sequence === ExamConductMethodEnum::MANDATORY->value) ? true : false;
 
         if (intval($practiceExam->status) != PracticeExamStatusEnum::NEW->value) {
-            $practiceExam->remaining_duration = $practiceExam->practice_exam_usage()->first(['remaining_duration']);
+            $practiceExam->remaining_time = $practiceExam->practice_exam_usage()->first(['remaining_duration'])['remaining_duration'];
         }
 
         $departmentCoursePart = DepartmentCoursePart::findOrFail($practiceExam->department_course_part_id);
