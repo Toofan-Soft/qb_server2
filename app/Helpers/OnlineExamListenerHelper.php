@@ -10,6 +10,7 @@ use App\Helpers\ProcessDataHelper;
 use App\Events\ProctorRefreshEvevnt;
 use App\Events\StudentRefreshEvevnt;
 use App\Enums\StudentOnlineExamStatusEnum;
+use App\Models\Employee;
 
 class OnlineExamListenerHelper
 {
@@ -130,21 +131,21 @@ class OnlineExamListenerHelper
     //     event(new ProctorRefreshEvevnt($data, $uid));
     // }
 
-    public static function refreshProctor($studentId, $exam_id)
+    public static function refreshProctor($studentId, $examId)
     {
         // return {id, status name?, form name?, start time?, end time?, answered questions count?, is suspended?}
         try {
+            $onlineExam = OnlineExam::findOrFail($examId);
+            $user = Employee::findOrFail($onlineExam->proctor_id)->user()->first();
 
-            $user = OnlineExam::findOrFail($exam_id)->employee()->user();
-
-            $exam = StudentOnlineExam::where('online_exam_id', $exam_id)
+            $exam = StudentOnlineExam::where('online_exam_id', $examId)
                 ->where('student_id', $studentId)
                 ->first();
 
-            $formName = OnlinExamHelper::getStudentFormName($exam_id,$exam->form_id); 
+            $formName = OnlinExamHelper::getStudentFormName($examId, $exam->form_id);
             $statusName = EnumTraits::getNameByNumber(intval($exam->status), StudentOnlineExamStatusEnum::class, LanguageHelper::getEnumLanguageName($user));
-            $startTime = DatetimeHelper::convertTimeToLong($exam->start_datetime);
-            $endTime = DatetimeHelper::convertTimeToLong($exam->end_datetime);
+            $startTime = DatetimeHelper::convertDateTimeToLong($exam->start_datetime);
+            $endTime = DatetimeHelper::convertDateTimeToLong($exam->end_datetime);
             $answeredQuestionsCount = StudentAnswer::where('student_id', $studentId)
                 ->where('form_id', $exam->form_id)
                 ->where('answer', '!=', null)
@@ -162,7 +163,7 @@ class OnlineExamListenerHelper
                 'is_suspended' => $isSuspended
 
             ];
-            return $data;
+            // return $data;
             event(new ProctorRefreshEvevnt($data, $user->id));
         } catch (\Exception $e) {
             throw $e;
@@ -171,22 +172,20 @@ class OnlineExamListenerHelper
 
     public static function refreshStudent($studentId, $examId)
     {
-        // $uid = OnlineExam::findOrFail($exam_id)->employee()->user()->id;
-
         $exam = StudentOnlineExam::where('online_exam_id', $examId)
             ->where('student_id', $studentId)
-            ->first();
+            ->firstOrFail();
 
         $uid = $exam->student()->first()->user()->first()->id;
 
         $data = [
-            'is_takable' => (intval($exam->status) === StudentOnlineExamStatusEnum::ACTIVE->value)? true:false,
-            'is_suspended' => (intval($exam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value)? true:false,
-            'is_complete' => (intval($exam->status) === StudentOnlineExamStatusEnum::COMPLETE->value)? true:false,
-            'is_canceled' => (intval($exam->status) === StudentOnlineExamStatusEnum::CANCELED->value)? true:false,
+            'is_takable' => (intval($exam->status) === StudentOnlineExamStatusEnum::ACTIVE->value) ? true : false,
+            'is_suspended' => (intval($exam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value) ? true : false,
+            'is_complete' => (intval($exam->status) === StudentOnlineExamStatusEnum::COMPLETE->value) ? true : false,
+            'is_canceled' => (intval($exam->status) === StudentOnlineExamStatusEnum::CANCELED->value) ? true : false,
         ];
-        
-        return $data;
+
+        // return $data;
         event(new StudentRefreshEvevnt($data, $uid));
     }
 

@@ -529,9 +529,9 @@ class QuestionController extends Controller
             
             // choice rules 
             // 'choices' => 'required|array|min:1',
-            // 'choices' => 'required|array|min:4',
             // 'choices' => 'nullable|array',
-            'choices' => 'required|array',
+            // 'choices' => 'required|array',
+            'choices' => 'required|array|min:4',
             'choices.*.attachment' => ['nullable', new ByteArrayValidationRule],
             'choices.*.content' => 'required|string',
             'choices.*.is_true' => 'required|boolean',

@@ -342,8 +342,8 @@ class PracticeExamController extends Controller
                     }
                 } else {
                     if ($withAnswer) {
-                        $trueFalseQuestion = TrueFalseQuestion::findOrFail($examQuestion->question_id)->first(['answer']);
-
+                        $trueFalseQuestion = TrueFalseQuestion::firstWhere('question_id', $examQuestion->question_id);
+                        // $question['is_true'] = $trueFalseQuestion->answer;
                         if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
                             $question['is_true'] = true;
                         } else {
@@ -461,7 +461,7 @@ class PracticeExamController extends Controller
             new EnumReplacement('language_name', LanguageEnum::class)
         ]);
 
-        $practiceExam->is_started = (intval($practiceExam->status) != PracticeExamStatusEnum::NEW->value) ? true : false;
+        $practiceExam->is_started = (intval($practiceExam->status) === PracticeExamStatusEnum::ACTIVE->value) ? true : false;
         $practiceExam->is_suspended = (intval($practiceExam->status) === PracticeExamStatusEnum::SUSPENDED->value) ? true : false;
         $practiceExam->is_complete = (intval($practiceExam->status) === PracticeExamStatusEnum::COMPLETE->value) ? true : false;
 
@@ -588,8 +588,6 @@ class PracticeExamController extends Controller
             ]);
 
             QuestionUsageHelper::updatePracticeExamQuestionsUsage($practiceExam);
-            // return [QuestionUsageHelper::updatePracticeExamQuestionsUsage($practiceExam)];
-
             DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
@@ -673,7 +671,7 @@ class PracticeExamController extends Controller
                     'remaining_duration' => $practiceExamUsage->first()->remaining_duration - DatetimeHelper::getDifferenceInSeconds(DatetimeHelper::now(), $practiceExamUsage->first()->start_datetime)
                 ]);
 
-                QuestionUsageHelper::updatePracticeExamQuestionsUsageAnswer($practiceExam);
+                // QuestionUsageHelper::updatePracticeExamQuestionsAnswerUsage($practiceExam);
 
                 DB::commit();
                 return ResponseHelper::success();
