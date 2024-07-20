@@ -51,10 +51,11 @@ class PracticeExamController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
-        try {
+        // try {
             $algorithmData = $this->getAlgorithmData($request);
             $examQuestions = (new GenerateExam())->execute($algorithmData);
 
+            return $examQuestions;
             if (!is_null($examQuestions)) { // modify to use has function
 
                 $user = User::findOrFail(auth()->user()->id);
@@ -64,7 +65,7 @@ class PracticeExamController extends Controller
                     'department_course_part_id' => $request->department_course_part_id,
                     'title' => $request->title ?? null,
                     'language' => $request->language_id,
-                    'datetime' => DatetimeHelper::now(), // can make defult value in migration 
+                    'datetime' => DatetimeHelper::now(), // can make defult value in migration
                     'duration' => $request->duration,
                     'difficulty_level' => $request->difficulty_level_id,
                     'conduct_method' => $request->conduct_method_id,
@@ -95,9 +96,9 @@ class PracticeExamController extends Controller
                 DB::rollBack();
                 return ResponseHelper::serverError();
             }
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function modifyPracticeExam(Request $request)
@@ -129,7 +130,7 @@ class PracticeExamController extends Controller
             $practiceExam = PracticeExam::findOrFail($request->id);
             if ((intval($practiceExam->status) != PracticeExamStatusEnum::SUSPENDED->value) || (intval($practiceExam->status) != PracticeExamStatusEnum::NEW->value)) {
                 return ResponseHelper::clientError(401);
-                // لا يمكن حذف الاختبار اذا كانت حالته غير معلق او جديد 
+                // لا يمكن حذف الاختبار اذا كانت حالته غير معلق او جديد
             }
             $practiceExam->delete();
             return ResponseHelper::success();
@@ -142,7 +143,7 @@ class PracticeExamController extends Controller
     {
         Gate::authorize('retrievePracticeExams', PracticeExamController::class);
         /**
-         * parameters:  
+         * parameters:
          * request {department_course_part_id, status_id? }
          * return: [id, course name, course part name, title, datetime, status name?, appreciation?, score rate?]
          */
@@ -207,7 +208,7 @@ class PracticeExamController extends Controller
         Gate::authorize('retrievePracticeExamsAndroid', PracticeExamController::class);
 
         /**
-         * parameters:  
+         * parameters:
          * request {department_course_part_id?, status_id? }
          * return: [id, course name, course part name, title, datetime, status name, language name, appreciation?, score rate?]
          */
@@ -687,14 +688,14 @@ class PracticeExamController extends Controller
 
 
     /**
-     ***** job: 
-     * this function using for retrieve data that will use in algorithm 
-     ***** parameters: 
-     * request: Request 
-     * 
-     ***** return: 
-     * algorithmData = { estimated_time, difficulty_level, forms_count,  
-     *      question_types_and_questions_count [id, count], 
+     ***** job:
+     * this function using for retrieve data that will use in algorithm
+     ***** parameters:
+     * request: Request
+     *
+     ***** return:
+     * algorithmData = { estimated_time, difficulty_level, forms_count,
+     *      question_types_and_questions_count [id, count],
      *      question [id, type_id, difficulty_level, answer_time, topic_id, last_selection, selection_times]
      *  }
      */

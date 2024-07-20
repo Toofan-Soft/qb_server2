@@ -22,7 +22,7 @@ class UniversityController extends Controller
             return  ResponseHelper::clientError();
         }
         $updatedAttributes = $request->all();
-        try {
+        // try {
             if ($request->hasFile('logo')) {
                 $filePath = ImageHelper::uploadImage($request->file('logo'));
                 $updatedAttributes['logo'] = asset($filePath);
@@ -32,9 +32,9 @@ class UniversityController extends Controller
             Storage::disk('local')->put('university.json', $jsonData);
 
             return ResponseHelper::success();
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function modifyUniversityData(Request $request)

@@ -41,9 +41,9 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: python example.py <method_name>")
         sys.exit(1)
-    
+
     method_name = sys.argv[1]
-    
+  
     try:
         # Read JSON data from stdin
         json_data = sys.stdin.read()
@@ -51,7 +51,7 @@ def main():
     except Exception as e:
         print(f"Error reading JSON data: {e}")
         sys.exit(1)
-    
+
 
     if method_name == 'generate':
         result = generate(data)

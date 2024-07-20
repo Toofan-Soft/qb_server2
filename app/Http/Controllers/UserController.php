@@ -73,6 +73,7 @@ class UserController extends Controller
             }
 
             if (auth()->attempt($input)) {
+                Auth::logoutOtherDevices($request->password);// logout from other devices
                 $user = Auth::user();
 
                 if ($user->email_verified_at !== false) {
@@ -233,7 +234,7 @@ class UserController extends Controller
         try {
             $generatedToken = self::generateAlphanumericToken(8);
             // $user = auth()->user();
-            $user = User::where('email', auth()->user()->email)->first();
+            $user = User::where('email', $request->email)->first();
             $user->notify(new EmaiVerificationNotification($generatedToken));
             return ResponseHelper::success();
         } catch (\Exception $e) {

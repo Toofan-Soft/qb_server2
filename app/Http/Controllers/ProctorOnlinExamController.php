@@ -465,7 +465,7 @@ class ProctorOnlinExamController extends Controller
     {
         // Gate::authorize('suspendStudentOnlineExam', ProctorOnlinExamController::class);
 
-        try {
+        // try {
             // rule : exam_id, student_id
             $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
                 ->where('student_id', $request->student_id);
@@ -486,10 +486,10 @@ class ProctorOnlinExamController extends Controller
                 DB::commit();
                 return ResponseHelper::success();
             }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function continueStudentOnlineExam(Request $request)

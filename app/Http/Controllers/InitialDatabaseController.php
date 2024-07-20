@@ -48,7 +48,7 @@ class InitialDatabaseController extends Controller
         // return $this->chapters($request->course_part_id);
         // $this->questionsChoices($request->topic_id);
         // $this->questionsTrueFalse($request->topic_id);
-        // $this->acceptQuestions($request->topic_id);
+        $this->acceptQuestions($request->topic_id);
         // $this->acceptQuestions();
 
         return ResponseHelper::success();
@@ -232,8 +232,8 @@ class InitialDatabaseController extends Controller
     private function selectRandomEstimatedAnswerTime(): float
     {
         // select randomly int number
-        // this number represent time in second. 
-        // the selected time must be >= 1 minute and <= 10 minute 
+        // this number represent time in second.
+        // the selected time must be >= 1 minute and <= 10 minute
 
         $minSeconds = 1 * 60; // 1 minute in seconds
         $maxSeconds = 10 * 60; // 10 minutes in seconds

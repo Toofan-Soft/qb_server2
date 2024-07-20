@@ -36,7 +36,7 @@ class DepartmentCourseController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
-        try {
+        // try {
             $departmentCourse = DepartmentCourse::create([
                 'department_id' => $request->department_id,
                 'course_id' => $request->course_id,
@@ -44,9 +44,9 @@ class DepartmentCourseController extends Controller
                 'semester' => $request->semester_id,
             ]);
             return ResponseHelper::successWithData(['id' => $departmentCourse->id]);
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function modifyDepartmentCourse(Request $request)
@@ -264,7 +264,7 @@ class DepartmentCourseController extends Controller
                     new EnumReplacement('name', CoursePartsEnum::class)
                 ]
             );
-            
+
             $departmentCourseParts = NullHelper::filter($departmentCourseParts);
 
             $data = [
@@ -303,7 +303,7 @@ class DepartmentCourseController extends Controller
             'level_id' => ['required', new Enum(LevelsEnum::class)], // Assuming LevelsEnum holds valid values
             'semester_id' => ['required', new Enum(SemesterEnum::class)], // Assuming SemesterEnum holds valid values
         ];
-        // التحقق من ان المستوى ينتمي الي القسم، اي يتوفق مع عدد المستويات 
+        // التحقق من ان المستوى ينتمي الي القسم، اي يتوفق مع عدد المستويات
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {
                 // Ensure strict type comparison for security
