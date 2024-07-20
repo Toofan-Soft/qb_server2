@@ -256,7 +256,7 @@ class ProctorOnlinExamController extends Controller
     public function refreshOnlineExamStudents(Request $request)
     {
         // acepted : exam id, student id
-        // return : 
+        // return :
 
         $results = DB::table('real_exams as res')
             ->select('s.id')
@@ -508,7 +508,7 @@ class ProctorOnlinExamController extends Controller
                 ]);
 
 
-                // refresh studnet and proctor 
+                // refresh studnet and proctor
                 // OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id, $studentOnlineExam->form_id);
                 DB::commit();
                 return ResponseHelper::success();
@@ -575,8 +575,8 @@ class ProctorOnlinExamController extends Controller
         return $questionsCount;
     }
 
-    // الدالة التالية تمثل الدالة التي سوف تقوم بعملية التحديث للمراقب 
-    // وهو مؤقته 
+    // الدالة التالية تمثل الدالة التي سوف تقوم بعملية التحديث للمراقب
+    // وهو مؤقته
 
     public function refreshProctorOnlineExamStudents(StudentOnlineExam $studentOnlineExam)
     {
@@ -588,7 +588,7 @@ class ProctorOnlinExamController extends Controller
             'is_suspended' => (intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value) ? true : false,
             'status_name' => EnumTraits::getNameByNumber(intval($studentOnlineExam->status), StudentOnlineExamStatusEnum::class),
             'form_name' => $studentOnlineExam->form_name, // يتم عمل دالة ترجع اسم النموذج عن طريق رقم النموذج او نشوف حل مناسب لهذه المشكةل
-            'answered_questions_count' => $studentOnlineExam->status, // يتم عمل دالة لعمل هذا الجزء 
+            'answered_questions_count' => $studentOnlineExam->status, // يتم عمل دالة لعمل هذا الجزء
         ];
         return $refreshedStudentOnlineExam;
     }
