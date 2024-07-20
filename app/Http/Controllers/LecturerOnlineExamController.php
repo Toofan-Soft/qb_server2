@@ -55,7 +55,7 @@ class LecturerOnlineExamController extends Controller
             return ResponseHelper::clientError();
         }
 
-        try {
+        // try {
             $formConfigurationMethodId = FormConfigurationMethodEnum::SIMILAR_FORMS->value;
             $formNameMethodId = FormNameMethodEnum::DECIMAL_NUMBERING->value;
 
@@ -69,10 +69,10 @@ class LecturerOnlineExamController extends Controller
             }
 
             $algorithmData = $this->getAlgorithmData($request);
-            
+
             $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
-            
-            
+
+
             if ($examFormsQuestions) { // modify to use has function
                 $employee = Employee::where('user_id',  auth()->user()->id)->first();
 
@@ -130,10 +130,10 @@ class LecturerOnlineExamController extends Controller
                 DB::rollBack();
                 return ResponseHelper::serverError();
             }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function modifyOnlineExam(Request $request)
@@ -336,7 +336,7 @@ class LecturerOnlineExamController extends Controller
             // $realExam->datetime = $realExam->datetime1;
 
             // return $realExam->datetime;
-            
+
             $lecturer_id = CourseLecturer::findOrFail($realExam->course_lecturer_id)
                 ->first(['lecturer_id'])['lecturer_id'];
 
@@ -353,7 +353,7 @@ class LecturerOnlineExamController extends Controller
                 $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
                     new EnumReplacement('form_configuration_method_name', FormConfigurationMethodEnum::class),
                     new EnumReplacement('form_name_method_name', FormNameMethodEnum::class),
-                ]);    
+                ]);
             } else {
                 unset($realExam->form_configuration_method_name);
                 unset($realExam->form_name_method_name);
@@ -374,10 +374,10 @@ class LecturerOnlineExamController extends Controller
 
             $onlineExam->is_suspended = intval($onlineExam->status_name) === OnlineExamStatusEnum::SUSPENDED->value;
             $onlineExam->is_complete = intval($onlineExam->status_name) === OnlineExamStatusEnum::COMPLETE->value;
-            
+
             $onlineExam->is_editable = DatetimeHelper::convertLongToDateTime($realExam->datetime) > DatetimeHelper::now();
             // $onlineExam->is_deletable = $realExam->datetime > now();
-            
+
             $onlineExam = ProcessDataHelper::enumsConvertIdToName($onlineExam, [
                 new EnumReplacement('status_name', OnlineExamStatusEnum::class),
                 new EnumReplacement('conduct_method_name', OnlineExamStatusEnum::class),
@@ -673,7 +673,7 @@ class LecturerOnlineExamController extends Controller
             //     //     $question->practice_exam_selection_times_count +
             //     //     $question->paper_exam_selection_times_count
             //     // ) / 3;
-            //     // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة 
+            //     // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة
             //     unset($question->online_exam_last_selection_datetime);
             //     unset($question->practice_exam_last_selection_datetime);
             //     unset($question->paper_exam_last_selection_datetime);
@@ -741,7 +741,7 @@ class LecturerOnlineExamController extends Controller
     {
         // need to make rules
         /*
-	- real exam data 
+	- real exam data
 		- language
 		- difficulty_level
 		- form_configuration_method
@@ -766,7 +766,7 @@ class LecturerOnlineExamController extends Controller
 	- topics_ids
         */
         $rules = [
-            // real exam table 
+            // real exam table
             'language_id' => ['required', new Enum(LanguageEnum::class)],
             'difficulty_level_id' => ['required', new Enum(ExamDifficultyLevelEnum::class)],
             'datetime' => 'required|integer', // check for bigInteger data type
@@ -777,7 +777,7 @@ class LecturerOnlineExamController extends Controller
             'form_configuration_method_id' => ['nullable', new Enum(FormConfigurationMethodEnum::class)],
             'form_name_method_id' => ['nullable', new Enum(FormNameMethodEnum::class)],
 
-            // online exam table 
+            // online exam table
             'conduct_method_id' => ['required', new Enum(ExamConductMethodEnum::class)],
             'datetime_notification_datetime' => 'required|integer', // check for bigInteger data type
             'result_notification_datetime' => 'required|integer', // check for bigInteger data type
@@ -789,11 +789,11 @@ class LecturerOnlineExamController extends Controller
             'questions_types.*.questions_count' => 'required|integer',
             'questions_types.*.question_score' => 'required|numeric', // Use 'numeric' to allow both integer and float
 
-            // topice 
+            // topice
             'topics_ids'                => 'required|array|min:1',
             'topics_ids.*'              => 'required|integer|exists:topics,id',
 
-            // other variables 
+            // other variables
             'department_course_part_id' => 'required|exists:department_course_parts,id',
 
         ];
@@ -807,6 +807,6 @@ class LecturerOnlineExamController extends Controller
     }
     /**
      * التاكد من ان رقم المراقب المختار يملك صلاحية مراقب
-     * 
+     *
      */
 }

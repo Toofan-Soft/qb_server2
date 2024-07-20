@@ -84,7 +84,7 @@ class CourseStudentController extends Controller
     //     } catch (\Exception $e) {
     //         return ResponseHelper::serverError();
     //     }
-    // } this use case will be deleted 
+    // } this use case will be deleted
 
     public function passCourseStudent(Request $request)
     {
@@ -236,9 +236,9 @@ class CourseStudentController extends Controller
     public function retrieveUnlinkCourceStudents(Request $request)
     {
         Gate::authorize('retrieveUnlinkCourceStudents', CourseStudentController::class);
-        
+
         // هذا المتطلب ناقص ، ويتحاج الي ان يتم ايضا التركيز على المستوى الذي يدرس فيه الطالب واستثناء الطلاب الذين في مستويات اقل
-        try {
+        // try {
             $department = DepartmentCourse::findOrFail($request->department_course_id, ['department_id']);
             $departmentStudents = []; // كل الطلاب الذين يدرسون في القسم الذي ينتمي اليه مقرر القسم المطلوب
             $departmentCourseStudents = []; // كل الطلاب الذين يدرسون او قد درسو مقرر القسم المطلوب
@@ -254,15 +254,15 @@ class CourseStudentController extends Controller
             $departmentCourseStudents = CourseStudent::where('department_course_id', '=', $request->department_course_id)
             ->pluck('student_id')->toArray();
 
-            $unlinkCourseStudents = $departmentStudents->whereNotIn('id', $departmentCourseStudents->student_id);
+            $unlinkCourseStudents = $departmentStudents->whereNotIn('id', $departmentCourseStudents);
             // $unlinkCourseStudents = $departmentStudents->whereNotIn('id', $departmentCourseStudents);
             $unlinkCourseStudents = NullHelper::filter($unlinkCourseStudents);
             // $unlinkCourseStudents = ImageHelper::addCompleteDomainToMediaUrls($unlinkCourseStudents);
 
             return ResponseHelper::successWithData($unlinkCourseStudents);
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
 
 
         // compare or تقاطع بين الناتجين
@@ -304,7 +304,7 @@ class CourseStudentController extends Controller
     //     } catch (\Exception $e) {
     //         return ResponseHelper::serverError();
     //     }
-    // } // this use case will be deleted 
+    // } // this use case will be deleted
 
     public function rules(Request $request): array
     {
