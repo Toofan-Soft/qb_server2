@@ -81,7 +81,7 @@ class CollegeController extends Controller
                 'telegram' => $request->telegram ?? $college->telegram,
                 'logo_url' => ImageHelper::updateImage($request->logo, $college->logo_url)
             ]);
-            // event(new FireEvent($college));
+            //  event(new FireEvent($college));
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -143,7 +143,7 @@ class CollegeController extends Controller
             return ResponseHelper::serverError();
         }
     }
-    
+
     public function retrieveEditableCollege(Request $request)
     {
         Gate::authorize('retrieveEditableCollege', CollegeController::class);

@@ -27,7 +27,7 @@ class UserManagementController extends Controller
 {
     public function addUser(Request $request)
     {
-        Gate::authorize('addUser', UserManagementController::class);
+        // Gate::authorize('addUser', UserManagementController::class);
 
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
@@ -167,7 +167,7 @@ class UserManagementController extends Controller
                 $ownerData = $userData->employee()->get([LanguageHelper::getNameColumnName(null, 'name'), 'image_url', 'job_type']);
                 $userRoles = RoleEnum::getOwnerRolesWithMandatory(intval($userData->owner_type_name), intval($ownerData->job_type));
                 unset($ownerData['job_type']);
-            } 
+            }
 
             $currentUserRoles = $userData->user_roles()->pluck('role_id')->toArray();
             $resultRoles = [];
@@ -194,7 +194,7 @@ class UserManagementController extends Controller
             $userData['roles'] = $resultRoles;
 
             $userData = NullHelper::filter($userData);
-            
+
             return ResponseHelper::successWithData($userData);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

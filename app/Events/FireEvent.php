@@ -38,7 +38,7 @@ class FireEvent implements ShouldBroadcast
             new PrivateChannel('qb_server'),
         ];
     }
-    
+
     public function broadcastWith()
     {
         return [

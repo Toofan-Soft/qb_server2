@@ -38,10 +38,10 @@ class StudentRefreshEvevnt implements ShouldBroadcast
         ];
     }
 
-    public function broadcastWith()
-    {
-        return [
-            'data' => json_decode($this->data)
-        ];
-    }
+    // public function broadcastWith()
+    // {
+    //     return [
+    //         'data' => json_decode($this->data)
+    //     ];
+    // }
 }

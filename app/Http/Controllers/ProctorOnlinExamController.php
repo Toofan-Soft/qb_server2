@@ -463,7 +463,7 @@ class ProctorOnlinExamController extends Controller
 
     public function suspendStudentOnlineExam(Request $request)
     {
-        Gate::authorize('suspendStudentOnlineExam', ProctorOnlinExamController::class);
+        // Gate::authorize('suspendStudentOnlineExam', ProctorOnlinExamController::class);
 
         try {
             // rule : exam_id, student_id
@@ -482,7 +482,7 @@ class ProctorOnlinExamController extends Controller
                 // $studentInfo = $this->refreshOnlineExamStudents($studentOnlineExam);
                 // event(new StudentRefreshEvevnt($studentInfo)); // execute event
 
-                // OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id);
+                OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id);
                 DB::commit();
                 return ResponseHelper::success();
             }

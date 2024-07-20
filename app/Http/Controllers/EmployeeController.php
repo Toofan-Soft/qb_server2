@@ -33,7 +33,7 @@ class EmployeeController extends Controller
 {
     public function addEmployee(Request $request)
     {
-        Gate::authorize('addEmployee', EmployeeController::class);
+        // Gate::authorize('addEmployee', EmployeeController::class);
 
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
@@ -163,7 +163,7 @@ class EmployeeController extends Controller
     public function retrieveEditableEmployee(Request $request)
     {
         Gate::authorize('retrieveEditableEmployee', EmployeeController::class);
-        
+
         $attributes = ['arabic_name', 'english_name', 'gender as gender_id', 'phone', 'job_type as job_type_id', 'specialization', 'qualification as qualification_id', 'image_url'];
         $conditionAttribute = ['id' => $request->id];
         try {

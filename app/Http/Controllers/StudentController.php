@@ -44,8 +44,8 @@ class StudentController extends Controller
 
     public function addStudent(Request $request)
     {
-        Gate::authorize('addStudent', StudentController::class);
-        
+        // Gate::authorize('addStudent', StudentController::class);
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
@@ -64,7 +64,7 @@ class StudentController extends Controller
             ]);
             // add initail student courses, that belonge to (department, level, semester)
             $this->addStudentCoures($student->id, $request->department_id, $request->level_id, $request->semester_id);
-            
+
             if ($request->email) {
                 if (!UserHelper::addUser($request->email, OwnerTypeEnum::STUDENT->value, $student->id)) {
                     return ResponseHelper::serverError();
@@ -111,7 +111,7 @@ class StudentController extends Controller
                         return ResponseHelper::clientError();
                         // return ResponseHelper::clientError('لا يمكنك تغيير فصل الطالب الي فصل ادنى من الفصل الحالي');
                     } else {
-                        // هل صحيح اننا انجح الطالب للمقررات حق الفصل الحالي 
+                        // هل صحيح اننا انجح الطالب للمقررات حق الفصل الحالي
                         // aupdate status of courses for last level
                         $currentCourseStudents = DB::table('students')
                             ->join('course_students', 'students.id', '=', 'course_students.student_id')
@@ -133,7 +133,7 @@ class StudentController extends Controller
                     }
                 } else {
                     return ResponseHelper::clientError();
-                    // semester id is required 
+                    // semester id is required
                 }
             }
             DB::commit();
@@ -196,7 +196,7 @@ class StudentController extends Controller
             // $student = Student::findOrFail($request->id);
             $student = Student::where('id', $request->id)
                 ->firstOrFail();
-            
+
             $studentData = [
                 'academic_id' => $student->academic_id,
                 'arabic_name' => $student->arabic_name,
@@ -354,7 +354,7 @@ class StudentController extends Controller
             'semester_id' => ['required', new Enum(SemesterEnum::class)],
             // 'user_id' => 'nullable|uuid|unique:users,id',
             // يتم اضافة الايميل وجعله قابل للنل ، وفريد
-            // التحقق من ان رقم المستوى المرسل موجود في القسم، اي يتوافق مع عدد المستويات، وليس في الاينم 
+            // التحقق من ان رقم المستوى المرسل موجود في القسم، اي يتوافق مع عدد المستويات، وليس في الاينم
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
             $rules = array_filter($rules, function ($attribute) use ($request) {

@@ -28,7 +28,7 @@ class GuestController extends Controller
         // return ResponseHelper::successWithData(ValidateHelper::validateData($request, $this->rules($request)));
         // return 5;
 
-        Gate::authorize('addGuest', GuestController::class);
+         Gate::authorize('addGuest', GuestController::class);
 
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError();
