@@ -342,8 +342,8 @@ class PracticeExamController extends Controller
                     }
                 } else {
                     if ($withAnswer) {
-                        $trueFalseQuestion = TrueFalseQuestion::findOrFail($examQuestion->question_id)->first(['answer']);
-
+                        $trueFalseQuestion = TrueFalseQuestion::firstWhere('question_id', $examQuestion->question_id);
+                        // $question['is_true'] = $trueFalseQuestion->answer;
                         if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
                             $question['is_true'] = true;
                         } else {

@@ -553,7 +553,7 @@ class ProctorOnlinExamController extends Controller
         // request {id}
         Gate::authorize('finishOnlineExam', ProctorOnlinExamController::class);
 
-        try {
+        // try {
             DB::beginTransaction();
             /**
              * تغير حالة الاختبار الالكتروني الي مكتمل 
@@ -570,18 +570,25 @@ class ProctorOnlinExamController extends Controller
             
             $studentOnlineExams = $onlineExam->student_online_exams()->get();
             
-            return $studentOnlineExams;
+            // return $studentOnlineExams;
+
             foreach ($studentOnlineExams as $studentOnlineExam) {
+                // return $studentOnlineExam->start_datetime;
                 if((intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::ACTIVE->value)
                  || (intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value)
                 ){
-                    $studentOnlineExam->update([
+
+                    StudentOnlineExam::where('student_id', $studentOnlineExam->student_id)
+                    ->where('online_exam_id', $studentOnlineExam->online_exam_id)
+                    ->update([
                         'status' => StudentOnlineExamStatusEnum::COMPLETE->value,
                         'end_datetime' => DatetimeHelper::now(),
                     ]);
 
-                    OnlineExamListenerHelper::refreshStudent($studentOnlineExam->student_id, $studentOnlineExam->exam_id);
-                    OnlineExamListenerHelper::refreshProctor($studentOnlineExam->student_id, $studentOnlineExam->exam_id);
+                    // return $studentOnlineExam;
+
+                    return OnlineExamListenerHelper::refreshStudent($studentOnlineExam->student_id, $studentOnlineExam->online_exam_id);
+                    // return OnlineExamListenerHelper::refreshProctor($studentOnlineExam->student_id, $studentOnlineExam->online_exam_id);
 
                 }
             }
@@ -590,16 +597,16 @@ class ProctorOnlinExamController extends Controller
                 'status' => OnlineExamStatusEnum::COMPLETE->value
             ]);
 
-            QuestionUsageHelper::updateOnlineExamQuestionsUsage($request->id);
+            // QuestionUsageHelper::updateOnlineExamQuestionsUsage($request->id);
 
-            return $onlineExam;
+            return $studentOnlineExams;
 
             DB::commit();
             return ResponseHelper::success();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return ResponseHelper::serverError();
+        // }
     }
 
 }
