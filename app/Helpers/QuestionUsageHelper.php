@@ -24,7 +24,7 @@ class QuestionUsageHelper
      *      
      * return:
      */
-    public static function updateOnlineExamQuestionsUsage($examId)
+    public static function updateOnlineExamQuestionsUsage($examId) // this may by deleted
     {
         try {
             DB::beginTransaction();
@@ -36,6 +36,36 @@ class QuestionUsageHelper
                 'form_questions.question_id'
             )
             ->where('forms.real_exam_id', '=', $examId)
+            ->get();
+
+
+            foreach ($onlineExamQuestions as $onlineExamQuestion) {
+                $questionUsage = QuestionUsage::where('question_id', '=', $onlineExamQuestion->question_id);
+                $questionUsage->update([
+                    'online_exam_last_selection_datetime' => DatetimeHelper::now(),
+                    'online_exam_selection_times_count' => $questionUsage->online_exam_selection_times_count + 1
+                ]);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            // return $e->getMessage();
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public static function updateOnlineExamQuestionsUsageAndAnswer($OnlineExamId)
+    {
+        try {
+            DB::beginTransaction();
+
+            $onlineExamQuestions =  DB::table('forms')
+            ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
+            ->select(
+                'form_questions.combination_id',
+                'form_questions.question_id'
+            )
+            ->where('forms.real_exam_id', '=', $OnlineExamId)
             ->get();
 
 
@@ -98,7 +128,7 @@ class QuestionUsageHelper
             $questionUsage = QuestionUsage::where('question_id', '=', $questionId);
             $questionUsage->update([
                 'paper_exam_last_selection_datetime' => DatetimeHelper::now(),
-                'paper_exam_selection_times_count' => $questionUsage->paper_exam_selection_times_count + 1
+                'paper_exam_selection_times_count' => $questionUsage->first()->paper_exam_selection_times_count + 1
             ]);
         } catch (\Exception $e) {
             // return $e->getMessage();
@@ -126,8 +156,9 @@ class QuestionUsageHelper
         }
     }
 
-    public static function updatePracticeExamQuestionsAnswerUsage(PracticeExam $practiceExam)
-    {
+    public static function updatePracticeExamQuestionsUsageAnswer(PracticeExam $practiceExam)
+    { 
+        // التحقق من ان الاجابة لا تحتوي على نل، وهذا يعني ان الطالب جاوب السؤال، مش خلي السؤال فاضي
         try {
             DB::beginTransaction();
             $practiceExamQuestions = $practiceExam->practice_exam_question()->get();

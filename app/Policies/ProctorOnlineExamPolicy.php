@@ -56,7 +56,6 @@ class ProctorOnlineExamPolicy
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::PROCTOR,
             RoleEnum::PROCTOR
         ];
         return ValidateHelper::validatePolicy($validRoles);
@@ -66,19 +65,18 @@ class ProctorOnlineExamPolicy
     {
         $validRoles = [
             RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::PROCTOR,
             RoleEnum::PROCTOR
         ];
         return ValidateHelper::validatePolicy($validRoles);
     }
     
-    // public function refreshOnlineExamStudents(): bool
-    // {
-    //     $validRoles = [
-    //         RoleEnum::SYSTEM_ADMINISTRATOR,
-    //         RoleEnum::PROCTOR
-    //     ];
-    //     return ValidateHelper::validatePolicy($validRoles);
-    // }
+    public function finishOnlineExam(): bool
+    {
+        $validRoles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::PROCTOR
+        ];
+        return ValidateHelper::validatePolicy($validRoles);
+    }
 
 }

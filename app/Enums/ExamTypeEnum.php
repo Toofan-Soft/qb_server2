@@ -7,15 +7,15 @@ enum ExamTypeEnum: int {
     use InteractWithEnum;
     use EnumTraits;
 
-    case MIDTERM  = 0;
-    case FINAL  =  1;
-    case MONTHLY  =  2;
+    case MONTHLY  =  0;
+    case MIDTERM  = 1;
+    case FINAL  =  2;
 
     public function getValues(): array {
         return match ($this) {
-            self::MIDTERM => [0, 'Midterm', ' نصفي'],
-            self::FINAL => [1, 'Final', ' نهائي'],
-            self::MONTHLY => [2, 'Monthly', ' شهري'],
+            self::MONTHLY => [0, 'Monthly', ' شهري'],
+            self::MIDTERM => [1, 'Midterm', ' نصفي'],
+            self::FINAL => [2, 'Final', ' نهائي'],
         };
     }
 

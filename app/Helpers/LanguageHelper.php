@@ -57,10 +57,15 @@ class LanguageHelper
         }
     }
 
-    public static function getEnumLanguageName(): string
+    public static function getEnumLanguageName($user = null): string
     {
         try {
-            if (intval(auth()->user()->language_id) === LanguageEnum::ARABIC->value) {
+            if(is_null($user)){
+                $languageId = auth()->user()->language_id;
+            }else{
+                $languageId = $user->language_id;
+            }
+            if (intval($languageId) === LanguageEnum::ARABIC->value) {
                 return 'ar';
             } else {
                 return 'en';

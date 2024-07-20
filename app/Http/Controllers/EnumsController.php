@@ -16,24 +16,25 @@ use Illuminate\Http\Request;
 use App\Enums\ExamStatusEnum;
 use App\Enums\UserStatusEnum;
 use App\Enums\CoursePartsEnum;
+use App\Enums\LevelsCountEnum;
 use App\Enums\CourseStatusEnum;
 use App\Enums\QuestionTypeEnum;
+use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
+use App\Enums\ChapterStatusEnum;
 use App\Enums\QualificationEnum;
 use App\Enums\FormNameMethodEnum;
 use App\Enums\QuestionStatusEnum;
 use App\Enums\CoursePartStatusEnum;
+use App\Enums\OnlineExamStatusEnum;
 use App\Enums\ExamConductMethodEnum;
+use App\Enums\PracticeExamStatusEnum;
 use App\Enums\AccessibilityStatusEnum;
-use App\Enums\ChapterStatusEnum;
 use App\Enums\CourseStudentStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
 use App\Enums\OnlineExamTakingStatusEnum;
 use App\Enums\FormConfigurationMethodEnum;
-use App\Enums\LevelsCountEnum;
-use App\Enums\PracticeExamStatusEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
-use App\Helpers\LanguageHelper;
 
 class EnumsController extends Controller
 {
@@ -76,12 +77,6 @@ class EnumsController extends Controller
     {
         return ResponseHelper::successWithData(EnumTraits::getEnum(QuestionStatusEnum::class, LanguageHelper::getEnumLanguageName()));
     }
-
-    // public function  retrieveAcceptanceStatus()
-    // {
-    //     // enum not found
-    //     // return response()->json(['data' => AcceptanceStatusEnum::getEnum()], 200);
-    // }
 
     public function  retrieveSemesters()
     {
@@ -153,7 +148,7 @@ class EnumsController extends Controller
 
     public function  retrieveOnlineExamStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(ExamStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        return ResponseHelper::successWithData(EnumTraits::getEnum(OnlineExamStatusEnum::class, LanguageHelper::getEnumLanguageName()));
     }
 
     public function retrievePracticeExamStatus()

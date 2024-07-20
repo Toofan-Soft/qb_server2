@@ -4,7 +4,7 @@ namespace App\Enums;
 use App\Traits\EnumTraits;
 use Kongulov\Traits\InteractWithEnum;
 
-enum ExamStatusEnum: int {
+enum OnlineExamStatusEnum: int {
     use InteractWithEnum;
     use EnumTraits;
 
@@ -14,7 +14,7 @@ enum ExamStatusEnum: int {
 
     public function getValues(): array {
         return match ($this) {
-            self::ACTIVE => [0, 'ACTIVE', ' نشط'],
+            self::ACTIVE => [0, 'Active', ' نشط'],
             self::COMPLETE => [1, 'Complete', ' مكتمل'],
             self::SUSPENDED => [2, 'Suspended', ' معلق'],
         };

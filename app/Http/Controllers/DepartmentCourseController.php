@@ -244,7 +244,6 @@ class DepartmentCourseController extends Controller
                 'id', 'course_part_id as name', 'score', 'lectures_count', 'lecture_duration', 'note'
             ]);
 
-            $departmentCourseParts = NullHelper::filter($departmentCourseParts);
 
             $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
                 new EnumReplacement('level', LevelsEnum::class),
@@ -265,6 +264,8 @@ class DepartmentCourseController extends Controller
                     new EnumReplacement('name', CoursePartsEnum::class)
                 ]
             );
+            
+            $departmentCourseParts = NullHelper::filter($departmentCourseParts);
 
             $data = [
                 'college_name' => $college->college_name,

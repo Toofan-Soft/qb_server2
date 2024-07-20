@@ -12,7 +12,7 @@ use App\Models\CoursePart;
 use App\Models\Department;
 use App\Models\OnlineExam;
 use App\Enums\LanguageEnum;
-use App\Enums\ExamStatusEnum;
+use App\Enums\OnlineExamStatusEnum;
 use App\Enums\CoursePartsEnum;
 use App\Enums\LevelsCountEnum;
 use App\Enums\ChoiceStatusEnum;
@@ -1939,7 +1939,7 @@ class InitialDatabaseHelper
                 'exam_datetime_notification_datetime' => $exam['exam_datetime_notification_datetime'],
                 'result_notification_datetime'  => $exam['result_notification_datetime'],
                 'proctor_id' => $exam['proctor_id'] ?? null,
-                'status' => ExamStatusEnum::ACTIVE->value,
+                'status' => OnlineExamStatusEnum::ACTIVE->value,
                 'id' => $realExam->id,
             ]);
 
