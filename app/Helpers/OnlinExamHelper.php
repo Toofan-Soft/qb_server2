@@ -18,6 +18,7 @@ use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Enums\ExamConductMethodEnum;
 use Illuminate\Support\Facades\Storage;
+use App\Enums\FormConfigurationMethodEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
 
 class OnlinExamHelper
@@ -48,7 +49,25 @@ class OnlinExamHelper
     }
 
     public static function getStudentFormName($onlineExamId, $formId):string{
-        return 'unknown from name';
+
+        try {
+            $exam = RealExam::findOrFail($onlineExamId);
+            // $forms = $realExam->forms()->get(['id']);
+
+            $form = '';
+
+            $formName = ExamHelper::getRealExamFormsNames(intval($exam->form_name_method), $exam->forms_count);
+
+            if (intval($exam->form_configuration_method) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
+                    $form = $formName;
+            } else {
+
+            }
+            return $form ;
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
     }
 
 
