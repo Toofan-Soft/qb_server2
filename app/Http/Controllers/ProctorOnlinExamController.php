@@ -597,7 +597,7 @@ class ProctorOnlinExamController extends Controller
                 'status' => OnlineExamStatusEnum::COMPLETE->value
             ]);
 
-            // QuestionUsageHelper::updateOnlineExamQuestionsUsage($request->id);
+            QuestionUsageHelper::updateOnlineExamQuestionsUsage($request->id);
 
             return $studentOnlineExams;
 
