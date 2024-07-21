@@ -252,7 +252,7 @@ class StudentOnlineExamController extends Controller
     public function retrieveOnlineExamQuestions(Request $request)
     {
         Gate::authorize('retrieveOnlineExamQuestions', StudentOnlineExamController::class);
-        try {
+        // try {
             $exam = OnlineExam::findOrFail($request->exam_id);
 
             if (
@@ -268,8 +268,7 @@ class StudentOnlineExamController extends Controller
 
                 if (!is_null($studentOnlineExam)) {
                     if (intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::ACTIVE->value) {
-                        $questions = $this->getFormQuestions($studentOnlineExam->form_id);
-                        // $questions = ExamHelper::getFormQuestionsWithDetails($studentOnlineExam->form_id, false, false, false);
+                        $questions = $this->getFormQuestions($studentOnlineExam->form_id, $studentId);
 
                         $questions = NullHelper::filter($questions);
 
@@ -292,15 +291,15 @@ class StudentOnlineExamController extends Controller
             // $questions = NullHelper::filter($questions);
 
             // return ResponseHelper::successWithData($questions);
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
-    private function getFormQuestions($formId)
+    private function getFormQuestions($formId, $studentId)
     {
         $questions = [];
-        try {
+        // try {
             $form = Form::findOrFail($formId);
             $realExam = RealExam::findOrFail($form->real_exam_id);
             $language = LanguageEnum::symbolOf($realExam->language);
@@ -309,16 +308,57 @@ class StudentOnlineExamController extends Controller
 
             foreach ($formQuestions as $formQuestion) {
                 $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
+
+                $answer = StudentAnswer::where('student_id', $studentId)
+                    ->where('form_id', $formId)
+                    ->where('question_id', $question->id)
+                    ->first()['answer'];
+                
                 if ($formQuestion->combination_id) {
-                    // $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, false, false);
                     $question['choices'] = ExamHelper::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, true, false, $language);
+
+                    if (!is_null($answer)) {
+                        $choices = $question->choices; // Retrieve the choices array
+
+                        if (isset($choices['mixed'])) {
+                            if ($choices['mixed']['id'] === $answer) {
+                                $choices['mixed']['is_selected'] = true;
+                            } else {
+                                $choices['mixed']['choices'] = collect($choices['mixed']['choices'])->map(function ($choice) use ($answer) {
+                                    if ($choice['id'] === $answer) {
+                                        $choice['is_selected'] = true;
+                                    }
+
+                                    return $choice;
+                                })->toArray();
+                            }
+                        }
+
+                        if (isset($choices['unmixed'])) {
+                            $choices['unmixed'] = collect($choices['unmixed'])->map(function ($choice) use ($answer) {
+                                if ($choice['id'] === $answer) {
+                                    $choice['is_selected'] = true;
+                                }
+
+                                return $choice;
+                            })->toArray();
+                        }
+
+                        $question->choices = $choices; // Set the modified choices array back to the property
+                    }
+                } else {
+                    if ($answer === TrueFalseAnswerEnum::TRUE->value) {
+                        $question->user_answer = true;
+                    } elseif ($answer === TrueFalseAnswerEnum::FALSE->value) {
+                        $question->user_answer = false;
+                    }
                 }
                 array_push($questions, $question);
             }
             return $questions;
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        // } catch (\Exception $e) {
+        //     throw $e;
+        // }
     }
 
     public function finishOnlineExam(Request $request)
@@ -373,7 +413,7 @@ class StudentOnlineExamController extends Controller
                 ]);
 
             // refresh student and proctor 
-            // OnlineExamListenerHelper::refreshProctor($studentId, $request->exam_id);
+            OnlineExamListenerHelper::refreshProctor($studentId, $request->exam_id);
 
             return ResponseHelper::success();
         } catch (\Exception $e) {
@@ -516,7 +556,7 @@ class StudentOnlineExamController extends Controller
                 ->join('course_parts', 'department_course_parts.course_part_id', '=', 'course_parts.id')
                 ->join('courses', 'course_parts.course_id', '=', 'courses.id')
                 ->where('real_exams.exam_type', RealExamTypeEnum::ONLINE->value) // ONLINE
-                ->where('real_exams.datetime', '>', DatetimeHelper::now()) // Not-Taken
+                // ->where('real_exams.datetime', '>', DatetimeHelper::now()) // Not-Taken
                 ->where('online_exams.status', OnlineExamStatusEnum::ACTIVE->value) // ACTIVE
                 ->where('online_exams.exam_datetime_notification_datetime', '<=', DatetimeHelper::now()) // VISIBLE
                 ->where('course_students.student_id', $studentId)

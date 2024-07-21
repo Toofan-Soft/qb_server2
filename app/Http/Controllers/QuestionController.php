@@ -79,7 +79,7 @@ class QuestionController extends Controller
                 // }
 
                 foreach ($request->choices as $choice) {
-                    $question->choice()->create([
+                    $question->choices()->create([
                         'content' => $choice['content'],
                         'attachment' => !NullHelper::is_null($choice, ['attachment']) ? ImageHelper::uploadImage($choice['attachment']) : null,
                         'status' => $choice['is_true']

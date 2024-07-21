@@ -144,8 +144,10 @@ class OnlineExamListenerHelper
 
             $formName = OnlinExamHelper::getStudentFormName($examId, $exam->form_id);
             $statusName = EnumTraits::getNameByNumber(intval($exam->status), StudentOnlineExamStatusEnum::class, LanguageHelper::getEnumLanguageName($user));
-            $startTime = DatetimeHelper::convertDateTimeToLong($exam->start_datetime);
-            $endTime = DatetimeHelper::convertDateTimeToLong($exam->end_datetime);
+            // $startTime = DatetimeHelper::convertDateTimeToLong($exam->start_datetime);
+            // $endTime = DatetimeHelper::convertDateTimeToLong($exam->end_datetime);
+            $startTime = DatetimeHelper::convertDateTimeToTimeToLong($exam->start_datetime);
+            $endTime = DatetimeHelper::convertDateTimeToTimeToLong($exam->end_datetime);
             $answeredQuestionsCount = StudentAnswer::where('student_id', $studentId)
                 ->where('form_id', $exam->form_id)
                 ->where('answer', '!=', null)

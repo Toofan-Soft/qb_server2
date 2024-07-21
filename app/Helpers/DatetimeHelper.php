@@ -145,6 +145,36 @@ class DatetimeHelper
         return $timestampInSeconds;
     }
 
+    public static function convertDatetimeToTimeToLong($value)
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        try {
+            // Create a Carbon instance from the datetime string
+            $datetime = Carbon::createFromFormat('Y-m-d H:i:s', $value);
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException("Invalid datetime format: $value");
+        }
+
+        // Extract the time part
+        $timeString = $datetime->format('H:i:s');
+
+        try {
+            // Create a Carbon instance from the time string
+            $time = Carbon::createFromFormat('H:i:s', $timeString);
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException("Invalid time format: $timeString");
+        }
+
+        // Calculate the seconds since midnight
+        $secondsSinceMidnight = $time->diffInSeconds(Carbon::today());
+
+        return $secondsSinceMidnight;
+    }
+
+
     public static function convertTimeToLong($value)
     {
         if ($value === null) {
