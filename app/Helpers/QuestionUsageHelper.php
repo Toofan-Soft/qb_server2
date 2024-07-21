@@ -4,8 +4,10 @@ namespace App\Helpers;
 
 use App\Models\Choice;
 use App\Models\Question;
+use App\Models\RealExam;
 use App\Models\PracticeExam;
 use App\Models\QuestionUsage;
+use App\Models\StudentAnswer;
 use App\Enums\ChoiceStatusEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Models\StudentOnlineExam;
@@ -14,21 +16,42 @@ use App\Enums\TrueFalseAnswerEnum;
 use Illuminate\Support\Facades\DB;
 use App\Models\QuestionChoicesCombination;
 use App\AlgorithmAPI\GenerateQuestionChoicesCombination;
-use App\Models\StudentAnswer;
+use App\Models\FormQuestion;
 
 class QuestionUsageHelper
 {
     /**
-     * using: 
+     * using:
      * parameters:
-     *      
+     *
      * return:
      */
     public static function updateOnlineExamQuestionsUsage($examId) // this may by deleted
     {
         try {
-            DB::beginTransaction();
 
+            ////////new ///////
+            DB::beginTransaction();
+            $realExam = RealExam::findOrFail($examId);
+            $forms =  $realExam->forms()->get();
+            foreach ($forms as $form) {
+                $formQuestions = $form->form_questions()->get();
+                foreach($formQuestions as $formQuestion){
+                    $questionUsage = QuestionUsage::where('question_id', '=', $formQuestion->question_id)->first();
+                    $questionUsage->update([
+                        'online_exam_last_selection_datetime' => DatetimeHelper::now(),
+                        'online_exam_selection_times_count' => $questionUsage->online_exam_selection_times_count + 1
+                    ]);
+
+                    $studentAnswer = StudentAnswer::where('question_id', $formQuestion->question_id)->where('form_id', $formQuestion->form_id)->first();
+                }
+            }
+
+            /////////////////////
+
+
+
+            //////////      Last      ////////////////////
             $onlineExamQuestions =  DB::table('forms')
             ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
             ->select(
@@ -83,7 +106,7 @@ class QuestionUsageHelper
             throw $e;
         }
     }
-    
+
     public static function updateOnlineExamQuestionsAnswerUsage(StudentOnlineExam $studentOnlineExam)
     {
         try {
@@ -157,7 +180,7 @@ class QuestionUsageHelper
     }
 
     public static function updatePracticeExamQuestionsUsageAnswer(PracticeExam $practiceExam)
-    { 
+    {
         // التحقق من ان الاجابة لا تحتوي على نل، وهذا يعني ان الطالب جاوب السؤال، مش خلي السؤال فاضي
         try {
             DB::beginTransaction();

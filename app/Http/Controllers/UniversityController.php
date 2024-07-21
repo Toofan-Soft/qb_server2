@@ -92,7 +92,7 @@ class UniversityController extends Controller
             $basicUniversityInfo = [
                 'arabic_name' => $universityData['arabic_name'],
                 'english_name' => $universityData['english_name'],
-                'logo' => urldecode($universityData['logo']),
+                'logo_url' => urldecode($universityData['logo_url']),
             ];
             return ResponseHelper::successWithData($basicUniversityInfo);
         } catch (\Exception $e) {
