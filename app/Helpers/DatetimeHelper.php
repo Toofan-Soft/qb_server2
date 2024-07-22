@@ -229,4 +229,17 @@ class DatetimeHelper
 
         return $localDate;
     }
+
+    public static function checkEndedExam($dateTime, $duration)
+    {
+        $date = $dateTime + $duration; 
+     
+        $now = now()->getTimestamp();
+
+        if($date < $now){
+            return true ;
+        }
+        return false;
+    }
+
 }

@@ -48,22 +48,35 @@ class OnlinExamHelper
         return [];
     }
 
-    public static function getStudentFormName($onlineExamId, $formId):string{
+    public static function getStudentFormName($onlineExamId, $studentFormId):string{
 
         try {
             $exam = RealExam::findOrFail($onlineExamId);
             // $forms = $realExam->forms()->get(['id']);
 
-            $form = '';
+            $studentForm = '';
 
-            $formName = ExamHelper::getRealExamFormsNames(intval($exam->form_name_method), $exam->forms_count);
+            $formsIds = $exam->forms()->get(['id'])
+            ->map(function ($form) {
+                return $form->id;
+            });
+
+            $formsNames = ExamHelper::getRealExamFormsNames(intval($exam->form_name_method), $exam->forms_count);
 
             if (intval($exam->form_configuration_method) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
-                    $form = $formName;
+                $i = 0;
+                
+               foreach ($formsIds as $formId) {
+                if($formId === $studentFormId){
+                    $studentForm = $formsNames[$i++];
+                }
+                $i++;
+                }
             } else {
-
+                $studentForm = $formsNames[0];
             }
-            return $form ;
+           
+            return $studentForm ;
         } catch (\Exception $e) {
             throw $e;
         }

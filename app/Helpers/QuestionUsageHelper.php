@@ -26,114 +26,39 @@ class QuestionUsageHelper
      *
      * return:
      */
-    public static function updateOnlineExamQuestionsUsage($examId) // this may by deleted
+    // public static function updateOnlineExamQuestionsUsage($examId,StudentOnlineExam $studentOnlineExam ) // this may by deleted
+    public static function updateOnlineExamQuestionsUsageAndAnswer($examId)
     {
         try {
-
-            ////////new ///////
             DB::beginTransaction();
             $realExam = RealExam::findOrFail($examId);
             $forms =  $realExam->forms()->get();
             foreach ($forms as $form) {
                 $formQuestions = $form->form_questions()->get();
-                foreach($formQuestions as $formQuestion){
+                foreach ($formQuestions as $formQuestion) {
                     $questionUsage = QuestionUsage::where('question_id', '=', $formQuestion->question_id)->first();
                     $questionUsage->update([
                         'online_exam_last_selection_datetime' => DatetimeHelper::now(),
                         'online_exam_selection_times_count' => $questionUsage->online_exam_selection_times_count + 1
                     ]);
+                    $studentAnswers = $formQuestion->student_answers()->get();
+                    foreach ($studentAnswers as $studentAnswer) {
+                        $answer = ExamHelper::checkQuestionAnswer(
+                            $studentAnswer->question_id,
+                            $studentAnswer->answer,
+                            $formQuestion->combination_id,
+                        );
 
-                    $studentAnswer = StudentAnswer::where('question_id', $formQuestion->question_id)->where('form_id', $formQuestion->form_id)->first();
-                }
-            }
-
-            /////////////////////
-
-
-
-            //////////      Last      ////////////////////
-            $onlineExamQuestions =  DB::table('forms')
-            ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
-            ->select(
-                'form_questions.combination_id',
-                'form_questions.question_id'
-            )
-            ->where('forms.real_exam_id', '=', $examId)
-            ->get();
-
-
-            foreach ($onlineExamQuestions as $onlineExamQuestion) {
-                $questionUsage = QuestionUsage::where('question_id', '=', $onlineExamQuestion->question_id);
-                $questionUsage->update([
-                    'online_exam_last_selection_datetime' => DatetimeHelper::now(),
-                    'online_exam_selection_times_count' => $questionUsage->online_exam_selection_times_count + 1
-                ]);
-            }
-            DB::commit();
-        } catch (\Exception $e) {
-            // return $e->getMessage();
-            DB::rollBack();
-            throw $e;
-        }
-    }
-
-    public static function updateOnlineExamQuestionsUsageAndAnswer($OnlineExamId)
-    {
-        try {
-            DB::beginTransaction();
-
-            $onlineExamQuestions =  DB::table('forms')
-            ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
-            ->select(
-                'form_questions.combination_id',
-                'form_questions.question_id'
-            )
-            ->where('forms.real_exam_id', '=', $OnlineExamId)
-            ->get();
-
-
-            foreach ($onlineExamQuestions as $onlineExamQuestion) {
-                $questionUsage = QuestionUsage::where('question_id', '=', $onlineExamQuestion->question_id);
-                $questionUsage->update([
-                    'online_exam_last_selection_datetime' => DatetimeHelper::now(),
-                    'online_exam_selection_times_count' => $questionUsage->online_exam_selection_times_count + 1
-                ]);
-            }
-            DB::commit();
-        } catch (\Exception $e) {
-            // return $e->getMessage();
-            DB::rollBack();
-            throw $e;
-        }
-    }
-
-    public static function updateOnlineExamQuestionsAnswerUsage(StudentOnlineExam $studentOnlineExam)
-    {
-        try {
-            DB::beginTransaction();
-            $studentQuestionAnswers = StudentAnswer::where('student_id', '=', $studentOnlineExam->student_id)
-                ->where('form_id', '=', $studentOnlineExam->form_id)
-                ->get();
-
-            foreach ($studentQuestionAnswers as $studentQuestionAnswer) {
-                $combination_choices = QuestionChoicesCombination::where('question_id', '=', $studentQuestionAnswer->student_id)
-                    ->where('question_id', '=', $studentQuestionAnswer->form_question()->first(['combination_id'])['combination_id']);
-
-                $answer = ExamHelper::checkQuestionAnswer(
-                    $studentQuestionAnswer->question_id,
-                    $studentQuestionAnswer->answer,
-                    $combination_choices
-                );
-
-                $questionUsage = QuestionUsage::where('question_id', '=', $studentQuestionAnswer->question_id);
-                if ($answer) {
-                    $questionUsage->update([
-                        'online_exam_correct_answers_count' => $questionUsage->online_exam_correct_answers_count + 1
-                    ]);
-                } else {
-                    $questionUsage->update([
-                        'online_exam_incorrect_answers_count' => $questionUsage->online_exam_incorrect_answers_count + 1
-                    ]);
+                        if ($answer) {
+                            $questionUsage->update([
+                                'online_exam_correct_answers_count' => $questionUsage->online_exam_correct_answers_count + 1
+                            ]);
+                        } else {
+                            $questionUsage->update([
+                                'online_exam_incorrect_answers_count' => $questionUsage->online_exam_incorrect_answers_count + 1
+                            ]);
+                        }
+                    }
                 }
             }
 
@@ -179,7 +104,7 @@ class QuestionUsageHelper
         }
     }
 
-    public static function updatePracticeExamQuestionsUsageAnswer(PracticeExam $practiceExam)
+    public static function updatePracticeExamQuestionsUsageAndAnswer(PracticeExam $practiceExam)
     {
         // التحقق من ان الاجابة لا تحتوي على نل، وهذا يعني ان الطالب جاوب السؤال، مش خلي السؤال فاضي
         try {
@@ -209,5 +134,4 @@ class QuestionUsageHelper
             throw $e;
         }
     }
-
 }

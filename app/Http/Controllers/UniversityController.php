@@ -25,7 +25,7 @@ class UniversityController extends Controller
         // try {
             if ($request->hasFile('logo')) {
                 $filePath = ImageHelper::uploadImage($request->file('logo'));
-                $updatedAttributes['logo'] = asset($filePath);
+                $updatedAttributes['logo'] =  $filePath ;
             }
             // Convert the data to JSON
             $jsonData = json_encode($updatedAttributes, JSON_UNESCAPED_SLASHES);
@@ -73,7 +73,7 @@ class UniversityController extends Controller
             $jsonData = Storage::disk('local')->get('university.json');
             $universityData = json_decode($jsonData, true);
             if (isset($universityData['logo'])) {
-                $universityData['logo'] = urldecode($universityData['logo']);
+                $universityData['logo_url'] = urldecode($universityData['logo']);
             }
             $universityData = NullHelper::filter($universityData);
             return ResponseHelper::successWithData($universityData);
