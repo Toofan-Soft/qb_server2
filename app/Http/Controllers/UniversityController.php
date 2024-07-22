@@ -21,20 +21,19 @@ class UniversityController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
+
         $updatedAttributes = $request->all();
-        // try {
-            if ($request->hasFile('logo')) {
-                $filePath = ImageHelper::uploadImage($request->file('logo'));
-                $updatedAttributes['logo'] =  $filePath ;
-            }
-            // Convert the data to JSON
+        try {
+            $filePath = ImageHelper::uploadImage($request->logo);
+            $updatedAttributes['logo'] =  $filePath;
+            
             $jsonData = json_encode($updatedAttributes, JSON_UNESCAPED_SLASHES);
             Storage::disk('local')->put('university.json', $jsonData);
 
             return ResponseHelper::success();
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyUniversityData(Request $request)
