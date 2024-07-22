@@ -27,7 +27,7 @@ class ProctorRefreshListener
      */
     public function handle(ProctorRefreshEvevnt $event): void
     {
-        $this->pusher->trigger('qb_server', 'student.refresh.' . $event->uid, $event->data);
+        $this->pusher->trigger('qb_server', 'proctor.refresh.' . $event->uid, $event->data);
         
         // $uid = auth()->user()->id;
         // $this->pusher->trigger('qb_server', 'student.refresh.' . $uid, $event->data);

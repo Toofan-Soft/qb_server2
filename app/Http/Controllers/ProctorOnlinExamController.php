@@ -404,7 +404,7 @@ class ProctorOnlinExamController extends Controller
     {
         Gate::authorize('startStudentOnlineExam', ProctorOnlinExamController::class);
 
-        try {
+        // try {
             // rule: exam_id, student_id
             $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
                 ->where('student_id', $request->student_id);
@@ -439,10 +439,10 @@ class ProctorOnlinExamController extends Controller
 
                 return ResponseHelper::success();
             }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     private function selectStudentFormId($examId)
@@ -488,6 +488,7 @@ class ProctorOnlinExamController extends Controller
                 // event(new StudentRefreshEvevnt($studentInfo)); // execute event
 
                 OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id);
+                OnlineExamListenerHelper::refreshProctor($request->student_id, $request->exam_id);
                 DB::commit();
                 return ResponseHelper::success();
             }
@@ -513,9 +514,9 @@ class ProctorOnlinExamController extends Controller
                     'status' => StudentOnlineExamStatusEnum::ACTIVE->value,
                 ]);
 
-
                 // refresh studnet and proctor
                 OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id);
+                OnlineExamListenerHelper::refreshProctor($request->student_id, $request->exam_id);
                 DB::commit();
                 return ResponseHelper::success();
             }
@@ -533,8 +534,8 @@ class ProctorOnlinExamController extends Controller
             $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
                 ->where('student_id', $request->student_id);
             DB::beginTransaction();
-            // if ($studentOnlineExam && intval($studentOnlineExam->status) != StudentOnlineExamStatusEnum::COMPLETE->value) {
-            if (intval($studentOnlineExam->first()->status) != StudentOnlineExamStatusEnum::COMPLETE->value) {
+            if (intval($studentOnlineExam->first()->status) === StudentOnlineExamStatusEnum::COMPLETE->value ||
+                intval($studentOnlineExam->first()->status) === StudentOnlineExamStatusEnum::CANCELED->value) {
                 return ResponseHelper::clientError();
             } else {
                 $studentOnlineExam->update([
@@ -544,6 +545,7 @@ class ProctorOnlinExamController extends Controller
 
                 // refresh student and proctor
                 OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id);
+                OnlineExamListenerHelper::refreshProctor($request->student_id, $request->exam_id);
                 DB::commit();
                 return ResponseHelper::success();
             }
