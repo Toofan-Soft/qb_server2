@@ -468,7 +468,7 @@ class PaperExamController extends Controller
     public function exportPaperExamToPDF(Request $request)
     {
         // request {id, with_answer_mirror?}
-        Gate::authorize('exportPaperExamToPDF', PaperExamController::class);
+        // Gate::authorize('exportPaperExamToPDF', PaperExamController::class);
 
         // id, with mirror?, with answered mirror?
         /* Data:
@@ -500,7 +500,7 @@ class PaperExamController extends Controller
         *   .
         * */
         // تبقى جزء فحص اذا كان يشتي مع اجابة او لا
-        // try {
+        try {
             $realExam = RealExam::findOrFail($request->id, [
                 'id', 'datetime', 'duration', 'type as type_name', 'course_lecturer_id',
                 'forms_count', 'form_name_method', 'form_configuration_method', 'language as language_id'
@@ -617,9 +617,9 @@ class PaperExamController extends Controller
             $realExam['datetime'] = DatetimeHelper::convertDateTimeToLong($realExam['datetime']);
 
             return ResponseHelper::successWithData($realExam);
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     private function getFormQuestions($formId, bool $withAnsweredMirror, $language)

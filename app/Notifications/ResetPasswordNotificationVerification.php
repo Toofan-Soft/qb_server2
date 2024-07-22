@@ -43,7 +43,7 @@ class ResetPasswordNotificationVerification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $otp = $this->otp->generate($notifiable->email,'numeric', 6, 60); //generate recieve(email, number of code, duration of code to expired)
+        $otp = $this->otp->generate($notifiable->email,'numeric', $this->generateAlphanumericToken(8), 60); //generate recieve(email, number of code, duration of code to expired)
 
         return (new MailMessage)
                 ->mailer('smtp')
@@ -63,5 +63,11 @@ class ResetPasswordNotificationVerification extends Notification
         return [
             //
         ];
+    }
+
+    private function generateAlphanumericToken(int $length = 4): string
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        return substr(str_shuffle($characters), 0, $length);
     }
 }

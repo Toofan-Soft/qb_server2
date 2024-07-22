@@ -98,7 +98,7 @@ class InitialDatabaseHelper
                 'youtube' => 'https://www.youtube.com/channel/applied_sciences',
                 'x_platform' => 'https://twitter.com/applied_sciences',
                 'telegram' => 'https://t.me/applied_sciences',
-                'logo' => 'path/to/applied_sciences/logo.jpg'
+                'logo' => 'images/1721653542.png'
             ]
         ];
 
