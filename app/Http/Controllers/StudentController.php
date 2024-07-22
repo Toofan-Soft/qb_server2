@@ -51,7 +51,7 @@ class StudentController extends Controller
         }
 
         DB::beginTransaction();
-        // try {
+        try {
             $student =  Student::create([
                 'academic_id' => $request->academic_id,
                 'arabic_name' =>  $request->arabic_name,
@@ -74,10 +74,10 @@ class StudentController extends Controller
 
             DB::commit();
             return ResponseHelper::success();
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyStudent(Request $request, Student $student)
