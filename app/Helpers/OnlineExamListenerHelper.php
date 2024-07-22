@@ -183,7 +183,8 @@ class OnlineExamListenerHelper
         $data = [
             'is_takable' => (intval($exam->status) === StudentOnlineExamStatusEnum::ACTIVE->value) ? true : false,
             'is_suspended' => (intval($exam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value) ? true : false,
-            'is_complete' => (intval($exam->status) === StudentOnlineExamStatusEnum::COMPLETE->value) ? true : false,
+            'is_complete' => ((intval($exam->status) === StudentOnlineExamStatusEnum::COMPLETE->value) ? true : false) ||
+                (intval($exam->status) === StudentOnlineExamStatusEnum::CANCELED->value) ? true : false,
             'is_canceled' => (intval($exam->status) === StudentOnlineExamStatusEnum::CANCELED->value) ? true : false,
         ];
 

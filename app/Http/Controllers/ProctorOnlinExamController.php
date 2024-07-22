@@ -477,7 +477,7 @@ class ProctorOnlinExamController extends Controller
             // rule : exam_id, student_id
             $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
                 ->where('student_id', $request->student_id);
-                 
+            
             DB::beginTransaction();
             if (intval($studentOnlineExam->first()->status) != StudentOnlineExamStatusEnum::ACTIVE->value) {
                 return ResponseHelper::clientError();
