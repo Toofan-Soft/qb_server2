@@ -20,8 +20,8 @@ class GenerateExam
 
             $process = new Process([
                 // 'E:\Applications\Python\Python312\python.exe',
-                 // 'C:\Users\dell\AppData\Local\Programs\Python\Python312\python.exe',
-                 'C:\Users\Nasser\AppData\Local\Programs\Python\Python312\python.exe',
+                 'C:\Users\dell\AppData\Local\Programs\Python\Python312\python.exe',
+                //  'C:\Users\Nasser\AppData\Local\Programs\Python\Python312\python.exe',
                 base_path() . '\app\AlgorithmAPI\PythonModules\examGeneratorAPI\start.py',
                 $methodName
             ]);

@@ -672,7 +672,7 @@ class PracticeExamController extends Controller
                     'remaining_duration' => $practiceExamUsage->first()->remaining_duration - DatetimeHelper::getDifferenceInSeconds(DatetimeHelper::now(), $practiceExamUsage->first()->start_datetime)
                 ]);
 
-                // QuestionUsageHelper::updatePracticeExamQuestionsAnswerUsage($practiceExam);
+                QuestionUsageHelper::updatePracticeExamQuestionsUsageAndAnswer($practiceExam);
 
                 DB::commit();
                 return ResponseHelper::success();

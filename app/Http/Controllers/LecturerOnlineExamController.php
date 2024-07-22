@@ -300,7 +300,7 @@ class LecturerOnlineExamController extends Controller
                     return $query->where('department_course_parts.id', '=', $request->department_course_part_id);
                 })
                 ->when(isset($request->status_id), function ($query) use ($request) {
-                    return $query->where('online_exams.status', '=', $request->stsatus_id);
+                    return $query->where('online_exams.status', '=', $request->status_id);
                 })
                 ->when(isset($request->type_id), function ($query) use ($request) {
                     return $query->where('real_exams.type', '=', $request->type_id);

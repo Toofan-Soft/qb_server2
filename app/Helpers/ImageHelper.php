@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use Faker\Core\Uuid;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
@@ -35,6 +36,7 @@ class ImageHelper
             $filePath = public_path($folder . '/' . $fileName);
 
             file_put_contents($filePath, implode(array_map("chr", $fileData)));
+           // file_put_contents($filePath,  $fileData);
 
             return $fileName;
         }

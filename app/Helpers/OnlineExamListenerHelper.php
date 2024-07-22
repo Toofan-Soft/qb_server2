@@ -187,7 +187,7 @@ class OnlineExamListenerHelper
             'is_canceled' => (intval($exam->status) === StudentOnlineExamStatusEnum::CANCELED->value) ? true : false,
         ];
 
-        
+         
         event(new StudentRefreshEvevnt($data, $uid));
     }
 
