@@ -469,7 +469,7 @@ Route::middleware('auth:api')->group(function () {
 
 //for test with out need to login
 Route::prefix('test/')->group(function () {
-    Route::post('add', [InitialDatabaseController::class, 'initialDatabase']);
+    // Route::post('add', [InitialDatabaseController::class, 'initialDatabase']);
     // Route::put('modify', [QuestionController::class, 'acceptQuestion']);
     // Route::put('change-status', [UserManagementController::class, 'changeUserStatus']);
     // Route::delete('delete', [UserManagementController::class, 'deleteUser']);
