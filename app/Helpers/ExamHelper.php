@@ -420,6 +420,39 @@ class ExamHelper
 
         return $groupedQuestions;
     }
+
+    public static function getFormQuestionsWithoutDetails($formId, bool $withQuestionId, bool $withChoiceId, bool $withAnswer)
+    {
+        $questions = [];
+        $form = Form::findOrFail($formId);
+        $realExam = RealExam::findOrFail($form->real_exam_id);
+        $language = LanguageEnum::symbolOf($realExam->language);
+
+        $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
+
+        foreach ($formQuestions as $formQuestion) {
+            $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
+
+            if ($formQuestion->combination_id) {
+                $question->choices = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, $withAnswer, $language);
+            } else {
+                if ($withAnswer) {
+                    $answer = TrueFalseQuestion::where('question_id', $formQuestion->question_id)->first(['answer'])['answer'];
+                    $question->is_true = intval($answer) === TrueFalseAnswerEnum::TRUE->value;
+                }
+            }
+
+            if (!$withQuestionId) {
+                unset($question->id);
+            }
+
+            array_push($questions, $question);
+        }
+
+        $questions = NullHelper::filter($questions);
+
+        return $questions;
+    }
     
     public static function retrieveRealExamFormQuestions($formId) //////////////////////*********** More condition needed
     {

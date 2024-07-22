@@ -501,104 +501,122 @@ class PaperExamController extends Controller
         * */
         // تبقى جزء فحص اذا كان يشتي مع اجابة او لا
         // try {
-        $realExam = RealExam::findOrFail($request->id, [
-            'id', 'datetime', 'duration', 'type as type_name', 'course_lecturer_id',
-            'forms_count', 'form_name_method', 'form_configuration_method'
-        ]);
+            $realExam = RealExam::findOrFail($request->id, [
+                'id', 'datetime', 'duration', 'type as type_name', 'course_lecturer_id',
+                'forms_count', 'form_name_method', 'form_configuration_method', 'language as language_id'
+            ]);
 
-        $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
-            new EnumReplacement('type_name', ExamTypeEnum::class),
-        ]);
+            $realExam = ProcessDataHelper::enumsConvertIdToName($realExam, [
+                new EnumReplacement('type_name', ExamTypeEnum::class),
+            ]);
 
-        $paperExam = PaperExam::where('id', $realExam->id)->first(['course_lecturer_name as lecturer_name']);
-        // $paperExam = $realExam->paper_exam()->first(['course_lecturer_name as lecturer_name']);
-        if (is_null($paperExam->lecturer_name)) {
-
-            $paperExam = $realExam->course_lecturer()->first()->employee()->first()[LanguageHelper::getEmployeeNameColumnName($realExam->id)];
-        }
-
-        $courseLecturer = $realExam->course_lecturer()->first();
-        $departmentCoursePart = $courseLecturer->department_course_part()->first();
-
-        $coursePart = $departmentCoursePart->course_part()->first(['part_id as course_part_name']);
-        $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
-            new EnumReplacement('course_part_name', CoursePartsEnum::class)
-        ]);
-        $departmentCourse = $departmentCoursePart->department_course()->first(['level as level_name', 'semester as semester_name', 'department_id', 'course_id']);
-        $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
-            new EnumReplacement('level_name', LevelsEnum::class),
-            new EnumReplacement('semester_name', SemesterEnum::class)
-        ]);
-        $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
-
-        $college = $department->college()->first(['arabic_name as college_name']);
-
-        $course = $departmentCourse->course()->first(['arabic_name as course_name']);
-        // Total Score of exam 
-        $questionsTypes = $realExam->real_exam_question_types()->get(['questions_count', 'question_score']);
-        $totalScore = 0;
-        foreach ($questionsTypes as $questionType) {
-            $totalScore += ($questionType->questions_count * $questionType->question_score);
-        }
-        // university name 
-        // $jsonData = Storage::disk('local')->get('university.json');
-        // $universityData = json_decode($jsonData, true);
-        // $universityName = [
-        //     'arabic_name' => $universityData['arabic_name'],
-        // ];
-
-        // form and form questions 
-        // as [formName, questions[], .....] or [formsName[name,...], questoins[]]
-        $examFormsQuestions = [];
-        $formsNames = ExamHelper::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count);
-        $examForms = $realExam->forms()->get(['id']);
-
-        if (intval($realExam->form_configuration_methode) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
-            $i = 0;
-            foreach ($examForms as $formId) {
-                // $formQuestions = $this->getFormQuestions($formId->id, $request->with_answer_mirror, $realExam->language);
-                $formQuestions = ExamHelper::getFormQuestionsWithDetails($formId->id, false, false, true);
-                array_push($examFormsQuestions, [$formsNames[$i++], $formQuestions]);
+            $paperExam = PaperExam::where('id', $realExam->id)->first(['course_lecturer_name as lecturer_name']);
+            if (is_null($paperExam->lecturer_name)) {
+                $lecturerId = $realExam->course_lecturer()->first()['lecturer_id'];
+                $paperExam = Employee::findOrFail($lecturerId, [LanguageHelper::getEmployeeNameColumnName($realExam->id)]);
             }
-        } else {
-            $formQuestions = $this->getFormQuestions($examForms->id, $request->with_answer_mirror, $realExam->language);
-            array_push($examFormsQuestions, $formsNames);
-            array_push($examFormsQuestions, $formQuestions);
-        }
+            $courseLecturer = $realExam->course_lecturer()->first();
+            $departmentCoursePart = $courseLecturer->department_course_part()->first();
 
-        $departmentCourse = $departmentCourse->toArray();
-        unset($departmentCourse['department_id']);
-        unset($departmentCourse['course_id']);
+            $coursePart = $departmentCoursePart->course_part()->first(['part_id as course_part_name']);
+            $coursePart = ProcessDataHelper::enumsConvertIdToName($coursePart, [
+                new EnumReplacement('course_part_name', CoursePartsEnum::class)
+            ]);
+            $departmentCourse = $departmentCoursePart->department_course()->first(['level as level_name', 'semester as semester_name', 'department_id', 'course_id']);
+            $departmentCourse = ProcessDataHelper::enumsConvertIdToName($departmentCourse, [
+                new EnumReplacement('level_name', LevelsEnum::class),
+                new EnumReplacement('semester_name', SemesterEnum::class)
+            ]);
+            $department = $departmentCourse->department()->first(['arabic_name as department_name', 'college_id']);
 
-        $department = $department->toArray();
-        unset($department['college_id']);
+            $college = $department->college()->first(['arabic_name as college_name']);
 
-        $realExam = $realExam->toArray();
-        unset($realExam['course_lecturer_id']);
-        unset($realExam['id']);
-        unset($realExam['form_name_method']);
-        unset($realExam['forms_count']);
-        unset($realExam['form_configuration_methode']);
+            $course = $departmentCourse->course()->first(['arabic_name as course_name']);
+            // Total Score of exam 
+            $questionsTypes = $realExam->real_exam_question_types()->get(['questions_count', 'question_score']);
+            $totalScore = 0;
+            foreach ($questionsTypes as $questionType) {
+                $totalScore += ($questionType->questions_count * $questionType->question_score);
+            }
 
-        $realExam = $realExam +
-            $paperExam->toArray() +
-            $coursePart->toArray() +
-            $departmentCourse +
-            $department +
-            $college->toArray() +
-            $course->toArray();
+            // university name 
+            $jsonData = Storage::disk('local')->get('university.json');
+            $universityData = json_decode($jsonData, true);
+            $universityName = $universityData['arabic_name'];
+            $universityLogoUrl = $universityData['logo'];
 
-        $realExam['score'] = $totalScore;
-        // $realExam['university_name'] = $universityName;
-        // $realExam['forms'] = $examFormsQuestions;
+            // form and form questions 
+            // as [formName, questions[], .....] or [formsName[name,...], questoins[]]
+            $formsNames = ExamHelper::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count);
+            $examForms = $realExam->forms()->get(['id']);
 
-        if ($examForms->count() === 1) {
-            $realExam['questions'] = $examFormsQuestions[0];
-        } else {
-            $realExam['forms'] = $examFormsQuestions;
-        }
+            if (intval($realExam->form_count) > 1) {
+                $examFormsQuestions = [];
+                if (intval($realExam->form_configuration_methode) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
+                    $i = 0;
+                    foreach ($examForms as $formId) {
+                        $formQuestions = ExamHelper::getFormQuestionsWithoutDetails($formId->id, false, false, $request->with_answer ?? false);
+                        $examFormsQuestions[] = [
+                            'form_name' => [$formsNames[$i++],
+                            'questions' => $formQuestions]
+                        ];
+                    }
+                } elseif (intval($realExam->form_configuration_methode) === FormConfigurationMethodEnum::SIMILAR_FORMS->value) {
+                    $formQuestions = ExamHelper::getFormQuestionsWithoutDetails($examForms->first()->id, false, false, $request->with_answer ?? false);
+                    for ($i=0; $i < $realExam->form_count; $i++) { 
+                        $examFormsQuestions[] = [
+                            'form_name' => $i + 1,
+                            'questions' => $formQuestions
+                        ];
+                    }
+                } elseif (intval($realExam->form_configuration_methode) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
+                    $formQuestions = ExamHelper::getFormQuestionsWithoutDetails($examForms->first()->id, false, false, $request->with_answer ?? false);
+                    for ($i=0; $i < $realExam->form_count; $i++) { 
+                        $examFormsQuestions[] = [
+                            'form_name' => $i + 1,
+                            'questions' => collect($formQuestions)->shuffle()
+                        ];
+                    }
+                } else {
+                    return ResponseHelper::serverError();
+                }
+                $realExam['forms'] = $examFormsQuestions;
+            } else {
+                $formQuestions = ExamHelper::getFormQuestionsWithoutDetails($examForms->first()->id, false, false, $request->with_answer ?? false);
+                $realExam['questions'] = $formQuestions;
+            }
 
-        return ResponseHelper::successWithData($realExam);
+            $departmentCourse = $departmentCourse->toArray();
+            unset($departmentCourse['department_id']);
+            unset($departmentCourse['course_id']);
+
+            $department = $department->toArray();
+            unset($department['college_id']);
+
+            $realExam = $realExam->toArray();
+            unset($realExam['course_lecturer_id']);
+            unset($realExam['id']);
+            unset($realExam['form_name_method']);
+            unset($realExam['forms_count']);
+            unset($realExam['form_configuration_method']);
+
+            $realExam = $realExam +
+                $paperExam->toArray() +
+                $coursePart->toArray() +
+                $departmentCourse +
+                $department +
+                $college->toArray() +
+                $course->toArray();
+
+            $realExam['score'] = $totalScore;
+            $realExam['university_name'] = $universityName;
+            $realExam['university_logo_url'] = $universityLogoUrl;
+
+            $realExam = NullHelper::filter($realExam);
+
+            $realExam['datetime'] = DatetimeHelper::convertDateTimeToLong($realExam['datetime']);
+
+            return ResponseHelper::successWithData($realExam);
         // } catch (\Exception $e) {
         //     return ResponseHelper::serverError();
         // }

@@ -72,7 +72,6 @@ class LecturerOnlineExamController extends Controller
 
             $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
 
-
             if ($examFormsQuestions) { // modify to use has function
                 $employee = Employee::where('user_id',  auth()->user()->id)->first();
 
