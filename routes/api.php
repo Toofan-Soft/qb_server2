@@ -72,7 +72,7 @@ Route::post('user/verify', [UserController::class, 'verifyAccount']);
 Route::post('user/verify-account-after-recovery', [UserController::class, 'verifyAccountAfterRecvery']);
 Route::post('user/login', [UserController::class, 'login']);
 Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
-Route::put('user/change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+// Route::put('user/change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
 Route::get('enum/retrieve-gender-list', [EnumsController::class, 'retrieveRegisterGenders']);
 Route::post('employee/add', [EmployeeController::class, 'addEmployee']);
 Route::post('user-management/add', [UserManagementController::class, 'addUser']);
@@ -314,7 +314,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('change-password', [UserController::class, 'changePassword']);
         Route::put('change-language', [UserController::class, 'changeLanguage']);
         // Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
-        // Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+        Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
         // Route::post('verify-account-after-recovery', [UserController::class, 'verifyAccountAfterRecvery']);
         Route::get('retrieve-profile', [UserController::class, 'retrieveProfile']);
 

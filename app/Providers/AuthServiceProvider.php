@@ -58,6 +58,8 @@ use App\Http\Controllers\LecturerOnlineExamController;
 use App\Http\Controllers\DepartmentCoursePartController;
 use App\Policies\DepartmentCoursePartChapterTopicPolicy;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
+use Laravel\Passport\Passport;
+
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
@@ -104,7 +106,7 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
-        // Passport::routes();
+        //Passport::routes();
 
         // if (! $this->app->routesAreCached()) {
             // Passport::routes();

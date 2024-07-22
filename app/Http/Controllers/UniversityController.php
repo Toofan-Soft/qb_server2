@@ -25,7 +25,7 @@ class UniversityController extends Controller
         $updatedAttributes = $request->all();
         try {
             $filePath = ImageHelper::uploadImage($request->logo);
-            $updatedAttributes['logo'] =  $filePath;
+            $updatedAttributes['logo'] =  asset($filePath);
             
             $jsonData = json_encode($updatedAttributes, JSON_UNESCAPED_SLASHES);
             Storage::disk('local')->put('university.json', $jsonData);
@@ -45,10 +45,8 @@ class UniversityController extends Controller
         }
         $updatedAttributes = $request->all();
         try {
-            if ($request->hasFile('logo')) {
-                $filePath = ImageHelper::uploadImage($request->file('logo'));
+                $filePath = ImageHelper::uploadImage($request->logo);
                 $updatedAttributes['logo'] = asset($filePath);
-            }
             $jsonData = Storage::disk('local')->get('university.json');
             $universityData = json_decode($jsonData, true);
             foreach ($updatedAttributes as $key => $value) {

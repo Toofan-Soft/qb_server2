@@ -468,7 +468,7 @@ class PaperExamController extends Controller
     public function exportPaperExamToPDF(Request $request)
     {
         // request {id, with_answer_mirror?}
-        Gate::authorize('exportPaperExamToPDF', PaperExamController::class);
+        // Gate::authorize('exportPaperExamToPDF', PaperExamController::class);
 
         // id, with mirror?, with answered mirror?
         /* Data:
@@ -512,6 +512,7 @@ class PaperExamController extends Controller
 
         $paperExam = PaperExam::where('id', $realExam->id)->first(['course_lecturer_name as lecturer_name']);
         // $paperExam = $realExam->paper_exam()->first(['course_lecturer_name as lecturer_name']);
+        
         if (is_null($paperExam->lecturer_name)) {
 
             $paperExam = $realExam->course_lecturer()->first()->employee()->first()[LanguageHelper::getEmployeeNameColumnName($realExam->id)];

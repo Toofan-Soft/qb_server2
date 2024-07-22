@@ -72,14 +72,14 @@ class LecturerOnlineExamController extends Controller
 
             $examFormsQuestions = (new GenerateExam())->execute($algorithmData);
 
-
+            
             if ($examFormsQuestions) { // modify to use has function
                 $employee = Employee::where('user_id',  auth()->user()->id)->first();
-
+                
                 $courseLecturer = CourseLecturer::where('department_course_part_id', '=', $request->department_course_part_id)
-                    ->where('lecturer_id', $employee->id)
-                    ->where('academic_year', now()->format('Y'))
-                    ->first();
+                ->where('lecturer_id', $employee->id)
+                ->where('academic_year', now()->format('Y'))
+                ->first();
                 DB::beginTransaction();
                 $realExam = $courseLecturer->real_exams()->create([
                     'type' => $request->type_id,

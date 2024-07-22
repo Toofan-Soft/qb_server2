@@ -36,10 +36,10 @@ class Student extends Model
     
     public function setBirthdateAttribute($value)
     {
+        $this->attributes['birthdate'] = DatetimeHelper::convertLongToDate($value);
         // $this->attributes['birthdate'] = date('Y-m-d H:i:s', $value);
         // $this->attributes['birthdate'] = DatetimeHelper::convertMillisecondsToTimestamp($value);
-        $this->attributes['birthdate'] = DatetimeHelper::convertLongToDate($value);
-    }
+    }   
 
     //عشان اقله نوع البيانات في هذا الاتريبيوت ستكون من نوع هذا الإنم
     protected $casts = [

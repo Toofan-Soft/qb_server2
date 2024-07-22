@@ -46,8 +46,8 @@ class StudentController extends Controller
     {
         // Gate::authorize('addStudent', StudentController::class);
 
-        if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError();
+        if ($x = ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError1($x);
         }
 
         DB::beginTransaction();
