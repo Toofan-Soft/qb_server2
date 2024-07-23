@@ -51,7 +51,7 @@ class StudentController extends Controller
         }
 
         DB::beginTransaction();
-        // try {
+        try {
             $student =  Student::create([
                 'academic_id' => $request->academic_id,
                 'arabic_name' =>  $request->arabic_name,
@@ -74,10 +74,10 @@ class StudentController extends Controller
 
             DB::commit();
             return ResponseHelper::success();
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyStudent(Request $request, Student $student)
@@ -103,11 +103,12 @@ class StudentController extends Controller
             if (isset($request->level_id)) {
                 if (isset($request->semester_id)) {
                     $studnetDepartmentAndLevel = $this->getStudentDepartmentLevelSemesterIds($student->id);
-
-                    if ($request->level_id <= $studnetDepartmentAndLevel->level_id) {
+                  
+                    if ($request->level_id < intval($studnetDepartmentAndLevel->level_id)) {
+                        return  "currentCourseStudents";
                         return ResponseHelper::clientError();
                         // return ResponseHelper::clientError('لا يمكنك تغيير مستوى الطالب الي مستوى ادنى من المستوى الحالي');
-                    } elseif ($request->level_id <= $studnetDepartmentAndLevel->semester_id) {
+                    } elseif ($request->level_id < intval($studnetDepartmentAndLevel->semester_id)) {
                         return ResponseHelper::clientError();
                         // return ResponseHelper::clientError('لا يمكنك تغيير فصل الطالب الي فصل ادنى من الفصل الحالي');
                     } else {
@@ -121,7 +122,7 @@ class StudentController extends Controller
                             ->where('department_courses.semester', '=', $studnetDepartmentAndLevel->semester_id)
                             ->where('students.id', '=', $student->id)
                             ->get();
-
+                          
                         foreach ($currentCourseStudents as $currentCourseStudent) {
                             $student->course_students()->where('department_course_id', '=', $currentCourseStudent->department_course_id)
                                 ->update([
@@ -292,20 +293,60 @@ class StudentController extends Controller
         }
     }
 
-    private function addStudentCoures($studnetId, $departmentId, $levelId, $semesterId)
+    private function addStudentCoures($studentId, $departmentId, $levelId, $semesterId)
     {
         try {
-            $departmentCourses = DepartmentCourse::where('department_id', '=', $departmentId)
-                ->where('level', '=', $levelId)
-                ->where('semester', '=', $semesterId)
-                ->get();
-            foreach ($departmentCourses as $departmentCourse) {
+            $departmentCourses = DepartmentCourse::where('department_id', $departmentId)
+            ->where('level', $levelId)
+            ->where('semester', $semesterId)
+            ->get();
+        
+        // Check if there's only one departmentCourse
+        if ($departmentCourses->count() === 1) {
+            $departmentCourse = $departmentCourses->first();
+          
+            // Check if the course_student already exists
+            $existingCourseStudent = $departmentCourse->course_students()->where('student_id', $studentId)->first();
+            
+            if (!$existingCourseStudent) {
+                // Create new course_student if not found
                 $departmentCourse->course_students()->create([
-                    'student_id' => $studnetId,
+                    'student_id' => $studentId,
                     'status' => CourseStudentStatusEnum::ACTIVE->value,
                     'academic_year' => now()->format('Y')
                 ]);
             }
+        } else {
+            foreach ($departmentCourses as $departmentCourse) {
+                // Check if the course_student already exists
+                $existingCourseStudent = $departmentCourse->course_students()->where('student_id', $studentId)->first();
+                
+                if (!$existingCourseStudent) {
+                    // Create new course_student if not found
+                    $departmentCourse->course_students()->create([
+                        'student_id' => $studentId,
+                        'status' => CourseStudentStatusEnum::ACTIVE->value,
+                        'academic_year' => now()->format('Y')
+                    ]);
+                }
+            }
+        }
+
+
+            //////////old 
+            // $departmentCourses = DepartmentCourse::where('department_id', '=', $departmentId)
+            //     ->where('level', '=', $levelId)
+            //     ->where('semester', '=', $semesterId)
+            //     ->get();
+                 
+            // foreach ($departmentCourses as $departmentCourse) {
+            //     $departmentCourse->course_students()->create([
+            //         'student_id' => $studentId,
+            //         'status' => CourseStudentStatusEnum::ACTIVE->value,
+            //         'academic_year' => now()->format('Y')
+            //     ]);
+            // }
+
         } catch (\Exception $e) {
             throw $e;
         }

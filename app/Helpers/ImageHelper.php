@@ -38,7 +38,7 @@ class ImageHelper
             file_put_contents($filePath, implode(array_map("chr", $fileData)));
 
 
-            return $$filePath;
+            return $fileName;
         }
         
         return null;
@@ -51,16 +51,18 @@ class ImageHelper
         }else{
             // Delete old image if it exists
             if ($oldImageName !== null) {
+            
                 self::deleteImage($oldImageName, $folder);
             }
     
             // Upload new image
-            return self::uploadImage($newImage, $folder);
+            return  self::uploadImage($newImage, $folder);
         }
     }
 
     private static function deleteImage($imageName, $folder = 'images')
     {
+        
         if ($imageName) {
             $filePath = public_path($folder . '/' . $imageName);
             
