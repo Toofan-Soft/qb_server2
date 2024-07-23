@@ -55,7 +55,6 @@ class PracticeExamController extends Controller
             $algorithmData = $this->getAlgorithmData($request);
             $examQuestions = (new GenerateExam())->execute($algorithmData);
 
-            return $examQuestions;
             if (!is_null($examQuestions)) { // modify to use has function
 
                 $user = User::findOrFail(auth()->user()->id);
@@ -257,7 +256,7 @@ class PracticeExamController extends Controller
                 $examResult = $this->getPracticeExamResult($practiceExam->id);
 
                 if ($examResult !== null) {
-                    $practiceExam->score_rate = $examResult['score_rate'];
+                    $practiceExam->score_rate = $examResult['score_rate'] / 100;
                     $practiceExam->appreciation = $examResult['appreciation'];
                 }
             }
