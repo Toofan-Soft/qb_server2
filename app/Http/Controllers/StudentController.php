@@ -44,7 +44,7 @@ class StudentController extends Controller
 
     public function addStudent(Request $request)
     {
-        // Gate::authorize('addStudent', StudentController::class);
+        Gate::authorize('addStudent', StudentController::class);
 
         if ($x = ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError1($x);
@@ -105,7 +105,7 @@ class StudentController extends Controller
                     $studnetDepartmentAndLevel = $this->getStudentDepartmentLevelSemesterIds($student->id);
                   
                     if ($request->level_id < intval($studnetDepartmentAndLevel->level_id)) {
-                        return  "currentCourseStudents";
+            
                         return ResponseHelper::clientError();
                         // return ResponseHelper::clientError('لا يمكنك تغيير مستوى الطالب الي مستوى ادنى من المستوى الحالي');
                     } elseif ($request->level_id < intval($studnetDepartmentAndLevel->semester_id)) {

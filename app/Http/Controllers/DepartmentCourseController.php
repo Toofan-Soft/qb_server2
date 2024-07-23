@@ -36,7 +36,7 @@ class DepartmentCourseController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
-        // try {
+        try {
             $departmentCourse = DepartmentCourse::create([
                 'department_id' => $request->department_id,
                 'course_id' => $request->course_id,
@@ -44,9 +44,9 @@ class DepartmentCourseController extends Controller
                 'semester' => $request->semester_id,
             ]);
             return ResponseHelper::successWithData(['id' => $departmentCourse->id]);
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyDepartmentCourse(Request $request)

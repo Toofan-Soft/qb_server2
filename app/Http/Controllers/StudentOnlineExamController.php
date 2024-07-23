@@ -252,7 +252,7 @@ class StudentOnlineExamController extends Controller
     public function retrieveOnlineExamQuestions(Request $request)
     {
         Gate::authorize('retrieveOnlineExamQuestions', StudentOnlineExamController::class);
-        // try {
+        try {
             $exam = OnlineExam::findOrFail($request->exam_id);
 
             if (
@@ -291,15 +291,15 @@ class StudentOnlineExamController extends Controller
             // $questions = NullHelper::filter($questions);
 
             // return ResponseHelper::successWithData($questions);
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     private function getFormQuestions($formId, $studentId)
     {
         $questions = [];
-        // try {
+        try {
             $form = Form::findOrFail($formId);
             $realExam = RealExam::findOrFail($form->real_exam_id);
             $language = LanguageEnum::symbolOf($realExam->language);
@@ -356,9 +356,9 @@ class StudentOnlineExamController extends Controller
                 array_push($questions, $question);
             }
             return $questions;
-        // } catch (\Exception $e) {
-        //     throw $e;
-        // }
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public function finishOnlineExam(Request $request)
@@ -506,7 +506,7 @@ class StudentOnlineExamController extends Controller
 
     private function getRealExamQuestionScore($onlineExamId)
     {
-        // $examScores = [];
+        // $examScores = []; php artisan passport:install
         try {
             $realExam = RealExam::findOrFail($onlineExamId);
 

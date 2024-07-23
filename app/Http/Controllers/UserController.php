@@ -128,7 +128,7 @@ class UserController extends Controller
 
     public function retrieveProfile()
     {
-        // try {
+        try {
             $user = auth()->user();
             $owner = null;
             $enumReplacements = [
@@ -159,9 +159,9 @@ class UserController extends Controller
             $owner = NullHelper::filter($owner);
 
             return ResponseHelper::successWithData($owner);
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function changePassword(Request $request)
