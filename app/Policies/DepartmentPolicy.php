@@ -39,6 +39,12 @@ class DepartmentPolicy
     
     public function retrieveBasicDepartmentsInfo(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        $roles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::DATA_ENTRY,
+            RoleEnum::GUEST
+        ];
+
+        return ValidateHelper::validatePolicy($roles);
     }
 }

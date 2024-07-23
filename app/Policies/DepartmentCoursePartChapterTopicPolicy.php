@@ -24,12 +24,26 @@ class DepartmentCoursePartChapterTopicPolicy
 
     public function retrieveDepartmentCoursePartChapters(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        $roles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::DATA_ENTRY,
+            RoleEnum::STUDENT,
+            RoleEnum::LECTURER
+        ];
+        return ValidateHelper::validatePolicy($roles);
     }
     
     public function retrieveDepartmentCoursePartChapterTopics(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        $roles = [
+            RoleEnum::SYSTEM_ADMINISTRATOR,
+            RoleEnum::DATA_ENTRY,
+            RoleEnum::STUDENT,
+            RoleEnum::LECTURER,
+
+        ];
+
+        return ValidateHelper::validatePolicy($roles);
     }
     
     public function retrieveEditableDepartmentCoursePartChapters(): bool
