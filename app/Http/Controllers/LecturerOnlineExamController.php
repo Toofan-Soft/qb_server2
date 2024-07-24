@@ -547,12 +547,12 @@ class LecturerOnlineExamController extends Controller
     {
         Gate::authorize('retrieveOnlineExamFormQuestions', LecturerOnlineExamController::class);
 
-        // try {
+        try {
             $questions = ExamHelper::getFormQuestionsWithDetails($request->form_id, false, false, true);
             return ResponseHelper::successWithData($questions);
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function changeOnlineExamStatus(Request $request)

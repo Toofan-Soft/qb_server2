@@ -36,8 +36,8 @@ class QuestionController extends Controller
     {
         Gate::authorize('addQuestion', QuestionController::class);
 
-        if (ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError();
+        if ($x= ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError1($x);
         }
 
         DB::beginTransaction();
@@ -349,7 +349,7 @@ class QuestionController extends Controller
                         $choice['is_true'] = false;
                     }
                 }
-                $question['choices'] = $choices;
+                $question['choices'] = $choices->toArray();
             }
             unset($question['type']);
             unset($question['id']);
@@ -359,23 +359,23 @@ class QuestionController extends Controller
 
             if (intval($question->status) === QuestionStatusEnum::NEW->value) {
                 $status  = [
-                    'is_accept' => null,
-                    'is_request' => false,
+                    'is_accepted' => null,
+                    'is_requested' => false,
                 ];
             } elseif (intval($question->status) ===  QuestionStatusEnum::REQUESTED->value) {
                 $status  = [
-                    'is_accept' => null,
-                    'is_request' => true,
+                    'is_accepted' => null,
+                    'is_requested' => true,
                 ];
-            } elseif (intval($question->status) === QuestionStatusEnum::ACCEPTED->value) {
+             } elseif (intval($question->status) === QuestionStatusEnum::ACCEPTED->value) {
                 $status  = [
-                    'is_accept' => true,
-                    'is_request' => true,
+                    'is_accepted' => true,
+                    'is_requested' => true,
                 ];
             } else {
                 $status  = [
-                    'is_accept' => false,
-                    'is_request' => true,
+                    'is_accepted' => false,
+                    'is_requested' => true,
                 ];
             }
 
@@ -388,7 +388,7 @@ class QuestionController extends Controller
             ];
 
             $question = ProcessDataHelper::enumsConvertIdToName($question, $enumReplacements);
-            $question['status'] = $status;
+            $question->status = $status;
 
             return ResponseHelper::successWithData($question);
         } catch (\Exception $e) {
@@ -531,10 +531,10 @@ class QuestionController extends Controller
             // 'choices' => 'required|array|min:1',
             // 'choices' => 'nullable|array',
             // 'choices' => 'required|array',
-            'choices' => 'required|array|min:4',
+            'choices' => 'nullable|array|min:4',
             'choices.*.attachment' => ['nullable', new ByteArrayValidationRule],
-            'choices.*.content' => 'required|string',
-            'choices.*.is_true' => 'required|boolean',
+            'choices.*.content' => 'nullable|string',
+            'choices.*.is_true' => 'nullable|boolean',
 
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

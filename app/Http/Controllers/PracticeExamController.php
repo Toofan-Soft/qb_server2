@@ -51,7 +51,7 @@ class PracticeExamController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
-        // try {
+        try {
             $algorithmData = $this->getAlgorithmData($request);
             $examQuestions = (new GenerateExam())->execute($algorithmData);
 
@@ -95,9 +95,9 @@ class PracticeExamController extends Controller
                 DB::rollBack();
                 return ResponseHelper::serverError();
             }
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyPracticeExam(Request $request)
@@ -147,7 +147,7 @@ class PracticeExamController extends Controller
          * return: [id, course name, course part name, title, datetime, status name?, appreciation?, score rate?]
          */
         $userId = auth()->user()->id;
-        // try {
+        try {
             $practiceExams =  DB::table('practice_exams')
                 ->join('department_course_parts', 'practice_exams.department_course_part_id', '=', 'department_course_parts.id')
                 ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
@@ -197,9 +197,9 @@ class PracticeExamController extends Controller
             $practiceExams = NullHelper::filter($practiceExams);
 
             return ResponseHelper::successWithData($practiceExams);
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrievePracticeExamsAndroid(Request $request)
@@ -450,7 +450,7 @@ class PracticeExamController extends Controller
     {
         Gate::authorize('retrievePracticeExam', PracticeExamController::class);
 
-        // try {
+        try {
         $practiceExam = PracticeExam::findOrFail($request->id, [
             'datetime',
             'id', 'title', 'duration', 'language as language_name',
@@ -510,9 +510,9 @@ class PracticeExamController extends Controller
         $practiceExam = NullHelper::filter($practiceExam);
 
         return ResponseHelper::successWithData($practiceExam);
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveEditablePracticeExam(Request $request)

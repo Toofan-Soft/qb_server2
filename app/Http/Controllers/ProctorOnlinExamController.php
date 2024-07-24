@@ -407,7 +407,7 @@ class ProctorOnlinExamController extends Controller
     {
         Gate::authorize('startStudentOnlineExam', ProctorOnlinExamController::class);
 
-        // try {
+        try {
             // rule: exam_id, student_id
             $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
                 ->where('student_id', $request->student_id);
@@ -442,10 +442,10 @@ class ProctorOnlinExamController extends Controller
 
                 return ResponseHelper::success();
             }
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError();
+        }
     }
 
     private function selectStudentFormId($examId)
@@ -471,9 +471,9 @@ class ProctorOnlinExamController extends Controller
 
     public function suspendStudentOnlineExam(Request $request)
     {
-        // Gate::authorize('suspendStudentOnlineExam', ProctorOnlinExamController::class);
+        Gate::authorize('suspendStudentOnlineExam', ProctorOnlinExamController::class);
 
-        // try {
+        try {
             // rule : exam_id, student_id
             $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $request->exam_id)
                 ->where('student_id', $request->student_id);
@@ -496,10 +496,10 @@ class ProctorOnlinExamController extends Controller
                 DB::commit();
                 return ResponseHelper::success();
             }
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError();
+        }
     }
 
     public function continueStudentOnlineExam(Request $request)
@@ -564,7 +564,7 @@ class ProctorOnlinExamController extends Controller
         // request {id}
         Gate::authorize('finishOnlineExam', ProctorOnlinExamController::class);
 
-        // try {
+        try {
             DB::beginTransaction();
             /**
              * تغير حالة الاختبار الالكتروني الي مكتمل
@@ -614,10 +614,10 @@ class ProctorOnlinExamController extends Controller
 
             DB::commit();
             return ResponseHelper::success();
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError();
+        }
     }
 
 }
