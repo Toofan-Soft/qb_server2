@@ -1,0 +1,50 @@
+[
+    {
+        "content" : "Is programming essential for modern technology?",
+        "isCorrect" : true
+    },
+    {
+        "content" : "Is programming only about writing code?",
+        "isCorrect" : false
+    },
+    {
+        "content" : "Is programming essential for modern technology?",
+        "isCorrect" : true
+    },
+    {
+        "content" : "Is programming only about writing code?",
+        "isCorrect" : false
+    },
+    {
+        "content" : "Does every programming language use the same syntax?",
+        "isCorrect" : false
+    },
+    {
+        "content" : "Is Python a programming language?",
+        "isCorrect" : true
+    },
+    {
+        "content" : "Can HTML be used to develop mobile apps?",
+        "isCorrect" : false
+    },
+    {
+        "content" : "Is JavaScript used for both front-end and back-end development?",
+        "isCorrect" : true
+    },
+    {
+        "content" : "Is C++ an object-oriented programming language?",
+        "isCorrect" : true
+    },
+    {
+        "content" : "Does SQL stand for Structured Query Language?",
+        "isCorrect" : true
+    },
+    {
+        "content" : "Can CSS be used to style a webpage?",
+        "isCorrect" : true
+    },
+    {
+        "content" : "Is Java the same as JavaScript?",
+        "isCorrect" : false
+    }
+]

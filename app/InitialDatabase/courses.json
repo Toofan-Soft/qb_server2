@@ -1,6 +1,16 @@
 [
     {
-        "arabic_name": "لغة انجليزية",
+        "arabic_name": "اللغة العربية",
+        "english_name": "Arabic Language",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "اللغة الانجليزية",
         "english_name": "English Language",
         "course_parts": [
             {
@@ -10,8 +20,64 @@
         ]
     },
     {
+        "arabic_name": "ثقافة اسلامية",
+        "english_name": "Islamic Culture",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "اساسيات البرمجة",
+        "english_name": "Programming Fundamentals",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "الرياضيات",
+        "english_name": "Mathematics",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "part_id": 2,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "الفيزياء",
+        "english_name": "Physics",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "part_id": 2,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
         "arabic_name": "ذكاء صناعي",
-        "english_name": "Artificial Intelligent",
+        "english_name": "Artificial Intelligence",
         "course_parts": [
             {
                 "part_id": 0,
@@ -38,8 +104,48 @@
         ]
     },
     {
-        "arabic_name": "معالجة صور رقمية", 
-        "english_name": "Digtal Image Processing",
+        "arabic_name": "هندسة طبية حيوية",
+        "english_name": "Biomedical Engineering",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "علم الأدوية",
+        "english_name": "Pharmacology",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "إدارة أنظمة صحية",
+        "english_name": "Health Systems Management",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "ميكانيكا حيوية",
+        "english_name": "Biomechanics",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "معالجة الصور الطبية",
+        "english_name": "Medical Image Processing",
         "course_parts": [
             {
                 "part_id": 0,
@@ -52,7 +158,21 @@
         ]
     },
     {
-        "arabic_name": "تشريح", 
+        "arabic_name": "الروبوتات الجراحية",
+        "english_name": "Surgical Robotics",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "علم التشريح",
         "english_name": "Anatomy",
         "course_parts": [
             {
@@ -61,6 +181,26 @@
             },
             {
                 "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "أجهزة طبية",
+        "english_name": "Medical Devices",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "هندسة أنسجة",
+        "english_name": "Tissue Engineering",
+        "course_parts": [
+            {
+                "part_id": 0,
                 "description": "this description for course part, that show the content of the part"
             }
         ]

@@ -1,0 +1,57 @@
+[
+    {
+        "arabic_name": "فادي مدير النظام",
+        "english_name": "Fadi Admin",
+        "job_type_id": 2,
+        "qualification_id": 5,
+        "specialization": "System Administrator",
+        "gender_id": 0,
+        "phone": 778313999,
+        "email": "fadiadmin@gmail.com",
+        "password": "fadiadmin1"
+    },
+    {
+        "arabic_name": "اياد مدير النظام",
+        "english_name": "Eyad Admin",
+        "job_type_id": 2,
+        "qualification_id": 4,
+        "specialization": "System Administrator",
+        "gender_id": 1,
+        "phone": 777400001,
+        "email": "eyadadmin@gmail.com",
+        "password": "eyadadmin1"
+    },
+    {
+        "arabic_name": "ناصر مدير النظام",
+        "english_name": "Nasser Admin",
+        "job_type_id": 2,
+        "qualification_id": 5,
+        "specialization": "System Administrator",
+        "gender_id": 0,
+        "phone": 777400002,
+        "email": "nasseradimn@gmail.com",
+        "password": "nasseradimn1"
+    },
+    {
+        "arabic_name": "محمود مدير النظام",
+        "english_name": "Mahmood Admin",
+        "job_type_id": 2,
+        "qualification_id": 4,
+        "specialization": "System Administrator",
+        "gender_id": 1,
+        "phone": 777400003,
+        "email": "mahmoodadmin@gmail.com",
+        "password": "mahmoodadmin1"
+    },
+    {
+        "arabic_name": "رفيق مدير النظام",
+        "english_name": "Rafek Admin",
+        "job_type_id": 2,
+        "qualification_id": 4,
+        "specialization": "System Administrator",
+        "gender_id": 1,
+        "phone": 777400004,
+        "email": "rafekadmin@gmail.com",
+        "password": "rafekadmin1"
+    }
+]

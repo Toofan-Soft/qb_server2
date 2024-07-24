@@ -1,0 +1,931 @@
+[
+    {
+        "type": 1, // multiple choice question
+        "content": "Which of the following is a programming language?",
+        "choices": [
+            {
+                "content": "HTML",
+                "isCorrect": false
+            },
+            {
+                "content": "Python",
+                "isCorrect": true
+            },
+            {
+                "content": "CSS",
+                "isCorrect": false
+            },
+            {
+                "content": "SQL",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "type": 1, // multiple choice question
+        "content": "Which of the following is a programming language?",
+        "choices": [
+            {
+                "content": "HTML",
+                "isCorrect": false
+            },
+            {
+                "content": "Python",
+                "isCorrect": true
+            },
+            {
+                "content": "CSS",
+                "isCorrect": false
+            },
+            {
+                "content": "SQL",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "type": 1, // multiple choice question
+        "content": "Which language is primarily used for web development?",
+        "choices": [
+            {
+                "content": "Python",
+                "isCorrect": false
+            },
+            {
+                "content": "JavaScript",
+                "isCorrect": true
+            },
+            {
+                "content": "C++",
+                "isCorrect": false
+            },
+            {
+                "content": "Java",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "type": 1, // multiple choice question
+        "content": "Which of the following is used for styling web pages?",
+        "choices": [
+            {
+                "content": "Python",
+                "isCorrect": false
+            },
+            {
+                "content": "HTML",
+                "isCorrect": false
+            },
+            {
+                "content": "CSS",
+                "isCorrect": true
+            },
+            {
+                "content": "SQL",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "type": 1, // multiple choice question
+        "content": "Which of these is a database query language?",
+        "choices": [
+            {
+                "content": "Java",
+                "isCorrect": false
+            },
+            {
+                "content": "CSS",
+                "isCorrect": false
+            },
+            {
+                "content": "SQL",
+                "isCorrect": true
+            },
+            {
+                "content": "JavaScript",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "type": 1, // multiple choice question
+        "content": "Which of the following is not a programming language?",
+        "choices": [
+            {
+                "content": "Ruby",
+                "isCorrect": false
+            },
+            {
+                "content": "HTML",
+                "isCorrect": false
+            },
+            {
+                "content": "C#",
+                "isCorrect": false
+            },
+            {
+                "content": "SQL",
+                "isCorrect": true
+            }
+        ]
+    },
+    // Questions for Topic 2
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Is algebra a branch of mathematics?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Is geometry only about shapes?",
+        "is_true": false,
+    },
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Is algebra a branch of mathematics?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Is geometry only about shapes?",
+        "is_true": false,
+    },
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Can calculus be used to find the area under a curve?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Is statistics only about collecting data?",
+        "is_true": false,
+    },
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Is probability a part of statistics?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Is trigonometry used to study triangles?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Is differential equations a part of linear algebra?",
+        "is_true": false,
+    },
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Is set theory used to study collections of objects?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Is combinatorics the study of counting?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 2,
+        "type": 0, // true/false question
+        "content": "Is complex analysis the study of complex numbers?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 2,
+        "type": 1, // multiple choice question
+        "content": "Which of the following is a fundamental concept in algebra?",
+        "choices": [
+            {
+                "content": "Equation",
+                "isCorrect": true
+            },
+            {
+                "content": "Frequency",
+                "isCorrect": false
+            },
+            {
+                "content": "Amplitude",
+                "isCorrect": false
+            },
+            {
+                "content": "Wavelength",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 2,
+        "type": 1, // multiple choice question
+        "content": "Which of the following is a fundamental concept in algebra?",
+        "choices": [
+            {
+                "content": "Equation",
+                "isCorrect": true
+            },
+            {
+                "content": "Frequency",
+                "isCorrect": false
+            },
+            {
+                "content": "Amplitude",
+                "isCorrect": false
+            },
+            {
+                "content": "Wavelength",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 2,
+        "type": 1, // multiple choice question
+        "content": "Which branch of mathematics deals with shapes and their properties?",
+        "choices": [
+            {
+                "content": "Algebra",
+                "isCorrect": false
+            },
+            {
+                "content": "Geometry",
+                "isCorrect": true
+            },
+            {
+                "content": "Calculus",
+                "isCorrect": false
+            },
+            {
+                "content": "Statistics",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 2,
+        "type": 1, // multiple choice question
+        "content": "Which field of mathematics is concerned with the study of change?",
+        "choices": [
+            {
+                "content": "Trigonometry",
+                "isCorrect": false
+            },
+            {
+                "content": "Calculus",
+                "isCorrect": true
+            },
+            {
+                "content": "Linear Algebra",
+                "isCorrect": false
+            },
+            {
+                "content": "Set Theory",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 2,
+        "type": 1, // multiple choice question
+        "content": "Which branch of mathematics involves the study of angles and their relationships?",
+        "choices": [
+            {
+                "content": "Algebra",
+                "isCorrect": false
+            },
+            {
+                "content": "Trigonometry",
+                "isCorrect": true
+            },
+            {
+                "content": "Calculus",
+                "isCorrect": false
+            },
+            {
+                "content": "Statistics",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 2,
+        "type": 1, // multiple choice question
+        "content": "Which field of mathematics is focused on the study of data and its analysis?",
+        "choices": [
+            {
+                "content": "Geometry",
+                "isCorrect": false
+            },
+            {
+                "content": "Statistics",
+                "isCorrect": true
+            },
+            {
+                "content": "Algebra",
+                "isCorrect": false
+            },
+            {
+                "content": "Calculus",
+                "isCorrect": false
+            }
+        ]
+    },
+    // Questions for Topic 3
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Is circular motion a type of motion in physics?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Is energy always conserved?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Is the Earth round?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Do all plants photosynthesize?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Is water made up of two hydrogen atoms and one oxygen atom?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Is the sun a planet?",
+        "is_true": false,
+    },
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Do humans have more than one heart?",
+        "is_true": false,
+    },
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Does gravity only exist on Earth?",
+        "is_true": false,
+    },
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Is the human body composed of 60% water?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Is a light year a measure of time?",
+        "is_true": false,
+    },
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Does the moon emit its own light?",
+        "is_true": false,
+    },
+    {
+        "topic_id": 3,
+        "type": 0, // true/false question
+        "content": "Can energy be created or destroyed?",
+        "is_true": false,
+    },
+    {
+        "topic_id": 3,
+        "type": 1, // multiple choice question
+        "content": "Which of the following is a type of energy?",
+        "choices": [
+            {
+                "content": "Kinetic",
+                "isCorrect": true
+            },
+            {
+                "content": "Frequency",
+                "isCorrect": false
+            },
+            {
+                "content": "Amplitude",
+                "isCorrect": false
+            },
+            {
+                "content": "Wavelength",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 3,
+        "type": 1, // multiple choice question
+        "content": "Which planet is known as the Red Planet?",
+        "choices": [
+            {
+                "content": "Earth",
+                "isCorrect": false
+            },
+            {
+                "content": "Mars",
+                "isCorrect": true
+            },
+            {
+                "content": "Jupiter",
+                "isCorrect": false
+            },
+            {
+                "content": "Venus",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 3,
+        "type": 1, // multiple choice question
+        "content": "What is the chemical symbol for water?",
+        "choices": [
+            {
+                "content": "O2",
+                "isCorrect": false
+            },
+            {
+                "content": "H2O",
+                "isCorrect": true
+            },
+            {
+                "content": "CO2",
+                "isCorrect": false
+            },
+            {
+                "content": "NaCl",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 3,
+        "type": 1, // multiple choice question
+        "content": "Which gas is most abundant in the Earth\"s atmosphere?",
+        "choices": [
+            {
+                "content": "Oxygen",
+                "isCorrect": false
+            },
+            {
+                "content": "Hydrogen",
+                "isCorrect": false
+            },
+            {
+                "content": "Nitrogen",
+                "isCorrect": true
+            },
+            {
+                "content": "Carbon Dioxide",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 3,
+        "type": 1, // multiple choice question
+        "content": "What is the powerhouse of the cell?",
+        "choices": [
+            {
+                "content": "Nucleus",
+                "isCorrect": false
+            },
+            {
+                "content": "Mitochondria",
+                "isCorrect": true
+            },
+            {
+                "content": "Ribosome",
+                "isCorrect": false
+            },
+            {
+                "content": "Endoplasmic Reticulum",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 3,
+        "type": 1, // multiple choice question
+        "content": "Which of these is not a type of rock?",
+        "choices": [
+            {
+                "content": "Igneous",
+                "isCorrect": false
+            },
+            {
+                "content": "Sedimentary",
+                "isCorrect": false
+            },
+            {
+                "content": "Metamorphic",
+                "isCorrect": false
+            },
+            {
+                "content": "Aquatic",
+                "isCorrect": true
+            }
+        ]
+    },
+    // Questions for Topic 4
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "Is Islamic culture a part of world history?",
+        "is_true": true,
+    },
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "Is philosophy irrelevant to Islamic culture?",
+        "is_true": false,
+    },
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "The speed of light is constant in a vacuum.",
+        "is_true": true,
+    },
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "Sound can travel through a vacuum.",
+        "is_true": false,
+    },
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "Newton discovered the law of gravity.",
+        "is_true": true,
+    },
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "The Earth is the center of the solar system.",
+        "is_true": false,
+    },
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "Einstein developed the theory of relativity.",
+        "is_true": true,
+    },
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "Atoms are the smallest unit of matter.",
+        "is_true": false,
+    },
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "Electricity is the flow of protons.",
+        "is_true": false,
+    },
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "Water boils at 100 degrees Celsius at sea level.",
+        "is_true": true,
+    },
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "Light can be bent by gravity.",
+        "is_true": true,
+    },
+    {
+        "topic_id": 4,
+        "type": 0, // true/false question
+        "content": "The Milky Way is the only galaxy in the universe.",
+        "is_true": false,
+    },
+    {
+        "topic_id": 4,
+        "type": 1, // multiple choice question
+        "content": "Which of the following is a significant aspect of Islamic culture?",
+        "choices": [
+            {
+                "content": "Arts and Sciences",
+                "isCorrect": true
+            },
+            {
+                "content": "Astronomy",
+                "isCorrect": false
+            },
+            {
+                "content": "Geology",
+                "isCorrect": false
+            },
+            {
+                "content": "Biology",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 4,
+        "type": 1, // multiple choice question
+        "content": "What is the acceleration due to gravity on Earth?",
+        "choices": [
+            {
+                "content": "9.8 m/s²",
+                "isCorrect": true
+            },
+            {
+                "content": "12 m/s²",
+                "isCorrect": false
+            },
+            {
+                "content": "15 m/s²",
+                "isCorrect": false
+            },
+            {
+                "content": "5 m/s²",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 4,
+        "type": 1, // multiple choice question
+        "content": "Which scientist is known for the laws of motion?",
+        "choices": [
+            {
+                "content": "Albert Einstein",
+                "isCorrect": false
+            },
+            {
+                "content": "Isaac Newton",
+                "isCorrect": true
+            },
+            {
+                "content": "Nikola Tesla",
+                "isCorrect": false
+            },
+            {
+                "content": "Galileo Galilei",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 4,
+        "type": 1, // multiple choice question
+        "content": "What is the primary component of the sun?",
+        "choices": [
+            {
+                "content": "Oxygen",
+                "isCorrect": false
+            },
+            {
+                "content": "Hydrogen",
+                "isCorrect": true
+            },
+            {
+                "content": "Carbon",
+                "isCorrect": false
+            },
+            {
+                "content": "Nitrogen",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 4,
+        "type": 1, // multiple choice question
+        "content": "Which planet is known as the "Red Planet"?",
+        "choices": [
+            {
+                "content": "Earth",
+                "isCorrect": false
+            },
+            {
+                "content": "Mars",
+                "isCorrect": true
+            },
+            {
+                "content": "Jupiter",
+                "isCorrect": false
+            },
+            {
+                "content": "Venus",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "topic_id": 4,
+        "type": 1, // multiple choice question
+        "content": "What is the chemical symbol for gold?",
+        "choices": [
+            {
+                "content": "Au",
+                "isCorrect": true
+            },
+            {
+                "content": "Ag",
+                "isCorrect": false
+            },
+            {
+                "content": "Fe",
+                "isCorrect": false
+            },
+            {
+                "content": "Pb",
+                "isCorrect": false
+            }
+        ]
+    }
+};
+
+$arabicQuestions = {
+    {
+        "type": 0, // true/false question
+        "content": "لغة بايثون تستخدم لتطوير تطبيقات الويب.",
+        "is_true": true,
+    },
+    {
+        "type": 0, // true/false question
+        "content": "جافا هي لغة برمجة مفسرة وليست مترجمة.",
+        "is_true": false,
+    },
+    {
+        "type": 0, // true/false question
+        "content": "HTML هي لغة برمجة.",
+        "is_true": false,
+    },
+    {
+        "type": 0, // true/false question
+        "content": "C++ تدعم البرمجة الكائنية التوجه.",
+        "is_true": true,
+    },
+    {
+        "type": 0, // true/false question
+        "content": "PHP تستخدم لتطوير تطبيقات سطح المكتب.",
+        "is_true": false,
+    },
+    {
+        "type": 0, // true/false question
+        "content": "بايثون تدعم البرمجة الكائنية التوجه والبرمجة الإجرائية.",
+        "is_true": true,
+    },
+    {
+        "type": 0, // true/false question
+        "content": "CSS تستخدم لتحديد شكل صفحات الويب.",
+        "is_true": true,
+    },
+    {
+        "type": 0, // true/false question
+        "content": "JavaScript تعمل فقط على جانب الخادم.",
+        "is_true": false,
+    },
+    {
+        "type": 0, // true/false question
+        "content": "SQL هي لغة استعلامات تستخدم لإدارة قواعد البيانات.",
+        "is_true": true,
+    },
+    {
+        "type": 0, // true/false question
+        "content": "Git هو نظام إدارة النسخ الموزعة.",
+        "is_true": true,
+    },
+    // Multiple choice questions for Topic 1 (Programming)
+    {
+        "type": 1, // multiple choice question
+        "content": "ما هي لغة البرمجة التي تُستخدم بشكل رئيسي لتطوير تطبيقات أندرويد؟",
+        "choices": [
+            {
+                "content": "بايثون",
+                "isCorrect": false
+            },
+            {
+                "content": "جافا",
+                "isCorrect": true
+            },
+            {
+                "content": "C++",
+                "isCorrect": false
+            },
+            {
+                "content": "PHP",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "type": 1, // multiple choice question
+        "content": "أي من التالي ليس إطار عمل لتطوير الويب؟",
+        "choices": [
+            {
+                "content": "Django",
+                "isCorrect": false
+            },
+            {
+                "content": "React",
+                "isCorrect": false
+            },
+            {
+                "content": "Laravel",
+                "isCorrect": false
+            },
+            {
+                "content": "MySQL",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "type": 1, // multiple choice question
+        "content": "ما هي لغة البرمجة التي تُستخدم لتطوير تطبيقات الويب الديناميكية؟",
+        "choices": [
+            {
+                "content": "HTML",
+                "isCorrect": false
+            },
+            {
+                "content": "CSS",
+                "isCorrect": false
+            },
+            {
+                "content": "JavaScript",
+                "isCorrect": true
+            },
+            {
+                "content": "SQL",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "type": 1, // multiple choice question
+        "content": "أي من هذه اللغات تُعتبر لغة استعلامات قواعد البيانات؟",
+        "choices": [
+            {
+                "content": "Python",
+                "isCorrect": false
+            },
+            {
+                "content": "Ruby",
+                "isCorrect": false
+            },
+            {
+                "content": "SQL",
+                "isCorrect": true
+            },
+            {
+                "content": "C#",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "type": 1, // multiple choice question
+        "content": "ما هو النظام الذي يُستخدم لإدارة النسخ في البرمجة؟",
+        "choices": [
+            {
+                "content": "JIRA",
+                "isCorrect": false
+            },
+            {
+                "content": "Trello",
+                "isCorrect": false
+            },
+            {
+                "content": "Git",
+                "isCorrect": true
+            },
+            {
+                "content": "Slack",
+                "isCorrect": false
+            }
+        ]
+    }
+]

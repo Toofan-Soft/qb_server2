@@ -1,0 +1,2635 @@
+[
+    {
+        "content": "What are the correct forms of the verb \"to be\" in the present tense?",
+        "choices": [
+            {
+                "content": "Am",
+                "isCorrect": true
+            },
+            {
+                "content": "Are",
+                "isCorrect": true
+            },
+            {
+                "content": "Is",
+                "isCorrect": true
+            },
+            {
+                "content": "Be",
+                "isCorrect": false
+            },
+            {
+                "content": "Being",
+                "isCorrect": false
+            },
+            {
+                "content": "Been",
+                "isCorrect": false
+            },
+            {
+                "content": "Was",
+                "isCorrect": false
+            },
+            {
+                "content": "Were",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct uses of the comma in the sentence:",
+        "choices": [
+            {
+                "content": "She likes to swim, play tennis, and read books.",
+                "isCorrect": true
+            },
+            {
+                "content": "He went to the store, but forgot to buy milk.",
+                "isCorrect": true
+            },
+            {
+                "content": "Running quickly, the cat caught the mouse.",
+                "isCorrect": false
+            },
+            {
+                "content": "The car, that is red, belongs to Sarah.",
+                "isCorrect": false
+            },
+            {
+                "content": "John and Jane, went to the party together.",
+                "isCorrect": false
+            },
+            {
+                "content": "It\u0027s a beautiful day, let\u0027s go for a walk.",
+                "isCorrect": true
+            },
+            {
+                "content": "She studied all night, she still failed the exam.",
+                "isCorrect": false
+            },
+            {
+                "content": "After dinner, we went for a movie.",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "What are the correct comparative forms of the adjective \"big\"?",
+        "choices": [
+            {
+                "content": "Bigger",
+                "isCorrect": true
+            },
+            {
+                "content": "Biger",
+                "isCorrect": false
+            },
+            {
+                "content": "More big",
+                "isCorrect": false
+            },
+            {
+                "content": "Biggest",
+                "isCorrect": true
+            },
+            {
+                "content": "Bigerer",
+                "isCorrect": false
+            },
+            {
+                "content": "Biggest",
+                "isCorrect": false
+            },
+            {
+                "content": "Biggier",
+                "isCorrect": false
+            },
+            {
+                "content": "Bigliest",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct conjunctions in the sentence: \"She prefers tea _____ coffee, _____ she occasionally drinks coffee.\"",
+        "choices": [
+            {
+                "content": "but",
+                "isCorrect": true
+            },
+            {
+                "content": "and",
+                "isCorrect": false
+            },
+            {
+                "content": "or",
+                "isCorrect": true
+            },
+            {
+                "content": "yet",
+                "isCorrect": false
+            },
+            {
+                "content": "so",
+                "isCorrect": false
+            },
+            {
+                "content": "because",
+                "isCorrect": false
+            },
+            {
+                "content": "while",
+                "isCorrect": false
+            },
+            {
+                "content": "nor",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct meanings of the idiom \"hit the nail on the head\":",
+        "choices": [
+            {
+                "content": "To miss the target completely",
+                "isCorrect": false
+            },
+            {
+                "content": "To accidentally hit someone on the head",
+                "isCorrect": false
+            },
+            {
+                "content": "To criticize someone unfairly",
+                "isCorrect": false
+            },
+            {
+                "content": "To precisely identify the main point",
+                "isCorrect": true
+            },
+            {
+                "content": "To avoid making a decision",
+                "isCorrect": false
+            },
+            {
+                "content": "To agree with everyone",
+                "isCorrect": false
+            },
+            {
+                "content": "To hammer a nail into the wall",
+                "isCorrect": false
+            },
+            {
+                "content": "To ignore an important detail",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct past tense forms of the irregular verb \"to do\"?",
+        "choices": [
+            {
+                "content": "Did",
+                "isCorrect": true
+            },
+            {
+                "content": "Doed",
+                "isCorrect": false
+            },
+            {
+                "content": "Done",
+                "isCorrect": true
+            },
+            {
+                "content": "Doing",
+                "isCorrect": false
+            },
+            {
+                "content": "Doen",
+                "isCorrect": false
+            },
+            {
+                "content": "Dones",
+                "isCorrect": false
+            },
+            {
+                "content": "Do",
+                "isCorrect": false
+            },
+            {
+                "content": "Dided",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct prepositions in the sentence: \"The cat is sleeping _____ the bed _____ the bedroom.\"",
+        "choices": [
+            {
+                "content": "on, at",
+                "isCorrect": false
+            },
+            {
+                "content": "at, in",
+                "isCorrect": false
+            },
+            {
+                "content": "on, in",
+                "isCorrect": true
+            },
+            {
+                "content": "in, at",
+                "isCorrect": false
+            },
+            {
+                "content": "above, beside",
+                "isCorrect": false
+            },
+            {
+                "content": "with, under",
+                "isCorrect": false
+            },
+            {
+                "content": "over, near",
+                "isCorrect": false
+            },
+            {
+                "content": "beside, on",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct uses of the apostrophe in the sentence:",
+        "choices": [
+            {
+                "content": "The cat\u0027s tail is fluffy.",
+                "isCorrect": true
+            },
+            {
+                "content": "Its important to proofread your work.",
+                "isCorrect": false
+            },
+            {
+                "content": "The dogs\u0027 barking woke up the neighbors.",
+                "isCorrect": true
+            },
+            {
+                "content": "They\u0027re going to the beach tomorrow.",
+                "isCorrect": false
+            },
+            {
+                "content": "Its a beautiful day outside.",
+                "isCorrect": false
+            },
+            {
+                "content": "The childrens toys are scattered everywhere.",
+                "isCorrect": false
+            },
+            {
+                "content": "The book\u0027s pages were torn.",
+                "isCorrect": true
+            },
+            {
+                "content": "The birds\u0027 nests were high in the trees.",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "What are the correct present tense forms of the verb \"to eat\"?",
+        "choices": [
+            {
+                "content": "Eat",
+                "isCorrect": true
+            },
+            {
+                "content": "Eating",
+                "isCorrect": true
+            },
+            {
+                "content": "Ate",
+                "isCorrect": false
+            },
+            {
+                "content": "Eats",
+                "isCorrect": true
+            },
+            {
+                "content": "Eaten",
+                "isCorrect": false
+            },
+            {
+                "content": "Eatting",
+                "isCorrect": false
+            },
+            {
+                "content": "Eatsed",
+                "isCorrect": false
+            },
+            {
+                "content": "Eting",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct conjunctions in the sentence: \"She is both intelligent _____ hardworking, _____ she always excels in her studies.\"",
+        "choices": [
+            {
+                "content": "and",
+                "isCorrect": true
+            },
+            {
+                "content": "but",
+                "isCorrect": true
+            },
+            {
+                "content": "or",
+                "isCorrect": false
+            },
+            {
+                "content": "nor",
+                "isCorrect": false
+            },
+            {
+                "content": "yet",
+                "isCorrect": false
+            },
+            {
+                "content": "for",
+                "isCorrect": false
+            },
+            {
+                "content": "so",
+                "isCorrect": false
+            },
+            {
+                "content": "while",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct meanings of the idiom \"burn the midnight oil\":",
+        "choices": [
+            {
+                "content": "To set oil on fire",
+                "isCorrect": false
+            },
+            {
+                "content": "To work late into the night",
+                "isCorrect": true
+            },
+            {
+                "content": "To waste time",
+                "isCorrect": false
+            },
+            {
+                "content": "To conserve energy",
+                "isCorrect": false
+            },
+            {
+                "content": "To study during the day",
+                "isCorrect": false
+            },
+            {
+                "content": "To avoid working",
+                "isCorrect": false
+            },
+            {
+                "content": "To sleep peacefully",
+                "isCorrect": false
+            },
+            {
+                "content": "To illuminate the night with oil lamps",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct plural forms of the word \"child\"?",
+        "choices": [
+            {
+                "content": "Childs",
+                "isCorrect": false
+            },
+            {
+                "content": "Childen",
+                "isCorrect": false
+            },
+            {
+                "content": "Child\u0027s",
+                "isCorrect": false
+            },
+            {
+                "content": "Childers",
+                "isCorrect": false
+            },
+            {
+                "content": "Childes",
+                "isCorrect": false
+            },
+            {
+                "content": "Children",
+                "isCorrect": true
+            },
+            {
+                "content": "Childies",
+                "isCorrect": false
+            },
+            {
+                "content": "Childens",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct prepositions in the sentence: \"The cat jumped _____ the table _____ the chair.\"",
+        "choices": [
+            {
+                "content": "on, at",
+                "isCorrect": true
+            },
+            {
+                "content": "at, in",
+                "isCorrect": false
+            },
+            {
+                "content": "on, in",
+                "isCorrect": false
+            },
+            {
+                "content": "in, at",
+                "isCorrect": false
+            },
+            {
+                "content": "above, beside",
+                "isCorrect": false
+            },
+            {
+                "content": "with, under",
+                "isCorrect": false
+            },
+            {
+                "content": "over, near",
+                "isCorrect": false
+            },
+            {
+                "content": "beside, on",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct meanings of the idiom \"bite the bullet\":",
+        "choices": [
+            {
+                "content": "To chew on a bullet",
+                "isCorrect": false
+            },
+            {
+                "content": "To avoid facing a difficult situation",
+                "isCorrect": false
+            },
+            {
+                "content": "To endure a painful experience",
+                "isCorrect": true
+            },
+            {
+                "content": "To spit out a bullet",
+                "isCorrect": false
+            },
+            {
+                "content": "To give up easily",
+                "isCorrect": false
+            },
+            {
+                "content": "To shoot a bullet",
+                "isCorrect": false
+            },
+            {
+                "content": "To eat a bullet",
+                "isCorrect": false
+            },
+            {
+                "content": "To throw a bullet",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct past tense forms of the verb \"to write\"?",
+        "choices": [
+            {
+                "content": "Wrote",
+                "isCorrect": true
+            },
+            {
+                "content": "Writing",
+                "isCorrect": false
+            },
+            {
+                "content": "Writed",
+                "isCorrect": false
+            },
+            {
+                "content": "Writen",
+                "isCorrect": false
+            },
+            {
+                "content": "Writes",
+                "isCorrect": false
+            },
+            {
+                "content": "Wroted",
+                "isCorrect": false
+            },
+            {
+                "content": "Writ",
+                "isCorrect": false
+            },
+            {
+                "content": "Writted",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct conjunctions in the sentence: \"He likes both swimming _____ running, _____ he is a dedicated athlete.\"",
+        "choices": [
+            {
+                "content": "and",
+                "isCorrect": true
+            },
+            {
+                "content": "but",
+                "isCorrect": true
+            },
+            {
+                "content": "or",
+                "isCorrect": false
+            },
+            {
+                "content": "nor",
+                "isCorrect": false
+            },
+            {
+                "content": "yet",
+                "isCorrect": false
+            },
+            {
+                "content": "for",
+                "isCorrect": false
+            },
+            {
+                "content": "so",
+                "isCorrect": false
+            },
+            {
+                "content": "while",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct uses of the semicolon in the sentence:",
+        "choices": [
+            {
+                "content": "She finished her work; then, she went home.",
+                "isCorrect": true
+            },
+            {
+                "content": "The sun is shining; however, it is still cold outside.",
+                "isCorrect": false
+            },
+            {
+                "content": "The cat is black; and it has green eyes.",
+                "isCorrect": false
+            },
+            {
+                "content": "They played games all day; so, they were exhausted.",
+                "isCorrect": true
+            },
+            {
+                "content": "He plays the guitar; with passion.",
+                "isCorrect": true
+            },
+            {
+                "content": "She studied hard; but, she failed the exam.",
+                "isCorrect": false
+            },
+            {
+                "content": "The car broke down; therefore, they had to call for help.",
+                "isCorrect": true
+            },
+            {
+                "content": "She enjoys hiking; yet, she rarely goes on long hikes.",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct comparative forms of the adjective \"happy\"?",
+        "choices": [
+            {
+                "content": "Happier",
+                "isCorrect": true
+            },
+            {
+                "content": "Happiest",
+                "isCorrect": false
+            },
+            {
+                "content": "More happy",
+                "isCorrect": true
+            },
+            {
+                "content": "Hapier",
+                "isCorrect": false
+            },
+            {
+                "content": "Happer",
+                "isCorrect": false
+            },
+            {
+                "content": "Happyer",
+                "isCorrect": false
+            },
+            {
+                "content": "Happierest",
+                "isCorrect": false
+            },
+            {
+                "content": "Happily",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct prepositions in the sentence: \"The bird is flying _____ the sky _____ the clouds.\"",
+        "choices": [
+            {
+                "content": "in, above",
+                "isCorrect": true
+            },
+            {
+                "content": "above, through",
+                "isCorrect": false
+            },
+            {
+                "content": "in, through",
+                "isCorrect": false
+            },
+            {
+                "content": "on, under",
+                "isCorrect": false
+            },
+            {
+                "content": "over, below",
+                "isCorrect": false
+            },
+            {
+                "content": "under, between",
+                "isCorrect": false
+            },
+            {
+                "content": "across, upon",
+                "isCorrect": false
+            },
+            {
+                "content": "between, around",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct uses of the apostrophe in the sentence:",
+        "choices": [
+            {
+                "content": "It\u0027s important to proofread your work.",
+                "isCorrect": true
+            },
+            {
+                "content": "The cats\u0027 toys are scattered across the room.",
+                "isCorrect": true
+            },
+            {
+                "content": "Shes going to the market.",
+                "isCorrect": false
+            },
+            {
+                "content": "The dogs\u0027 barking woke up the neighbors.",
+                "isCorrect": true
+            },
+            {
+                "content": "The book\u0027s pages were torn.",
+                "isCorrect": true
+            },
+            {
+                "content": "Theyre having a party tonight.",
+                "isCorrect": false
+            },
+            {
+                "content": "The childrens toys are scattered everywhere.",
+                "isCorrect": false
+            },
+            {
+                "content": "Its a beautiful day outside.",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct past tense forms of the irregular verb \"to break\"?",
+        "choices": [
+            {
+                "content": "Broke",
+                "isCorrect": true
+            },
+            {
+                "content": "Breaking",
+                "isCorrect": false
+            },
+            {
+                "content": "Breaked",
+                "isCorrect": false
+            },
+            {
+                "content": "Broken",
+                "isCorrect": true
+            },
+            {
+                "content": "Brokes",
+                "isCorrect": false
+            },
+            {
+                "content": "Breaken",
+                "isCorrect": false
+            },
+            {
+                "content": "Break",
+                "isCorrect": false
+            },
+            {
+                "content": "Broked",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct conjunctions in the sentence: \"He not only sings well, _____ he also plays the guitar.\"",
+        "choices": [
+            {
+                "content": "but",
+                "isCorrect": true
+            },
+            {
+                "content": "and",
+                "isCorrect": true
+            },
+            {
+                "content": "or",
+                "isCorrect": false
+            },
+            {
+                "content": "nor",
+                "isCorrect": false
+            },
+            {
+                "content": "yet",
+                "isCorrect": false
+            },
+            {
+                "content": "for",
+                "isCorrect": false
+            },
+            {
+                "content": "so",
+                "isCorrect": false
+            },
+            {
+                "content": "while",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct meanings of the idiom \"hit the hay\":",
+        "choices": [
+            {
+                "content": "To punch a stack of hay",
+                "isCorrect": false
+            },
+            {
+                "content": "To avoid going to bed",
+                "isCorrect": false
+            },
+            {
+                "content": "To take a nap",
+                "isCorrect": false
+            },
+            {
+                "content": "To miss a target",
+                "isCorrect": false
+            },
+            {
+                "content": "To go to bed or sleep",
+                "isCorrect": true
+            },
+            {
+                "content": "To kick a bale of hay",
+                "isCorrect": false
+            },
+            {
+                "content": "To avoid hard work",
+                "isCorrect": false
+            },
+            {
+                "content": "To buy hay",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct present tense forms of the verb \"to run\"?",
+        "choices": [
+            {
+                "content": "Runs",
+                "isCorrect": true
+            },
+            {
+                "content": "Running",
+                "isCorrect": true
+            },
+            {
+                "content": "Ran",
+                "isCorrect": false
+            },
+            {
+                "content": "Runned",
+                "isCorrect": false
+            },
+            {
+                "content": "Runner",
+                "isCorrect": false
+            },
+            {
+                "content": "Runing",
+                "isCorrect": false
+            },
+            {
+                "content": "Rans",
+                "isCorrect": false
+            },
+            {
+                "content": "Run",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct prepositions in the sentence: \"The keys are _____ the table _____ the living room.\"",
+        "choices": [
+            {
+                "content": "on, at",
+                "isCorrect": true
+            },
+            {
+                "content": "at, in",
+                "isCorrect": false
+            },
+            {
+                "content": "on, in",
+                "isCorrect": false
+            },
+            {
+                "content": "in, at",
+                "isCorrect": false
+            },
+            {
+                "content": "above, beside",
+                "isCorrect": false
+            },
+            {
+                "content": "with, under",
+                "isCorrect": false
+            },
+            {
+                "content": "over, near",
+                "isCorrect": false
+            },
+            {
+                "content": "beside, on",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct meanings of the idiom \"burn the midnight oil\":",
+        "choices": [
+            {
+                "content": "To set oil on fire",
+                "isCorrect": false
+            },
+            {
+                "content": "To work late into the night",
+                "isCorrect": true
+            },
+            {
+                "content": "To waste time",
+                "isCorrect": false
+            },
+            {
+                "content": "To conserve energy",
+                "isCorrect": false
+            },
+            {
+                "content": "To study during the day",
+                "isCorrect": false
+            },
+            {
+                "content": "To avoid working",
+                "isCorrect": false
+            },
+            {
+                "content": "To sleep peacefully",
+                "isCorrect": false
+            },
+            {
+                "content": "To illuminate the night with oil lamps",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct past tense forms of the irregular verb \"to swim\"?",
+        "choices": [
+            {
+                "content": "Swam",
+                "isCorrect": true
+            },
+            {
+                "content": "Swimmed",
+                "isCorrect": false
+            },
+            {
+                "content": "Swimming",
+                "isCorrect": false
+            },
+            {
+                "content": "Swum",
+                "isCorrect": true
+            },
+            {
+                "content": "Swimmer",
+                "isCorrect": false
+            },
+            {
+                "content": "Sweme",
+                "isCorrect": false
+            },
+            {
+                "content": "Swamming",
+                "isCorrect": false
+            },
+            {
+                "content": "Swummed",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct conjunctions in the sentence: \"The cat is both playful _____ lazy, _____ it depends on the time of day.\"",
+        "choices": [
+            {
+                "content": "and",
+                "isCorrect": true
+            },
+            {
+                "content": "but",
+                "isCorrect": true
+            },
+            {
+                "content": "or",
+                "isCorrect": false
+            },
+            {
+                "content": "nor",
+                "isCorrect": false
+            },
+            {
+                "content": "yet",
+                "isCorrect": false
+            },
+            {
+                "content": "for",
+                "isCorrect": false
+            },
+            {
+                "content": "so",
+                "isCorrect": false
+            },
+            {
+                "content": "while",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct meanings of the idiom \"kick the bucket\":",
+        "choices": [
+            {
+                "content": "To play a game with a bucket",
+                "isCorrect": false
+            },
+            {
+                "content": "To avoid taking sides",
+                "isCorrect": false
+            },
+            {
+                "content": "To join a popular activity or trend",
+                "isCorrect": false
+            },
+            {
+                "content": "To criticize someone unfairly",
+                "isCorrect": false
+            },
+            {
+                "content": "To refuse assistance",
+                "isCorrect": false
+            },
+            {
+                "content": "To start a new project",
+                "isCorrect": false
+            },
+            {
+                "content": "To jump off a moving vehicle",
+                "isCorrect": false
+            },
+            {
+                "content": "To die",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "What are the correct comparative forms of the adjective \"sad\"?",
+        "choices": [
+            {
+                "content": "Sadder",
+                "isCorrect": true
+            },
+            {
+                "content": "Saddest",
+                "isCorrect": false
+            },
+            {
+                "content": "More sad",
+                "isCorrect": true
+            },
+            {
+                "content": "Sader",
+                "isCorrect": false
+            },
+            {
+                "content": "Sadderest",
+                "isCorrect": false
+            },
+            {
+                "content": "Saddest",
+                "isCorrect": false
+            },
+            {
+                "content": "Sadier",
+                "isCorrect": false
+            },
+            {
+                "content": "Saddestest",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct conjunctions in the sentence: \"She is not only a great musician _____ also a talented painter.\"",
+        "choices": [
+            {
+                "content": "but",
+                "isCorrect": true
+            },
+            {
+                "content": "and",
+                "isCorrect": true
+            },
+            {
+                "content": "or",
+                "isCorrect": false
+            },
+            {
+                "content": "nor",
+                "isCorrect": false
+            },
+            {
+                "content": "yet",
+                "isCorrect": false
+            },
+            {
+                "content": "for",
+                "isCorrect": false
+            },
+            {
+                "content": "so",
+                "isCorrect": false
+            },
+            {
+                "content": "while",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct uses of the comma in the sentence:",
+        "choices": [
+            {
+                "content": "She likes to dance, sing, and play the piano.",
+                "isCorrect": true
+            },
+            {
+                "content": "The car is red, and it has a flat tire.",
+                "isCorrect": true
+            },
+            {
+                "content": "After the storm, the sun came out.",
+                "isCorrect": true
+            },
+            {
+                "content": "The cat is black, and it has a fluffy tail.",
+                "isCorrect": false
+            },
+            {
+                "content": "We went to the beach and swam in the ocean.",
+                "isCorrect": false
+            },
+            {
+                "content": "While she was sleeping her dog barked.",
+                "isCorrect": false
+            },
+            {
+                "content": "She is a talented, musician.",
+                "isCorrect": false
+            },
+            {
+                "content": "We went to the store, and bought some groceries.",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "What are the correct past tense forms of the irregular verb \"to do\"?",
+        "choices": [
+            {
+                "content": "Did",
+                "isCorrect": true
+            },
+            {
+                "content": "Doed",
+                "isCorrect": false
+            },
+            {
+                "content": "Done",
+                "isCorrect": true
+            },
+            {
+                "content": "Doing",
+                "isCorrect": false
+            },
+            {
+                "content": "Doen",
+                "isCorrect": false
+            },
+            {
+                "content": "Dones",
+                "isCorrect": false
+            },
+            {
+                "content": "Do",
+                "isCorrect": false
+            },
+            {
+                "content": "Dided",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct prepositions in the sentence: \"The cat is hiding _____ the bed _____ the bedroom.\"",
+        "choices": [
+            {
+                "content": "on, at",
+                "isCorrect": false
+            },
+            {
+                "content": "at, in",
+                "isCorrect": false
+            },
+            {
+                "content": "on, in",
+                "isCorrect": true
+            },
+            {
+                "content": "over, under",
+                "isCorrect": false
+            },
+            {
+                "content": "under, above",
+                "isCorrect": false
+            },
+            {
+                "content": "with, beside",
+                "isCorrect": false
+            },
+            {
+                "content": "by, near",
+                "isCorrect": false
+            },
+            {
+                "content": "between, around",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct uses of the apostrophe in the sentence:",
+        "choices": [
+            {
+                "content": "The child\u0027s toys were scattered across the room.",
+                "isCorrect": true
+            },
+            {
+                "content": "The childs\u0027 toys were scattered across the room.",
+                "isCorrect": false
+            },
+            {
+                "content": "The childrens\u0027 toys were scattered across the room.",
+                "isCorrect": false
+            },
+            {
+                "content": "The childrens toys were scattered across the room.",
+                "isCorrect": false
+            },
+            {
+                "content": "The childs toys were scattered across the room.",
+                "isCorrect": false
+            },
+            {
+                "content": "The children\u0027s\u0027 toys were scattered across the room.",
+                "isCorrect": false
+            },
+            {
+                "content": "The child\u0027s\u0027 toys were scattered across the room.",
+                "isCorrect": false
+            },
+            {
+                "content": "The children\u0027s toys\u0027 were scattered across the room.",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct present tense forms of the verb \"to speak\"?",
+        "choices": [
+            {
+                "content": "Speak",
+                "isCorrect": true
+            },
+            {
+                "content": "Speaking",
+                "isCorrect": true
+            },
+            {
+                "content": "Spoke",
+                "isCorrect": false
+            },
+            {
+                "content": "Speaks",
+                "isCorrect": true
+            },
+            {
+                "content": "Spoken",
+                "isCorrect": false
+            },
+            {
+                "content": "Speakking",
+                "isCorrect": false
+            },
+            {
+                "content": "Spokeing",
+                "isCorrect": false
+            },
+            {
+                "content": "Spokens",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct conjunctions in the sentence: \"He wanted to go to the party, _____ he had a lot of work to finish.\"",
+        "choices": [
+            {
+                "content": "And",
+                "isCorrect": false
+            },
+            {
+                "content": "But",
+                "isCorrect": true
+            },
+            {
+                "content": "Or",
+                "isCorrect": false
+            },
+            {
+                "content": "Nor",
+                "isCorrect": false
+            },
+            {
+                "content": "So",
+                "isCorrect": true
+            },
+            {
+                "content": "Yet",
+                "isCorrect": false
+            },
+            {
+                "content": "Because",
+                "isCorrect": false
+            },
+            {
+                "content": "While",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct meanings of the idiom \"jump on the bandwagon\":",
+        "choices": [
+            {
+                "content": "To criticize someone unfairly",
+                "isCorrect": false
+            },
+            {
+                "content": "To join a popular activity or trend",
+                "isCorrect": true
+            },
+            {
+                "content": "To avoid taking sides",
+                "isCorrect": false
+            },
+            {
+                "content": "To play music on a moving vehicle",
+                "isCorrect": false
+            },
+            {
+                "content": "To refuse assistance",
+                "isCorrect": false
+            },
+            {
+                "content": "To start a new project",
+                "isCorrect": false
+            },
+            {
+                "content": "To jump off a moving vehicle",
+                "isCorrect": false
+            },
+            {
+                "content": "To lead a parade",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct present tense forms of the verb \"to go\"?",
+        "choices": [
+            {
+                "content": "Go",
+                "isCorrect": true
+            },
+            {
+                "content": "Goes",
+                "isCorrect": true
+            },
+            {
+                "content": "Going",
+                "isCorrect": true
+            },
+            {
+                "content": "Goed",
+                "isCorrect": false
+            },
+            {
+                "content": "Goen",
+                "isCorrect": false
+            },
+            {
+                "content": "Goe",
+                "isCorrect": false
+            },
+            {
+                "content": "Goin",
+                "isCorrect": false
+            },
+            {
+                "content": "Gon",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct prepositions to complete the sentence: \"The cat is sitting _____ the chair _____ the table.\"",
+        "choices": [
+            {
+                "content": "on, at",
+                "isCorrect": true
+            },
+            {
+                "content": "at, in",
+                "isCorrect": false
+            },
+            {
+                "content": "on, in",
+                "isCorrect": false
+            },
+            {
+                "content": "over, under",
+                "isCorrect": false
+            },
+            {
+                "content": "under, above",
+                "isCorrect": false
+            },
+            {
+                "content": "with, beside",
+                "isCorrect": false
+            },
+            {
+                "content": "by, near",
+                "isCorrect": false
+            },
+            {
+                "content": "between, around",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct meanings of the idiom \"burn the midnight oil\":",
+        "choices": [
+            {
+                "content": "To set oil on fire",
+                "isCorrect": false
+            },
+            {
+                "content": "To work late into the night",
+                "isCorrect": true
+            },
+            {
+                "content": "To waste time",
+                "isCorrect": false
+            },
+            {
+                "content": "To conserve energy",
+                "isCorrect": false
+            },
+            {
+                "content": "To study during the day",
+                "isCorrect": false
+            },
+            {
+                "content": "To avoid working",
+                "isCorrect": false
+            },
+            {
+                "content": "To sleep peacefully",
+                "isCorrect": false
+            },
+            {
+                "content": "To illuminate the night with oil lamps",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct plural forms of the word \"knife\"?",
+        "choices": [
+            {
+                "content": "Knifes",
+                "isCorrect": false
+            },
+            {
+                "content": "Knive",
+                "isCorrect": false
+            },
+            {
+                "content": "Kniven",
+                "isCorrect": false
+            },
+            {
+                "content": "Knifes",
+                "isCorrect": false
+            },
+            {
+                "content": "Knivess",
+                "isCorrect": false
+            },
+            {
+                "content": "Knives",
+                "isCorrect": true
+            },
+            {
+                "content": "Knifez",
+                "isCorrect": false
+            },
+            {
+                "content": "Knify",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct conjunctions in the sentence: \"She likes both chocolate _____ vanilla ice cream, _____ she can never decide which one to choose.\"",
+        "choices": [
+            {
+                "content": "and",
+                "isCorrect": true
+            },
+            {
+                "content": "but",
+                "isCorrect": true
+            },
+            {
+                "content": "or",
+                "isCorrect": false
+            },
+            {
+                "content": "nor",
+                "isCorrect": false
+            },
+            {
+                "content": "yet",
+                "isCorrect": false
+            },
+            {
+                "content": "for",
+                "isCorrect": false
+            },
+            {
+                "content": "so",
+                "isCorrect": false
+            },
+            {
+                "content": "while",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct uses of the comma in the sentence:",
+        "choices": [
+            {
+                "content": "He likes to play soccer, swim, and read books.",
+                "isCorrect": true
+            },
+            {
+                "content": "The car is red, and it has a flat tire.",
+                "isCorrect": true
+            },
+            {
+                "content": "After the storm, the sun came out.",
+                "isCorrect": true
+            },
+            {
+                "content": "The cat is black, and it has a fluffy tail.",
+                "isCorrect": false
+            },
+            {
+                "content": "We went to the beach and swam in the ocean.",
+                "isCorrect": false
+            },
+            {
+                "content": "While she was sleeping her dog barked.",
+                "isCorrect": false
+            },
+            {
+                "content": "She is a talented, musician.",
+                "isCorrect": false
+            },
+            {
+                "content": "We went to the store, and bought some groceries.",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "What are the correct past tense forms of the irregular verb \"to have\"?",
+        "choices": [
+            {
+                "content": "Had",
+                "isCorrect": true
+            },
+            {
+                "content": "Haved",
+                "isCorrect": false
+            },
+            {
+                "content": "Have",
+                "isCorrect": true
+            },
+            {
+                "content": "Having",
+                "isCorrect": false
+            },
+            {
+                "content": "Havent",
+                "isCorrect": false
+            },
+            {
+                "content": "Havet",
+                "isCorrect": false
+            },
+            {
+                "content": "Haves",
+                "isCorrect": false
+            },
+            {
+                "content": "Having",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct prepositions to complete the sentence: \"The cat is sleeping _____ the couch _____ the living room.\"",
+        "choices": [
+            {
+                "content": "on, at",
+                "isCorrect": true
+            },
+            {
+                "content": "at, in",
+                "isCorrect": false
+            },
+            {
+                "content": "on, in",
+                "isCorrect": false
+            },
+            {
+                "content": "over, under",
+                "isCorrect": false
+            },
+            {
+                "content": "under, above",
+                "isCorrect": false
+            },
+            {
+                "content": "with, beside",
+                "isCorrect": false
+            },
+            {
+                "content": "by, near",
+                "isCorrect": false
+            },
+            {
+                "content": "between, around",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct meanings of the idiom \"hit the hay\":",
+        "choices": [
+            {
+                "content": "To punch a stack of hay",
+                "isCorrect": false
+            },
+            {
+                "content": "To avoid going to bed",
+                "isCorrect": false
+            },
+            {
+                "content": "To take a nap",
+                "isCorrect": false
+            },
+            {
+                "content": "To miss a target",
+                "isCorrect": false
+            },
+            {
+                "content": "To go to bed or sleep",
+                "isCorrect": true
+            },
+            {
+                "content": "To kick a bale of hay",
+                "isCorrect": false
+            },
+            {
+                "content": "To avoid hard work",
+                "isCorrect": false
+            },
+            {
+                "content": "To buy hay",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct present tense forms of the verb \"to read\"?",
+        "choices": [
+            {
+                "content": "Read",
+                "isCorrect": true
+            },
+            {
+                "content": "Reading",
+                "isCorrect": true
+            },
+            {
+                "content": "Reads",
+                "isCorrect": true
+            },
+            {
+                "content": "Rreading",
+                "isCorrect": false
+            },
+            {
+                "content": "Readed",
+                "isCorrect": false
+            },
+            {
+                "content": "Red",
+                "isCorrect": false
+            },
+            {
+                "content": "Ridden",
+                "isCorrect": false
+            },
+            {
+                "content": "Reed",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct conjunctions to complete the sentence: \"He enjoys playing tennis, _____ he doesn\u0027t like playing basketball.\"",
+        "choices": [
+            {
+                "content": "but",
+                "isCorrect": true
+            },
+            {
+                "content": "and",
+                "isCorrect": false
+            },
+            {
+                "content": "or",
+                "isCorrect": false
+            },
+            {
+                "content": "nor",
+                "isCorrect": false
+            },
+            {
+                "content": "yet",
+                "isCorrect": false
+            },
+            {
+                "content": "for",
+                "isCorrect": false
+            },
+            {
+                "content": "so",
+                "isCorrect": false
+            },
+            {
+                "content": "while",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct uses of the semicolon in the sentence:",
+        "choices": [
+            {
+                "content": "She finished her work; then, she went home.",
+                "isCorrect": true
+            },
+            {
+                "content": "The sun is shining; however, it is still cold outside.",
+                "isCorrect": false
+            },
+            {
+                "content": "The cat is black; and it has green eyes.",
+                "isCorrect": false
+            },
+            {
+                "content": "They played games all day; so, they were exhausted.",
+                "isCorrect": true
+            },
+            {
+                "content": "He plays the guitar; with passion.",
+                "isCorrect": true
+            },
+            {
+                "content": "She studied hard; but, she failed the exam.",
+                "isCorrect": false
+            },
+            {
+                "content": "The car broke down; therefore, they had to call for help.",
+                "isCorrect": true
+            },
+            {
+                "content": "She enjoys hiking; yet, she rarely goes on long hikes.",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Which of the following are synonyms for the word \"happy\"?",
+        "choices": [
+            {
+                "content": "Joyful",
+                "isCorrect": true
+            },
+            {
+                "content": "Sad",
+                "isCorrect": false
+            },
+            {
+                "content": "Content",
+                "isCorrect": true
+            },
+            {
+                "content": "Angry",
+                "isCorrect": false
+            },
+            {
+                "content": "Glad",
+                "isCorrect": true
+            },
+            {
+                "content": "Miserable",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct past tense forms of the verb \"to go\":",
+        "choices": [
+            {
+                "content": "Went",
+                "isCorrect": true
+            },
+            {
+                "content": "Gone",
+                "isCorrect": false
+            },
+            {
+                "content": "Goed",
+                "isCorrect": false
+            },
+            {
+                "content": "Goes",
+                "isCorrect": false
+            },
+            {
+                "content": "Wented",
+                "isCorrect": false
+            },
+            {
+                "content": "Gone",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct articles to complete the sentence: \"She is ___ artist and he is ___ engineer.\"",
+        "choices": [
+            {
+                "content": "an, a",
+                "isCorrect": true
+            },
+            {
+                "content": "a, a",
+                "isCorrect": false
+            },
+            {
+                "content": "an, an",
+                "isCorrect": false
+            },
+            {
+                "content": "a, an",
+                "isCorrect": false
+            },
+            {
+                "content": "the, a",
+                "isCorrect": false
+            },
+            {
+                "content": "an, the",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "What are the correct plural forms of the word \"mouse\"?",
+        "choices": [
+            {
+                "content": "Mice",
+                "isCorrect": true
+            },
+            {
+                "content": "Mouses",
+                "isCorrect": false
+            },
+            {
+                "content": "Mousees",
+                "isCorrect": false
+            },
+            {
+                "content": "Mices",
+                "isCorrect": false
+            },
+            {
+                "content": "Mice",
+                "isCorrect": true
+            },
+            {
+                "content": "Meese",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Which of the following are prepositions?",
+        "choices": [
+            {
+                "content": "On",
+                "isCorrect": true
+            },
+            {
+                "content": "Under",
+                "isCorrect": true
+            },
+            {
+                "content": "Quickly",
+                "isCorrect": false
+            },
+            {
+                "content": "Beautiful",
+                "isCorrect": false
+            },
+            {
+                "content": "Beside",
+                "isCorrect": true
+            },
+            {
+                "content": "Running",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Select the correct adverbs from the following:",
+        "choices": [
+            {
+                "content": "Quickly",
+                "isCorrect": true
+            },
+            {
+                "content": "Carefully",
+                "isCorrect": true
+            },
+            {
+                "content": "Good",
+                "isCorrect": false
+            },
+            {
+                "content": "Happy",
+                "isCorrect": false
+            },
+            {
+                "content": "Slowly",
+                "isCorrect": true
+            },
+            {
+                "content": "Slow",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct uses of the semicolon in the sentence:",
+        "choices": [
+            {
+                "content": "She likes to swim; he prefers to run.",
+                "isCorrect": true
+            },
+            {
+                "content": "I have a big test tomorrow; I can’t go out tonight.",
+                "isCorrect": true
+            },
+            {
+                "content": "It’s sunny outside; but I forgot my sunglasses.",
+                "isCorrect": false
+            },
+            {
+                "content": "My favorite colors are blue; and green.",
+                "isCorrect": false
+            },
+            {
+                "content": "She enjoys reading; playing tennis; and painting.",
+                "isCorrect": false
+            },
+            {
+                "content": "We went to the beach; the mountains; and the city.",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "Which of the following are proper nouns?",
+        "choices": [
+            {
+                "content": "London",
+                "isCorrect": true
+            },
+            {
+                "content": "apple",
+                "isCorrect": false
+            },
+            {
+                "content": "Eiffel Tower",
+                "isCorrect": true
+            },
+            {
+                "content": "dog",
+                "isCorrect": false
+            },
+            {
+                "content": "Mount Everest",
+                "isCorrect": true
+            },
+            {
+                "content": "happy",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct forms of the adjective \"good\" in the comparative and superlative degrees:",
+        "choices": [
+            {
+                "content": "Better",
+                "isCorrect": true
+            },
+            {
+                "content": "Gooder",
+                "isCorrect": false
+            },
+            {
+                "content": "Best",
+                "isCorrect": true
+            },
+            {
+                "content": "Goodest",
+                "isCorrect": false
+            },
+            {
+                "content": "Most good",
+                "isCorrect": false
+            },
+            {
+                "content": "Bestest",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct plural forms of the word \"child\":",
+        "choices": [
+            {
+                "content": "Children",
+                "isCorrect": true
+            },
+            {
+                "content": "Childs",
+                "isCorrect": false
+            },
+            {
+                "content": "Childrens",
+                "isCorrect": false
+            },
+            {
+                "content": "Childes",
+                "isCorrect": false
+            },
+            {
+                "content": "Children",
+                "isCorrect": true
+            },
+            {
+                "content": "Childer",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Select the correct past participles of the verb \"to write\":",
+        "choices": [
+            {
+                "content": "Written",
+                "isCorrect": true
+            },
+            {
+                "content": "Wrote",
+                "isCorrect": true
+            },
+            {
+                "content": "Writ",
+                "isCorrect": false
+            },
+            {
+                "content": "Writed",
+                "isCorrect": false
+            },
+            {
+                "content": "Writing",
+                "isCorrect": false
+            },
+            {
+                "content": "Write",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct usage of the apostrophe in the sentence:",
+        "choices": [
+            {
+                "content": "It’s a beautiful day.",
+                "isCorrect": true
+            },
+            {
+                "content": "The dog lost it’s collar.",
+                "isCorrect": false
+            },
+            {
+                "content": "That’s Johns’ book.",
+                "isCorrect": false
+            },
+            {
+                "content": "The cats’ toys are everywhere.",
+                "isCorrect": true
+            },
+            {
+                "content": "He can’t believe it.",
+                "isCorrect": true
+            },
+            {
+                "content": "Its going to rain.",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Which of the following are irregular verbs?",
+        "choices": [
+            {
+                "content": "Go",
+                "isCorrect": true
+            },
+            {
+                "content": "Play",
+                "isCorrect": false
+            },
+            {
+                "content": "Run",
+                "isCorrect": true
+            },
+            {
+                "content": "Talk",
+                "isCorrect": false
+            },
+            {
+                "content": "See",
+                "isCorrect": true
+            },
+            {
+                "content": "Dance",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct forms of the adjective \"bad\" in the comparative and superlative degrees:",
+        "choices": [
+            {
+                "content": "Worse",
+                "isCorrect": true
+            },
+            {
+                "content": "Bader",
+                "isCorrect": false
+            },
+            {
+                "content": "Worst",
+                "isCorrect": true
+            },
+            {
+                "content": "Badest",
+                "isCorrect": false
+            },
+            {
+                "content": "Most bad",
+                "isCorrect": false
+            },
+            {
+                "content": "Worser",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct uses of the word \"affect\" in the sentence:",
+        "choices": [
+            {
+                "content": "The new law will affect many people.",
+                "isCorrect": true
+            },
+            {
+                "content": "His speech had a great affect on me.",
+                "isCorrect": false
+            },
+            {
+                "content": "This medication has no side affects.",
+                "isCorrect": false
+            },
+            {
+                "content": "Her smile affects everyone positively.",
+                "isCorrect": true
+            },
+            {
+                "content": "The weather can affect your mood.",
+                "isCorrect": true
+            },
+            {
+                "content": "The affect of the news was immediate.",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Which of the following are conjunctions?",
+        "choices": [
+            {
+                "content": "And",
+                "isCorrect": true
+            },
+            {
+                "content": "But",
+                "isCorrect": true
+            },
+            {
+                "content": "Quickly",
+                "isCorrect": false
+            },
+            {
+                "content": "However",
+                "isCorrect": true
+            },
+            {
+                "content": "Beautiful",
+                "isCorrect": false
+            },
+            {
+                "content": "Running",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Select the correct forms of the verb \"to see\" in the past tense:",
+        "choices": [
+            {
+                "content": "Saw",
+                "isCorrect": true
+            },
+            {
+                "content": "Seen",
+                "isCorrect": false
+            },
+            {
+                "content": "Sawn",
+                "isCorrect": false
+            },
+            {
+                "content": "See",
+                "isCorrect": false
+            },
+            {
+                "content": "Sawed",
+                "isCorrect": false
+            },
+            {
+                "content": "Saws",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct use of the colon in the sentence:",
+        "choices": [
+            {
+                "content": "There are three primary colors: red, blue, and yellow.",
+                "isCorrect": true
+            },
+            {
+                "content": "She has one goal: to win the championship.",
+                "isCorrect": true
+            },
+            {
+                "content": "He is studying: math, science, and history.",
+                "isCorrect": false
+            },
+            {
+                "content": "They need: bread, milk, and eggs.",
+                "isCorrect": false
+            },
+            {
+                "content": "The following are required: a pencil, a notebook, and a calculator.",
+                "isCorrect": true
+            },
+            {
+                "content": "She loves: dancing, singing, and acting.",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Which of the following are pronouns?",
+        "choices": [
+            {
+                "content": "He",
+                "isCorrect": true
+            },
+            {
+                "content": "She",
+                "isCorrect": true
+            },
+            {
+                "content": "Happy",
+                "isCorrect": false
+            },
+            {
+                "content": "They",
+                "isCorrect": true
+            },
+            {
+                "content": "Quickly",
+                "isCorrect": false
+            },
+            {
+                "content": "Beautiful",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct forms of the adjective \"many\" in the comparative and superlative degrees:",
+        "choices": [
+            {
+                "content": "More",
+                "isCorrect": true
+            },
+            {
+                "content": "Morer",
+                "isCorrect": false
+            },
+            {
+                "content": "Most",
+                "isCorrect": true
+            },
+            {
+                "content": "Manyest",
+                "isCorrect": false
+            },
+            {
+                "content": "Much",
+                "isCorrect": false
+            },
+            {
+                "content": "Manyest",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct meanings of the idiom \"a piece of cake\":",
+        "choices": [
+            {
+                "content": "Something very easy",
+                "isCorrect": true
+            },
+            {
+                "content": "A small portion",
+                "isCorrect": false
+            },
+            {
+                "content": "A sweet dessert",
+                "isCorrect": false
+            },
+            {
+                "content": "A difficult task",
+                "isCorrect": false
+            },
+            {
+                "content": "Something very easy",
+                "isCorrect": true
+            },
+            {
+                "content": "A quick decision",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Which of the following are correctly spelled words?",
+        "choices": [
+            {
+                "content": "Accommodate",
+                "isCorrect": true
+            },
+            {
+                "content": "Recieve",
+                "isCorrect": false
+            },
+            {
+                "content": "Definately",
+                "isCorrect": false
+            },
+            {
+                "content": "Separate",
+                "isCorrect": true
+            },
+            {
+                "content": "Goverment",
+                "isCorrect": false
+            },
+            {
+                "content": "Occasionally",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "Select the correct forms of the verb \"to have\" in the present perfect tense:",
+        "choices": [
+            {
+                "content": "Have had",
+                "isCorrect": true
+            },
+            {
+                "content": "Had had",
+                "isCorrect": false
+            },
+            {
+                "content": "Has had",
+                "isCorrect": true
+            },
+            {
+                "content": "Have has",
+                "isCorrect": false
+            },
+            {
+                "content": "Had has",
+                "isCorrect": false
+            },
+            {
+                "content": "Has have",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct usage of the word \"effect\" in the sentence:",
+        "choices": [
+            {
+                "content": "The effect of the medicine was immediate.",
+                "isCorrect": true
+            },
+            {
+                "content": "The new policy will effect many people.",
+                "isCorrect": false
+            },
+            {
+                "content": "Her speech had a profound effect on me.",
+                "isCorrect": true
+            },
+            {
+                "content": "This weather has no side affects.",
+                "isCorrect": false
+            },
+            {
+                "content": "The movie had a great affect.",
+                "isCorrect": false
+            },
+            {
+                "content": "His smile affects everyone positively.",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Which of the following are collective nouns?",
+        "choices": [
+            {
+                "content": "Team",
+                "isCorrect": true
+            },
+            {
+                "content": "Dog",
+                "isCorrect": false
+            },
+            {
+                "content": "Family",
+                "isCorrect": true
+            },
+            {
+                "content": "Computer",
+                "isCorrect": false
+            },
+            {
+                "content": "Group",
+                "isCorrect": true
+            },
+            {
+                "content": "Car",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Choose the correct forms of the adjective \"much\" in the comparative and superlative degrees:",
+        "choices": [
+            {
+                "content": "More",
+                "isCorrect": true
+            },
+            {
+                "content": "Morer",
+                "isCorrect": false
+            },
+            {
+                "content": "Most",
+                "isCorrect": true
+            },
+            {
+                "content": "Muchest",
+                "isCorrect": false
+            },
+            {
+                "content": "Many",
+                "isCorrect": false
+            },
+            {
+                "content": "Mucher",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "Identify the correct uses of the word \"their\" in the sentence:",
+        "choices": [
+            {
+                "content": "Their house is big.",
+                "isCorrect": true
+            },
+            {
+                "content": "They went to their favorite restaurant.",
+                "isCorrect": true
+            },
+            {
+                "content": "Their going to the park.",
+                "isCorrect": false
+            },
+            {
+                "content": "This is their book.",
+                "isCorrect": true
+            },
+            {
+                "content": "It’s their fault.",
+                "isCorrect": true
+            },
+            {
+                "content": "Their is a problem.",
+                "isCorrect": false
+            }
+        ]
+    }
+]

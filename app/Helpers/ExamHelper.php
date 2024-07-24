@@ -564,7 +564,6 @@ class ExamHelper
                 // ],
             ];
 
-
             $questions =  DB::table('questions')
                 ->join('question_usages', 'questions.id', '=', 'question_usages.question_id')
                 // ->join('topics', 'questions.topic_id', '=', 'topics.id')
@@ -591,6 +590,7 @@ class ExamHelper
                 // ->whereIn('topics.id', [3])
                 ->get()
                 ->toArray();
+            
             foreach ($questions as $question) {
                 // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
 

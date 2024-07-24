@@ -37,9 +37,13 @@
         "arabic_name": "تعز",
         "english_name": "taiz",
         "phone": 778313999,
-        "email": "taiz@gmail.com",
+        "email": "taizUniversity@gmail.com",
         "address": "الحصب الجامعة",
-        "description": "this is taiz university description"
+        "description": "this is taiz university description",
+        "facebook": "https://www.facebook.com/taizUniversity",
+        "youtube": "https://www.youtube.com/channel/taizUniversity",
+        "x_platform": "https://twitter.com/taizUniversity",
+        "telegram": "https://t.me/taizUniversity"
     },
     {
         "comment": "user management : add",
@@ -68,14 +72,14 @@
         ]
     },
     {
-        "comment": "department course : add",
+        "comment": "department-course/add",
         "department_id": 1,
         "course_id": 1,
         "level_id": 1,
         "semester_id": 1
     },
     {
-        "comment": "department course part : add",
+        "comment": "department-course-part/add",
         "department_course_id": 1,
         "course_part_id": 1,
         "score": 100,
@@ -84,7 +88,7 @@
         "note": "this description for this department course part"
     },
     {
-        "comment": "department course part topic : add",
+        "comment": "department-course-part-topic/add",
         "department_course_part_id": 1,
         "topics_ids": [
             1,

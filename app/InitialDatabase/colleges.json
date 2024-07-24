@@ -1,81 +1,328 @@
 [
     {
-        "arabic_name": "الهندسة وتقنية المعلومات",
-        "english_name": "Engineering and Infromation Technology", 
-        "phone": "777000001",
-        "email": "engineering@gmail.com",
+        "arabic_name": "الطب والعلوم الصحية",
+        "english_name": "Medicine and health sciences",
+        "phone": "777100001",
+        "email": "medicine@gmail.com",
+        "description": "College of Medicine.",
+        "facebook": "https://www.facebook.com/medicine",
+        "youtube": "https://www.youtube.com/channel/medicine",
+        "x_platform": "https://twitter.com/medicine",
+        "telegram": "https://t.me/medicine",
         "departments": [
             {
-                "arabic_name": "هندسة البرمجيات",
-                "english_name": "software engineering", 
-                "levels_count": 4
+                "arabic_name": "طب عام وجراحة",
+                "english_name": "General medicine and surgery",
+                "levels_count": 6
             },
             {
-                "arabic_name": "تقنية المعلومات",
-                "english_name": "Infromation Technology", 
-                "levels_count": 4
-            },
-            {
-                "arabic_name": "الشبكات",
-                "english_name": "network", 
-                "levels_count": 4
-            },
-            {
-                "arabic_name": "الاتصالات",
-                "english_name": "communication", 
+                "arabic_name": "طب الفهم والاسنان",
+                "english_name": "Oral and dental medicine",
                 "levels_count": 5
             },
             {
-                "arabic_name": "هندسة صناعية",
-                "english_name": "indestry engineering", 
+                "arabic_name": "الصيدلة",
+                "english_name": "pharmacy",
                 "levels_count": 5
             },
             {
-                "arabic_name": "الميكترونكس",
-                "english_name": "mectronks", 
-                "levels_count": 5
-            },
-            {
-                "arabic_name": "الذكاء الصناعي",
-                "english_name": "artifail inteligent", 
+                "arabic_name": "مختبرات طبية",
+                "english_name": "Medical labs",
                 "levels_count": 4
             },
             {
-                "arabic_name": "الطاقة المتجددة",
-                "english_name": "modren energy", 
+                "arabic_name": "تمريض عالي",
+                "english_name": "Higher nursing",
                 "levels_count": 4
             }
         ]
     },
     {
-        "arabic_name": "الطب",
-        "english_name": "Medical", 
-        "phone": "777000002",
-        "email": "medical@gmail.com",
+        "arabic_name": "الهندسة وتقنية المعلومات",
+        "english_name": "Engineering and Information Technology",
+        "phone": "777100002",
+        "email": "engineering@gmail.com",
+        "description": "College of Engineering and Information Technology.",
+        "facebook": "https://www.facebook.com/engineering",
+        "youtube": "https://www.youtube.com/channel/engineering",
+        "x_platform": "https://twitter.com/engineering",
+        "telegram": "https://t.me/engineering",
         "departments": [
             {
-                "arabic_name": "طب الفهم والاسنان",
-                "english_name": "Dentist", 
-                "levels_count": 5
-            },
-            {
-                "arabic_name": "طب عام وجراحة",
-                "english_name": "Medicine", 
-                "levels_count": 6
-            },
-            {
-                "arabic_name": "صيدلة",
-                "english_name": "Pharmacy", 
-                "levels_count": 5
-            },
-            {
-                "arabic_name": "مختبرات طبية",
-                "english_name": "laboratory", 
+                "arabic_name": "هندسة البرمجيات",
+                "english_name": "software engineering",
                 "levels_count": 4
             },
             {
-                "arabic_name": "تمريض عالي",
-                "english_name": "mursing", 
+                "arabic_name": "تكنولوجيا المعلومات",
+                "english_name": "Infromation Technology",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "هندسة شبكات والامن السبراني",
+                "english_name": "Network engineering and cybersecurity",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "هندسة الاتصالات والحاسوب",
+                "english_name": "Communications and computer engineering",
+                "levels_count": 5
+            },
+            {
+                "arabic_name": "لهندسة الصناعية ونظم التصنيع",
+                "english_name": "Industrial engineering and manufacturing systems",
+                "levels_count": 5
+            },
+            {
+                "arabic_name": "الميكاترونيات والروبوتات",
+                "english_name": "Mechatronics and robotics",
+                "levels_count": 5
+            },
+            {
+                "arabic_name": "الذكاء الصناعي",
+                "english_name": "artifail inteligent",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الطاقة المتجددة",
+                "english_name": "modren energy",
+                "levels_count": 4
+            }
+        ]
+    },
+    {
+        "arabic_name": "العلوم التطبيقية",
+        "english_name": "Applied Sciences",
+        "phone": "777100003",
+        "email": "applied_sciences@gmail.com",
+        "description": "College of Applied Sciences.",
+        "facebook": "https://www.facebook.com/applied_sciences",
+        "youtube": "https://www.youtube.com/channel/applied_sciences",
+        "x_platform": "https://twitter.com/applied_sciences",
+        "telegram": "https://t.me/applied_sciences",
+        "departments": [
+            {
+                "arabic_name": "علوم الحاسوب",
+                "english_name": "Computer Science",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الكيمياء الصناعية",
+                "english_name": "Industrial chemistry",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الميكروبيولجي",
+                "english_name": "Microbiology",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الجيولوجيا",
+                "english_name": "Geology",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "1الفيزياء",
+                "english_name": "Physics1",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "1الرياضيات",
+                "english_name": "mathematics1",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الكيمياء العامة",
+                "english_name": "General chemistry",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "لعلوم البيولوجية",
+                "english_name": "Biological sciences",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "النفط والتعدين",
+                "english_name": "Oil and mining",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الفيزياء الطبية",
+                "english_name": "Medical physics",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "رياضيات حاسوب",
+                "english_name": "Computer mathematics",
+                "levels_count": 4
+            }
+        ]
+    },
+    {
+        "arabic_name": "العلوم الادارية",
+        "english_name": "Administrative Sciences",
+        "phone": "777100004",
+        "email": "admin_sciences@gmail.com",
+        "description": "College of Administrative Sciences.",
+        "facebook": "https://www.facebook.com/admin_sciences",
+        "youtube": "https://www.youtube.com/channel/admin_sciences",
+        "x_platform": "https://twitter.com/admin_sciences",
+        "telegram": "https://t.me/admin_sciences",
+        "departments": [
+            {
+                "arabic_name": "المحاسبة",
+                "english_name": "Accounting",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "ادارة الاعمال",
+                "english_name": "Business Management",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "العلوم المالية والمصرفية",
+                "english_name": "Banking and Finance",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "التسويق",
+                "english_name": "Marketing",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الاقتصاد",
+                "english_name": "Economy",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "السياحة وادارة الفنادق",
+                "english_name": "Tourism and hotel management",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "علوم البيانات وتكنولوجيا المعلومات",
+                "english_name": "Data science and information technology",
+                "levels_count": 4
+            }
+        ]
+    },
+    {
+        "arabic_name": "التربية",
+        "english_name": "Education",
+        "phone": "777100005",
+        "email": "education@gmail.com",
+        "description": "College of Education.",
+        "facebook": "https://www.facebook.com/education",
+        "youtube": "https://www.youtube.com/channel/education",
+        "x_platform": "https://twitter.com/education",
+        "telegram": "https://t.me/education",
+        "departments": [
+            {
+                "arabic_name": "الدراسات العربية",
+                "english_name": "Arabic Studies",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الدراسات الانجليزية",
+                "english_name": "English Studies",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "علوم القران",
+                "english_name": "Quran Sciences",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "علوم الحياة",
+                "english_name": "Life science",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الكيمياء",
+                "english_name": "Chemistry",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "2الفيزياء",
+                "english_name": "Physics2",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "2الرياضيات",
+                "english_name": "mathematics2",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "رياض الاطفال",
+                "english_name": "Kindergarten",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الارشاد النفس",
+                "english_name": "psychological guidance",
+                "levels_count": 4
+            }
+        ]
+    },
+    {
+        "arabic_name": "الأدب",
+        "english_name": "literature",
+        "phone": "777100006",
+        "email": "literature@gmail.com",
+        "description": "College of literature.",
+        "facebook": "https://www.facebook.com/literature",
+        "youtube": "https://www.youtube.com/channel/literature",
+        "x_platform": "https://twitter.com/literature",
+        "telegram": "https://t.me/literature",
+        "departments": [
+            {
+                "arabic_name": "اللغة الانجليزية",
+                "english_name": "english language",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الاعلام وعلوم الاتصا",
+                "english_name": "Media and communication sciences",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الفنون الجميلة",
+                "english_name": "Fine arts",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "اللغة العربي",
+                "english_name": "Arabic",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الدراسات الاسلامية",
+                "english_name": "Islamic studies",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "التاريخ والعلوم السياسية",
+                "english_name": "History and political science",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "الجرافيا",
+                "english_name": "Graphia",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "علم الاجتماع",
+                "english_name": "Sociology",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "اللغة الفرنسية",
+                "english_name": "French language",
+                "levels_count": 4
+            },
+            {
+                "arabic_name": "علم النفس العام",
+                "english_name": "General psychology",
                 "levels_count": 4
             }
         ]

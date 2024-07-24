@@ -1,0 +1,1046 @@
+[
+    {
+        "content": "ما هي علامات رفع الفعل المضارع؟",
+        "choices": [
+            {
+                "content": "الضمة",
+                "isCorrect": true
+            },
+            {
+                "content": "الفتحة",
+                "isCorrect": false
+            },
+            {
+                "content": "الكسرة",
+                "isCorrect": false
+            },
+            {
+                "content": "السكون",
+                "isCorrect": false
+            },
+            {
+                "content": "النون",
+                "isCorrect": true
+            },
+            {
+                "content": "الياء",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هي حروف الجر؟",
+        "choices": [
+            {
+                "content": "من",
+                "isCorrect": true
+            },
+            {
+                "content": "إلى",
+                "isCorrect": true
+            },
+            {
+                "content": "في",
+                "isCorrect": true
+            },
+            {
+                "content": "على",
+                "isCorrect": true
+            },
+            {
+                "content": "عن",
+                "isCorrect": true
+            },
+            {
+                "content": "هل",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "أي من الأسماء التالية يُعتبر جمع تكسير؟",
+        "choices": [
+            {
+                "content": "أطفال",
+                "isCorrect": true
+            },
+            {
+                "content": "كتب",
+                "isCorrect": true
+            },
+            {
+                "content": "رجال",
+                "isCorrect": true
+            },
+            {
+                "content": "نساء",
+                "isCorrect": true
+            },
+            {
+                "content": "جمل",
+                "isCorrect": false
+            },
+            {
+                "content": "أصدقاء",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "ما هو الفاعل في الجملة: \"كتب الطالب الدرس\"؟",
+        "choices": [
+            {
+                "content": "الطالب",
+                "isCorrect": true
+            },
+            {
+                "content": "كتب",
+                "isCorrect": false
+            },
+            {
+                "content": "الدرس",
+                "isCorrect": false
+            },
+            {
+                "content": "المعلم",
+                "isCorrect": false
+            },
+            {
+                "content": "الكتابة",
+                "isCorrect": false
+            },
+            {
+                "content": "الطلاب",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هي علامة نصب المفعول به؟",
+        "choices": [
+            {
+                "content": "الفتحة",
+                "isCorrect": true
+            },
+            {
+                "content": "الضمة",
+                "isCorrect": false
+            },
+            {
+                "content": "السكون",
+                "isCorrect": false
+            },
+            {
+                "content": "الكسرة",
+                "isCorrect": false
+            },
+            {
+                "content": "النون",
+                "isCorrect": false
+            },
+            {
+                "content": "الياء",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو جمع كلمة \"كتاب\"؟",
+        "choices": [
+            {
+                "content": "كتب",
+                "isCorrect": true
+            },
+            {
+                "content": "كتابات",
+                "isCorrect": false
+            },
+            {
+                "content": "كاتبون",
+                "isCorrect": false
+            },
+            {
+                "content": "كتابين",
+                "isCorrect": false
+            },
+            {
+                "content": "كتبي",
+                "isCorrect": false
+            },
+            {
+                "content": "كتابها",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هي أدوات الشرط الجازمة؟",
+        "choices": [
+            {
+                "content": "إن",
+                "isCorrect": true
+            },
+            {
+                "content": "من",
+                "isCorrect": true
+            },
+            {
+                "content": "ما",
+                "isCorrect": true
+            },
+            {
+                "content": "أين",
+                "isCorrect": true
+            },
+            {
+                "content": "كلما",
+                "isCorrect": false
+            },
+            {
+                "content": "لولا",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو الخبر في الجملة: \"العلم نور\"؟",
+        "choices": [
+            {
+                "content": "العلم",
+                "isCorrect": false
+            },
+            {
+                "content": "نور",
+                "isCorrect": true
+            },
+            {
+                "content": "المعرفة",
+                "isCorrect": false
+            },
+            {
+                "content": "الجهل",
+                "isCorrect": false
+            },
+            {
+                "content": "المعلم",
+                "isCorrect": false
+            },
+            {
+                "content": "التعلم",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو المبتدأ في الجملة: \"البيت جميل\"؟",
+        "choices": [
+            {
+                "content": "البيت",
+                "isCorrect": true
+            },
+            {
+                "content": "جميل",
+                "isCorrect": false
+            },
+            {
+                "content": "المنزل",
+                "isCorrect": false
+            },
+            {
+                "content": "الحديقة",
+                "isCorrect": false
+            },
+            {
+                "content": "البناء",
+                "isCorrect": false
+            },
+            {
+                "content": "المدينة",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو الجمع السالم لكلمة \"معلم\"؟",
+        "choices": [
+            {
+                "content": "معلمون",
+                "isCorrect": true
+            },
+            {
+                "content": "معلمين",
+                "isCorrect": false
+            },
+            {
+                "content": "معلمات",
+                "isCorrect": false
+            },
+            {
+                "content": "معلميين",
+                "isCorrect": false
+            },
+            {
+                "content": "معلم",
+                "isCorrect": false
+            },
+            {
+                "content": "معلمي",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هي الكلمة المضادة لـ\"النهار\"؟",
+        "choices": [
+            {
+                "content": "الليل",
+                "isCorrect": true
+            },
+            {
+                "content": "الصباح",
+                "isCorrect": false
+            },
+            {
+                "content": "المساء",
+                "isCorrect": false
+            },
+            {
+                "content": "الفجر",
+                "isCorrect": false
+            },
+            {
+                "content": "الشمس",
+                "isCorrect": false
+            },
+            {
+                "content": "الظهر",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "أي من الأفعال التالية يُعتبر فعلاً ماضياً؟",
+        "choices": [
+            {
+                "content": "كتب",
+                "isCorrect": true
+            },
+            {
+                "content": "يكتب",
+                "isCorrect": false
+            },
+            {
+                "content": "سوف يكتب",
+                "isCorrect": false
+            },
+            {
+                "content": "يكتبون",
+                "isCorrect": false
+            },
+            {
+                "content": "كتابة",
+                "isCorrect": false
+            },
+            {
+                "content": "كتبت",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "ما هي علامة رفع الفاعل في الجملة: \"ذهب الطالب إلى المدرسة\"؟",
+        "choices": [
+            {
+                "content": "الضمة",
+                "isCorrect": true
+            },
+            {
+                "content": "الفتحة",
+                "isCorrect": false
+            },
+            {
+                "content": "السكون",
+                "isCorrect": false
+            },
+            {
+                "content": "الكسرة",
+                "isCorrect": false
+            },
+            {
+                "content": "النون",
+                "isCorrect": false
+            },
+            {
+                "content": "الياء",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو المثنى لكلمة \"كتاب\"؟",
+        "choices": [
+            {
+                "content": "كتابان",
+                "isCorrect": true
+            },
+            {
+                "content": "كتب",
+                "isCorrect": false
+            },
+            {
+                "content": "كتابات",
+                "isCorrect": false
+            },
+            {
+                "content": "كاتبون",
+                "isCorrect": false
+            },
+            {
+                "content": "كتبي",
+                "isCorrect": false
+            },
+            {
+                "content": "كتابين",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "ما هو المصدر للفعل \"درس\"؟",
+        "choices": [
+            {
+                "content": "درس",
+                "isCorrect": true
+            },
+            {
+                "content": "درساً",
+                "isCorrect": false
+            },
+            {
+                "content": "دروس",
+                "isCorrect": false
+            },
+            {
+                "content": "دراسة",
+                "isCorrect": true
+            },
+            {
+                "content": "مدرسة",
+                "isCorrect": false
+            },
+            {
+                "content": "دارس",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو الضمير المنفصل للمخاطب المفرد المؤنث؟",
+        "choices": [
+            {
+                "content": "أنتِ",
+                "isCorrect": true
+            },
+            {
+                "content": "أنتَ",
+                "isCorrect": false
+            },
+            {
+                "content": "هو",
+                "isCorrect": false
+            },
+            {
+                "content": "هي",
+                "isCorrect": false
+            },
+            {
+                "content": "نحن",
+                "isCorrect": false
+            },
+            {
+                "content": "هم",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو جمع كلمة \"فعل\"؟",
+        "choices": [
+            {
+                "content": "أفعال",
+                "isCorrect": true
+            },
+            {
+                "content": "فعلات",
+                "isCorrect": false
+            },
+            {
+                "content": "فعلون",
+                "isCorrect": false
+            },
+            {
+                "content": "فعال",
+                "isCorrect": false
+            },
+            {
+                "content": "أفعالات",
+                "isCorrect": false
+            },
+            {
+                "content": "فعلين",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو الفعل الصحيح في الجملة: \"سافر محمد\"؟",
+        "choices": [
+            {
+                "content": "سافر",
+                "isCorrect": true
+            },
+            {
+                "content": "يسافر",
+                "isCorrect": false
+            },
+            {
+                "content": "سافرا",
+                "isCorrect": false
+            },
+            {
+                "content": "سافروا",
+                "isCorrect": false
+            },
+            {
+                "content": "سافرت",
+                "isCorrect": false
+            },
+            {
+                "content": "سفر",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو الفرق بين \"أصبح\" و\"يصير\"؟",
+        "choices": [
+            {
+                "content": "أصبح للدلالة على التحول، يصير للدلالة على الاستمرارية",
+                "isCorrect": true
+            },
+            {
+                "content": "أصبح فعل ماضٍ، يصير فعل مضارع",
+                "isCorrect": false
+            },
+            {
+                "content": "أصبح فعل أمر، يصير فعل مصدر",
+                "isCorrect": false
+            },
+            {
+                "content": "أصبح للدلالة على النفي، يصير للدلالة على الإيجاب",
+                "isCorrect": false
+            },
+            {
+                "content": "أصبح للدلالة على المستقبل، يصير للدلالة على الحاضر",
+                "isCorrect": false
+            },
+            {
+                "content": "أصبح للدلالة على الحضور، يصير للدلالة على الغياب",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هي علامة نصب الأفعال المعتلة؟",
+        "choices": [
+            {
+                "content": "الفتحة",
+                "isCorrect": true
+            },
+            {
+                "content": "الضمة",
+                "isCorrect": false
+            },
+            {
+                "content": "الكسرة",
+                "isCorrect": false
+            },
+            {
+                "content": "السكون",
+                "isCorrect": false
+            },
+            {
+                "content": "النون",
+                "isCorrect": false
+            },
+            {
+                "content": "الياء",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو جمع كلمة \"مفتاح\"؟",
+        "choices": [
+            {
+                "content": "مفاتيح",
+                "isCorrect": true
+            },
+            {
+                "content": "مفاتيحون",
+                "isCorrect": false
+            },
+            {
+                "content": "مفتاحات",
+                "isCorrect": false
+            },
+            {
+                "content": "مفتاحين",
+                "isCorrect": false
+            },
+            {
+                "content": "مفاتيحات",
+                "isCorrect": false
+            },
+            {
+                "content": "مفاتيحا",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو المقصود بـ\"التشبيه\" في اللغة العربية؟",
+        "choices": [
+            {
+                "content": "تشبيه شيء بشيء آخر بناءً على صفة مشتركة",
+                "isCorrect": true
+            },
+            {
+                "content": "تحويل الكلمة من فعل إلى اسم",
+                "isCorrect": false
+            },
+            {
+                "content": "إضافة معنى جديد إلى الكلمة",
+                "isCorrect": false
+            },
+            {
+                "content": "التعبير عن الشعور الداخلي",
+                "isCorrect": false
+            },
+            {
+                "content": "إزالة التكرار في الجملة",
+                "isCorrect": false
+            },
+            {
+                "content": "اختصار الجملة",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو الجمع المذكر السالم لكلمة \"طبيب\"؟",
+        "choices": [
+            {
+                "content": "أطباء",
+                "isCorrect": true
+            },
+            {
+                "content": "طبيبين",
+                "isCorrect": false
+            },
+            {
+                "content": "طبيبات",
+                "isCorrect": false
+            },
+            {
+                "content": "طبيبون",
+                "isCorrect": true
+            },
+            {
+                "content": "أطباءون",
+                "isCorrect": false
+            },
+            {
+                "content": "طبيبونين",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو التمييز في الجملة: \"هذه السيارة أسرع\"؟",
+        "choices": [
+            {
+                "content": "أسرع",
+                "isCorrect": true
+            },
+            {
+                "content": "السيارة",
+                "isCorrect": false
+            },
+            {
+                "content": "هذه",
+                "isCorrect": false
+            },
+            {
+                "content": "هي",
+                "isCorrect": false
+            },
+            {
+                "content": "أسرع من",
+                "isCorrect": false
+            },
+            {
+                "content": "أسرع جداً",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هي الجملة الصحيحة نحويًا؟",
+        "choices": [
+            {
+                "content": "أذهب إلى المدرسة كل يوم",
+                "isCorrect": true
+            },
+            {
+                "content": "ذهبت إلى المدرسة كل يوم",
+                "isCorrect": false
+            },
+            {
+                "content": "أذهب إلى المدرسة كل أيام",
+                "isCorrect": false
+            },
+            {
+                "content": "ذهب إلى المدرسة كل يوم",
+                "isCorrect": false
+            },
+            {
+                "content": "أذهب إلى المدارس كل يوم",
+                "isCorrect": false
+            },
+            {
+                "content": "أذهب المدرسة كل يوم",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو الفعل في الجملة: \"الطفل يلعب في الحديقة\"؟",
+        "choices": [
+            {
+                "content": "يلعب",
+                "isCorrect": true
+            },
+            {
+                "content": "الطفل",
+                "isCorrect": false
+            },
+            {
+                "content": "في",
+                "isCorrect": false
+            },
+            {
+                "content": "الحديقة",
+                "isCorrect": false
+            },
+            {
+                "content": "اللعب",
+                "isCorrect": false
+            },
+            {
+                "content": "الحدائق",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو المضاف في الجملة: \"قلم الطالب\"؟",
+        "choices": [
+            {
+                "content": "قلم",
+                "isCorrect": false
+            },
+            {
+                "content": "الطالب",
+                "isCorrect": true
+            },
+            {
+                "content": "قلم الطالب",
+                "isCorrect": false
+            },
+            {
+                "content": "ال",
+                "isCorrect": false
+            },
+            {
+                "content": "الطلاب",
+                "isCorrect": false
+            },
+            {
+                "content": "قلم",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو الجمع السالم لكلمة \"معلم\"؟",
+        "choices": [
+            {
+                "content": "معلمون",
+                "isCorrect": true
+            },
+            {
+                "content": "معلمين",
+                "isCorrect": false
+            },
+            {
+                "content": "معلمات",
+                "isCorrect": false
+            },
+            {
+                "content": "معلمونين",
+                "isCorrect": false
+            },
+            {
+                "content": "معلمونون",
+                "isCorrect": false
+            },
+            {
+                "content": "معلمينون",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو جمع كلمة \"مدينة\"؟",
+        "choices": [
+            {
+                "content": "مدن",
+                "isCorrect": true
+            },
+            {
+                "content": "مدائن",
+                "isCorrect": false
+            },
+            {
+                "content": "مدينون",
+                "isCorrect": false
+            },
+            {
+                "content": "مدنات",
+                "isCorrect": false
+            },
+            {
+                "content": "مدين",
+                "isCorrect": false
+            },
+            {
+                "content": "مدائنون",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو المصدر للفعل \"غسل\"؟",
+        "choices": [
+            {
+                "content": "غسل",
+                "isCorrect": false
+            },
+            {
+                "content": "غسلاء",
+                "isCorrect": false
+            },
+            {
+                "content": "غسالة",
+                "isCorrect": false
+            },
+            {
+                "content": "غسل",
+                "isCorrect": true
+            },
+            {
+                "content": "غسلون",
+                "isCorrect": false
+            },
+            {
+                "content": "غسول",
+                "isCorrect": true
+            }
+        ]
+    },
+    {
+        "content": "ما هي أداة الاستفهام في الجملة: \"أين ذهب أحمد؟\"؟",
+        "choices": [
+            {
+                "content": "أين",
+                "isCorrect": true
+            },
+            {
+                "content": "ذهب",
+                "isCorrect": false
+            },
+            {
+                "content": "أحمد",
+                "isCorrect": false
+            },
+            {
+                "content": "جاء",
+                "isCorrect": false
+            },
+            {
+                "content": "متى",
+                "isCorrect": false
+            },
+            {
+                "content": "لماذا",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو الضمير المتصل للمفرد المذكر في الجملة: \"أعطيتك الكتاب\"؟",
+        "choices": [
+            {
+                "content": "ك",
+                "isCorrect": true
+            },
+            {
+                "content": "ها",
+                "isCorrect": false
+            },
+            {
+                "content": "ه",
+                "isCorrect": false
+            },
+            {
+                "content": "نا",
+                "isCorrect": false
+            },
+            {
+                "content": "هم",
+                "isCorrect": false
+            },
+            {
+                "content": "أنت",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو اسم التفضيل من الفعل \"عظيم\"؟",
+        "choices": [
+            {
+                "content": "أعظم",
+                "isCorrect": true
+            },
+            {
+                "content": "عظيمون",
+                "isCorrect": false
+            },
+            {
+                "content": "عظيمين",
+                "isCorrect": false
+            },
+            {
+                "content": "عظيمات",
+                "isCorrect": false
+            },
+            {
+                "content": "أعظمان",
+                "isCorrect": false
+            },
+            {
+                "content": "عظيمة",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هي الجملة الصحيحة نحويًا؟",
+        "choices": [
+            {
+                "content": "ذهبت إلى المدرسة",
+                "isCorrect": true
+            },
+            {
+                "content": "ذهب إلى المدرسة",
+                "isCorrect": false
+            },
+            {
+                "content": "ذهبت المدرسة",
+                "isCorrect": false
+            },
+            {
+                "content": "ذهابت إلى المدرسة",
+                "isCorrect": false
+            },
+            {
+                "content": "ذهب إلى المدارس",
+                "isCorrect": false
+            },
+            {
+                "content": "ذهبت المدرسة إلى",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو جمع كلمة \"قلم\"؟",
+        "choices": [
+            {
+                "content": "أقلام",
+                "isCorrect": true
+            },
+            {
+                "content": "قلمين",
+                "isCorrect": false
+            },
+            {
+                "content": "قلمون",
+                "isCorrect": false
+            },
+            {
+                "content": "قلمين",
+                "isCorrect": false
+            },
+            {
+                "content": "قلمات",
+                "isCorrect": false
+            },
+            {
+                "content": "قلمون",
+                "isCorrect": false
+            }
+        ]
+    },
+    {
+        "content": "ما هو نوع الكلمة \"سعيد\" في الجملة: \"الشخص سعيد\"؟",
+        "choices": [
+            {
+                "content": "صفة",
+                "isCorrect": true
+            },
+            {
+                "content": "فعل",
+                "isCorrect": false
+            },
+            {
+                "content": "اسم",
+                "isCorrect": false
+            },
+            {
+                "content": "ضمير",
+                "isCorrect": false
+            },
+            {
+                "content": "حرف",
+                "isCorrect": false
+            },
+            {
+                "content": "ظرف",
+                "isCorrect": false
+            }
+        ]
+    }
+]

@@ -1,0 +1,304 @@
+[
+    {
+        "department_id": 6,
+        "level_id": 1,
+        "semester_id": 1,
+        "students": [
+            {
+                "arabic_name": "إبراهيم حمدي محمد بن محمد",
+                "english_name": "Ibrahim Hamdi Mohamed Bin Mohamed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "أثار شائف احمد سعيد",
+                "english_name": "Athar Shaif Ahmed Saeed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "أحمد عبدالحميد عبدالعزيز قحطان",
+                "english_name": "Ahmed Abdulhamid Abdulaziz Qahtan",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "أحمد عبدالرحمن عبدالكريم محمد",
+                "english_name": "Ahmed Abdulrahman Abdulkarim Mohamed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "أديب حميد غالب محمد",
+                "english_name": "Adeeb Hamid Ghaleb Mohamed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "أزهار أحمد هزاع أحمد نصر",
+                "english_name": "Azhar Ahmed Haza Ahmed Nasr",
+                "gender_id": 1
+            },
+            {
+                "arabic_name": "أسامة عبدالواحد عبده نعمان الاثوري",
+                "english_name": "Osama Abdulwahid Abdo Numan Al-Athori",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "أسامه حميد محمد عبده",
+                "english_name": "Osama Hamid Mohamed Abdo",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "أسدالدين عبدالفتاح عبده مرشد مقبل",
+                "english_name": "Asaduddin Abdulfattah Abdo Morshed Moqbil",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "أشرف علي قحطان همام",
+                "english_name": "Ashraf Ali Qahtan Hammam",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "أكرم فؤاد أحمد عبدالغني",
+                "english_name": "Akram Fouad Ahmed Abdulghani",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "أنس عبدالرحمن عبدالله علي",
+                "english_name": "Anas Abdulrahman Abdullah Ali",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "انهار هائل سعيد مسعد",
+                "english_name": "Anhar Hael Saeed Massad",
+                "gender_id": 1
+            },
+            {
+                "arabic_name": "إياد محمد عبدالله قاسم",
+                "english_name": "Iyad Mohamed Abdullah Qasim",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "آية نجيب أحمد علي",
+                "english_name": "Aya Najib Ahmed Ali",
+                "gender_id": 1
+            },
+            {
+                "arabic_name": "باسم قاسم ناجي أحمد",
+                "english_name": "Bassam Qasim Nagy Ahmed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "تميم عبدالباسط حسن عبدالله",
+                "english_name": "Tamim Abdulbaset Hassan Abdullah",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "جمال عبدالحافظ حمود محمد",
+                "english_name": "Jamal Abdulhafez Hamoud Mohamed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "جواد فيصل عبدالكريم مهيوب",
+                "english_name": "Jawad Faisal Abdulkarim Mahyoub",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "حماس عبدالباقي عبدالعزيز فازع",
+                "english_name": "Hamas Abdulbaqi Abdulaziz Fawaz",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "حمزة مصطفى مجاهد سلام",
+                "english_name": "Hamza Mustafa Mujahid Salam",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "خالد عبدالباسط عثمان عبده",
+                "english_name": "Khalid Abdulbaset Othman Abdo",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "خطاب عبده قاسم محمد",
+                "english_name": "Khattab Abdo Qasim Mohamed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "رغد هاني علي عماد القباطي",
+                "english_name": "Raghad Hani Ali Imad Al-Qubati",
+                "gender_id": 1
+            },
+            {
+                "arabic_name": "رفيق هزاع مرشد محمد",
+                "english_name": "Rafiq Haza Morshed Mohamed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "ريم عبدالرؤوف سيف عبده الغني",
+                "english_name": "Reem Abdulraouf Saif Abdo Al-Ghani",
+                "gender_id": 1
+            },
+            {
+                "arabic_name": "زال الهم صادق علي حسن",
+                "english_name": "Zal Al-Ham Sadiq Ali Hassan",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "زاهر نعمان الصغير مهيوب",
+                "english_name": "Zahir Numan Al-Sagheer Mahyoub",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "سامح منير أحمد حسن",
+                "english_name": "Samih Mounir Ahmed Hassan",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "شيماء ناصر عبدالباقي عبدالوهاب",
+                "english_name": "Shaimaa Nasser Abdulbaqi Abdulwahab",
+                "gender_id": 1
+            },
+            {
+                "arabic_name": "عبدالرحمن حمود محمد سعيد",
+                "english_name": "Abdulrahman Hamoud Mohamed Saeed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "عبدالرحمن حمود هزاع عبده القاسمي",
+                "english_name": "Abdulrahman Hamoud Haza Abdo Al-Qasimi",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "عبدالرحمن فضل أمير سيف",
+                "english_name": "Abdulrahman Fadl Amir Saif",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "عبدالرحمن فؤاد محمد ناصر",
+                "english_name": "Abdulrahman Fouad Mohamed Nasser",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "عبدالعزيز نجيب أمين محمد",
+                "english_name": "Abdulaziz Najib Amin Mohamed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "عزالدين إبراهيم عبدالله عبده إسماعيل",
+                "english_name": "Ezzeldin Ibrahim Abdullah Abdo Ismail",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "عمر علي محمد أحمد الزعزعي",
+                "english_name": "Omar Ali Mohamed Ahmed Al-Zazai",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "فادي مفيد سعيد علي",
+                "english_name": "Fadi Mufeed Saeed Ali",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "مازن محمد عقلان علي",
+                "english_name": "Mazen Mohamed Aqlan Ali",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "محمد أحمد محمد غالب",
+                "english_name": "Mohamed Ahmed Mohamed Ghaleb",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "محمد عبدالرحمن قائد شمسان",
+                "english_name": "Mohamed Abdulrahman Qa'id Shamsan",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "محمد عبدالعزيز قاسم محمد",
+                "english_name": "Mohamed Abdulaziz Qasim Mohamed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "محمد عبده سيف قاسم",
+                "english_name": "Mohamed Abdo Saif Qasim",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "محمد علي عبده مثنى",
+                "english_name": "Mohamed Ali Abdo Methna",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "محمد فؤاد عبد الله سيف",
+                "english_name": "Mohamed Fouad Abdullah Saif",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "محمود عارف عبده قاسم",
+                "english_name": "Mahmoud Aref Abdo Qasim",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "مروه هشام أحمد حسن",
+                "english_name": "Marwa Hisham Ahmed Hassan",
+                "gender_id": 1
+            },
+            {
+                "arabic_name": "مريح محمد علي أحمد",
+                "english_name": "Mureeh Mohamed Ali Ahmed",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "معاذ علي حازم عبدالوهاب",
+                "english_name": "Muath Ali Hazem Abdulwahab",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "معتصم عبدالله أحمد فرحان",
+                "english_name": "Moatasem Abdullah Ahmed Farhan",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "منير علي عبدالواحد محمد منصور",
+                "english_name": "Mounir Ali Abdulwahid Mohamed Mansour",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "منيرة عبدالله محمد علي الشيباني",
+                "english_name": "Muneera Abdullah Mohamed Ali Al-Shaibani",
+                "gender_id": 1
+            },
+            {
+                "arabic_name": "نادر درهم عبدالله شرف",
+                "english_name": "Nader Dirham Abdullah Sharaf",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "ناصر محمد عبدالله مهيوب",
+                "english_name": "Nasser Mohamed Abdullah Mahyoub",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "نسمه موسى عبدالله الحكيمي",
+                "english_name": "Nasmah Mousa Abdullah Al-Hakimi",
+                "gender_id": 1
+            },
+            {
+                "arabic_name": "نسيبة عبدالملك قاسم سعيد",
+                "english_name": "Naseeba Abdulmalik Qasim Saeed",
+                "gender_id": 1
+            },
+            {
+                "arabic_name": "هديل موسى عبده سعيد الصلوي",
+                "english_name": "Hadeel Mousa Abdo Saeed Al-Salawi",
+                "gender_id": 1
+            },
+            {
+                "arabic_name": "وهيب خالد عبدالرب حزام",
+                "english_name": "Waheeb Khalid Abdulrab Hizam",
+                "gender_id": 0
+            },
+            {
+                "arabic_name": "لؤي فهد أحمد محمد",
+                "english_name": "Luay Fahd Ahmed Mohamed",
+                "gender_id": 0
+            }
+        ]
+    }
+]

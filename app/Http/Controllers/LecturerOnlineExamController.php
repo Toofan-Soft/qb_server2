@@ -55,7 +55,7 @@ class LecturerOnlineExamController extends Controller
             return ResponseHelper::clientError();
         }
 
-        // try {
+        try {
             $formConfigurationMethodId = FormConfigurationMethodEnum::SIMILAR_FORMS->value;
             $formNameMethodId = FormNameMethodEnum::DECIMAL_NUMBERING->value;
 
@@ -129,10 +129,10 @@ class LecturerOnlineExamController extends Controller
                 DB::rollBack();
                 return ResponseHelper::serverError();
             }
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ResponseHelper::serverError();
+        }
     }
 
     public function modifyOnlineExam(Request $request)
