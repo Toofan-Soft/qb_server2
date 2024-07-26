@@ -40,7 +40,7 @@ class UserHelper
                 'password' => ($password) ? bcrypt($password) : $generatedToken,
                 'status' => UserStatusEnum::ACTIVATED->value,
                 'owner_type' => $ownerTypeId,
-                'email_verified_at' =>($ownerTypeId === OwnerTypeEnum::GUEST->value) ? null: now(),
+                'email_verified_at' => ($ownerTypeId === OwnerTypeEnum::GUEST->value) ? null : now(),
             ]);
 
             $owner = null;
@@ -52,8 +52,9 @@ class UserHelper
                 array_push($roles, RoleEnum::STUDENT->value);
             } elseif ($ownerTypeId === OwnerTypeEnum::EMPLOYEE->value) {
                 $owner = Employee::findOrFail($ownerId);
-                if((intval($owner->job_type) === JobTypeEnum::LECTURER->value) || 
-                    (intval($owner->job_type) === JobTypeEnum::EMPLOYEE_LECTURE->value)){
+                if ((intval($owner->job_type) === JobTypeEnum::LECTURER->value) ||
+                    (intval($owner->job_type) === JobTypeEnum::EMPLOYEE_LECTURE->value)
+                ) {
                     array_push($roles, RoleEnum::LECTURER->value);
                 }
                 $owner->update(['user_id' => $user->id]);
@@ -71,7 +72,7 @@ class UserHelper
             //     $token = $user->createToken('quesionbanklaravelapi')->accessToken;
             //     return $token;
             // } else {
-                DB::commit();
+            DB::commit();
             return true;
             // }
         } catch (\Exception $e) {
@@ -167,10 +168,20 @@ class UserHelper
 
     //     return $userRoles;
     // }
-
+    
     private static function generateAlphanumericToken(int $length = 8): string
     {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
-        return substr(str_shuffle($characters), 0, $length);
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $numbers = '0123456789';
+        $letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        $randomNumber = $numbers[random_int(0, strlen($numbers) - 1)];
+        $randomLetter = $letters[random_int(0, strlen($letters) - 1)];
+
+        $randomChars = substr(str_shuffle($characters), 0, $length - 2);
+
+        $token = str_shuffle($randomNumber . $randomLetter . $randomChars);
+
+        return $token;
     }
 }

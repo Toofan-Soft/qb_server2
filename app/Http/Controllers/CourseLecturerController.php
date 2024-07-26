@@ -50,6 +50,11 @@ class CourseLecturerController extends Controller
     public function deleteCourseLecturer(Request $request)
     {
         Gate::authorize('deleteCourseLecturer', CourseLecturerController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $courseLecturer = CourseLecturer::findOrFail($request->id);
             $courseLecturer->delete();
@@ -62,7 +67,12 @@ class CourseLecturerController extends Controller
     public function retrieveCourseLecturers(Request $request)
     {
         Gate::authorize('retrieveCourseLecturers', CourseLecturerController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'course_part_id' => 'required|integer',
+            'academic_year' => 'nullable|integer',
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $courseLecturers = DB::table('department_course_parts')
                 ->join('department_courses', 'department_course_parts.department_course_id', '=', 'department_courses.id')
@@ -96,6 +106,11 @@ class CourseLecturerController extends Controller
     public function retrieveLecturerCourses(Request $request)
     {
         Gate::authorize('retrieveLecturerCourses', CourseLecturerController::class);
+        if (ValidateHelper::validateData($request, [
+            'employee_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $lecturerCourses =  DB::table('course_lecturers')
                 ->join('department_course_parts', 'course_lecturers.department_course_part_id', '=', 'department_course_parts.id')
@@ -136,6 +151,11 @@ class CourseLecturerController extends Controller
     public function retrieveCourseLecturer(Request $request)
     {
         Gate::authorize('retrieveCourseLecturer', CourseLecturerController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         ///eagear loading
         // $courseLecturer = CourseLecturer::with([
         //     'employee:arabic_name as name,phone,email,specialization,qualification as qualification_name,image_url', // Eager load with required attributes

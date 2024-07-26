@@ -11,7 +11,6 @@ enum FormNameMethodEnum: int {
     case ROMAN_NUMBERING   =  1;
     case ALPHANUMERIC_NUMBERING   =  2;
 
-
     public function getValues(): array {
         return match ($this) {
             self::DECIMAL_NUMBERING => [0, 'Decimal Numbering', ' ترقيم عشري'],
@@ -19,6 +18,5 @@ enum FormNameMethodEnum: int {
             self::ALPHANUMERIC_NUMBERING => [2, 'Alphanumeric Numbering', ' ترقيم أبجدي'],
         };
     }
-
 
 }

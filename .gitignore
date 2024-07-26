@@ -17,3 +17,10 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/app/AlgorithmAPI/PythonModules/combinationGeneratorAPI/__pycache__
+/app/AlgorithmAPI/PythonModules/combinationGeneratorAPI/__pycache__
+/app/AlgorithmAPI/PythonModules/examGeneratorAPI/__pycache__
+/app/AlgorithmAPI/PythonModules/examGeneratorAPI/model/__pycache__
+/app/AlgorithmAPI/PythonModules/combinationGeneratorAPI/__pycache__
+/public/images
+/public/images

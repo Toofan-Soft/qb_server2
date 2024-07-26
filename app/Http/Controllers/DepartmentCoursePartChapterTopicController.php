@@ -16,44 +16,17 @@ use App\Models\DepartmentCoursePartTopic;
 
 class DepartmentCoursePartChapterTopicController extends Controller
 {
-    // public function addDepartmentCoursePartTopics(Request $request)
-    // {
-    //     // if ($request->topics_ids->count() > 1) {
-    //     //     $departmentCoursePart->department_course_part_topics()->createMany($request->topics_ids);
-    //     // } else {
-    //     //     $departmentCoursePart->department_course_part_topics()->create($request->topics_ids);
-    //     // }
-    //     DB::beginTransaction();
-    //     try {
-    //         $departmentCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
-    //         if (count($request->topics_ids) === 1) {
-    //             $departmentCoursePart->department_course_part_topics()->create([
-    //                 'topic_id' => $request->topics_ids[0],
-    //             ]);
-    //         } else {
-    //             $topicsData = [];
-    //             foreach ($request->topics_ids as $topicId) {
-    //                 $topicsData[] = [
-    //                     'topic_id' => $topicId,
-    //                 ];
-    //             }
-    //             $departmentCoursePart->department_course_part_topics()->createMany($topicsData);
-    //         }
-    //         DB::commit();
-    //         return ResponseHelper::success();
-    //     } catch (\Exception $e) {
-    //         DB::rollBack();
-    //         return ResponseHelper::serverError();
-    //     }
-    // } // this use case will deleted 
-
     public function modifyDepartmentCoursePartTopics(Request $request)
     {
         Gate::authorize('modifyDepartmentCoursePartTopics', DepartmentCoursePartChapterTopicController::class);
-
-        if (ValidateHelper::validateData($request, $this->rules($request))) {
+        if (ValidateHelper::validateData($request, [
+            'department_course_part_id' => 'required|exists:department_course_parts,id',
+            'topics_ids'                => 'required|array|min:1',
+            'topics_ids.*'              => 'required|integer|exists:topics,id',
+        ])) {
             return  ResponseHelper::clientError();
         }
+
         DB::beginTransaction();
         try {
             $departmentCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
@@ -75,22 +48,14 @@ class DepartmentCoursePartChapterTopicController extends Controller
         }
     }
 
-    // public function deleteDepartmentCoursePartTopics(Request $request)
-    // {
-    //     try {
-    //         $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
-    //         $departmenCoursePart->department_course_part_topics()
-    //             ->whereIn('topic_id', $request->topics_ids)->delete();
-    //         return ResponseHelper::success();
-    //     } catch (\Exception $e) {
-    //         return ResponseHelper::serverError();
-    //     }
-    // } // this use case will deleted 
-
     public function retrieveDepartmentCoursePartChapters(Request $request)
     {
         Gate::authorize('retrieveDepartmentCoursePartChapters', DepartmentCoursePartChapterTopicController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_course_part_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $chapters = DB::table('department_course_parts')
                 ->join('department_course_part_topics', 'department_course_parts.id', '=', 'department_course_part_topics.department_course_part_id')
@@ -111,7 +76,12 @@ class DepartmentCoursePartChapterTopicController extends Controller
     public function retrieveDepartmentCoursePartChapterTopics(Request $request)
     {
         Gate::authorize('retrieveDepartmentCoursePartChapterTopics', DepartmentCoursePartChapterTopicController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_course_part_id' => 'required|integer',
+            'chapter_id' => 'required|integer',
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $topics = DB::table('department_course_parts')
                 ->join('department_course_part_topics', 'department_course_parts.id', '=', 'department_course_part_topics.department_course_part_id')
@@ -129,7 +99,11 @@ class DepartmentCoursePartChapterTopicController extends Controller
     public function retrieveEditableDepartmentCoursePartChapters(Request $request)
     {
         Gate::authorize('retrieveEditableDepartmentCoursePartChapters', DepartmentCoursePartChapterTopicController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_course_part_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
             $coursePart = CoursePart::findOrFail($departmenCoursePart->course_part_id);
@@ -169,6 +143,12 @@ class DepartmentCoursePartChapterTopicController extends Controller
     public function retrieveEditableDepartmentCoursePartTopics(Request $request)
     {
         Gate::authorize('retrieveEditableDepartmentCoursePartTopics', DepartmentCoursePartChapterTopicController::class);
+        if (ValidateHelper::validateData($request, [
+            'department_course_part_id' => 'required|integer',
+            'chapter_id' => 'required|integer',
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             return ResponseHelper::success();
             ////////////////////

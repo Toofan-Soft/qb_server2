@@ -20,7 +20,6 @@ use App\Helpers\ExamHelper;
 use App\Helpers\NullHelper;
 use App\Helpers\ParamHelper;
 use Illuminate\Http\Request;
-use App\Enums\OnlineExamStatusEnum;
 use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
 use Illuminate\Support\Carbon;
@@ -37,13 +36,16 @@ use App\AlgorithmAPI\GenerateExam;
 use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
+use App\Enums\OnlineExamStatusEnum;
 use App\Enums\ExamConductMethodEnum;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
+use App\Enums\OnlineExamTakingStatusEnum;
 use App\Enums\FormConfigurationMethodEnum;
+use App\Helpers\Roles\PasswordValidationRule;
 
 class LecturerOnlineExamController extends Controller
 {
@@ -52,6 +54,9 @@ class LecturerOnlineExamController extends Controller
         Gate::authorize('addOnlineExam', LecturerOnlineExamController::class);
 
         if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return ResponseHelper::clientError();
+        }
+        if ($request->datetime > $request->datetime_notification_datetime) {
             return ResponseHelper::clientError();
         }
 
@@ -74,11 +79,11 @@ class LecturerOnlineExamController extends Controller
 
             if ($examFormsQuestions) { // modify to use has function
                 $employee = Employee::where('user_id',  auth()->user()->id)->first();
-                
+
                 $courseLecturer = CourseLecturer::where('department_course_part_id', '=', $request->department_course_part_id)
-                ->where('lecturer_id', $employee->id)
-                ->where('academic_year', now()->format('Y'))
-                ->first();
+                    ->where('lecturer_id', $employee->id)
+                    ->where('academic_year', now()->format('Y'))
+                    ->first();
                 DB::beginTransaction();
                 $realExam = $courseLecturer->real_exams()->create([
                     'type' => $request->type_id,
@@ -154,7 +159,9 @@ class LecturerOnlineExamController extends Controller
         // ]);
 
         Gate::authorize('modifyOnlineExam', LecturerOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return ResponseHelper::clientError();
+        }
         try {
             $params = ParamHelper::getParams(
                 $request,
@@ -201,7 +208,11 @@ class LecturerOnlineExamController extends Controller
         // يتم حذف كل ما يتعلق بالاختبار وايضا اسئلة الاختبار التي قد تم توليدها
         // دراسة كيفية امكانية انقاص بيانات استخدام الاسئلة
         Gate::authorize('deleteOnlineExam', LecturerOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $realExam = RealExam::findOrFail($request->id);
             $realExam->delete();
@@ -214,7 +225,13 @@ class LecturerOnlineExamController extends Controller
     public function retrieveOnlineExams(Request $request) ////**** يتم اضافة شرط ان يتم ارجاع الاختبارات التي تنتمي الى المستخدم الحالي
     {
         Gate::authorize('retrieveOnlineExams', LecturerOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_course_part_id' => 'required|integer',
+            'type_id' => ['nullable', new Enum(ExamTypeEnum::class)],
+            'status_id' => ['nullable', new Enum(OnlineExamStatusEnum::class)],
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $enumReplacements  = [];
         try {
             $lecturer_id = Employee::where('user_id', '=', auth()->user()->id)->first(['id'])['id'];
@@ -269,6 +286,13 @@ class LecturerOnlineExamController extends Controller
     public function retrieveOnlineExamsAndroid(Request $request) ////////** this attribute department_course_part_id can be null
     {
         Gate::authorize('retrieveOnlineExamsAndroid', LecturerOnlineExamController::class);
+        if (ValidateHelper::validateData($request, [
+            'department_course_part_id' => 'nullable|integer',
+            'type_id' => ['nullable', new Enum(ExamTypeEnum::class)],
+            'status_id' => ['nullable', new Enum(OnlineExamStatusEnum::class)]
+        ])) {
+            return  ResponseHelper::clientError();
+        }
 
         $enumReplacements  = [
             new EnumReplacement('type_name', ExamTypeEnum::class),
@@ -322,7 +346,11 @@ class LecturerOnlineExamController extends Controller
     public function retrieveOnlineExam(Request $request)
     {
         Gate::authorize('retrieveOnlineExam', LecturerOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $realExam = RealExam::findOrFail($request->id, [
                 'id', 'language as language_name', 'difficulty_level as difficulty_level_name',
@@ -467,7 +495,11 @@ class LecturerOnlineExamController extends Controller
 
         // $exam = $realExam->toArray() + $onlineExam->toArray();
         Gate::authorize('retrieveEditableOnlineExam', LecturerOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $exam = DB::table('real_exams')
                 ->join('online_exams', 'real_exams.id', '=', 'online_exams.id')
@@ -506,7 +538,11 @@ class LecturerOnlineExamController extends Controller
     public function retrieveOnlineExamChapters(Request $request)
     {
         Gate::authorize('retrieveOnlineExamChapters', LecturerOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'exam_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $chapters = ExamHelper::retrieveRealExamChapters($request->exam_id);
             return ResponseHelper::successWithData($chapters);
@@ -518,7 +554,12 @@ class LecturerOnlineExamController extends Controller
     public function retrieveOnlineExamChapterTopics(Request $request)
     {
         Gate::authorize('retrieveOnlineExamChapterTopics', LecturerOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'exam_id' => 'required|integer',
+            'chapter_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             // return ExamHelper::retrieveRealExamChapterTopics($request->exam_id, $request->chapter_id);
             $topics = ExamHelper::retrieveRealExamChapterTopics($request->exam_id, $request->chapter_id);
@@ -532,7 +573,11 @@ class LecturerOnlineExamController extends Controller
     public function retrieveOnlineExamForms(Request $request)
     {
         Gate::authorize('retrieveOnlineExamForms', LecturerOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'exam_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             // return LevelsEnum::values();
             $onlineExamForms = ExamHelper::retrieveRealExamForms($request->exam_id);
@@ -546,7 +591,11 @@ class LecturerOnlineExamController extends Controller
     public function retrieveOnlineExamFormQuestions(Request $request)
     {
         Gate::authorize('retrieveOnlineExamFormQuestions', LecturerOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'form_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $questions = ExamHelper::getFormQuestionsWithDetails($request->form_id, false, false, true);
             return ResponseHelper::successWithData($questions);
@@ -558,12 +607,17 @@ class LecturerOnlineExamController extends Controller
     public function changeOnlineExamStatus(Request $request)
     {
         Gate::authorize('changeOnlineExamStatus', LecturerOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $onlineExam = OnlineExam::findOrFail($request->id);
             $realExam = RealExam::findOrFail($request->id);
 
-            if (!(intval($onlineExam->status) === OnlineExamStatusEnum::COMPLETE->value) ||
+            if (
+                !(intval($onlineExam->status) === OnlineExamStatusEnum::COMPLETE->value) ||
                 $realExam->datetime > DatetimeHelper::now()
             ) {
                 if (intval($onlineExam->status) === OnlineExamStatusEnum::SUSPENDED->value) {
@@ -738,32 +792,6 @@ class LecturerOnlineExamController extends Controller
 
     public function rules(Request $request): array
     {
-        // need to make rules
-        /*
-	- real exam data
-		- language
-		- difficulty_level
-		- form_configuration_method
-		- forms_count
-		- form_name_method
-		- datetime
-		- duration
-		- type
-		- exam_type
-		- note
-		- course_lecturer_id
-	- real_exam_question_types
-		- question_type_id
-		- questions_count
-		- question_score
-	- online_exams
-		- status
-		- conduct_method
-		- exam_datetime_notification_datetime
-		- result_notification_datetime
-		- proctor_id
-	- topics_ids
-        */
         $rules = [
             // real exam table
             'language_id' => ['required', new Enum(LanguageEnum::class)],

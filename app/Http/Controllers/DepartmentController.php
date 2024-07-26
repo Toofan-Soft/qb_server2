@@ -72,6 +72,11 @@ class DepartmentController extends Controller
     public function deleteDepartment(Request $request)
     {
         Gate::authorize('deleteDepartment', DepartmentController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $department = Department::findOrFail($request->id);
             $department->delete();
@@ -84,6 +89,11 @@ class DepartmentController extends Controller
     public function retrieveDepartments(Request $request)
     {
         Gate::authorize('retrieveDepartments', DepartmentController::class);
+        if (ValidateHelper::validateData($request, [
+            'college_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['id', 'arabic_name', 'english_name', 'levels_count as levels_count_name', 'logo_url'];
             $conditionAttribute = ['college_id' => $request->college_id];
@@ -102,6 +112,11 @@ class DepartmentController extends Controller
     public function retrieveBasicDepartmentsInfo(Request $request)
     {
         Gate::authorize('retrieveBasicDepartmentsInfo', DepartmentController::class);
+        if (ValidateHelper::validateData($request, [
+            'college_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name'), 'logo_url'];
             $conditionAttribute = ['college_id' => $request->college_id];
@@ -117,6 +132,11 @@ class DepartmentController extends Controller
     public function retrieveDepartment(Request $request)
     {
         Gate::authorize('retrieveDepartment', DepartmentController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['arabic_name', 'english_name', 'levels_count as levels_count_name', 'logo_url', 'description'];
             $conditionAttribute = ['id' => $request->id];
@@ -134,6 +154,11 @@ class DepartmentController extends Controller
     public function retrieveEditableDepartment(Request $request)
     {
         Gate::authorize('retrieveEditableDepartment', DepartmentController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['arabic_name', 'english_name', 'levels_count as levels_count_id', 'logo_url', 'description'];
             $conditionAttribute = ['id' => $request->id];

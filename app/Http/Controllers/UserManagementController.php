@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\JobTypeEnum;
 use App\Models\User;
 use App\Models\Guest;
 use App\Enums\RoleEnum;
@@ -27,7 +28,7 @@ class UserManagementController extends Controller
 {
     public function addUser(Request $request)
     {
-        // Gate::authorize('addUser', UserManagementController::class);
+        Gate::authorize('addUser', UserManagementController::class);
 
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
@@ -75,6 +76,11 @@ class UserManagementController extends Controller
     public function changeUserStatus(Request $request)
     {
         Gate::authorize('changeUserStatus', UserManagementController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $user = User::findOrFail($request->id);
             if (intval($user->status) === UserStatusEnum::ACTIVATED->value) {
@@ -95,7 +101,11 @@ class UserManagementController extends Controller
     public function deleteUser(Request $request)
     {
         Gate::authorize('deleteUser', UserManagementController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $user = User::findOrFail($request->id);
             $user->delete();
@@ -108,7 +118,12 @@ class UserManagementController extends Controller
     public function retrieveUsers(Request $request)
     {
         Gate::authorize('retrieveUsers', UserManagementController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'owner_type_id' => ['required', new Enum(OwnerTypeEnum::class)],
+            'role_id' => ['required', new Enum(RoleEnum::class)]
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $users = [];
         $ownerTable = '';
         $nameColumn = LanguageHelper::getNameColumnName(null, null);
@@ -150,7 +165,11 @@ class UserManagementController extends Controller
     public function retrieveUser(Request $request)
     {
         Gate::authorize('retrieveUser', UserManagementController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $userData = User::findOrFail(
                 $request->id,
@@ -204,7 +223,12 @@ class UserManagementController extends Controller
     public function retrieveOwnerRoles(Request $request)
     {
         Gate::authorize('retrieveOwnerRoles', UserManagementController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'owner_type_id' => ['required', new Enum(OwnerTypeEnum::class)],
+            'job_type_id' => ['nullable', new Enum(JobTypeEnum::class)]
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $ownerRoles = RoleEnum::getOwnerRolesWithMandatory($request->owner_type_id, $request->job_type_id);
             return ResponseHelper::successWithData($ownerRoles);
@@ -213,7 +237,6 @@ class UserManagementController extends Controller
             return ResponseHelper::serverError();
         }
     }
-
 
     public function rules(Request $request): array
     {

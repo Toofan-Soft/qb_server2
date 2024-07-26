@@ -53,7 +53,11 @@ class CourseController extends Controller
     public function deleteCourse(Request $request)
     {
         Gate::authorize('deleteCourse', CourseController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $course = Course::findOrFail($request->id);
             $course->delete();
@@ -79,7 +83,11 @@ class CourseController extends Controller
     public function retrieveCourse(Request $request)
     {
         Gate::authorize('retrieveCourse', CourseController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['arabic_name', 'english_name'];
         $conditionAttribute = ['id' => $request->id];
         try {
@@ -92,7 +100,11 @@ class CourseController extends Controller
     public function retrieveEditableCourse(Request $request)
     {
         Gate::authorize('retrieveEditableCourse', CourseController::class);
-        
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['arabic_name', 'english_name'];
         $conditionAttribute = ['id' => $request->id];
         try {

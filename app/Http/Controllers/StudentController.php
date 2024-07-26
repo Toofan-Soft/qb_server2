@@ -46,8 +46,8 @@ class StudentController extends Controller
     {
         Gate::authorize('addStudent', StudentController::class);
 
-        if ($x = ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError1($x);
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError();
         }
 
         DB::beginTransaction();
@@ -87,6 +87,7 @@ class StudentController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
+
         DB::beginTransaction();
         try {
             $student = Student::findOrFail($request->id);
@@ -103,9 +104,9 @@ class StudentController extends Controller
             if (isset($request->level_id)) {
                 if (isset($request->semester_id)) {
                     $studnetDepartmentAndLevel = $this->getStudentDepartmentLevelSemesterIds($student->id);
-                  
+
                     if ($request->level_id < intval($studnetDepartmentAndLevel->level_id)) {
-            
+
                         return ResponseHelper::clientError();
                         // return ResponseHelper::clientError('لا يمكنك تغيير مستوى الطالب الي مستوى ادنى من المستوى الحالي');
                     } elseif ($request->level_id < intval($studnetDepartmentAndLevel->semester_id)) {
@@ -122,7 +123,7 @@ class StudentController extends Controller
                             ->where('department_courses.semester', '=', $studnetDepartmentAndLevel->semester_id)
                             ->where('students.id', '=', $student->id)
                             ->get();
-                          
+
                         foreach ($currentCourseStudents as $currentCourseStudent) {
                             $student->course_students()->where('department_course_id', '=', $currentCourseStudent->department_course_id)
                                 ->update([
@@ -148,7 +149,11 @@ class StudentController extends Controller
     public function deleteStudent(Request $request)
     {
         Gate::authorize('deleteStudent', StudentController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         DB::beginTransaction();
         try {
             $student = Student::findOrFail($request->id);
@@ -165,7 +170,13 @@ class StudentController extends Controller
     public function retrieveStudents(Request $request)
     {
         Gate::authorize('retrieveStudents', StudentController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_id' => 'required|integer',
+            'level_id' => ['required', new Enum(LevelsEnum::class)],
+            'semester_id' => ['required', new Enum(SemesterEnum::class)]
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $students = DB::table('departments')
                 ->join('department_courses', 'departments.id', '=', 'department_courses.department_id')
@@ -192,7 +203,11 @@ class StudentController extends Controller
     public function retrieveStudent(Request $request)
     {
         Gate::authorize('retrieveStudent', StudentController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             // $student = Student::findOrFail($request->id);
             $student = Student::where('id', $request->id)
@@ -277,7 +292,11 @@ class StudentController extends Controller
     public function retrieveEditableStudent(Request $request)
     {
         Gate::authorize('retrieveEditableStudent', StudentController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['academic_id', 'arabic_name', 'english_name', 'gender as gender_id', 'phone', 'birthdate', 'image_url'];
         try {
             $student = Student::findOrFail($request->id, $attributes);
@@ -297,30 +316,17 @@ class StudentController extends Controller
     {
         try {
             $departmentCourses = DepartmentCourse::where('department_id', $departmentId)
-            ->where('level', $levelId)
-            ->where('semester', $semesterId)
-            ->get();
-        
-        // Check if there's only one departmentCourse
-        if ($departmentCourses->count() === 1) {
-            $departmentCourse = $departmentCourses->first();
-          
-            // Check if the course_student already exists
-            $existingCourseStudent = $departmentCourse->course_students()->where('student_id', $studentId)->first();
-            
-            if (!$existingCourseStudent) {
-                // Create new course_student if not found
-                $departmentCourse->course_students()->create([
-                    'student_id' => $studentId,
-                    'status' => CourseStudentStatusEnum::ACTIVE->value,
-                    'academic_year' => now()->format('Y')
-                ]);
-            }
-        } else {
-            foreach ($departmentCourses as $departmentCourse) {
+                ->where('level', $levelId)
+                ->where('semester', $semesterId)
+                ->get();
+
+            // Check if there's only one departmentCourse
+            if ($departmentCourses->count() === 1) {
+                $departmentCourse = $departmentCourses->first();
+
                 // Check if the course_student already exists
                 $existingCourseStudent = $departmentCourse->course_students()->where('student_id', $studentId)->first();
-                
+
                 if (!$existingCourseStudent) {
                     // Create new course_student if not found
                     $departmentCourse->course_students()->create([
@@ -329,8 +335,21 @@ class StudentController extends Controller
                         'academic_year' => now()->format('Y')
                     ]);
                 }
+            } else {
+                foreach ($departmentCourses as $departmentCourse) {
+                    // Check if the course_student already exists
+                    $existingCourseStudent = $departmentCourse->course_students()->where('student_id', $studentId)->first();
+
+                    if (!$existingCourseStudent) {
+                        // Create new course_student if not found
+                        $departmentCourse->course_students()->create([
+                            'student_id' => $studentId,
+                            'status' => CourseStudentStatusEnum::ACTIVE->value,
+                            'academic_year' => now()->format('Y')
+                        ]);
+                    }
+                }
             }
-        }
 
 
             //////////old 
@@ -338,7 +357,7 @@ class StudentController extends Controller
             //     ->where('level', '=', $levelId)
             //     ->where('semester', '=', $semesterId)
             //     ->get();
-                 
+
             // foreach ($departmentCourses as $departmentCourse) {
             //     $departmentCourse->course_students()->create([
             //         'student_id' => $studentId,
@@ -393,8 +412,8 @@ class StudentController extends Controller
             'department_id' => 'required|exists:departments,id',
             'level_id' => ['required', new Enum(LevelsEnum::class)], // Assuming LevelsEnum holds valid values
             'semester_id' => ['required', new Enum(SemesterEnum::class)],
+            'email' => 'required|email|unique:users,email',
             // 'user_id' => 'nullable|uuid|unique:users,id',
-            // يتم اضافة الايميل وجعله قابل للنل ، وفريد
             // التحقق من ان رقم المستوى المرسل موجود في القسم، اي يتوافق مع عدد المستويات، وليس في الاينم
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

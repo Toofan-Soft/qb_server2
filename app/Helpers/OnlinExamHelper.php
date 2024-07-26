@@ -51,46 +51,34 @@ class OnlinExamHelper
     public static function getStudentFormName($onlineExamId, $studentFormId):string{
 
         try {
-            $exam = RealExam::findOrFail($onlineExamId);
-            // $forms = $realExam->forms()->get(['id']);
+            $realExam = RealExam::findOrFail($onlineExamId);
+            $language = LanguageEnum::symbolOf(intval($realExam->language));
 
-            $studentForm = '';
+            $studentFormName = '';
 
-            $formsIds = $exam->forms()->get(['id'])
-            ->map(function ($form) {
-                return $form->id;
-            });
+            $formsIds = $realExam->forms()->orderBy('id')->pluck('id')->toArray();
 
-            $formsNames = ExamHelper::getRealExamFormsNames(intval($exam->form_name_method), $exam->forms_count);
+            $formsNames = ExamHelper::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count, $language);
 
-            if (intval($exam->form_configuration_method) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
+            if (intval($realExam->form_configuration_method) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
                 $i = 0;
                 
                foreach ($formsIds as $formId) {
                 if($formId === $studentFormId){
-                    $studentForm = $formsNames[$i++];
+                    $studentFormName = $formsNames[$i];
+                    break;
                 }
                 $i++;
                 }
             } else {
-                $studentForm = $formsNames[0];
+                $studentFormName = $formsNames[0];
             }
            
-            return $studentForm ;
+            return $studentFormName ;
         } catch (\Exception $e) {
             throw $e;
         }
 
     }
-
-
-    public static function getStudentForm($realExam){
-        // يتم عمل دالة تختار لي رقم النموذج المناسب لطالب
-        $formId = 0;
-        $form = Form::findOrFail($formId);
-        return $form;
-
-    }
-
 
 }

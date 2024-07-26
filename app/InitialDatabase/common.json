@@ -124,6 +124,35 @@
         "lecturer_id": 1
     },
     {
+        "comment": "question/add",
+        "topic_id": 1,
+        "content": "what is your name?",
+        "title": "test",
+        "type_id": 1,
+        "difficulty_level_id": 2,
+        "accessibility_status_id": 1,
+        "estimated_answer_time": 60,
+        "language_id": 1,
+        "choices": [
+            {
+                "content": "my name is fadi",
+                "is_true": 1
+            },
+            {
+                "content": "my name fadi",
+                "is_true": 0
+            },
+            {
+                "content": "name is fadi",
+                "is_true": 0
+            },
+            {
+                "content": "fadi",
+                "is_true": 1
+            }
+        ]
+    },
+    {
         "comment": "lecturer-online-exam/add",
         "language_id": 1,
         "difficulty_level_id": 2,

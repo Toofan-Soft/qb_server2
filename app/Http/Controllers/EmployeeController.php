@@ -33,11 +33,12 @@ class EmployeeController extends Controller
 {
     public function addEmployee(Request $request)
     {
-        // Gate::authorize('addEmployee', EmployeeController::class);
+        Gate::authorize('addEmployee', EmployeeController::class);
 
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
+
         try {
             $employee =  Employee::create([
                 'arabic_name' =>  $request->arabic_name,
@@ -95,7 +96,11 @@ class EmployeeController extends Controller
     public function deleteEmployee(Request $request)
     {
         Gate::authorize('deleteEmployee', EmployeeController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         DB::beginTransaction();
         try {
             $employee = Employee::findOrFail($request->id);
@@ -112,7 +117,11 @@ class EmployeeController extends Controller
     public function retrieveEmployees(Request $request)
     {
         Gate::authorize('retrieveEmployees', EmployeeController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'job_type_id' => ['required', new Enum(JobTypeEnum::class)],
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name'), 'gender as gender_name', 'phone', 'user_id as email', 'qualification as qualification_name', 'image_url'];
         $conditionAttribute = ['job_type' => $request->job_type_id];
         $enumReplacements = [
@@ -137,7 +146,11 @@ class EmployeeController extends Controller
     public function retrieveEmployee(Request $request)
     {
         Gate::authorize('retrieveEmployee', EmployeeController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['arabic_name', 'english_name', 'gender as gender_name', 'phone', 'user_id', 'job_type as job_type_name', 'specialization', 'qualification as qualification_name', 'image_url'];
         $enumReplacements = [
             new EnumReplacement('gender_name', GenderEnum::class),
@@ -163,7 +176,11 @@ class EmployeeController extends Controller
     public function retrieveEditableEmployee(Request $request)
     {
         Gate::authorize('retrieveEditableEmployee', EmployeeController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['arabic_name', 'english_name', 'gender as gender_id', 'phone', 'job_type as job_type_id', 'specialization', 'qualification as qualification_id', 'image_url'];
         $conditionAttribute = ['id' => $request->id];
         try {
@@ -188,8 +205,8 @@ class EmployeeController extends Controller
             'qualification_id' => ['required', new Enum(QualificationEnum::class)], // Assuming QualificationEnum holds valid values
             'specialization' => 'nullable|string',
             'gender_id' => ['required', new Enum(GenderEnum::class)], // Assuming GenderEnum holds valid values
+            'email' => 'nullable|email|unique:users,email',
             // 'user_id' => 'nullable|uuid|unique:users,id',
-            // يتم اضافة الايميل وجعله قابل للنل ، وفريد
 
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

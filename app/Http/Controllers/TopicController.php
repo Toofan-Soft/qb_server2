@@ -50,7 +50,11 @@ class TopicController extends Controller
     public function deleteTopic(Request $request)
     {
         Gate::authorize('deleteTopic', TopicController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $topic = Topic::findOrFail($request->id);
             $topic->delete();
@@ -63,7 +67,11 @@ class TopicController extends Controller
     public function retrieveTopics(Request $request)
     {
         Gate::authorize('retrieveTopics', TopicController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'chapter_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['id', 'arabic_title', 'english_title', 'description'];
             $conditionAttribute = ['chapter_id' => $request->chapter_id];
@@ -78,7 +86,11 @@ class TopicController extends Controller
     public function retrieveTopic(Request $request)
     {
         Gate::authorize('retrieveTopic', TopicController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['arabic_title', 'english_title', 'description'];
             $conditionAttribute = ['id' => $request->id];
@@ -93,7 +105,11 @@ class TopicController extends Controller
     public function retrieveEditableTopic(Request $request)
     {
         Gate::authorize('retrieveEditableTopic', TopicController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['arabic_title', 'english_title', 'description'];
             $conditionAttribute = ['id' => $request->id];
@@ -108,7 +124,11 @@ class TopicController extends Controller
     public function retrieveTopicDescription(Request $request)
     {
         Gate::authorize('retrieveTopicDescription', TopicController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['description'];
             $conditionAttribute = ['id' => $request->id];
@@ -123,7 +143,11 @@ class TopicController extends Controller
     public function retrieveAvailableTopics(Request $request)
     {
         Gate::authorize('retrieveAvailableTopics', TopicController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'chapter_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['id', 'arabic_title', 'english_title'];
             $conditionAttribute = [

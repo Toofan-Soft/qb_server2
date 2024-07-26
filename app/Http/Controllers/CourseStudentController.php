@@ -67,30 +67,13 @@ class CourseStudentController extends Controller
         }
     }
 
-    // public function modifyCourseStudent(Request $request)
-    // {
-    //     if (ValidateHelper::validateData($request, $this->rules($request))) {
-    //         return  ResponseHelper::clientError(401);
-    //     }
-    //     try {
-    //         $courseStudent = CourseStudent::where('department_course_id', '=', $request->department_course_id)
-    //             ->where('student_id', '=', $request->student_id);
-
-    //         $courseStudent->update([
-    //             'academic_year' => $request->academic_year
-    //         ]);
-
-    //         return ResponseHelper::success();
-    //     } catch (\Exception $e) {
-    //         return ResponseHelper::serverError();
-    //     }
-    // } this use case will be deleted
-
     public function passCourseStudent(Request $request)
     {
         Gate::authorize('passCourseStudent', CourseStudentController::class);
-
-        if (ValidateHelper::validateData($request, $this->rules($request))) {
+        if (ValidateHelper::validateData($request, [
+            'department_course_id' => 'required|integer',
+            'student_id' => 'required|integer'
+        ])) {
             return  ResponseHelper::clientError();
         }
         try {
@@ -115,7 +98,10 @@ class CourseStudentController extends Controller
     {
         Gate::authorize('suspendCourseStudent', CourseStudentController::class);
 
-        if (ValidateHelper::validateData($request, $this->rules($request))) {
+        if (ValidateHelper::validateData($request, [
+            'department_course_id' => 'required|integer',
+            'student_id' => 'required|integer'
+        ])) {
             return  ResponseHelper::clientError();
         }
         try {
@@ -141,7 +127,10 @@ class CourseStudentController extends Controller
     {
         Gate::authorize('unsuspendCourseStudent', CourseStudentController::class);
 
-        if (ValidateHelper::validateData($request, $this->rules($request))) {
+        if (ValidateHelper::validateData($request, [
+            'department_course_id' => 'required|integer',
+            'student_id' => 'required|integer'
+        ])) {
             return  ResponseHelper::clientError();
         }
         try {
@@ -167,8 +156,12 @@ class CourseStudentController extends Controller
     public function deleteCourseStudent(Request $request)
     {
         Gate::authorize('deleteCourseStudent', CourseStudentController::class);
-
-        // هل هناك قيود لحذف المقرر بناء على حالته الحالية او لا
+        if (ValidateHelper::validateData($request, [
+            'department_course_id' => 'required|integer',
+            'student_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $courseStudent = CourseStudent::where('department_course_id', '=', $request->department_course_id)
                 ->where('student_id', '=', $request->student_id);
@@ -187,7 +180,13 @@ class CourseStudentController extends Controller
     public function retrieveCourseStudents(Request $request)
     {
         Gate::authorize('retrieveCourseStudents', CourseStudentController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_course_id' => 'required|integer',
+            'academic_year' => 'required|integer',
+            'status_id' => ['nullable', new Enum(CourseStudentStatusEnum::class)],
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         // request : {department_course_id, academic_year, status_id?}
         // return : {}
         try {
@@ -236,10 +235,14 @@ class CourseStudentController extends Controller
     public function retrieveUnlinkCourceStudents(Request $request)
     {
         Gate::authorize('retrieveUnlinkCourceStudents', CourseStudentController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_course_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         // هذا المتطلب ناقص ، ويتحاج الي ان يتم ايضا التركيز على المستوى الذي يدرس فيه الطالب واستثناء الطلاب الذين في مستويات اقل
-        // try {
-            $department = DepartmentCourse::findOrFail($request->department_course_id, ['department_id']);
+        try {
+            $department = DepartmentCourse::findOrFail($request->department_course_id, ['department_id', 'level']);
             $departmentStudents = []; // كل الطلاب الذين يدرسون في القسم الذي ينتمي اليه مقرر القسم المطلوب
             $departmentCourseStudents = []; // كل الطلاب الذين يدرسون او قد درسو مقرر القسم المطلوب
             $departmentStudents = DB::table('departments')
@@ -248,6 +251,7 @@ class CourseStudentController extends Controller
                 ->join('students', 'course_students.student_id', '=', 'students.id')
                 ->select('students.id', 'students.academic_id', LanguageHelper::getNameColumnName('students', 'name'), 'students.image_url')
                 ->where('departments.id', '=', $department->department_id)
+                // ->where('department_courses.Level', '<=', $department->level)
                 ->distinct()
                 ->get();
 
@@ -255,14 +259,13 @@ class CourseStudentController extends Controller
             ->pluck('student_id')->toArray();
 
             $unlinkCourseStudents = $departmentStudents->whereNotIn('id', $departmentCourseStudents);
-            // $unlinkCourseStudents = $departmentStudents->whereNotIn('id', $departmentCourseStudents);
             $unlinkCourseStudents = NullHelper::filter($unlinkCourseStudents);
             // $unlinkCourseStudents = ImageHelper::addCompleteDomainToMediaUrls($unlinkCourseStudents);
 
             return ResponseHelper::successWithData($unlinkCourseStudents);
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
 
 
         // compare or تقاطع بين الناتجين

@@ -139,22 +139,22 @@ class OnlineExamListenerHelper
             $onlineExam = OnlineExam::findOrFail($examId);
             $user = Employee::findOrFail($onlineExam->proctor_id)->user()->first();
 
-            $exam = StudentOnlineExam::where('online_exam_id', $examId)
+            $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $examId)
                 ->where('student_id', $studentId)
                 ->first();
 
-            $formName = OnlinExamHelper::getStudentFormName($examId, $exam->form_id);
-            $statusName = EnumTraits::getNameByNumber(intval($exam->status), StudentOnlineExamStatusEnum::class, LanguageHelper::getEnumLanguageName($user));
+            $formName = OnlinExamHelper::getStudentFormName($examId, $studentOnlineExam->form_id);
+            $statusName = EnumTraits::getNameByNumber(intval($studentOnlineExam->status), StudentOnlineExamStatusEnum::class, LanguageHelper::getEnumLanguageName($user));
             // $startTime = DatetimeHelper::convertDateTimeToLong($exam->start_datetime);
             // $endTime = DatetimeHelper::convertDateTimeToLong($exam->end_datetime);
-            $startTime = DatetimeHelper::convertDateTimeToTimeToLong($exam->start_datetime);
-            $endTime = DatetimeHelper::convertDateTimeToTimeToLong($exam->end_datetime);
+            $startTime = DatetimeHelper::convertDateTimeToTimeToLong($studentOnlineExam->start_datetime);
+            $endTime = DatetimeHelper::convertDateTimeToTimeToLong($studentOnlineExam->end_datetime);
             $answeredQuestionsCount = StudentAnswer::where('student_id', $studentId)
-                ->where('form_id', $exam->form_id)
+                ->where('form_id', $studentOnlineExam->form_id)
                 ->where('answer', '!=', null)
                 ->count();
 
-            $isSuspended = (intval($exam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value) ? true : false;
+            $isSuspended = (intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value) ? true : false;
 
             $data = [
                 'id' => $studentId,
@@ -175,21 +175,20 @@ class OnlineExamListenerHelper
 
     public static function refreshStudent($studentId, $examId)
     {
-        $exam = StudentOnlineExam::where('online_exam_id', $examId)
+        $studentOnlineExam = StudentOnlineExam::where('online_exam_id', $examId)
             ->where('student_id', $studentId)
             ->firstOrFail();
 
-        $uid = $exam->student()->first()->user()->first()->id;
+        $uid = $studentOnlineExam->student()->first()->user()->first()->id;
 
         $data = [
-            'is_takable' => (intval($exam->status) === StudentOnlineExamStatusEnum::ACTIVE->value) ? true : false,
-            'is_suspended' => (intval($exam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value) ? true : false,
-            'is_complete' => ((intval($exam->status) === StudentOnlineExamStatusEnum::COMPLETE->value) ? true : false) ||
-                (intval($exam->status) === StudentOnlineExamStatusEnum::CANCELED->value) ? true : false,
-            'is_canceled' => (intval($exam->status) === StudentOnlineExamStatusEnum::CANCELED->value) ? true : false,
+            'is_takable' => (intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::ACTIVE->value) ? true : false,
+            'is_suspended' => (intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::SUSPENDED->value) ? true : false,
+            'is_complete' => ((intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::COMPLETE->value) ? true : false) ||
+                (intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::CANCELED->value) ? true : false,
+            'is_canceled' => (intval($studentOnlineExam->status) === StudentOnlineExamStatusEnum::CANCELED->value) ? true : false,
         ];
 
-        
          event(new StudentRefreshEvevnt($data, $uid));
     }
 

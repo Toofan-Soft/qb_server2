@@ -71,7 +71,11 @@ class DepartmentCourseController extends Controller
     public function deleteDepartmentCourse(Request  $request)
     {
         Gate::authorize('deleteDepartmentCourse', DepartmentCourseController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $departmentCourse = DepartmentCourse::findOrFail($request->id);
             $departmentCourse->delete();
@@ -84,7 +88,11 @@ class DepartmentCourseController extends Controller
     public function retrieveDepartmentCourses(Request $request)
     {
         Gate::authorize('retrieveDepartmentCourses', DepartmentCourseController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['id', 'course_id as course_name', 'level as level_name', 'semester as semester_name'];
         $conditionAttribute = ['department_id' => $request->department_id];
         $enumReplacements = [
@@ -114,11 +122,14 @@ class DepartmentCourseController extends Controller
 
     }
 
-    ////// **** NEED TO GOIN BETWEEN MORE THAN ONEW
     public function retrieveCourseDepartments(Request $request)
     {
         Gate::authorize('retrieveCourseDepartments', DepartmentCourseController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'course_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $coursesDepartments =  DB::table('courses')
                 ->join('department_courses', 'courses.id', '=', 'department_courses.course_id')
@@ -175,7 +186,12 @@ class DepartmentCourseController extends Controller
     public function retrieveDepartmentLevelCourses(Request $request)
     {
         Gate::authorize('retrieveDepartmentLevelCourses', DepartmentCourseController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_id' => 'required|integer',
+            'level_id' => 'required|integer',
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $semesters = DepartmentCourse::where('department_id', $request->department_id)
                 ->where('level', $request->level_id)->get(['semester']);
@@ -233,7 +249,11 @@ class DepartmentCourseController extends Controller
     public function retrieveDepartmentCourse(Request $request)
     {
         Gate::authorize('retrieveDepartmentCourse', DepartmentCourseController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $departmentCourse = DepartmentCourse::findOrFail($request->id); //updated successfull
             $course = $departmentCourse->course()->first([LanguageHelper::getNameColumnName(null, 'course_name')]);
@@ -285,7 +305,11 @@ class DepartmentCourseController extends Controller
     public function retrieveEditableDepartmentCourse(Request $request)
     {
         Gate::authorize('retrieveEditableDepartmentCourse', DepartmentCourseController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['level as level_id', 'semester as semester_id'];
         try {
             $departmentCourse = DepartmentCourse::findOrFail($request->id, $attributes); //updated successfull

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Helpers\Roles\ByteArrayValidationRule;
+use App\Helpers\Roles\PasswordValidationRule;
 
 class GuestController extends Controller
 {
@@ -102,7 +103,7 @@ class GuestController extends Controller
         $rules = [
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8',
+            'password' => ['required', new PasswordValidationRule],
             'phone' => 'nullable|integer',
             'image' => ['nullable', new ByteArrayValidationRule],
             'gender_id' => ['required', new Enum(GenderEnum::class)], // Assuming GenderEnum holds valid values

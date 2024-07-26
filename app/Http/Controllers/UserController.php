@@ -8,6 +8,7 @@ use App\Models\Guest;
 use Ichtrojan\Otp\Otp;
 use App\Models\Student;
 use App\Models\Employee;
+use App\Models\UserRole;
 use App\Enums\GenderEnum;
 use App\Events\FireEvent;
 use App\Enums\JobTypeEnum;
@@ -16,18 +17,19 @@ use App\Helpers\NullHelper;
 use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
 use Illuminate\Http\Request;
-use App\Helpers\ResponseHelper;
-use App\Enums\QualificationEnum;
-use App\Helpers\ColumnReplacement;
 use App\Helpers\DatetimeHelper;
+use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
+use App\Enums\QualificationEnum;
 use App\Helpers\EnumReplacement;
+use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
-use App\Models\UserRole;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\Roles\PasswordValidationRule;
 use App\Notifications\EmaiVerificationNotification;
 use Symfony\Component\Console\Helper\ProcessHelper;
 use App\Notifications\ResetPasswordNotificationVerification;
@@ -44,6 +46,11 @@ class UserController extends Controller
     public function verifyAccount(Request $request)
     {
         try {
+            if (ValidateHelper::validateData($request, [
+                'code' => ['required', new PasswordValidationRule],
+            ])) {
+                return  ResponseHelper::clientError();
+            }
             $otp2 = $this->otp->validate($request->code);
 
             if (!$otp2->status) {
@@ -65,7 +72,8 @@ class UserController extends Controller
             $input = $request->only('email', 'password');
             $validation = Validator::make($input, [
                 'email' => 'required|email',
-                'password' => 'required|min:8'
+                // 'password' => 'required|min:8'
+                'password' => ['required', new PasswordValidationRule]
             ]);
 
             if ($validation->fails()) {
@@ -169,15 +177,16 @@ class UserController extends Controller
         try {
             $user = User::where('email', auth()->user()->email)->first();
             if (Hash::check($request->old_password, $user->password)) {
-                $validator = Validator::make($request->all(), ['new_password' => 'required|min:8']);
+                // $validator = Validator::make($request->all(), ['new_password' => 'required|min:8']);
+                $validator = Validator::make($request->all(), ['new_password' => ['required', new PasswordValidationRule]]);
                 if ($validator->fails()) {
-                    return ResponseHelper::clientError(401);
+                    return ResponseHelper::clientError();
                 }
                 $user->update([
                     'password' => bcrypt($request->new_password),
                 ]);
             } else {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
             }
             return ResponseHelper::success();
         } catch (\Exception $e) {
@@ -190,7 +199,7 @@ class UserController extends Controller
         try {
             $validator = Validator::make($request->all(), ['email' => 'required|email']);
             if ($validator->fails()) {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
             }
             $input = $request->only('email');
             $user = User::where('email', $input)->first();
@@ -198,7 +207,7 @@ class UserController extends Controller
                 $user->notify(new ResetPasswordNotificationVerification());
                 return ResponseHelper::success();
             } else {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
             }
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -207,9 +216,15 @@ class UserController extends Controller
     public function verifyAccountAfterRecvery(Request $request)
     {
         try {
+            if (ValidateHelper::validateData($request, [
+                'code' => ['required', new PasswordValidationRule],
+            ])) {
+                return  ResponseHelper::clientError();
+            }
+
             $otp2 = $this->otp->validate($request->code);
             if (!$otp2->status) {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
             }
             return ResponseHelper::success();
         } catch (\Exception $e) {
@@ -220,6 +235,11 @@ class UserController extends Controller
     public function changePasswordAfterAccountReovery(Request $request)
     {
         try {
+            if (ValidateHelper::validateData($request, [
+                'new_password' => ['required', new PasswordValidationRule],
+            ])) {
+                return  ResponseHelper::clientError();
+            }
             $user = Auth::user();
             $user = User::where('email', $user->email)->first();
             $user->update(['password' => bcrypt($request->new_password)]);
@@ -232,6 +252,11 @@ class UserController extends Controller
     public function resendCode(Request $request)
     {
         try {
+            if (ValidateHelper::validateData($request, [
+                'email' => 'required|email',
+            ])) {
+                return  ResponseHelper::clientError();
+            }
             $generatedToken = self::generateAlphanumericToken(8);
             // $user = auth()->user();
             $user = User::where('email', $request->email)->first();
@@ -248,7 +273,7 @@ class UserController extends Controller
             $user = User::where('email', auth()->user()->email)->first();
             $validator = Validator::make($request->all(), ['language_id' => ['required', new Enum(LanguageEnum::class)]]);
             if ($validator->fails()) {
-                return ResponseHelper::clientError(401);
+                return ResponseHelper::clientError();
             } else {
                 $user->update([
                     'language' => $request->language_id
@@ -259,9 +284,5 @@ class UserController extends Controller
             return ResponseHelper::serverError();
         }
     }
-    private static function generateAlphanumericToken(int $length = 8): string
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
-        return substr(str_shuffle($characters), 0, $length);
-    }
+    
 }

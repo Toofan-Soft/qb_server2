@@ -41,9 +41,9 @@ enum AppreciationEnum: int
             $appreciation = EnumTraits::getNameByNumber(AppreciationEnum::EXCELLENT->value, AppreciationEnum::class, $language);
         }elseif(($scoreRate >= 80) && ($scoreRate < 90)){
             $appreciation = EnumTraits::getNameByNumber(AppreciationEnum::VERY_GOOD->value, AppreciationEnum::class, $language);
-        }elseif(($scoreRate >= 70) && ($scoreRate < 80)){
+        }elseif(($scoreRate >= 65) && ($scoreRate < 80)){
             $appreciation = EnumTraits::getNameByNumber(AppreciationEnum::GOOD->value, AppreciationEnum::class, $language);
-        }elseif(($scoreRate >= 60) && ($scoreRate < 70)){
+        }elseif(($scoreRate >= 50) && ($scoreRate < 65)){
             $appreciation = EnumTraits::getNameByNumber(AppreciationEnum::ACCEPTABLE->value, AppreciationEnum::class, $language);
         }else{
             $appreciation = EnumTraits::getNameByNumber(AppreciationEnum::POOR->value, AppreciationEnum::class, $language);

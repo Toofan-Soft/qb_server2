@@ -43,12 +43,12 @@ class CollegePolicy
 
     public function retrieveBasicCollegesInfo(): bool
     {
-        $roles = [
+        return ValidateHelper::validatePolicy([
             RoleEnum::SYSTEM_ADMINISTRATOR,
             RoleEnum::DATA_ENTRY,
+            RoleEnum::LECTURER,
+            RoleEnum::STUDENT,
             RoleEnum::GUEST
-        ];
-    
-        return ValidateHelper::validatePolicy($roles);
+        ]);
     }
 }

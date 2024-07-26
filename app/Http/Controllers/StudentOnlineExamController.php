@@ -17,7 +17,6 @@ use App\Enums\SemesterEnum;
 use App\Helpers\ExamHelper;
 use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
-use App\Enums\OnlineExamStatusEnum;
 use App\Models\StudentAnswer;
 use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
@@ -26,6 +25,7 @@ use App\Helpers\DatetimeHelper;
 use App\Helpers\LanguageHelper;
 use App\Helpers\QuestionHelper;
 use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
 use App\Helpers\OnlinExamHelper;
 use App\Helpers\EnumReplacement1;
@@ -33,6 +33,7 @@ use App\Models\StudentOnlineExam;
 use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
+use App\Enums\OnlineExamStatusEnum;
 use App\Enums\ExamConductMethodEnum;
 use App\Helpers\QuestionUsageHelper;
 use App\Http\Controllers\Controller;
@@ -51,7 +52,11 @@ class StudentOnlineExamController extends Controller
     public function retrieveOnlineExams(Request $request)
     {
         Gate::authorize('retrieveOnlineExams', StudentOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'status_id' =>  ['required', new Enum(OnlineExamTakingStatusEnum::class)],
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
             $onlineExams = [];
@@ -71,7 +76,11 @@ class StudentOnlineExamController extends Controller
     public function retrieveOnlineExam(Request $request)
     {
         Gate::authorize('retrieveOnlineExam', StudentOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
         try {
             $exam = DB::table('real_exams')
@@ -252,6 +261,11 @@ class StudentOnlineExamController extends Controller
     public function retrieveOnlineExamQuestions(Request $request)
     {
         Gate::authorize('retrieveOnlineExamQuestions', StudentOnlineExamController::class);
+        if (ValidateHelper::validateData($request, [
+            'exam_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $exam = OnlineExam::findOrFail($request->exam_id);
 
@@ -304,7 +318,7 @@ class StudentOnlineExamController extends Controller
             $realExam = RealExam::findOrFail($form->real_exam_id);
             $language = LanguageEnum::symbolOf($realExam->language);
 
-            $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
+            $formQuestions = $form->form_questions()->orderBy('question_id')->get(['question_id', 'combination_id']);
 
             foreach ($formQuestions as $formQuestion) {
                 $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
@@ -364,7 +378,11 @@ class StudentOnlineExamController extends Controller
     public function finishOnlineExam(Request $request)
     {
         Gate::authorize('finishOnlineExam', StudentOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             DB::beginTransaction();
             $student = Student::where('user_id', auth()->user()->id)->first();
@@ -376,7 +394,7 @@ class StudentOnlineExamController extends Controller
                 ]);
 
             // refresh student and proctor
-            // OnlineExamListenerHelper::refreshProctor($student->id, $request->exam_id);
+            OnlineExamListenerHelper::refreshProctor($student->id, $request->exam_id);
 
             DB::commit();
             return ResponseHelper::success();
@@ -386,11 +404,17 @@ class StudentOnlineExamController extends Controller
         }
     }
 
-
     public function saveOnlineExamQuestionAnswer(Request $request)
     {
         Gate::authorize('saveOnlineExamQuestionAnswer', StudentOnlineExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'exam_id' => 'required|integer',
+            'question_id' => 'required|integer',
+            'choice_id' => 'required|integer',
+            'is_true' => 'required|boolean',
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
             $formId = StudentOnlineExam::where('online_exam_id', $request->exam_id)
@@ -401,9 +425,18 @@ class StudentOnlineExamController extends Controller
 
             $answerId = null;
             if (intval($questionType->type) === QuestionTypeEnum::TRUE_FALSE->value) {
+                if(!isset($request->is_true) || is_null($request->is_true)){
+                    return  ResponseHelper::clientError();
+                }
                 $answerId = $request->is_true ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
-            } else {
+            } elseif (intval($questionType->type) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
+                if(!isset($request->choice_id) || is_null($request->choice_id)){
+                    return  ResponseHelper::clientError();
+                }
+
                 $answerId =  $request->choice_id;
+            }else{
+                return  ResponseHelper::clientError();
             }
             StudentAnswer::where('student_id', $studentId)
                 ->where('form_id', $formId)

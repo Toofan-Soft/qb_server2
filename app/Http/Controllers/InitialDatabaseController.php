@@ -28,8 +28,10 @@ use App\Enums\UserStatusEnum;
 use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
 use App\Helpers\ResponeHelper;
+use Illuminate\Support\Carbon;
 use App\Enums\ChoiceStatusEnum;
 use App\Enums\QuestionTypeEnum;
+use App\Helpers\DatetimeHelper;
 use App\Helpers\QuestionHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
@@ -52,6 +54,9 @@ class InitialDatabaseController extends Controller
 
     public function initialDatabase(Request $request)
     {
+        $mydate = Carbon::now();
+        // return $mydate->addMinutes(10);
+        return DatetimeHelper::convertDateTimeToLong($mydate->addMinutes(10));
         DB::beginTransaction();
         // step 1
         // $this->colleges();
@@ -216,7 +221,7 @@ class InitialDatabaseController extends Controller
                     'type' => QuestionTypeEnum::TRUE_FALSE->value,
                     'difficulty_level' => ExamDifficultyLevelEnum::toFloat($this->selectRandomDifficultyLevel()),
                     'accessibility_status' => $this->selectRandomAccessibilityStatus(),
-                    'language' => LanguageEnum::ENGLISH->value,
+                    'language' => $languageId,
                     'estimated_answer_time' => $this->selectRandomEstimatedAnswerTime(),
                     'content' => $row['content'],
                     'status' => QuestionStatusEnum::ACCEPTED->value,

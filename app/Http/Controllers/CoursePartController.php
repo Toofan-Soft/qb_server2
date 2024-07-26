@@ -69,6 +69,11 @@ class CoursePartController extends Controller
     public function deleteCoursePart(Request $request)
     {
         Gate::authorize('deleteCoursePart', CoursePartController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $coursePart = CoursePart::findOrFail($request->id);
             $coursePart->delete();
@@ -81,6 +86,11 @@ class CoursePartController extends Controller
     public function retrieveCourseParts(Request $request)
     {
         Gate::authorize('retrieveCourseParts', CoursePartController::class);
+        if (ValidateHelper::validateData($request, [
+            'course_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['id', 'part_id as name', 'status as status_name', 'description'];
             $conditionAttribute = ['course_id' => $request->course_id];
@@ -100,6 +110,11 @@ class CoursePartController extends Controller
     public function retrieveEditableCoursePart(Request $request)
     {
         Gate::authorize('retrieveEditableCoursePart', CoursePartController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['status as status_id', 'description'];
             $conditionAttribute = ['id' => $request->id];

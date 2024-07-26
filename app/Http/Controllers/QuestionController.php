@@ -35,11 +35,10 @@ class QuestionController extends Controller
     public function addQuestion(Request $request)
     {
         Gate::authorize('addQuestion', QuestionController::class);
-
-        if ($x= ValidateHelper::validateData($request, $this->rules($request))) {
-            return  ResponseHelper::clientError1($x);
+        
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return  ResponseHelper::clientError();
         }
-
         DB::beginTransaction();
         try {
             $question =  Question::create([
@@ -64,19 +63,10 @@ class QuestionController extends Controller
                     'answer' => ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
                 ]);
             } elseif ($request->type_id === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
-                // if (NullHelper::is_null($request, ['choices'])) {
-                //     return "required 'choices'!";
-                // }
-
-                // if (!is_array($request->choices)) {
-                //     return "'choices' must be an array!";
-                // }
-
-                // foreach ($request->choices as $choice) {
-                //     if (NullHelper::is_null($choice, ['content', 'is_true'])) {
-                //         return "Each item in 'choices' must have a non-null 'content' and 'is_true'!";
-                //     }
-                // }
+                if (NullHelper::is_null($request, ['choices'])) {
+                    // return ResponseHelper::clientError1("required 'choices'!");
+                    return ResponseHelper::clientError();
+                }
 
                 foreach ($request->choices as $choice) {
                     $question->choices()->create([
@@ -138,7 +128,7 @@ class QuestionController extends Controller
                 //     ]
                 // );
 
-                if (NullHelper::is_null($request, ['is_true'])) {
+                if (!NullHelper::is_null($request, ['is_true'])) {
                     $question->true_false_question()->update([
                         'answer' => ($request->is_true === true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
                     ]);
@@ -152,9 +142,6 @@ class QuestionController extends Controller
                 // );
 
                 if (!NullHelper::is_null($request, ['choices'])) {
-                    if (!is_array($request->choices)) {
-                        return "'choices' must be an array!";
-                    }
 
                     foreach ($request->choices as $choice) {
                         if (!NullHelper::is_null($choice, ['id']) &&
@@ -278,7 +265,11 @@ class QuestionController extends Controller
     public function deleteQuestion(Request $request)
     {
         Gate::authorize('deleteQuestion', QuestionController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $question = Question::findOrFail($request->id);
             return ResponseHelper::success();
@@ -290,7 +281,13 @@ class QuestionController extends Controller
     public function retrieveQuestions(Request $request)
     {
         Gate::authorize('retrieveQuestions', QuestionController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'topic_id' => 'required|integer',
+            'type_id' => ['nullable', new Enum(QuestionTypeEnum::class)],
+            'status_id' => ['nullable', new Enum(QuestionStatusEnum::class)]
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['id', 'content'];
         $conditionAttribute = [
             'topic_id' => $request->topic_id,
@@ -322,7 +319,11 @@ class QuestionController extends Controller
     public function retrieveQuestion(Request $request)
     {
         Gate::authorize('retrieveQuestion', QuestionController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = [
             'id', 'type', 'difficulty_level as difficulty_level_name', 'status',
             'accessibility_status as accessibility_status_name',
@@ -399,7 +400,11 @@ class QuestionController extends Controller
     public function retrieveEditableQuestion(Request $request)
     {
         Gate::authorize('retrieveEditableQuestion', QuestionController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = [
             'id', 'type', 'difficulty_level as difficulty_level_id',
             'accessibility_status as accessibility_status_id',
@@ -443,9 +448,18 @@ class QuestionController extends Controller
     public function submitQuestionReviewRequest(Request $request)
     {
         Gate::authorize('submitQuestionReviewRequest', QuestionController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
-            $this->modifyQuestionStatus($request->id, QuestionStatusEnum::REQUESTED->value);
+            $question = Question::findOrFail($request->id);
+            if(intval($question->status) != QuestionStatusEnum::NEW->value){
+                return  ResponseHelper::clientError();
+            }
+
+            $this->modifyQuestionStatus($question, QuestionStatusEnum::REQUESTED->value);
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
@@ -454,24 +468,40 @@ class QuestionController extends Controller
     public function withdrawSubmitQuestionReviewRequest(Request $request)
     {
         Gate::authorize('withdrawSubmitQuestionReviewRequest', QuestionController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
+        try {
+            $question = Question::findOrFail($request->id);
+            if(intval($question->status) != QuestionStatusEnum::REQUESTED->value){
+                return  ResponseHelper::clientError();
+            }
 
-        // try {
-            // $this->modifyQuestionStatus($request->id, QuestionStatusEnum::REQUESTED->value);
-        //     return ResponseHelper::success();
-        // } catch (\Exception $e) {
-        //     return ResponseHelper::serverError();
-        // }
+            $this->modifyQuestionStatus($question, QuestionStatusEnum::NEW->value);
+            return ResponseHelper::success();
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function acceptQuestion(Request $request)
     {
         Gate::authorize('acceptQuestion', QuestionController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         DB::beginTransaction();
         try {
-            $this->modifyQuestionStatus($request->id, QuestionStatusEnum::ACCEPTED->value);
-
             $question = Question::findOrFail($request->id);
+            if(intval($question->status) != QuestionStatusEnum::REQUESTED->value){
+                return  ResponseHelper::clientError();
+            }
+
+            $this->modifyQuestionStatus($question, QuestionStatusEnum::ACCEPTED->value);
 
             $question->question_usage()->create();
 
@@ -490,20 +520,28 @@ class QuestionController extends Controller
     public function rejectQuestion(Request $request)
     {
         Gate::authorize('rejectQuestion', QuestionController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
-            $this->modifyQuestionStatus($request->id, QuestionStatusEnum::REJECTED->value);
+            $question = Question::findOrFail($request->id);
+            if(intval($question->status) != QuestionStatusEnum::REQUESTED->value){
+                return  ResponseHelper::clientError();
+            }
+
+            $this->modifyQuestionStatus($question, QuestionStatusEnum::REJECTED->value);
+
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
     }
 
-    private function modifyQuestionStatus($question_id, $status_id)
+    private function modifyQuestionStatus(Question $question, $status_id)
     {
-        // هل يتم اضافة كود لفحص حالة السؤال سابقا، ومن ثم التعديل او عدم التعديل
         try {
-            $question = Question::findOrFail($question_id);
             $question->update([
                 'status' => $status_id
             ]);
@@ -521,7 +559,7 @@ class QuestionController extends Controller
             'title' => 'nullable|string',
             'type_id' => ['required', new Enum(QuestionTypeEnum::class)], // Assuming QuestionTypeEnum holds valid values
             'difficulty_level_id' => 'required|numeric',
-            'status' => new Enum(QuestionStatusEnum::class), // Assuming QuestionStatusEnum holds valid values
+            'status_id' => new Enum(QuestionStatusEnum::class), // Assuming QuestionStatusEnum holds valid values
             'accessibility_status_id' => ['required', new Enum(AccessibilityStatusEnum::class)], // Assuming AccessibilityStatusEnum holds valid values
             'estimated_answer_time' => 'required|integer',
             'language_id' => ['required', new Enum(LanguageEnum::class)],
@@ -533,8 +571,8 @@ class QuestionController extends Controller
             // 'choices' => 'required|array',
             'choices' => 'nullable|array|min:4',
             'choices.*.attachment' => ['nullable', new ByteArrayValidationRule],
-            'choices.*.content' => 'nullable|string',
-            'choices.*.is_true' => 'nullable|boolean',
+            'choices.*.content' => 'required|string',
+            'choices.*.is_true' => 'required|boolean',
 
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

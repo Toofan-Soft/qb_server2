@@ -18,12 +18,15 @@ use App\Models\Department;
 use App\Enums\OwnerTypeEnum;
 use Illuminate\Http\Request;
 use App\Enums\CoursePartsEnum;
+use App\Enums\SemesterEnum;
 use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
+use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rules\Enum;
 
 class FilterController extends Controller
 {
@@ -44,7 +47,11 @@ class FilterController extends Controller
     public function retrieveCourseParts(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'course_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['id', 'part_id as name'];
         $conditionAttribute = ['course_id'  => $request->course_id];
         $enumReplacements = [
@@ -62,7 +69,11 @@ class FilterController extends Controller
     public function retrieveChapters(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'course_part_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['id', LanguageHelper::getTitleColumnName(null, 'title')];
         $conditionAttribute = ['course_part_id'  => $request->course_part_id];
         try {
@@ -77,7 +88,11 @@ class FilterController extends Controller
     public function retrieveTopics(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'chapter_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['id', LanguageHelper::getTitleColumnName(null, 'title')];
         $conditionAttribute = ['chapter_id'  => $request->chapter_id];
         try {
@@ -166,7 +181,11 @@ class FilterController extends Controller
     public function retrieveDepartments(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'college_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
             $conditionAttribute = ['college_id'  => $request->college_id];
@@ -182,7 +201,11 @@ class FilterController extends Controller
     public function retrieveLecturerDepartments(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'college_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -211,7 +234,11 @@ class FilterController extends Controller
     public function retrieveLecturerCurrentDepartments(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'college_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -241,7 +268,11 @@ class FilterController extends Controller
     public function retrieveDepartmentLevels(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['levels_count'];
 
@@ -258,7 +289,11 @@ class FilterController extends Controller
     public function retrieveDepartmentCourses(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             if ($request->department_id) {
                 $departmentCourses =  DB::table('departments')
@@ -281,7 +316,12 @@ class FilterController extends Controller
     public function retrieveDepartmentLevelCourses(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_id' => 'required|integer',
+            'level_id' =>  ['required', new Enum(LevelsEnum::class)],
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             if ($request->department_id && $request->level_id) {
                 // // Fetch department with related department courses and courses
@@ -321,7 +361,13 @@ class FilterController extends Controller
     public function retrieveDepartmentLevelSemesterCourses(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_id' => 'required|integer',
+            'level_id' =>  ['required', new Enum(LevelsEnum::class)],
+            'semester_id' =>  ['required', new Enum(SemesterEnum::class)],
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             if ($request->department_id && $request->level_id && $request->semester_id) {
                 $departmentCourses =  DB::table('departments')
@@ -346,7 +392,11 @@ class FilterController extends Controller
     public function retrieveDepartmentCourseParts(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_course_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             if ($request->department_course_id) {
                 $departmentCourseParts =  DB::table('department_course_parts')
@@ -375,7 +425,11 @@ class FilterController extends Controller
     public function retrieveDepartmentLecturerCourses(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -409,7 +463,11 @@ class FilterController extends Controller
     public function retrieveDepartmentLecturerCurrentCourses(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -443,7 +501,11 @@ class FilterController extends Controller
     public function retrieveDepartmentLecturerCourseParts(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_course_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -483,7 +545,11 @@ class FilterController extends Controller
     public function retrieveDepartmentLecturerCurrentCourseParts(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_course_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $user = auth()->user();
             $lecturer = Employee::where('user_id', $user->id)->first();
@@ -558,7 +624,11 @@ class FilterController extends Controller
     public function retrieveEmployeesOfJob(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'job_type_id' =>  ['required', new Enum(JobTypeEnum::class)]
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
         $conditionAttribute = ['job_type' => $request->job_type_id];
         try {
@@ -602,7 +672,11 @@ class FilterController extends Controller
     public function retrieveNonOwnerEmployees(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'job_type_id' =>  ['required', new Enum(JobTypeEnum::class)]
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $nonOwnerEmployees = Employee::where('user_id', '=', null)
                 ->where('job_type', '=', $request->job_type_id)
@@ -615,7 +689,13 @@ class FilterController extends Controller
     public function retrieveNonOwnerStudents(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_id' => 'required|integer',
+            'level_id' =>  ['required', new Enum(LevelsEnum::class)],
+            'semester_id' =>  ['required', new Enum(SemesterEnum::class)]
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
 
             $nonOwnerStudents = DB::table('department_courses')
@@ -637,7 +717,11 @@ class FilterController extends Controller
     public function retrieveRoles(Request $request)
     {
         // Gate::authorize('retrieveEditableCourse', FilterController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'owner_type_id' =>  ['required', new Enum(OwnerTypeEnum::class)]
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $roles = RoleEnum::getOwnerRoles($request->owner_type_id);
             return ResponseHelper::successWithData($roles);

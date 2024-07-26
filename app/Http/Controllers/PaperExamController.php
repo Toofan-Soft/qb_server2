@@ -145,7 +145,9 @@ class PaperExamController extends Controller
     public function modifyPaperExam(Request $request)
     {
         Gate::authorize('modifyPaperExam', PaperExamController::class);
-
+        if (ValidateHelper::validateData($request, $this->rules($request))) {
+            return ResponseHelper::clientError();
+        }
         try {
             $params = ParamHelper::getParams(
                 $request,
@@ -187,6 +189,11 @@ class PaperExamController extends Controller
     public function deletePaperExam(Request $request)
     {
         Gate::authorize('deletePaperExam', PaperExamController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         // دراسة كيفية امكانية انقاص بيانات استخدام الاسئلة
         try {
             $realExam = RealExam::findOrFail($request->id);
@@ -202,7 +209,12 @@ class PaperExamController extends Controller
     {
         // request {department_course_part_id, type_id?}
         Gate::authorize('retrievePaperExams', PaperExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_course_part_id' => 'required|integer',
+            'type_id' => ['nullable', new Enum(ExamTypeEnum::class)]
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $enumReplacements  = [];
         try {
             $lecturer_id = Employee::where('user_id', '=', auth()->user()->id)->first(['id'])['id'];
@@ -249,7 +261,12 @@ class PaperExamController extends Controller
     public function retrievePaperExamsAndroid(Request $request) ////////** this attribute department_course_part_id can be null
     {
         Gate::authorize('retrievePaperExamsAndroid', PaperExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'department_course_part_id' => 'nullable|integer',
+            'type_id' => ['nullable', new Enum(ExamTypeEnum::class)]
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $enumReplacements  = [
             new EnumReplacement('type_name', ExamTypeEnum::class),
             new EnumReplacement('course_part_name', CoursePartsEnum::class),
@@ -301,7 +318,11 @@ class PaperExamController extends Controller
     {
         // request {id}
         Gate::authorize('retrievePaperExam', PaperExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $realExam = RealExam::findOrFail($request->id, [
                 'id', 'language as language_name', 'difficulty_level as difficulty_level_name',
@@ -389,7 +410,11 @@ class PaperExamController extends Controller
     public function retrieveEditablePaperExam(Request $request)
     {
         Gate::authorize('retrieveEditablePaperExam', PaperExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $realExam = RealExam::findOrFail($request->id, [
                 'id', 'forms_count', 'form_name_method as form_name_method_id',
@@ -420,7 +445,11 @@ class PaperExamController extends Controller
     public function retrievePaperExamChapters(Request $request)
     {
         Gate::authorize('retrievePaperExamChapters', PaperExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'exam_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $chapters = ExamHelper::retrieveRealExamChapters($request->exam_id);
             return ResponseHelper::successWithData($chapters);
@@ -432,7 +461,12 @@ class PaperExamController extends Controller
     public function retrievePaperExamChapterTopics(Request $request)
     {
         Gate::authorize('retrievePaperExamChapterTopics', PaperExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'exam_id' => 'required|integer',
+            'chapter_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $topics = ExamHelper::retrieveRealExamChapterTopics($request->exam_id, $request->chapter_id);
             return ResponseHelper::successWithData($topics);
@@ -444,7 +478,11 @@ class PaperExamController extends Controller
     public function retrievePaperExamForms(Request $request)
     {
         Gate::authorize('retrievePaperExamForms', PaperExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'exam_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $forms = ExamHelper::retrieveRealExamForms($request->exam_id);
             return ResponseHelper::successWithData($forms);
@@ -456,7 +494,11 @@ class PaperExamController extends Controller
     public function retrievePaperExamFormQuestions(Request $request)
     {
         Gate::authorize('retrievePaperExamFormQuestions', PaperExamController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'form_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $questions = ExamHelper::getFormQuestionsWithDetails($request->form_id, false, false, true);
             return ResponseHelper::successWithData($questions);
@@ -467,7 +509,7 @@ class PaperExamController extends Controller
 
     public function exportPaperExamToPDF(Request $request)
     {
-        // request {id, with_answer_mirror?}
+        // request {id, with_answer}
         // Gate::authorize('exportPaperExamToPDF', PaperExamController::class);
 
         // id, with mirror?, with answered mirror?
@@ -500,6 +542,12 @@ class PaperExamController extends Controller
         *   .
         * */
         // تبقى جزء فحص اذا كان يشتي مع اجابة او لا
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer',
+            'with_answer' => 'required|boolean'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $realExam = RealExam::findOrFail($request->id, [
                 'id', 'datetime', 'duration', 'type as type_name', 'course_lecturer_id',

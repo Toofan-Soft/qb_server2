@@ -54,7 +54,11 @@ class DepartmentCoursePartController extends Controller
     public function deleteDepartmentCoursePart(Request $request)
     {
         Gate::authorize('deleteDepartmentCoursePart', DepartmentCoursePartController::class);
-
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $departmentCoursePart = DepartmentCoursePart::findOrFail($request->id);
             $departmentCoursePart->delete();
@@ -67,7 +71,11 @@ class DepartmentCoursePartController extends Controller
     public function retrieveEditableDepartmentCoursePart(Request $request)
     {
         Gate::authorize('retrieveEditableDepartmentCoursePart', DepartmentCoursePartController::class);
-        
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['score', 'lectures_count', 'lecture_duration', 'note'];
         try {
             $departmentCourse = DepartmentCoursePart::findOrFail($request->id, $attributes); // edited

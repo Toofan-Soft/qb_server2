@@ -48,32 +48,6 @@ class ExamHelper
 {
 
     /**
-     * delete real (paper, online) exam by id
-     */
-    public static function deleteRealExam($realExamId)
-    {
-
-        try {
-            $realExam = RealExam::findOrFail($realExamId);
-            $realExam->real_exam_question_types()->delete();
-            $readExamForms = $realExam->forms();
-            foreach ($readExamForms as $readExamForm) {
-                $readExamForm->form_questions()->delete();
-            }
-            $realExam->forms()->delete();
-            if ($realExam->exam_type === RealExamTypeEnum::PAPER->value) {
-
-                $realExam->paper_exam()->delete();
-            } else {
-                $realExam->online_exam()->delete();
-            }
-            $realExam->delete();
-        } catch (\Exception $e) {
-            throw $e;
-            // return ResponseHelper::serverError('An error occurred while deleting models.');
-        }
-    }
-    /**
      * add total score of each exam.
      * $realExams: list of real exam
      */
@@ -114,44 +88,6 @@ class ExamHelper
         // If $realExams was a single object, return the first item in $processedRealExams
         return $isArray ? $processedRealExams : $processedRealExams[0];
     }
-
-    // public static function getRealExamsScore($realExams) // recieve object has multiple array data
-    // {
-    //     foreach ($realExams as $realExam ) {
-    //         $temp = RealExam::findOrFail($realExam['id']);
-    //         $realExamQuestionTypes = $temp->real_exam_question_types()->get(['questions_count', 'question_score']);
-
-    //         $score = 0;
-    //         foreach ($realExamQuestionTypes as $realExamQuestionType) {
-    //             $score += $realExamQuestionType->questions_count *  $realExamQuestionType->question_score;
-    //         }
-
-    //         $realExam['score'] = $score;
-    //         // return $realExam;
-    //         $score = 0;
-    //     }
-
-    //     return $realExams;
-    // }
-
-    // public static function getRealExamScore1($realExam) // recieve single array of data , not object has multiple
-    // {
-    //         $temp = RealExam::findOrFail($realExam['id']);
-    //         $realExamQuestionTypes = $temp->real_exam_question_types()->get(['questions_count', 'question_score']);
-
-    //         $score = 0;
-    //         foreach ($realExamQuestionTypes as $realExamQuestionType) {
-    //             $score += $realExamQuestionType->questions_count *  $realExamQuestionType->question_score;
-    //         }
-    //         $realExam['score'] = $score;
-
-    //     return $realExam;
-    // }
-
-
-    /**
-     * return froms nams: [name1, name2, name3,......]
-     */
 
 
     public static function retrieveRealExamChapters($realExamId)
@@ -200,16 +136,13 @@ class ExamHelper
     {
         try {
             $realExam = RealExam::findOrFail($realExamId);
-            // $forms = $realExam->forms()->get(['id']);
+            $language = LanguageEnum::symbolOf(intval($realExam->language));
 
             $forms = [];
 
-            $formsIds = $realExam->forms()->get(['id'])
-                ->map(function ($form) {
-                    return $form->id;
-                });
+            $formsIds = $realExam->forms()->orderBy('id')->pluck('id')->toArray();
 
-            $formsNames = self::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count);
+            $formsNames = self::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count, $language);
 
             if (intval($realExam->form_configuration_method) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
                 $i = 0;
@@ -237,104 +170,28 @@ class ExamHelper
         }
     }
 
-    // need to test
-    public static function getRealExamFormsNames($form_name_method, $forms_count)
+    /**
+     * return froms nams: [name1, name2, name3,......]
+     */
+
+    public static function getRealExamFormsNames($form_name_method, $forms_count, string $language)
     {
         $formsNames = [];
         if ($form_name_method === FormNameMethodEnum::DECIMAL_NUMBERING->value) {
             for ($i = 1; $i <= $forms_count; $i++) {
+                // $romanNumerals[] = strval($i);
                 array_push($formsNames, strval($i));
             }
         } elseif ($form_name_method === FormNameMethodEnum::ROMAN_NUMBERING->value) {
-            $formsNames = self::generateRomanNumerals($forms_count);
+            for ($i = 1; $i <= $forms_count; $i++) {
+                // $romanNumerals[] = NameMethodHelper::convertToRomanNumber($i);
+                array_push($formsNames, NameMethodHelper::convertToRomanNumber($i));
+            }
         } elseif ($form_name_method === FormNameMethodEnum::ALPHANUMERIC_NUMBERING->value) {
-            $formsNames = self::generateArabicLetters($forms_count);
-            // $formsNames = self::generateEnglishLetters($forms_count);
+            $formsNames = NameMethodHelper::generateAlphanumericNummering($forms_count, $language);
         }
 
         return $formsNames;
-    }
-
-    private static function generateRomanNumerals($count)
-    {
-        $romanSymbols = array(
-            1    => 'I',
-            4    => 'IV',
-            5    => 'V',
-            9    => 'IX',
-            10   => 'X',
-            40   => 'XL',
-            50   => 'L',
-            90   => 'XC',
-            100  => 'C',
-            400  => 'CD',
-            500  => 'D',
-            900  => 'CM',
-            1000 => 'M'
-        );
-
-        // Initialize an empty array to store the Roman numerals
-        $result = array();
-
-        // Iterate through numbers from 1 to the specified count
-        for ($i = 1; $i <= $count; $i++) {
-            $number = $i;
-            $romanNumeral = '';
-
-            // Iterate through the Roman numeral symbols in descending order
-            foreach (array_keys(array_reverse($romanSymbols, true)) as $value) {
-                // Divide the number by the current symbol's value and get the quotient
-                $count = intval($number / $value);
-
-                // Append the symbol to the Roman numeral count times
-                $romanNumeral .= str_repeat($romanSymbols[$value], $count);
-
-                // Update the number by subtracting the value of the symbols added to the result
-                $number %= $value;
-            }
-
-            // Add the Roman numeral for the current number to the result array
-            $result[] = $romanNumeral;
-        }
-
-        return $result;
-    }
-
-    private static function generateArabicLetters($count)
-    {
-        // Define an array to store Arabic numerals (digits)
-        $arabicLetters = array();
-
-        // Unicode value of Arabic numeral ١ (U+0661) for digit 1
-        $unicodeStart = 0x0661; // Arabic numeral 1
-
-        // Generate Arabic numerals for numbers from 1 to $count
-        for ($i = 1; $i <= $count; $i++) {
-            $arabicLetters[] = mb_chr($unicodeStart + $i - 1, 'UTF-8');
-        }
-
-        return $arabicLetters;
-    }
-
-    private static function generateEnglishLetters($count)
-    {
-        // Validate the input parameter
-        if (!is_int($count) || $count <= 0) {
-            return []; // Return an empty array if count is not a positive integer
-        }
-
-        // Define an array to store English letters
-        $englishLetters = [];
-
-        // Generate English letters for numbers from 1 to $count
-        for ($i = 1; $i <= $count; $i++) {
-            // Convert the number to its corresponding letter (a=1, b=2, ..., z=26)
-            $letter = chr(ord('a') + ($i - 1) % 26);
-            // Append the letter to the array
-            $englishLetters[] = $letter;
-        }
-
-        return $englishLetters;
     }
 
     public static function getFormQuestionsWithDetails($formId, bool $withQuestionId, bool $withChoiceId, bool $withAnswer)
@@ -342,9 +199,9 @@ class ExamHelper
         $questions = [];
         $form = Form::findOrFail($formId);
         $realExam = RealExam::findOrFail($form->real_exam_id);
-        $language = LanguageEnum::symbolOf($realExam->language);
+        $language = LanguageEnum::symbolOf(intval($realExam->language));
 
-        $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
+        $formQuestions = $form->form_questions()->orderBy('question_id')->get(['question_id', 'combination_id']);
 
         foreach ($formQuestions as $formQuestion) {
             $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url', 'topic_id', 'type as type_name']);
@@ -426,9 +283,9 @@ class ExamHelper
         $questions = [];
         $form = Form::findOrFail($formId);
         $realExam = RealExam::findOrFail($form->real_exam_id);
-        $language = LanguageEnum::symbolOf($realExam->language);
+        $language = LanguageEnum::symbolOf(intval($realExam->language));
 
-        $formQuestions = $form->form_questions()->get(['question_id', 'combination_id']);
+        $formQuestions = $form->form_questions()->orderBy('question_id')->get(['question_id', 'combination_id']);
 
         foreach ($formQuestions as $formQuestion) {
             $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
@@ -453,61 +310,60 @@ class ExamHelper
 
         return $questions;
     }
-    
-    public static function retrieveRealExamFormQuestions($formId) //////////////////////*********** More condition needed
-    {
-        $form = Form::findOrFail($formId);
-        $formQuestions = [];
-        $realExam = RealExam::where('id', $form->real_exam_id)->first();
-        $queationsTypes =  $realExam->real_exam_question_types()->get(['question_type as type_name']);
 
-        foreach ($queationsTypes as $type) {
-            $questions = DB::table('forms')
-                ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
-                ->join('questions', 'form_questions.question_id', '=', 'questions.id')
-                ->join('topics', 'questions.topic_id', '=', 'topics.id')
-                ->join('chapters', 'topics.chapter_id', '=', 'chapters.id')
-                ->select(
-                    'chapters.arabic_title as chapter_title',
-                    'topics.arabic_title as topic_title',
-                    'questions.id',
-                    'questions.content',
-                    'questions.attachment',
-                    'form_questions.combination_id',
-                )
-                ->where('forms.id', '=', $form->id)
-                ->where('questions.type', '=', $type->type_name)
-                ->get();
+    // public static function retrieveRealExamFormQuestions($formId) //////////////////////*********** More condition needed
+    // {
+    //     $form = Form::findOrFail($formId);
+    //     $formQuestions = [];
+    //     $realExam = RealExam::where('id', $form->real_exam_id)->first();
+    //     $queationsTypes =  $realExam->real_exam_question_types()->get(['question_type as type_name']);
 
-            $questions = QuestionHelper::retrieveQuestionsAnswer($questions, $type->type_name);
-            return $questions;
+    //     foreach ($queationsTypes as $type) {
+    //         $questions = DB::table('forms')
+    //             ->join('form_questions', 'forms.id', '=', 'form_questions.form_id')
+    //             ->join('questions', 'form_questions.question_id', '=', 'questions.id')
+    //             ->join('topics', 'questions.topic_id', '=', 'topics.id')
+    //             ->join('chapters', 'topics.chapter_id', '=', 'chapters.id')
+    //             ->select(
+    //                 'chapters.arabic_title as chapter_title',
+    //                 'topics.arabic_title as topic_title',
+    //                 'questions.id',
+    //                 'questions.content',
+    //                 'questions.attachment',
+    //                 'form_questions.combination_id',
+    //             )
+    //             ->where('forms.id', '=', $form->id)
+    //             ->where('questions.type', '=', $type->type_name)
+    //             ->get();
 
-            // $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
-            $formQuestions[EnumTraits::getNameByNumber($type->type_name, QuestionTypeEnum::class)] = $questions;
-        }
-        return $formQuestions;
-    }
+    //         $questions = QuestionHelper::retrieveQuestionsAnswer($questions, $type->type_name);
+    //         return $questions;
+
+    //         // $formQuestions[QuestionTypeEnum::getNameByNumber($type->type_name)] = $questions;
+    //         $formQuestions[EnumTraits::getNameByNumber($type->type_name, QuestionTypeEnum::class)] = $questions;
+    //     }
+    //     return $formQuestions;
+    // }
 
     public static function checkQuestionAnswer($questionId, $answer, $combinationId): bool
     {
         try {
             $question = Question::findOrFail($questionId);
-            if(intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value){
+            if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
                 $trueFalseQuestion = $question->true_false_question()->first();
-                if(intval($trueFalseQuestion->answer) === $answer){
+                if (intval($trueFalseQuestion->answer) === $answer) {
                     return true;
-                }else{
+                } else {
                     return false;
                 }
-            }else{
+            } else {
                 $data = [
-                    'combination_choices' => $question->question_choices_combinations()->where('combination_id', '=', $combinationId)->first(['combination_choices'])['combination_choices'], 
+                    'combination_choices' => $question->question_choices_combinations()->where('combination_id', '=', $combinationId)->first(['combination_choices'])['combination_choices'],
                     'answer_id' => $answer
                 ];
 
                 return (new CheckQuestionChoicesCombinationAnswer())->execute($data);
             }
-            
         } catch (\Exception $e) {
             throw $e;
         }
@@ -517,7 +373,6 @@ class ExamHelper
     {
         //for language we must choice like exam langauage or user language
         return AppreciationEnum::getScoreRateAppreciation($scoreRate, LanguageHelper::getEnumLanguageName());
-
     }
 
     /**
@@ -590,7 +445,7 @@ class ExamHelper
                 // ->whereIn('topics.id', [3])
                 ->get()
                 ->toArray();
-            
+
             foreach ($questions as $question) {
                 // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
 
@@ -665,7 +520,7 @@ class ExamHelper
                 }
 
                 // if ($withChoiceId) {
-                    $temp['id'] = $choice->id;
+                $temp['id'] = $choice->id;
                 // }
             }
 
@@ -709,7 +564,7 @@ class ExamHelper
             $mixed = collect($result)->filter(function ($item) use ($mixIds) {
                 return !isset($item['ids']) && !is_null($mixIds) && in_array($item->id, $mixIds);
             })->toArray();
-            
+
             $unmixed = collect($result)->filter(function ($item) use ($mixIds) {
                 return !isset($item['ids']) && ((!is_null($mixIds) && !in_array($item->id, $mixIds)) || is_null($mixIds));
             })->toArray();
@@ -725,10 +580,10 @@ class ExamHelper
                     return $item;
                 });
             }
-            
+
             if (!empty($mixed)) {
                 $finalMixed = [];
-                
+
                 foreach ($mixed as $mixedItem) {
                     $finalMixed[] = $mixedItem;
                 }
@@ -748,7 +603,7 @@ class ExamHelper
 
             if (!empty($unmixed)) {
                 $finalUnmixed = [];
-                
+
                 foreach ($unmixed as $unmixedItem) {
                     $finalUnmixed[] = $unmixedItem;
                 }
@@ -802,7 +657,7 @@ class ExamHelper
                 }
 
                 // if ($withChoiceId) {
-                    $temp['id'] = $choice->id;
+                $temp['id'] = $choice->id;
                 // }
             }
 
@@ -842,7 +697,7 @@ class ExamHelper
             $mixed = collect($result)->filter(function ($item) use ($mixIds) {
                 return !isset($item['ids']) && !is_null($mixIds) && in_array($item->id, $mixIds);
             })->toArray();
-            
+
             $unmixed = collect($result)->filter(function ($item) use ($mixIds) {
                 return !isset($item['ids']) && ((!is_null($mixIds) && !in_array($item->id, $mixIds)) || is_null($mixIds));
             })->toArray();
@@ -858,10 +713,10 @@ class ExamHelper
                     return $item;
                 });
             }
-            
+
             if (!empty($mixed)) {
                 $finalMixed = [];
-                
+
                 foreach ($mixed as $mixedItem) {
                     $finalMixed[] = $mixedItem;
                 }
@@ -897,7 +752,7 @@ class ExamHelper
 
             if (!empty($unmixed)) {
                 $finalUnmixed = [];
-                
+
                 foreach ($unmixed as $unmixedItem) {
                     $finalUnmixed[] = $unmixedItem;
                 }

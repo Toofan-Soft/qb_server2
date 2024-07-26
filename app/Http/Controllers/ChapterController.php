@@ -57,6 +57,11 @@ class ChapterController extends Controller
     public function deleteChapter(Request $request)
     {
         Gate::authorize('deleteChapter', ChapterController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $chapter = Chapter::findOrFail($request->id);
             $chapter->delete();
@@ -69,6 +74,11 @@ class ChapterController extends Controller
     public function retrieveChapters(Request $request)
     {
         Gate::authorize('retrieveChapters', ChapterController::class);
+        if (ValidateHelper::validateData($request, [
+            'course_part_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['id', 'arabic_title', 'english_title', 'status as status_name', 'description'];
             $conditionAttribute = ['course_part_id' => $request->course_part_id];
@@ -88,6 +98,11 @@ class ChapterController extends Controller
     public function retrieveAvailableChapters(Request $request)
     {
         Gate::authorize('retrieveAvailableChapters', ChapterController::class);
+        if (ValidateHelper::validateData($request, [
+            'course_part_id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['id', 'arabic_title', 'english_title'];
             $conditionAttribute = [
@@ -104,6 +119,11 @@ class ChapterController extends Controller
     public function retrieveChapter(Request $request)
     {
         Gate::authorize('retrieveChapter', ChapterController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         try {
             $attributes = ['arabic_title', 'english_title', 'status as status_name', 'description'];
             $conditionAttribute = ['id' => $request->id];
@@ -123,6 +143,11 @@ class ChapterController extends Controller
     public function retrieveEditableChapter(Request $request)
     {
         Gate::authorize('retrieveEditableChapter', ChapterController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['arabic_title', 'english_title', 'status as status_id', 'description'];
         $conditionAttribute = ['id' => $request->id];
         try {
@@ -137,6 +162,11 @@ class ChapterController extends Controller
     public function retrieveChapterDescription(Request $request)
     {
         Gate::authorize('retrieveChapterDescription', ChapterController::class);
+        if (ValidateHelper::validateData($request, [
+            'id' => 'required|integer'
+        ])) {
+            return  ResponseHelper::clientError();
+        }
         $attributes = ['description'];
         $conditionAttribute = ['id' => $request->id];
         try {

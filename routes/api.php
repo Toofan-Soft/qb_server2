@@ -66,16 +66,16 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
 
-Route::post('user/register', [GuestController::class, 'addGuest']);
+// Route::post('user/register', [GuestController::class, 'addGuest']);
 Route::put('user/resend-code', [UserController::class, 'resendCode']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);
 Route::post('user/verify-account-after-recovery', [UserController::class, 'verifyAccountAfterRecvery']);
 Route::post('user/login', [UserController::class, 'login']);
 Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
 // Route::put('user/change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
-Route::get('enum/retrieve-gender-list', [EnumsController::class, 'retrieveRegisterGenders']);
-Route::post('employee/add', [EmployeeController::class, 'addEmployee']);
-Route::post('user-management/add', [UserManagementController::class, 'addUser']);
+Route::get('enum/retrieve-register-gender-list', [EnumsController::class, 'retrieveRegisterGenders']);
+// Route::post('employee/add', [EmployeeController::class, 'addEmployee']);
+// Route::post('user-management/add', [UserManagementController::class, 'addUser']);
 
 Route::prefix('guest/')->group(function () {
     Route::post('add', [GuestController::class, 'addGuest']);
@@ -107,7 +107,7 @@ Route::middleware('auth:api')->group(function () {
     // Route::get('practice-exam/retrieve-list', [PracticeExamController::class, 'retrievePractiseExams']);
 
     // user
-    Route::get('user/retrieve-profile', [UserController::class, 'retrieveProfile']);
+    // Route::get('user/retrieve-profile', [UserController::class, 'retrieveProfile']);
     // Route::get('user/login1', [UserController::class, 'login1']);
     // Route::get('filter/retrieve-lecturer-college-list', [FilterController::class, 'retrieveLecturerColleges']);
 
@@ -420,7 +420,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-levels-count-list', [EnumsController::class, 'retrieveLevelsCounts']);
         Route::get('retrieve-job-type-list', [EnumsController::class, 'retrieveJobTypes']);
         Route::get('retrieve-qualification-list', [EnumsController::class, 'retrieveQualifications']);
-        // Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
+        Route::get('retrieve-gender-list', [EnumsController::class, 'retrieveGenders']);
         Route::get('retrieve-course-student-status-list', [EnumsController::class, 'retrieveCourseStudentStatus']);
         Route::get('retrieve-owner-type-list', [EnumsController::class, 'retrieveOwnerTypes']);
         Route::get('retrieve-user-status-list', [EnumsController::class, 'retrieveUserStatus']);

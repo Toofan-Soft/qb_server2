@@ -26,7 +26,6 @@ class QuestionUsageHelper
      *
      * return:
      */
-    // public static function updateOnlineExamQuestionsUsage($examId,StudentOnlineExam $studentOnlineExam ) // this may by deleted
     public static function updateOnlineExamQuestionsUsageAndAnswer($examId)
     {
         try {
@@ -36,12 +35,15 @@ class QuestionUsageHelper
             foreach ($forms as $form) {
                 $formQuestions = $form->form_questions()->get();
                 foreach ($formQuestions as $formQuestion) {
-                    $questionUsage = QuestionUsage::where('question_id', '=', $formQuestion->question_id)->first();
+                    $questionUsage = QuestionUsage::where('question_id', '=', $formQuestion->question_id);
                     $questionUsage->update([
                         'online_exam_last_selection_datetime' => DatetimeHelper::now(),
-                        'online_exam_selection_times_count' => $questionUsage->online_exam_selection_times_count + 1
+                        'online_exam_selection_times_count' => $questionUsage->first()->online_exam_selection_times_count + 1
                     ]);
-                    $studentAnswers = $formQuestion->student_answers()->get();
+                    // $studentAnswers = $formQuestion->student_answers()->get();
+                    $studentAnswers = StudentAnswer::where('form_id', $formQuestion->form_id)
+                    ->where('question_id', $formQuestion->question_id)
+                    ->get();
                     foreach ($studentAnswers as $studentAnswer) {
                         $answer = ExamHelper::checkQuestionAnswer(
                             $studentAnswer->question_id,
@@ -51,11 +53,11 @@ class QuestionUsageHelper
 
                         if ($answer) {
                             $questionUsage->update([
-                                'online_exam_correct_answers_count' => $questionUsage->online_exam_correct_answers_count + 1
+                                'online_exam_correct_answers_count' => $questionUsage->first()->online_exam_correct_answers_count + 1
                             ]);
                         } else {
                             $questionUsage->update([
-                                'online_exam_incorrect_answers_count' => $questionUsage->online_exam_incorrect_answers_count + 1
+                                'online_exam_incorrect_answers_count' => $questionUsage->first()->online_exam_incorrect_answers_count + 1
                             ]);
                         }
                     }
