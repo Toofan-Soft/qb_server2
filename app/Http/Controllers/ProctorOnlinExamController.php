@@ -448,7 +448,7 @@ class ProctorOnlinExamController extends Controller
                     ]);
                 }
                 // refresh proctor and student
-                return OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id);
+                OnlineExamListenerHelper::refreshStudent($request->student_id, $request->exam_id);
                 OnlineExamListenerHelper::refreshProctor($request->student_id, $request->exam_id);
 
                 DB::commit();

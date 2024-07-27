@@ -45,13 +45,13 @@
     },
     {
         "arabic_name": "رفيق مدير النظام",
-        "english_name": "Rafek Admin",
+        "english_name": "Rafiq Admin",
         "job_type_id": 2,
         "qualification_id": 4,
         "specialization": "System Administrator",
         "gender_id": 1,
         "phone": 777400004,
-        "email": "rafekadmin@gmail.com",
-        "password": "rafekadmin1"
+        "email": "rafiqadmin@gmail.com",
+        "password": "rafiqadmin1"
     }
 ]

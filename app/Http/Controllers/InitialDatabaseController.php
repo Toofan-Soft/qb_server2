@@ -54,9 +54,7 @@ class InitialDatabaseController extends Controller
 
     public function initialDatabase(Request $request)
     {
-        $mydate = Carbon::now();
-        // return $mydate->addMinutes(10);
-        return DatetimeHelper::convertDateTimeToLong($mydate->addMinutes(10));
+
         DB::beginTransaction();
         // step 1
         // $this->colleges();
@@ -348,8 +346,8 @@ class InitialDatabaseController extends Controller
                 'image_url' => null,
                 'specialization' => null,
             ]);
-            $email = $phone . '@gmail.com';
             $password = 'e' . $phone . 'e';
+            $email = $password . '@gmail.com';
             $phone++;
             $this->addUser($email, OwnerTypeEnum::EMPLOYEE->value, $emplyee->id, $password);
         }
@@ -374,8 +372,8 @@ class InitialDatabaseController extends Controller
                     'birthdate' => 12615,
                     'image_url' => null,
                 ]);
-                $email = $phone . '@gmail.com';
                 $password = 's' . $phone . 's';
+                $email = $password . '@gmail.com';
                 $phone++;
                 $this->addUser($email, OwnerTypeEnum::STUDENT->value, $student->id, $password);
                 $departmentCourses = DepartmentCourse::where('department_id', $row['department_id'])

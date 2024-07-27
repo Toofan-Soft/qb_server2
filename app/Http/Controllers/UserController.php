@@ -79,7 +79,6 @@ class UserController extends Controller
             if ($validation->fails()) {
                 return ResponseHelper::clientError();
             }
-
             if (auth()->attempt($input)) {
                 Auth::logoutOtherDevices($request->password);// logout from other devices
                 $user = Auth::user();

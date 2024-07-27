@@ -244,7 +244,7 @@ Route::middleware('auth:api')->group(function () {
 
     //employee
     Route::prefix('employee/')->group(function () {
-        // Route::post('add', [EmployeeController::class, 'addEmployee']);
+        Route::post('add', [EmployeeController::class, 'addEmployee']);
         Route::put('modify', [EmployeeController::class, 'modifyEmployee']);
         Route::delete('delete', [EmployeeController::class, 'deleteEmployee']);
         Route::get('retrieve', [EmployeeController::class, 'retrieveEmployee']);
@@ -296,7 +296,7 @@ Route::middleware('auth:api')->group(function () {
 
     // user management
     Route::prefix('user-management/')->group(function () {
-        // Route::post('add', [UserManagementController::class, 'addUser']);
+        Route::post('add', [UserManagementController::class, 'addUser']);
         Route::put('modify-role-list', [UserManagementController::class, 'modifyUserRoles']);
         Route::put('change-status', [UserManagementController::class, 'changeUserStatus']);
         Route::delete('delete', [UserManagementController::class, 'deleteUser']);

@@ -16,8 +16,8 @@ class PasswordValidationRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        // Check if the password length is 8
-        if (strlen($value) !== 8) {
+        // Check if the password length is less than 8
+        if (strlen($value) < 8) {
             return false;
         }
 

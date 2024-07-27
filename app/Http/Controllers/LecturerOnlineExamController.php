@@ -56,10 +56,12 @@ class LecturerOnlineExamController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError();
         }
-        if ($request->datetime > $request->datetime_notification_datetime) {
+        if (($request->datetime <= $request->datetime_notification_datetime) &&
+            ($request->datetime >= $request->result_notification_datetime) &&
+            ($request->datetime_notification_datetime <= DatetimeHelper::convertDateTimeToLong(DatetimeHelper::now()))
+        ) {
             return ResponseHelper::clientError();
         }
-
         try {
             $formConfigurationMethodId = FormConfigurationMethodEnum::SIMILAR_FORMS->value;
             $formNameMethodId = FormNameMethodEnum::DECIMAL_NUMBERING->value;

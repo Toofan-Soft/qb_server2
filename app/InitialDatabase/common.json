@@ -1,6 +1,6 @@
 [
     {
-        "comment": "employee::add",
+        "comment": "employee/add",
         "arabic_name": "فادي مدير النظام",
         "english_name": "Fadi Admin",
         "job_type_id": 2,
@@ -10,7 +10,7 @@
         "phone": 778313999
     },
     {
-        "comment": "employee::add",
+        "comment": "employee/add",
         "arabic_name": "اياد مدير النظام",
         "english_name": "Eead Admin",
         "job_type_id": 2,
@@ -18,6 +18,16 @@
         "specialization": "System Administrator",
         "gender_id": 1,
         "phone": 111222333
+    },
+    {
+        "comment": "employee/add",
+        "arabic_name": "رفيق مدير النظام",
+        "english_name": "Rafiq Admin",
+        "job_type_id": 2,
+        "qualification_id": 4,
+        "specialization": "System Administrator",
+        "gender_id": 1,
+        "phone": 777400004
     },
     {
         "comment": "student/add",
