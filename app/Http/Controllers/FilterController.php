@@ -689,7 +689,8 @@ class FilterController extends Controller
         Gate::authorize('retrieveNonOwnerStudents', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'department_id' => 'required|integer',
-            'level_id' =>  ['required', new Enum(LevelsEnum::class)]
+            'level_id' =>  ['required', new Enum(LevelsEnum::class)],
+            // 'semester_id' =>  ['required', new Enum(SemesterEnum::class)]
         ])) {
             return  ResponseHelper::clientError();
         }
@@ -701,6 +702,7 @@ class FilterController extends Controller
             ->select('students.id', LanguageHelper::getNameColumnName('students', 'name'),)
             ->where('department_courses.department_id', '=', $request->department_id)
             ->where('department_courses.level', '=', $request->level_id)
+            // ->where('department_courses.semester', '=', $request->semester_id)
             ->where('students.user_id', '=', null)
             ->distinct()
             ->get();

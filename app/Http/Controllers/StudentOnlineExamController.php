@@ -394,7 +394,7 @@ class StudentOnlineExamController extends Controller
                 ]);
 
             // refresh student and proctor
-            OnlineExamListenerHelper::refreshProctor($student->id, $request->exam_id);
+            OnlineExamListenerHelper::refreshProctor($student->id, $request->id);
 
             DB::commit();
             return ResponseHelper::success();
@@ -410,11 +410,12 @@ class StudentOnlineExamController extends Controller
         if (ValidateHelper::validateData($request, [
             'exam_id' => 'required|integer',
             'question_id' => 'required|integer',
-            'choice_id' => 'required|integer',
-            'is_true' => 'required|boolean',
+            'choice_id' => 'nullable|integer',
+            // 'is_true' => 'nullable|boolean',
         ])) {
             return  ResponseHelper::clientError();
         }
+        
         try {
             $studentId = Student::where('user_id', auth()->user()->id)->first()['id'];
             $formId = StudentOnlineExam::where('online_exam_id', $request->exam_id)
@@ -422,7 +423,6 @@ class StudentOnlineExamController extends Controller
                 ->first()->form_id;
 
             $questionType = Question::findOrFail($request->question_id, ['type']);
-
             $answerId = null;
             if (intval($questionType->type) === QuestionTypeEnum::TRUE_FALSE->value) {
                 if(!isset($request->is_true) || is_null($request->is_true)){
@@ -436,18 +436,19 @@ class StudentOnlineExamController extends Controller
 
                 $answerId =  $request->choice_id;
             }else{
-                return  ResponseHelper::clientError();
+                return ResponseHelper::clientError();
             }
+
             StudentAnswer::where('student_id', $studentId)
                 ->where('form_id', $formId)
                 ->where('question_id', $request->question_id)
                 ->update([
                     'answer' =>  $answerId
                 ]);
-
+            
             // refresh student and proctor 
             OnlineExamListenerHelper::refreshProctor($studentId, $request->exam_id);
-
+            
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

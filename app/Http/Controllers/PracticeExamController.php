@@ -572,7 +572,7 @@ class PracticeExamController extends Controller
             'exam_id' => 'required|integer',
             'question_id' => 'required|integer',
             'choice_id' => 'nullable|integer',
-            'is_true' => 'nullable|boolean',
+            // 'is_true' => 'nullable|boolean',
         ])) {
             return  ResponseHelper::clientError();
         }
