@@ -7,38 +7,51 @@ use App\Helpers\ValidateHelper;
 
 class StudentPolicy
 {
-    private static $validRoles = [
-        RoleEnum::SYSTEM_ADMINISTRATOR,
-        RoleEnum::DATA_ENTRY
-    ];
-
     public function addStudent(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function modifyStudent(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function deleteStudent(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
     
     public function retrieveStudent(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
     
     public function retrieveEditableStudent(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
     
     public function retrieveStudents(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 }

@@ -32,7 +32,7 @@ class FilterController extends Controller
 {
     public function retrieveCourses()
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveCourses', FilterController::class);
 
         $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
         try {
@@ -46,7 +46,7 @@ class FilterController extends Controller
 
     public function retrieveCourseParts(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveCourseParts', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'course_id' => 'required|integer'
         ])) {
@@ -68,7 +68,7 @@ class FilterController extends Controller
 
     public function retrieveChapters(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveChapters', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'course_part_id' => 'required|integer'
         ])) {
@@ -87,7 +87,7 @@ class FilterController extends Controller
 
     public function retrieveTopics(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveTopics', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'chapter_id' => 'required|integer'
         ])) {
@@ -107,7 +107,7 @@ class FilterController extends Controller
 
     public function retrieveColleges()
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveColleges', FilterController::class);
 
         $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
         try {
@@ -121,7 +121,7 @@ class FilterController extends Controller
 
     public function retrieveLecturerColleges()
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveLecturerColleges', FilterController::class);
 
         try {
             $user = auth()->user();
@@ -150,7 +150,7 @@ class FilterController extends Controller
 
     public function retrieveLecturerCurrentColleges()
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveLecturerCurrentColleges', FilterController::class);
 
         try {
             $user = auth()->user();
@@ -180,7 +180,7 @@ class FilterController extends Controller
 
     public function retrieveDepartments(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveDepartments', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'college_id' => 'required|integer'
         ])) {
@@ -200,7 +200,7 @@ class FilterController extends Controller
 
     public function retrieveLecturerDepartments(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveLecturerDepartments', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'college_id' => 'required|integer'
         ])) {
@@ -233,7 +233,7 @@ class FilterController extends Controller
 
     public function retrieveLecturerCurrentDepartments(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveLecturerCurrentDepartments', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'college_id' => 'required|integer'
         ])) {
@@ -267,7 +267,7 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLevels(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveDepartmentLevels', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'department_id' => 'required|integer'
         ])) {
@@ -288,7 +288,7 @@ class FilterController extends Controller
 
     public function retrieveDepartmentCourses(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveDepartmentCourses', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'department_id' => 'required|integer'
         ])) {
@@ -315,7 +315,7 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLevelCourses(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveDepartmentLevelCourses', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'department_id' => 'required|integer',
             'level_id' =>  ['required', new Enum(LevelsEnum::class)],
@@ -360,7 +360,7 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLevelSemesterCourses(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveDepartmentLevelSemesterCourses', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'department_id' => 'required|integer',
             'level_id' =>  ['required', new Enum(LevelsEnum::class)],
@@ -391,7 +391,7 @@ class FilterController extends Controller
 
     public function retrieveDepartmentCourseParts(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveDepartmentCourseParts', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'department_course_id' => 'required|integer'
         ])) {
@@ -424,7 +424,7 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLecturerCourses(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveDepartmentLecturerCourses', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'department_id' => 'required|integer'
         ])) {
@@ -462,7 +462,7 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLecturerCurrentCourses(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveDepartmentLecturerCurrentCourses', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'department_id' => 'required|integer'
         ])) {
@@ -500,7 +500,7 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLecturerCourseParts(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveDepartmentLecturerCourseParts', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'department_course_id' => 'required|integer'
         ])) {
@@ -544,7 +544,7 @@ class FilterController extends Controller
 
     public function retrieveDepartmentLecturerCurrentCourseParts(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveDepartmentLecturerCurrentCourseParts', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'department_course_id' => 'required|integer'
         ])) {
@@ -590,10 +590,8 @@ class FilterController extends Controller
 
     public function retrieveEmployees()
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveEmployees', FilterController::class);
 
-        // هل يتم ارجاع كل الموظفين (موظف ومحاضر) او موظف فقط؟؟؟؟؟؟؟؟؟؟؟
-        // يجب ان اسال العيال على هذه ايش المقصود فيها
         $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
         try {
             $employees = GetHelper::retrieveModels(Employee::class, $attributes, null);
@@ -606,7 +604,7 @@ class FilterController extends Controller
 
     public function retrieveLecturers()
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveLecturers', FilterController::class);
 
         $attributes = ['id', LanguageHelper::getNameColumnName(null, 'name')];
         try {
@@ -623,7 +621,7 @@ class FilterController extends Controller
 
     public function retrieveEmployeesOfJob(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveEmployeesOfJob', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'job_type_id' =>  ['required', new Enum(JobTypeEnum::class)]
         ])) {
@@ -671,7 +669,7 @@ class FilterController extends Controller
 
     public function retrieveNonOwnerEmployees(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveNonOwnerEmployees', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'job_type_id' =>  ['required', new Enum(JobTypeEnum::class)]
         ])) {
@@ -688,11 +686,10 @@ class FilterController extends Controller
     }
     public function retrieveNonOwnerStudents(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveNonOwnerStudents', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'department_id' => 'required|integer',
-            'level_id' =>  ['required', new Enum(LevelsEnum::class)],
-            'semester_id' =>  ['required', new Enum(SemesterEnum::class)]
+            'level_id' =>  ['required', new Enum(LevelsEnum::class)]
         ])) {
             return  ResponseHelper::clientError();
         }
@@ -704,7 +701,6 @@ class FilterController extends Controller
             ->select('students.id', LanguageHelper::getNameColumnName('students', 'name'),)
             ->where('department_courses.department_id', '=', $request->department_id)
             ->where('department_courses.level', '=', $request->level_id)
-            ->where('department_courses.semester', '=', $request->semester_id)
             ->where('students.user_id', '=', null)
             ->distinct()
             ->get();
@@ -716,7 +712,7 @@ class FilterController extends Controller
 
     public function retrieveRoles(Request $request)
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveRoles', FilterController::class);
         if (ValidateHelper::validateData($request, [
             'owner_type_id' =>  ['required', new Enum(OwnerTypeEnum::class)]
         ])) {
@@ -732,7 +728,7 @@ class FilterController extends Controller
 
     public function retrieveProctors()
     {
-        // Gate::authorize('retrieveEditableCourse', FilterController::class);
+        Gate::authorize('retrieveProctors', FilterController::class);
 
         try {
             $proctors =  DB::table('employees')

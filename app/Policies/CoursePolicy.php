@@ -7,37 +7,50 @@ use App\Helpers\ValidateHelper;
 
 class CoursePolicy
 {
-    private static $validRoles = [
-        RoleEnum::SYSTEM_ADMINISTRATOR,
-        RoleEnum::DATA_ENTRY
-    ];
-
     public function addCourse(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function modifyCourse(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function deleteCourse(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
     
     public function retrieveCourse(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
     public function retrieveEditableCourse(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
     
     public function retrieveCourses(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 }

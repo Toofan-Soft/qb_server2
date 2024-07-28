@@ -7,48 +7,49 @@ use App\Helpers\ValidateHelper;
 
 class CollegePolicy
 {
-    private static $validRoles = [
-        RoleEnum::SYSTEM_ADMINISTRATOR,
-        RoleEnum::DATA_ENTRY
-    ];
-
     public function addCollege(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function modifyCollege(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function deleteCollege(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function retrieveCollege(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validateUser();
     }
     public function retrieveEditableCollege(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function retrieveColleges(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validateUser();
     }
 
     public function retrieveBasicCollegesInfo(): bool
     {
-        return ValidateHelper::validatePolicy([
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::DATA_ENTRY,
-            RoleEnum::LECTURER,
-            RoleEnum::STUDENT,
-            RoleEnum::GUEST
-        ]);
+        return ValidateHelper::validateUser();
     }
 }

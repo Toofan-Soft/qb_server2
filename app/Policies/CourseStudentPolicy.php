@@ -7,48 +7,59 @@ use App\Helpers\ValidateHelper;
 
 class CourseStudentPolicy
 {
-    private static $validRoles = [
-        RoleEnum::SYSTEM_ADMINISTRATOR,
-        RoleEnum::DATA_ENTRY
-    ];
-    
     public function addCourseStudents(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
     
     public function passCourseStudent(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
     
     public function suspendCourseStudent(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
     
     public function unsuspendCourseStudent(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function deleteCourseStudent(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
     
-    // public function retrieveEditableCourseStudent(): bool
-    // {
-    //     return ValidateHelper::validatePolicy(self::$validRoles);
-    // }
-
     public function retrieveCourseStudents(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function retrieveUnlinkCourceStudents(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 }

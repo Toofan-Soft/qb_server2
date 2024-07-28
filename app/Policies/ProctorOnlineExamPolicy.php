@@ -9,74 +9,42 @@ class ProctorOnlineExamPolicy
 {
     public function startStudentOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::PROCTOR
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::PROCTOR->value]);
     }
 
     public function suspendStudentOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::PROCTOR
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::PROCTOR->value]);
     }
 
     public function continueStudentOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::PROCTOR
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::PROCTOR->value]);
     }
 
     public function finishStudentOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::PROCTOR
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::PROCTOR->value]);
     }
 
     public function retrieveOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::PROCTOR
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::PROCTOR->value]);
     }
 
     public function retrieveOnlineExams(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::PROCTOR
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::PROCTOR->value]);
     }
     
     public function retrieveOnlineExamStudents(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::PROCTOR
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::PROCTOR->value]);
     }
     
     public function finishOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::PROCTOR
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::PROCTOR->value]);
     }
 
 }

@@ -21,10 +21,11 @@ class ValidateHelper
         // }
     }
 
-    public static function validatePolicy($roles = []) : bool {
+    public static function validatePolicy($roles = []): bool
+    {
         $user = auth()->user();
 
-        if (!$user) {
+        if (is_null($user)) {
             return false;
         }
 
@@ -33,11 +34,22 @@ class ValidateHelper
             ->toArray();
 
         foreach ($roles as $role) {
-            if (in_array($role->value, $userRoleIds)) {
+            if (in_array($role, $userRoleIds)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    public static function validateUser(): bool
+    {
+        $user = auth()->user();
+
+        if (is_null($user)) {
+            return false;
+        }
+
+        return true;
     }
 }

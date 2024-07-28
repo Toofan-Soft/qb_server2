@@ -9,106 +9,82 @@ class LecturerOnlineExamPolicy
 {
     public function addOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
 
     public function modifyOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
 
     public function changeOnlineExamStatus(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
 
     public function deleteOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
 
     public function retrieveOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
 
     public function retrieveEditableOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
     
     public function retrieveOnlineExams(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
     
     public function retrieveOnlineExamsAndroid(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
 
     public function retrieveOnlineExamChapters(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
     public function retrieveOnlineExamChapterTopics(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
     public function retrieveOnlineExamForms(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
     public function retrieveOnlineExamFormQuestions(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::LECTURER->value
+        ]);
     }
 }

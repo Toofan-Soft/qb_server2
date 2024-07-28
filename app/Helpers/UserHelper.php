@@ -52,12 +52,19 @@ class UserHelper
                 array_push($roles, RoleEnum::STUDENT->value);
             } elseif ($ownerTypeId === OwnerTypeEnum::EMPLOYEE->value) {
                 $owner = Employee::findOrFail($ownerId);
-                if ((intval($owner->job_type) === JobTypeEnum::LECTURER->value) ||
-                    (intval($owner->job_type) === JobTypeEnum::EMPLOYEE_LECTURE->value)
-                ) {
+                if (intval($owner->job_type) === JobTypeEnum::LECTURER->value){
                     array_push($roles, RoleEnum::LECTURER->value);
+                } elseif (intval($owner->job_type) === JobTypeEnum::EMPLOYEE->value){
+                    array_push($roles, RoleEnum::PROCTOR->value);
+                } elseif (intval($owner->job_type) === JobTypeEnum::EMPLOYEE_LECTURE->value){
+                    array_push($roles, RoleEnum::PROCTOR->value);
+                    array_push($roles, RoleEnum::LECTURER->value);
+                }else {
+                    return false;
                 }
                 $owner->update(['user_id' => $user->id]);
+            }else{
+                return false;
             }
 
             foreach ($roles as $role) {

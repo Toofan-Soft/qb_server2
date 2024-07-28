@@ -66,20 +66,19 @@ use App\Http\Controllers\Auth\EmailVerificationController;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use App\Http\Controllers\DepartmentCoursePartChapterTopicController;
 
-// Route::post('user/register', [GuestController::class, 'addGuest']);
+Route::prefix('guest/')->group(function () {
+    Route::post('add', [GuestController::class, 'addGuest']);
+});
 Route::put('user/resend-code', [UserController::class, 'resendCode']);
 Route::post('user/verify', [UserController::class, 'verifyAccount']);
 Route::post('user/verify-account-after-recovery', [UserController::class, 'verifyAccountAfterRecvery']);
 Route::post('user/login', [UserController::class, 'login']);
 Route::put('user/request-account-recovery', [UserController::class, 'requestAccountReovery']);
-// Route::put('user/change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+Route::put('user/change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
 Route::get('enum/retrieve-register-gender-list', [EnumsController::class, 'retrieveRegisterGenders']);
 // Route::post('employee/add', [EmployeeController::class, 'addEmployee']);
 // Route::post('user-management/add', [UserManagementController::class, 'addUser']);
 
-Route::prefix('guest/')->group(function () {
-    Route::post('add', [GuestController::class, 'addGuest']);
-});
 
 // Route::post('forget_password',[ForgetPasswordController::class,'forget_password']);
 // Route::post('password_reset',[ResetPasswordController::class,'password_reset']);
@@ -203,16 +202,6 @@ Route::middleware('auth:api')->group(function () {
         Route::get('retrieve-list', [QuestionController::class, 'retrieveQuestions']);
     });
 
-
-    //question choice
-    // Route::prefix('question-choice/')->group(function () {
-    //     Route::post('add', [QuestionChoiceController::class, 'addQuestionChoice']);
-    //     Route::put('modify', [QuestionChoiceController::class, 'modifyQuestionChoice']);
-    //     Route::delete('delete', [QuestionChoiceController::class, 'deleteQuestionChoice']);
-    //     // Route::get('retrieve', [QuestionChoiceController::class, 'retrieveQuestionChoice']);
-    //     Route::get('retrieve-editable', [QuestionChoiceController::class, 'retrieveEditableQuestionChoice']);
-    // });
-
     //department course
     Route::prefix('department-course/')->group(function () {
         Route::post('add', [DepartmentCourseController::class, 'addDepartmentCourse']);
@@ -314,7 +303,7 @@ Route::middleware('auth:api')->group(function () {
         Route::put('change-password', [UserController::class, 'changePassword']);
         Route::put('change-language', [UserController::class, 'changeLanguage']);
         // Route::put('request-account-recovery', [UserController::class, 'requestAccountReovery']);
-        Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
+        // Route::put('change-password-after-account-recovery', [UserController::class, 'changePasswordAfterAccountReovery']);
         // Route::post('verify-account-after-recovery', [UserController::class, 'verifyAccountAfterRecvery']);
         Route::get('retrieve-profile', [UserController::class, 'retrieveProfile']);
 

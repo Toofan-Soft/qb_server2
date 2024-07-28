@@ -9,94 +9,83 @@ class QuestionPolicy
 {
     public function addQuestion(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::QUESTION_ENTRY->value
+        ]);
     }
 
     public function modifyQuestion(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::QUESTION_ENTRY->value
+        ]);
     }
 
     public function submitQuestionReviewRequest(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::QUESTION_ENTRY->value
+        ]);
     }
     
     public function withdrawSubmitQuestionReviewRequest(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::QUESTION_ENTRY->value
+        ]);
     }
 
     public function acceptQuestion(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_REVIEWER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::QUESTION_REVIEWER->value
+        ]);
     }
 
     public function rejectQuestion(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_REVIEWER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::QUESTION_REVIEWER->value
+        ]);
     }
 
     public function deleteQuestion(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY,
-            RoleEnum::QUESTION_REVIEWER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::QUESTION_ENTRY->value
+        ]);
     }
     
     public function retrieveQuestion(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY,
-            RoleEnum::QUESTION_REVIEWER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::QUESTION_ENTRY->value,
+            RoleEnum::QUESTION_REVIEWER->value
+        ]);
     }
     
     public function retrieveEditableQuestion(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::QUESTION_ENTRY->value
+        ]);
     }
 
     public function retrieveQuestions(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::QUESTION_ENTRY,
-            RoleEnum::QUESTION_REVIEWER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::QUESTION_ENTRY->value,
+            RoleEnum::QUESTION_REVIEWER->value
+        ]);
     }
 }

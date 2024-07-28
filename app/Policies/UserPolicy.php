@@ -7,50 +7,53 @@ use App\Helpers\ValidateHelper;
 
 class UserPolicy
 {
-    private static $validRoles = [];
+    // public function verifyAccount(): bool
+    // {
+    //     return ValidateHelper::validateUser();
+    // }
 
-    public function verifyAccount(): bool
-    {
-        return ValidateHelper::validatePolicy(self::$validRoles);
-    }
+    // public function login(): bool
+    // {
+    //     return ValidateHelper::validateUser();
+    // }
 
-    public function login(): bool
-    {
-        return ValidateHelper::validatePolicy(self::$validRoles);
-    }
-
-    public function resendCode(): bool
-    {
-        return ValidateHelper::validatePolicy(self::$validRoles);
-    }
+    // public function resendCode(): bool
+    // {
+    //     return ValidateHelper::validateUser();
+    // }
     
     public function logout(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validateUser();
     }
     
     public function changePassword(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validateUser();
     }
     
     public function changeLanguage(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validateUser();
     }
     
-    public function requestAccountReovery(): bool
-    {
-        return ValidateHelper::validatePolicy(self::$validRoles);
-    }
+    // public function requestAccountReovery(): bool
+    // {
+    //     return ValidateHelper::validateUser();
+    // }
 
-    public function changePasswordAfterAccountReovery(): bool
-    {
-        return ValidateHelper::validatePolicy(self::$validRoles);
-    }
+    // public function changePasswordAfterAccountReovery(): bool
+    // {
+    //     return ValidateHelper::validateUser();
+    // }
+
+    // public function verifyAccountAfterRecvery(): bool
+    // {
+    //     return ValidateHelper::validateUser();
+    // }
 
     public function retrieveProfile(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validateUser();
     }
 }

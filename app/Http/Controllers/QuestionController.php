@@ -272,6 +272,14 @@ class QuestionController extends Controller
         }
         try {
             $question = Question::findOrFail($request->id);
+            if((intval($question->status) === QuestionStatusEnum::REQUESTED->value) || 
+            (intval($question->status) === QuestionStatusEnum::ACCEPTED->value)
+            ){
+                return  ResponseHelper::clientError(); 
+                // can not delete requested or accepted question  
+            }
+            
+            $question->delete();
             return ResponseHelper::success();
         } catch (\Exception $e) {
             return ResponseHelper::serverError();

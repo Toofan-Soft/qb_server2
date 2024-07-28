@@ -21,15 +21,18 @@ use App\Helpers\DatetimeHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Enums\QualificationEnum;
+use App\Enums\UserStatusEnum;
 use App\Helpers\EnumReplacement;
 use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\Roles\PasswordValidationRule;
+use App\Listeners\FireListener;
 use App\Notifications\EmaiVerificationNotification;
 use Symfony\Component\Console\Helper\ProcessHelper;
 use App\Notifications\ResetPasswordNotificationVerification;
@@ -83,7 +86,7 @@ class UserController extends Controller
                 Auth::logoutOtherDevices($request->password);// logout from other devices
                 $user = Auth::user();
 
-                if ($user->email_verified_at !== false) {
+                if (($user->email_verified_at !== false) && ($user->status !== UserStatusEnum::INACTIVE->value)) {
                     $token =  $user->createToken('quesionbanklaravelapi')->accessToken;
                     $rolesIds = UserRole::where('user_id', $user->id)
                         ->get()
@@ -112,6 +115,7 @@ class UserController extends Controller
 
     public function logout()
     {
+        Gate::authorize('logout', UserController::class);
         $user = Auth::guard('api')->user();
         if ($user) {
             $token = $user->token();
@@ -136,6 +140,7 @@ class UserController extends Controller
     public function retrieveProfile()
     {
         try {
+            Gate::authorize('retrieveProfile', UserController::class);
             $user = auth()->user();
             $owner = null;
             $enumReplacements = [
@@ -174,6 +179,7 @@ class UserController extends Controller
     public function changePassword(Request $request)
     {
         try {
+            Gate::authorize('changePassword', UserController::class);
             $user = User::where('email', auth()->user()->email)->first();
             if (Hash::check($request->old_password, $user->password)) {
                 // $validator = Validator::make($request->all(), ['new_password' => 'required|min:8']);
@@ -269,6 +275,7 @@ class UserController extends Controller
     public function changeLanguage(Request $request)
     {
         try {
+            Gate::authorize('changeLanguage', UserController::class);
             $user = User::where('email', auth()->user()->email)->first();
             $validator = Validator::make($request->all(), ['language_id' => ['required', new Enum(LanguageEnum::class)]]);
             if ($validator->fails()) {

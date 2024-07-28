@@ -18,7 +18,7 @@ class LanguageHelper
 
         try {
             $statement = '';
-            if (intval(auth()->user()->language_id) === LanguageEnum::ARABIC->value) {
+            if (intval(auth()->user()->language) === LanguageEnum::ARABIC->value) {
                 $statement = 'arabic_name';
             } else {
                 $statement = 'english_name';
@@ -40,7 +40,7 @@ class LanguageHelper
          // استدعاء دالة تقوم بتخلص من الفراغات في اسم الجدول والاسم المستعار المرسل
          try {
             $statement = '';
-            if (intval(auth()->user()->language_id) === LanguageEnum::ARABIC->value) {
+            if (intval(auth()->user()->language) === LanguageEnum::ARABIC->value) {
                 $statement = 'arabic_title';
             } else {
                 $statement = 'english_title';
@@ -61,7 +61,7 @@ class LanguageHelper
     {
         try {
             if(is_null($user)){
-                $languageId = auth()->user()->language_id;
+                $languageId = auth()->user()->language;
             }else{
                 $languageId = $user->language_id;
             }

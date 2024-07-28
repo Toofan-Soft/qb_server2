@@ -9,105 +9,57 @@ class PaperExamPolicy
 {
     public function addPaperExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
 
     public function modifyPaperExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
 
     public function deletePaperExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
 
     public function retrievePaperExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
 
     public function retrieveEditablePaperExam(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
     
     public function retrievePaperExams(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
     
     public function retrievePaperExamsAndroid(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
 
     public function retrievePaperExamChapters(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
     public function retrievePaperExamChapterTopics(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
     public function retrievePaperExamForms(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
     public function retrievePaperExamFormQuestions(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
     public function exportPaperExamToPDF(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::LECTURER
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::LECTURER->value]);
     }
 }

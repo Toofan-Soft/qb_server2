@@ -9,179 +9,119 @@ class EnumsPolicy
 {
     public function retrieveCourseStatus(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveCourseParts(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveLanguages(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveDifficultyLevels(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveQuestionTypes(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveQuestionStatus(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
-    public function retrieveAcceptanceStatus(): bool
-    {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
-        // return ValidateHelper::validatePolicy($validRoles);
-        return true;
-    }
+   
     public function retrieveAccessibilityStatus(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveSemesters(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
+    }
+    public function retrieveLevelsCounts(): bool
+    {
+        // return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validateUser();
     }
     public function retrieveJobTypes(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveQualifications(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveGenders(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveCourseStudentStatus(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveOwnerTypes(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveUserStatus(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveConductMethods(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveExamTypes(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveformConfigurationMethods(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveformNameMethods(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveOnlineExamStatus(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
+    }
+    public function retrievePracticeExamStatus(): bool
+    {
+        // return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validateUser();
     }
     public function retrieveStudentOnlineExamStatus(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
     public function retrieveOnlineExamTakingStatus(): bool
     {
-        $validRoles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-        ];
         // return ValidateHelper::validatePolicy($validRoles);
-        return true;
+        return ValidateHelper::validateUser();
     }
 
 }

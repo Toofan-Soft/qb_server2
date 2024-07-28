@@ -230,7 +230,19 @@ class UserManagementController extends Controller
             return  ResponseHelper::clientError();
         }
         try {
-            $ownerRoles = RoleEnum::getOwnerRolesWithMandatory($request->owner_type_id, $request->job_type_id);
+            if ($request->owner_type_id === OwnerTypeEnum::EMPLOYEE->value) {
+                if (isset($request->job_type_id)) {
+                    $ownerRoles = RoleEnum::getOwnerRolesWithMandatory($request->owner_type_id, $request->job_type_id);
+                } else {
+                    return  ResponseHelper::clientError();
+                    // job type id must exceted
+                }
+            } elseif ($request->owner_type_id === OwnerTypeEnum::STUDENT->value) {
+                $ownerRoles = RoleEnum::getOwnerRolesWithMandatory($request->owner_type_id);
+            } else {
+                return  ResponseHelper::clientError();
+            }
+            
             return ResponseHelper::successWithData($ownerRoles);
             // $attributes = ['id, name, is_mandatory'];
         } catch (\Exception $e) {

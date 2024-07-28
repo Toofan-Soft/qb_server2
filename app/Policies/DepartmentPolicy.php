@@ -7,44 +7,50 @@ use App\Helpers\ValidateHelper;
 
 class DepartmentPolicy
 {
-    private static $validRoles = [
-        RoleEnum::SYSTEM_ADMINISTRATOR,
-        RoleEnum::DATA_ENTRY
-    ];
-
     public function addDepartment(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function modifyDepartment(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function deleteDepartment(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
+    }
+
+    public function retrieveEditableDepartment(): bool
+    {
+        return ValidateHelper::validatePolicy([
+            RoleEnum::SYSTEM_ADMINISTRATOR->value,
+            RoleEnum::DATA_ENTRY->value
+        ]);
     }
 
     public function retrieveDepartment(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validateUser();
     }
     
     public function retrieveDepartments(): bool
     {
-        return ValidateHelper::validatePolicy(self::$validRoles);
+        return ValidateHelper::validateUser();
     }
     
     public function retrieveBasicDepartmentsInfo(): bool
     {
-        $roles = [
-            RoleEnum::SYSTEM_ADMINISTRATOR,
-            RoleEnum::DATA_ENTRY,
-            RoleEnum::GUEST
-        ];
-
-        return ValidateHelper::validatePolicy($roles);
+        return ValidateHelper::validateUser();
     }
 }

@@ -9,42 +9,27 @@ class StudentOnlineExamPolicy
 {
     public function saveOnlineExamQuestionAnswer(): bool
     {
-        $validRoles = [
-            RoleEnum::STUDENT
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::STUDENT->value]);
     }
 
     public function finishOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::STUDENT
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::STUDENT->value]);
     }
 
     public function retrieveOnlineExam(): bool
     {
-        $validRoles = [
-            RoleEnum::STUDENT
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::STUDENT->value]);
     }
 
     public function retrieveOnlineExams(): bool
     {
-        $validRoles = [
-            RoleEnum::STUDENT
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::STUDENT->value]);
     }
 
     public function retrieveOnlineExamQuestions(): bool
     {
-        $validRoles = [
-            RoleEnum::STUDENT
-        ];
-        return ValidateHelper::validatePolicy($validRoles);
+        return ValidateHelper::validatePolicy([RoleEnum::STUDENT->value]);
     }
 
 }

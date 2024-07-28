@@ -107,7 +107,7 @@ enum RoleEnum: int
                     [
                         'id' => RoleEnum::PROCTOR->value,
                         'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
-                        'is_mandatory' => false
+                        'is_mandatory' => true
                     ],
                     [
                         'id' => RoleEnum::SYSTEM_ADMINISTRATOR->value,
@@ -134,7 +134,7 @@ enum RoleEnum: int
                     [
                         'id' => RoleEnum::PROCTOR->value,
                         'name' => EnumTraits::getNameByNumber(RoleEnum::PROCTOR->value, RoleEnum::class, LanguageHelper::getEnumLanguageName()),
-                        'is_mandatory' => false
+                        'is_mandatory' => true
                     ],
                     [
                         'id' => RoleEnum::SYSTEM_ADMINISTRATOR->value,
