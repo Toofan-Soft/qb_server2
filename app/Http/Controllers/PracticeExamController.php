@@ -571,8 +571,8 @@ class PracticeExamController extends Controller
         if (ValidateHelper::validateData($request, [
             'exam_id' => 'required|integer',
             'question_id' => 'required|integer',
-            'choice_id' => 'required|integer',
-            'is_true' => 'required|boolean',
+            'choice_id' => 'nullable|integer',
+            // 'is_true' => 'nullable|boolean',
         ])) {
             return  ResponseHelper::clientError();
         }

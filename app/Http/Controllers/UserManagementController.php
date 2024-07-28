@@ -166,7 +166,7 @@ class UserManagementController extends Controller
     {
         Gate::authorize('retrieveUser', UserManagementController::class);
         if (ValidateHelper::validateData($request, [
-            'id' => 'required|integer'
+            'id' => 'required|string'
         ])) {
             return  ResponseHelper::clientError();
         }

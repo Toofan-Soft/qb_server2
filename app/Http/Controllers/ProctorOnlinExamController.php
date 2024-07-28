@@ -195,7 +195,7 @@ class ProctorOnlinExamController extends Controller
                     $item->status_name = $soe->status;
                     $item->is_suspended = intval($soe->status) === StudentOnlineExamStatusEnum::SUSPENDED->value;
                     $item->start_time = DatetimeHelper::convertDatetimeToTimeToLong($soe->start_datetime);
-                    $item->end_time = DatetimeHelper::convertDatetimeToTimeToLong($soe->end_time);
+                    $item->end_time = DatetimeHelper::convertDatetimeToTimeToLong($soe->end_datetime);
                     // $item->start_time = $soe->start_datetime;
                     // $item->end_time = $soe->end_datetime;
                     // $item->form_name = $soe->form_id;
