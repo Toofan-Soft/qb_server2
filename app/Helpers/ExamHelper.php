@@ -2,45 +2,25 @@
 
 namespace App\Helpers;
 
-use stdClass;
 use Traversable;
 use App\Models\Form;
 use App\Models\Choice;
-use App\Models\Student;
 use App\Models\Question;
 use App\Models\RealExam;
-use App\Enums\LevelsEnum;
 use App\Traits\EnumTraits;
-use App\Enums\ExamTypeEnum;
 use App\Enums\LanguageEnum;
-use App\Enums\SemesterEnum;
-use Illuminate\Http\Request;
-use App\Enums\ExamStatusEnum;
-use App\Models\StudentAnswer;
-use App\Enums\CoursePartsEnum;
-use Illuminate\Support\Carbon;
 use App\Enums\AppreciationEnum;
 use App\Enums\QuestionTypeEnum;
-use App\Enums\RealExamTypeEnum;
-use App\Helpers\QuestionHelper;
 use App\Enums\FormNameMethodEnum;
 use App\Enums\QuestionStatusEnum;
-use App\Helpers\EnumReplacement1;
 use App\Models\TrueFalseQuestion;
-use Illuminate\Http\UploadedFile;
 use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
-use App\Enums\ExamConductMethodEnum;
-use App\Models\RealExamQuestionType;
 use App\Enums\ExamDifficultyLevelEnum;
-use Illuminate\Support\Facades\Storage;
 use App\Enums\CombinationChoiceTypeEnum;
-use App\Models\QuestionChoiceCombination;
 use App\Enums\FormConfigurationMethodEnum;
-use App\Enums\StudentOnlineExamStatusEnum;
 use App\Models\QuestionChoicesCombination;
-use Illuminate\Database\Eloquent\Collection;
 use App\AlgorithmAPI\UncombineQuestionChoicesCombination;
 use App\AlgorithmAPI\CheckQuestionChoicesCombinationAnswer;
 
@@ -54,39 +34,43 @@ class ExamHelper
 
     public static function getRealExamsScore($realExams)
     {
-        // Check if $realExams is an array or a single object
-        $isArray = is_array($realExams) || $realExams instanceof Traversable;
+        try {
+            // Check if $realExams is an array or a single object
+            $isArray = is_array($realExams) || $realExams instanceof Traversable;
 
-        $realExamsToProcess = $isArray ? $realExams : [$realExams];
+            $realExamsToProcess = $isArray ? $realExams : [$realExams];
 
-        $processedRealExams = [];
+            $processedRealExams = [];
 
-        foreach ($realExamsToProcess as $realExam) {
-            if (is_array($realExam)) {
-                if (isset($realExam['id'])) {
-                    $temp = RealExam::findOrFail($realExam['id']);
+            foreach ($realExamsToProcess as $realExam) {
+                if (is_array($realExam)) {
+                    if (isset($realExam['id'])) {
+                        $temp = RealExam::findOrFail($realExam['id']);
+                        $realExamQuestionTypes = $temp->real_exam_question_types()->get(['questions_count', 'question_score']);
+                        $score = 0;
+                        foreach ($realExamQuestionTypes as $realExamQuestionType) {
+                            $score += $realExamQuestionType->questions_count * $realExamQuestionType->question_score;
+                        }
+                        $realExam['score'] = $score;
+                        $processedRealExams[] = $realExam;
+                    }
+                } else {
+                    $temp = RealExam::findOrFail($realExam->id);
                     $realExamQuestionTypes = $temp->real_exam_question_types()->get(['questions_count', 'question_score']);
+                    // $realExamQuestionTypes = $realExam->real_exam_question_types()->get(['questions_count', 'question_score']);
                     $score = 0;
                     foreach ($realExamQuestionTypes as $realExamQuestionType) {
                         $score += $realExamQuestionType->questions_count * $realExamQuestionType->question_score;
                     }
-                    $realExam['score'] = $score;
+                    $realExam->score = $score;
                     $processedRealExams[] = $realExam;
                 }
-            } else {
-                $temp = RealExam::findOrFail($realExam->id);
-                $realExamQuestionTypes = $temp->real_exam_question_types()->get(['questions_count', 'question_score']);
-                // $realExamQuestionTypes = $realExam->real_exam_question_types()->get(['questions_count', 'question_score']);
-                $score = 0;
-                foreach ($realExamQuestionTypes as $realExamQuestionType) {
-                    $score += $realExamQuestionType->questions_count * $realExamQuestionType->question_score;
-                }
-                $realExam->score = $score;
-                $processedRealExams[] = $realExam;
             }
+            // If $realExams was a single object, return the first item in $processedRealExams
+            return $isArray ? $processedRealExams : $processedRealExams[0];
+        } catch (\Exception $e) {
+            throw $e;
         }
-        // If $realExams was a single object, return the first item in $processedRealExams
-        return $isArray ? $processedRealExams : $processedRealExams[0];
     }
 
 
@@ -141,7 +125,6 @@ class ExamHelper
             $forms = [];
 
             $formsIds = $realExam->forms()->orderBy('id')->pluck('id')->toArray();
-
             $formsNames = self::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count, $language);
 
             if (intval($realExam->form_configuration_method) === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) {
@@ -153,7 +136,7 @@ class ExamHelper
                 }
             } else {
                 if (count($formsIds) == 1) {
-                    $formId = $formsIds->first();
+                    $formId = $formsIds[0];
 
                     foreach ($formsNames as $formName) {
                         $form['id'] = $formId;
@@ -176,139 +159,151 @@ class ExamHelper
 
     public static function getRealExamFormsNames($form_name_method, $forms_count, string $language)
     {
-        $formsNames = [];
-        if ($form_name_method === FormNameMethodEnum::DECIMAL_NUMBERING->value) {
-            for ($i = 1; $i <= $forms_count; $i++) {
-                // $romanNumerals[] = strval($i);
-                array_push($formsNames, strval($i));
+        try {
+            $formsNames = [];
+            if ($form_name_method === FormNameMethodEnum::DECIMAL_NUMBERING->value) {
+                for ($i = 1; $i <= $forms_count; $i++) {
+                    // $romanNumerals[] = strval($i);
+                    array_push($formsNames, strval($i));
+                }
+            } elseif ($form_name_method === FormNameMethodEnum::ROMAN_NUMBERING->value) {
+                for ($i = 1; $i <= $forms_count; $i++) {
+                    // $romanNumerals[] = NameMethodHelper::convertToRomanNumber($i);
+                    array_push($formsNames, NameMethodHelper::convertToRomanNumber($i));
+                }
+            } elseif ($form_name_method === FormNameMethodEnum::ALPHANUMERIC_NUMBERING->value) {
+                $formsNames = NameMethodHelper::generateAlphanumericNummering($forms_count, $language);
             }
-        } elseif ($form_name_method === FormNameMethodEnum::ROMAN_NUMBERING->value) {
-            for ($i = 1; $i <= $forms_count; $i++) {
-                // $romanNumerals[] = NameMethodHelper::convertToRomanNumber($i);
-                array_push($formsNames, NameMethodHelper::convertToRomanNumber($i));
-            }
-        } elseif ($form_name_method === FormNameMethodEnum::ALPHANUMERIC_NUMBERING->value) {
-            $formsNames = NameMethodHelper::generateAlphanumericNummering($forms_count, $language);
-        }
 
-        return $formsNames;
+            return $formsNames;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public static function getFormQuestionsWithDetails($formId, bool $withQuestionId, bool $withChoiceId, bool $withAnswer)
     {
-        $questions = [];
-        $form = Form::findOrFail($formId);
-        $realExam = RealExam::findOrFail($form->real_exam_id);
-        $language = LanguageEnum::symbolOf(intval($realExam->language));
+        try {
+            $questions = [];
+            $form = Form::findOrFail($formId);
+            $realExam = RealExam::findOrFail($form->real_exam_id);
+            $language = LanguageEnum::symbolOf(intval($realExam->language));
 
-        $formQuestions = $form->form_questions()->orderBy('question_id')->get(['question_id', 'combination_id']);
+            $formQuestions = $form->form_questions()->orderBy('question_id')->get(['question_id', 'combination_id']);
 
-        foreach ($formQuestions as $formQuestion) {
-            $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url', 'topic_id', 'type as type_name']);
+            foreach ($formQuestions as $formQuestion) {
+                $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url', 'topic_id', 'type as type_name']);
 
-            $topic = $question->topic()->first([LanguageHelper::getTitleColumnName(null, null), 'chapter_id']);
+                $topic = $question->topic()->first([LanguageHelper::getTitleColumnName(null, null), 'chapter_id']);
 
-            $chapter_title = $topic->chapter()->first()[LanguageHelper::getTitleColumnName(null, null)];
-            $topic_title = $topic[LanguageHelper::getTitleColumnName(null, null)];
+                $chapter_title = $topic->chapter()->first()[LanguageHelper::getTitleColumnName(null, null)];
+                $topic_title = $topic[LanguageHelper::getTitleColumnName(null, null)];
 
-            $question->chapter_title = $chapter_title;
-            $question->topic_title = $topic_title;
+                $question->chapter_title = $chapter_title;
+                $question->topic_title = $topic_title;
 
-            unset($question['topic_id']);
+                unset($question['topic_id']);
 
-            // $question = NullHelper::filter($question);
+                // $question = NullHelper::filter($question);
 
-            if ($formQuestion->combination_id) {
-                $question->choices = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, $withAnswer, $language);
-                // if ($withAnswer) {
-                //     // $question['choices'] = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, true, $language);
-                //     $question->choices = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, true, $language);
-                // } else {
-                //     // $question['choices'] = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, false, $language);
-                //     $question->choices = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, false, $language);
-                // }
-            } else {
-                if ($withAnswer) {
-                    $trueFalseQuestion = TrueFalseQuestion::where('question_id', $formQuestion->question_id)->first(['answer']);
-                    if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
-                        $question->is_true = true;
-                    } else {
-                        $question->is_true = false;
+                if ($formQuestion->combination_id) {
+                    $question->choices = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, $withAnswer, $language);
+                    // if ($withAnswer) {
+                    //     // $question['choices'] = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, true, $language);
+                    //     $question->choices = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, true, $language);
+                    // } else {
+                    //     // $question['choices'] = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, false, $language);
+                    //     $question->choices = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, false, $language);
+                    // }
+                } else {
+                    if ($withAnswer) {
+                        $trueFalseQuestion = TrueFalseQuestion::where('question_id', $formQuestion->question_id)->first(['answer']);
+                        if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
+                            $question->is_true = true;
+                        } else {
+                            $question->is_true = false;
+                        }
                     }
                 }
+
+                if (!$withQuestionId) {
+                    // unset($question['id']);
+                    unset($question->id);
+                }
+
+                array_push($questions, $question);
             }
 
-            if (!$withQuestionId) {
-                // unset($question['id']);
-                unset($question->id);
+            $groupedQuestions = [];
+
+            foreach ($questions as $question) {
+                // $typeName = $question['type_name'];
+                $typeName = $question->type_name;
+                if (!isset($groupedQuestions[$typeName])) {
+                    $groupedQuestions[$typeName] = [
+                        'type_name' => $typeName,
+                        'questions' => []
+                    ];
+                }
+
+                // unset($question['type_name']);
+                unset($question->type_name);
+
+                $groupedQuestions[$typeName]['questions'][] = $question;
             }
 
-            array_push($questions, $question);
+            $groupedQuestions = array_values($groupedQuestions);
+
+            $groupedQuestions = ProcessDataHelper::enumsConvertIdToName(
+                $groupedQuestions,
+                [
+                    new EnumReplacement('type_name', QuestionTypeEnum::class)
+                ]
+            );
+
+            $groupedQuestions = NullHelper::filter($groupedQuestions);
+
+            return $groupedQuestions;
+        } catch (\Exception $e) {
+            throw $e;
         }
-
-        $groupedQuestions = [];
-
-        foreach ($questions as $question) {
-            // $typeName = $question['type_name'];
-            $typeName = $question->type_name;
-            if (!isset($groupedQuestions[$typeName])) {
-                $groupedQuestions[$typeName] = [
-                    'type_name' => $typeName,
-                    'questions' => []
-                ];
-            }
-
-            // unset($question['type_name']);
-            unset($question->type_name);
-
-            $groupedQuestions[$typeName]['questions'][] = $question;
-        }
-
-        $groupedQuestions = array_values($groupedQuestions);
-
-        $groupedQuestions = ProcessDataHelper::enumsConvertIdToName(
-            $groupedQuestions,
-            [
-                new EnumReplacement('type_name', QuestionTypeEnum::class)
-            ]
-        );
-
-        $groupedQuestions = NullHelper::filter($groupedQuestions);
-
-        return $groupedQuestions;
     }
 
     public static function getFormQuestionsWithoutDetails($formId, bool $withQuestionId, bool $withChoiceId, bool $withAnswer)
     {
-        $questions = [];
-        $form = Form::findOrFail($formId);
-        $realExam = RealExam::findOrFail($form->real_exam_id);
-        $language = LanguageEnum::symbolOf(intval($realExam->language));
+        try {
+            $questions = [];
+            $form = Form::findOrFail($formId);
+            $realExam = RealExam::findOrFail($form->real_exam_id);
+            $language = LanguageEnum::symbolOf(intval($realExam->language));
 
-        $formQuestions = $form->form_questions()->orderBy('question_id')->get(['question_id', 'combination_id']);
+            $formQuestions = $form->form_questions()->orderBy('question_id')->get(['question_id', 'combination_id']);
 
-        foreach ($formQuestions as $formQuestion) {
-            $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
+            foreach ($formQuestions as $formQuestion) {
+                $question = $formQuestion->question()->first(['id', 'content', 'attachment as attachment_url']);
 
-            if ($formQuestion->combination_id) {
-                $question->choices = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, $withAnswer, $language);
-            } else {
-                if ($withAnswer) {
-                    $answer = TrueFalseQuestion::where('question_id', $formQuestion->question_id)->first(['answer'])['answer'];
-                    $question->is_true = intval($answer) === TrueFalseAnswerEnum::TRUE->value;
+                if ($formQuestion->combination_id) {
+                    $question->choices = self::retrieveCombinationChoices($formQuestion->question_id, $formQuestion->combination_id, $withChoiceId, $withAnswer, $language);
+                } else {
+                    if ($withAnswer) {
+                        $answer = TrueFalseQuestion::where('question_id', $formQuestion->question_id)->first(['answer'])['answer'];
+                        $question->is_true = intval($answer) === TrueFalseAnswerEnum::TRUE->value;
+                    }
                 }
+
+                if (!$withQuestionId) {
+                    unset($question->id);
+                }
+
+                array_push($questions, $question);
             }
 
-            if (!$withQuestionId) {
-                unset($question->id);
-            }
+            $questions = NullHelper::filter($questions);
 
-            array_push($questions, $question);
+            return $questions;
+        } catch (\Exception $e) {
+            throw $e;
         }
-
-        $questions = NullHelper::filter($questions);
-
-        return $questions;
     }
 
     // public static function retrieveRealExamFormQuestions($formId) //////////////////////*********** More condition needed
@@ -371,8 +366,12 @@ class ExamHelper
 
     public static function getExamResultAppreciation($scoreRate)
     {
-        //for language we must choice like exam langauage or user language
-        return AppreciationEnum::getScoreRateAppreciation($scoreRate, LanguageHelper::getEnumLanguageName());
+        try {
+            //for language we must choice like exam langauage or user language
+            return AppreciationEnum::getScoreRateAppreciation($scoreRate, LanguageHelper::getEnumLanguageName());
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     /**
@@ -499,377 +498,406 @@ class ExamHelper
     // public static function retrieveCombinationChoices($qeustionId, $combinationId, bool $withChoiceId, bool $withAnswer)
     public static function retrieveCombinationChoices($qeustionId, $combinationId, bool $withChoiceId, bool $withAnswer, string $language = 'ar')
     {
-        // $result = null;
-        $choices = self::uncombinateCombination($qeustionId, $combinationId);
+        try {
+            // $result = null;
+            $choices = self::uncombinateCombination($qeustionId, $combinationId);
 
-        $result = [];
+            $result = [];
 
-        foreach ($choices as $choice) {
-            $temp = [];
+            foreach ($choices as $choice) {
+                $temp = [];
 
-            if (property_exists($choice, 'ids')) {
-                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class, $language);
-                $temp['ids'] = $choice->ids;
-            } else {
-                if ($choice->id == -1) {
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class, $language);
-                } elseif ($choice->id == -2) {
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class, $language);
+                if (property_exists($choice, 'ids')) {
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class, $language);
+                    $temp['ids'] = $choice->ids;
                 } else {
-                    $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
-                }
+                    if ($choice->id == -1) {
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class, $language);
+                    } elseif ($choice->id == -2) {
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class, $language);
+                    } else {
+                        $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
+                    }
 
-                // if ($withChoiceId) {
-                $temp['id'] = $choice->id;
-                // }
-            }
-
-            if ($withAnswer) {
-                $temp['is_true'] = $choice->isCorrect;
-            }
-
-            array_push($result, $temp);
-        }
-
-        $mixIds = collect($result)->filter(function ($item) {
-            if (isset($item['ids'])) {
-                return $item;
-            }
-        })->map(function ($item) {
-            return collect($item['ids'])->toArray();
-        })->first();
-
-        $isMixTrue = collect($result)->filter(function ($item) {
-            if (isset($item['is_true']) && isset($item['ids'])) {
-                return $item;
-            }
-        })->map(function ($item) {
-            return $item['is_true'];
-        })->first();
-
-        $finalChoices = [];
-
-        if (!isset($mixIds) && empty($mixIds)) {
-            $finalUnmixed = [];
-
-            foreach ($result as $item) {
-                if (!$withChoiceId) {
-                    unset($item['id']);
-                }
-                $finalUnmixed[] = $item;
-            }
-
-            $finalChoices['unmixed'] = $finalUnmixed;
-        } else {
-            $mixed = collect($result)->filter(function ($item) use ($mixIds) {
-                return !isset($item['ids']) && !is_null($mixIds) && in_array($item->id, $mixIds);
-            })->toArray();
-
-            $unmixed = collect($result)->filter(function ($item) use ($mixIds) {
-                return !isset($item['ids']) && ((!is_null($mixIds) && !in_array($item->id, $mixIds)) || is_null($mixIds));
-            })->toArray();
-
-            if (!$withChoiceId) {
-                $mixed = collect($mixed)->map(function ($item) {
-                    unset($item['id']);
-                    return $item;
-                });
-
-                $unmixed = collect($unmixed)->map(function ($item) {
-                    unset($item['id']);
-                    return $item;
-                });
-            }
-
-            if (!empty($mixed)) {
-                $finalMixed = [];
-
-                foreach ($mixed as $mixedItem) {
-                    $finalMixed[] = $mixedItem;
-                }
-
-                $final['choices'] = $finalMixed;
-
-                if ($withChoiceId) {
-                    $final['id'] = CombinationChoiceTypeEnum::MIX->value;
+                    // if ($withChoiceId) {
+                    $temp['id'] = $choice->id;
+                    // }
                 }
 
                 if ($withAnswer) {
-                    $final['is_true'] = $isMixTrue;
+                    $temp['is_true'] = $choice->isCorrect;
                 }
 
-                $finalChoices['mixed'] = $final;
+                array_push($result, $temp);
             }
 
-            if (!empty($unmixed)) {
+            $mixIds = collect($result)->filter(function ($item) {
+                if (isset($item['ids'])) {
+                    return $item;
+                }
+            })->map(function ($item) {
+                return collect($item['ids'])->toArray();
+            })->first();
+
+            $isMixTrue = collect($result)->filter(function ($item) {
+                if (isset($item['is_true']) && isset($item['ids'])) {
+                    return $item;
+                }
+            })->map(function ($item) {
+                return $item['is_true'];
+            })->first();
+
+            $finalChoices = [];
+
+            if (!isset($mixIds) && empty($mixIds)) {
                 $finalUnmixed = [];
 
-                foreach ($unmixed as $unmixedItem) {
-                    $finalUnmixed[] = $unmixedItem;
+                foreach ($result as $item) {
+                    if (!$withChoiceId) {
+                        unset($item['id']);
+                    }
+                    $finalUnmixed[] = $item;
                 }
 
                 $finalChoices['unmixed'] = $finalUnmixed;
-            }
-        }
+            } else {
+                $mixed = collect($result)->filter(function ($item) use ($mixIds) {
+                    return !isset($item['ids']) && !is_null($mixIds) && in_array($item->id, $mixIds);
+                })->toArray();
 
-        return $finalChoices;
+                $unmixed = collect($result)->filter(function ($item) use ($mixIds) {
+                    return !isset($item['ids']) && ((!is_null($mixIds) && !in_array($item->id, $mixIds)) || is_null($mixIds));
+                })->toArray();
+
+                if (!$withChoiceId) {
+                    $mixed = collect($mixed)->map(function ($item) {
+                        unset($item['id']);
+                        return $item;
+                    });
+
+                    $unmixed = collect($unmixed)->map(function ($item) {
+                        unset($item['id']);
+                        return $item;
+                    });
+                }
+
+                if (!empty($mixed)) {
+                    $finalMixed = [];
+
+                    foreach ($mixed as $mixedItem) {
+                        $finalMixed[] = $mixedItem;
+                    }
+
+                    $final['choices'] = $finalMixed;
+
+                    if ($withChoiceId) {
+                        $final['id'] = CombinationChoiceTypeEnum::MIX->value;
+                    }
+
+                    if ($withAnswer) {
+                        $final['is_true'] = $isMixTrue;
+                    }
+
+                    $finalChoices['mixed'] = $final;
+                }
+
+                if (!empty($unmixed)) {
+                    $finalUnmixed = [];
+
+                    foreach ($unmixed as $unmixedItem) {
+                        $finalUnmixed[] = $unmixedItem;
+                    }
+
+                    $finalChoices['unmixed'] = $finalUnmixed;
+                }
+            }
+
+            return $finalChoices;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public static function retrieveCombinationChoices1($qeustionId, $combinationId, bool $withChoiceId, bool $withAnswer, string $language = 'ar')
     {
-        // $result = null;
-        $choices = self::uncombinateCombination($qeustionId, $combinationId);
+        try {
+            // $result = null;
+            $choices = self::uncombinateCombination($qeustionId, $combinationId);
 
-        // 453, 454, 459, -2
+            // 453, 454, 459, -2
 
-        // return $choices;
+            // return $choices;
 
-        // if($withChoiceId && $withAnswer){
-        //     $result = self::retrieveCombinationChoicesWithIdAndAnswer($choices);
-        // }elseif($withChoiceId && !$withAnswer){
-        //     $result = self::retrieveCombinationChoicesWithId($choices);
-        // }elseif(!$withChoiceId && $withAnswer){
-        //     $result = self::retrieveCombinationChoicesWithAnswer($choices);
-        // }else{
-        //     $result = self::retrieveCombinationChoicesWithoutIdAndAnswer($choices);
-        // }
+            // if($withChoiceId && $withAnswer){
+            //     $result = self::retrieveCombinationChoicesWithIdAndAnswer($choices);
+            // }elseif($withChoiceId && !$withAnswer){
+            //     $result = self::retrieveCombinationChoicesWithId($choices);
+            // }elseif(!$withChoiceId && $withAnswer){
+            //     $result = self::retrieveCombinationChoicesWithAnswer($choices);
+            // }else{
+            //     $result = self::retrieveCombinationChoicesWithoutIdAndAnswer($choices);
+            // }
 
 
-        $result = [];
+            $result = [];
 
-        foreach ($choices as $choice) {
-            $temp = [];
+            foreach ($choices as $choice) {
+                $temp = [];
 
-            if (property_exists($choice, 'ids')) {
-                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class, $language);
-                $temp['ids'] = $choice->ids;
+                if (property_exists($choice, 'ids')) {
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class, $language);
+                    $temp['ids'] = $choice->ids;
 
-                // if ($withChoiceId) {
-                //     $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
-                // }
-            } else {
-                if ($choice->id == -1) {
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class, $language);
-                } elseif ($choice->id == -2) {
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class, $language);
+                    // if ($withChoiceId) {
+                    //     $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
+                    // }
                 } else {
-                    $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
-                }
+                    if ($choice->id == -1) {
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class, $language);
+                    } elseif ($choice->id == -2) {
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class, $language);
+                    } else {
+                        $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
+                    }
 
-                // if ($withChoiceId) {
-                $temp['id'] = $choice->id;
-                // }
-            }
-
-            if ($withAnswer) {
-                $temp['is_true'] = $choice->isCorrect;
-            }
-
-            array_push($result, $temp);
-        }
-
-        $mixIds = collect($result)->filter(function ($item) {
-            if (isset($item['ids'])) {
-                return $item;
-            }
-        })->map(function ($item) {
-            return collect($item['ids'])->toArray();
-        })->first();
-
-        $isMixTrue = collect($result)->filter(function ($item) {
-            if (isset($item['is_true'])) {
-                return $item;
-            }
-        })->map(function ($item) {
-            return $item['is_true'];
-        })->first();
-
-        $finalChoices = [];
-
-        if (!isset($mixIds) && empty($mixIds)) {
-            foreach ($result as $item) {
-                if (!$withChoiceId) {
-                    unset($item['id']);
-                }
-                $finalChoices[] = $item;
-            }
-        } else {
-            $mixed = collect($result)->filter(function ($item) use ($mixIds) {
-                return !isset($item['ids']) && !is_null($mixIds) && in_array($item->id, $mixIds);
-            })->toArray();
-
-            $unmixed = collect($result)->filter(function ($item) use ($mixIds) {
-                return !isset($item['ids']) && ((!is_null($mixIds) && !in_array($item->id, $mixIds)) || is_null($mixIds));
-            })->toArray();
-
-            if (!$withChoiceId) {
-                $mixed = collect($mixed)->map(function ($item) {
-                    unset($item['id']);
-                    return $item;
-                });
-
-                $unmixed = collect($unmixed)->map(function ($item) {
-                    unset($item['id']);
-                    return $item;
-                });
-            }
-
-            if (!empty($mixed)) {
-                $finalMixed = [];
-
-                foreach ($mixed as $mixedItem) {
-                    $finalMixed[] = $mixedItem;
-                }
-                // $finalChoices[] = ['mix' => $finalMixed];
-
-                // if (!$withChoiceId) {
-                //     $finalChoices[] = [
-                //         'mix' => $finalMixed
-                //     ];
-                // } else {
-                //     $finalChoices[] = [
-                //         'id' => CombinationChoiceTypeEnum::MIX->value,
-                //         'mix' => $finalMixed
-                //     ];
-                // }
-
-                $final['mix'] = $finalMixed;
-
-                if ($withChoiceId) {
-                    $final['id'] = CombinationChoiceTypeEnum::MIX->value;
+                    // if ($withChoiceId) {
+                    $temp['id'] = $choice->id;
+                    // }
                 }
 
                 if ($withAnswer) {
-                    $final['is_true'] = $isMixTrue;
+                    $temp['is_true'] = $choice->isCorrect;
                 }
 
-                $finalChoices[] = $final;
+                array_push($result, $temp);
             }
 
-            // foreach ($unmixed as $unmixedItem) {
-            //     $finalChoices[] = $unmixedItem;
-            // }
+            $mixIds = collect($result)->filter(function ($item) {
+                if (isset($item['ids'])) {
+                    return $item;
+                }
+            })->map(function ($item) {
+                return collect($item['ids'])->toArray();
+            })->first();
 
-            if (!empty($unmixed)) {
-                $finalUnmixed = [];
+            $isMixTrue = collect($result)->filter(function ($item) {
+                if (isset($item['is_true'])) {
+                    return $item;
+                }
+            })->map(function ($item) {
+                return $item['is_true'];
+            })->first();
 
-                foreach ($unmixed as $unmixedItem) {
-                    $finalUnmixed[] = $unmixedItem;
+            $finalChoices = [];
+
+            if (!isset($mixIds) && empty($mixIds)) {
+                foreach ($result as $item) {
+                    if (!$withChoiceId) {
+                        unset($item['id']);
+                    }
+                    $finalChoices[] = $item;
+                }
+            } else {
+                $mixed = collect($result)->filter(function ($item) use ($mixIds) {
+                    return !isset($item['ids']) && !is_null($mixIds) && in_array($item->id, $mixIds);
+                })->toArray();
+
+                $unmixed = collect($result)->filter(function ($item) use ($mixIds) {
+                    return !isset($item['ids']) && ((!is_null($mixIds) && !in_array($item->id, $mixIds)) || is_null($mixIds));
+                })->toArray();
+
+                if (!$withChoiceId) {
+                    $mixed = collect($mixed)->map(function ($item) {
+                        unset($item['id']);
+                        return $item;
+                    });
+
+                    $unmixed = collect($unmixed)->map(function ($item) {
+                        unset($item['id']);
+                        return $item;
+                    });
                 }
 
-                $final2['unmix'] = $finalUnmixed;
+                if (!empty($mixed)) {
+                    $finalMixed = [];
 
-                $finalChoices[] = $final2;
+                    foreach ($mixed as $mixedItem) {
+                        $finalMixed[] = $mixedItem;
+                    }
+                    // $finalChoices[] = ['mix' => $finalMixed];
+
+                    // if (!$withChoiceId) {
+                    //     $finalChoices[] = [
+                    //         'mix' => $finalMixed
+                    //     ];
+                    // } else {
+                    //     $finalChoices[] = [
+                    //         'id' => CombinationChoiceTypeEnum::MIX->value,
+                    //         'mix' => $finalMixed
+                    //     ];
+                    // }
+
+                    $final['mix'] = $finalMixed;
+
+                    if ($withChoiceId) {
+                        $final['id'] = CombinationChoiceTypeEnum::MIX->value;
+                    }
+
+                    if ($withAnswer) {
+                        $final['is_true'] = $isMixTrue;
+                    }
+
+                    $finalChoices[] = $final;
+                }
+
+                // foreach ($unmixed as $unmixedItem) {
+                //     $finalChoices[] = $unmixedItem;
+                // }
+
+                if (!empty($unmixed)) {
+                    $finalUnmixed = [];
+
+                    foreach ($unmixed as $unmixedItem) {
+                        $finalUnmixed[] = $unmixedItem;
+                    }
+
+                    $final2['unmix'] = $finalUnmixed;
+
+                    $finalChoices[] = $final2;
+                }
             }
+
+            return $finalChoices;
+        } catch (\Exception $e) {
+            throw $e;
         }
-
-        return $finalChoices;
     }
 
 
     private static function uncombinateCombination($qeustionId, $combinationId)
     {
-        $combinationChoices = QuestionChoicesCombination::where('combination_id', '=', $combinationId)
-            ->where('question_id', '=', $qeustionId)
-            ->first(['combination_choices'])['combination_choices'];
+        try {
+            $combinationChoices = QuestionChoicesCombination::where('combination_id', '=', $combinationId)
+                ->where('question_id', '=', $qeustionId)
+                ->first(['combination_choices'])['combination_choices'];
 
-        $choices = (new UncombineQuestionChoicesCombination())->execute($combinationChoices);
+            $choices = (new UncombineQuestionChoicesCombination())->execute($combinationChoices);
 
-        return $choices;
+            return $choices;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     private static function retrieveCombinationChoicesWithIdAndAnswer($choices)
     {
-        $result = [];
-        foreach ($choices as $choice) {
-            $temp = [];
-            if (property_exists($choice, 'ids')) {
-                $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
-                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
-            } else {
-                if ($choice->id == -1) {
-                    $temp['id'] = CombinationChoiceTypeEnum::ALL->value;
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
-                } elseif ($choice->id == -2) {
-                    $temp['id'] = CombinationChoiceTypeEnum::NOTHING->value;
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+        try {
+            $result = [];
+
+            foreach ($choices as $choice) {
+                $temp = [];
+                if (property_exists($choice, 'ids')) {
+                    $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
                 } else {
-                    $temp = Choice::findOrFail($choice->id)->first(['id', 'content', 'attachment as attachment_url']);
+                    if ($choice->id == -1) {
+                        $temp['id'] = CombinationChoiceTypeEnum::ALL->value;
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
+                    } elseif ($choice->id == -2) {
+                        $temp['id'] = CombinationChoiceTypeEnum::NOTHING->value;
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+                    } else {
+                        $temp = Choice::findOrFail($choice->id)->first(['id', 'content', 'attachment as attachment_url']);
+                    }
                 }
+                $temp['is_true'] = $choice->isCorrect;
+                array_push($result, $temp);
             }
-            $temp['is_true'] = $choice->isCorrect;
-            array_push($result, $temp);
+            return $result;
+        } catch (\Exception $e) {
+            throw $e;
         }
-        return $result;
     }
 
     private static function retrieveCombinationChoicesWithId($choices)
     {
-        $result = [];
-        foreach ($choices as $choice) {
-            $temp = [];
-            if (property_exists($choice, 'ids')) {
-                $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
-                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
-            } else {
-                if ($choice->id == -1) {
-                    $temp['id'] = CombinationChoiceTypeEnum::ALL->value;
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
-                } elseif ($choice->id == -2) {
-                    $temp['id'] = CombinationChoiceTypeEnum::NOTHING->value;
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+        try {
+            $result = [];
+            foreach ($choices as $choice) {
+                $temp = [];
+                if (property_exists($choice, 'ids')) {
+                    $temp['id'] = CombinationChoiceTypeEnum::MIX->value;
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
                 } else {
-                    $temp = Choice::findOrFail($choice->id)->first(['id', 'content', 'attachment as attachment_url']);
+                    if ($choice->id == -1) {
+                        $temp['id'] = CombinationChoiceTypeEnum::ALL->value;
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
+                    } elseif ($choice->id == -2) {
+                        $temp['id'] = CombinationChoiceTypeEnum::NOTHING->value;
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+                    } else {
+                        $temp = Choice::findOrFail($choice->id)->first(['id', 'content', 'attachment as attachment_url']);
+                    }
                 }
+                array_push($result, $temp);
             }
-            array_push($result, $temp);
+            return $result;
+        } catch (\Exception $e) {
+            throw $e;
         }
-        return $result;
     }
 
     private static function retrieveCombinationChoicesWithAnswer($choices)
     {
-        $result = [];
-        foreach ($choices as $choice) {
-            $temp = [];
-            if (property_exists($choice, 'ids')) {
-                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
-            } else {
-                if ($choice->id == -1) {
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
-                } elseif ($choice->id == -2) {
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+        try {
+            $result = [];
+            foreach ($choices as $choice) {
+                $temp = [];
+                if (property_exists($choice, 'ids')) {
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
                 } else {
-                    // $temp = Choice::findOrFail($choice->id)->first(['content', 'attachment as attachment_url']); // threre's problem in pk (id)
-                    $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
+                    if ($choice->id == -1) {
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
+                    } elseif ($choice->id == -2) {
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+                    } else {
+                        // $temp = Choice::findOrFail($choice->id)->first(['content', 'attachment as attachment_url']); // threre's problem in pk (id)
+                        $temp = Choice::where('id', $choice->id)->first(['content', 'attachment as attachment_url']);
 
-                    return $temp;
+                        return $temp;
+                    }
                 }
+                $temp['is_true'] = $choice->isCorrect;
+                array_push($result, $temp);
             }
-            $temp['is_true'] = $choice->isCorrect;
-            array_push($result, $temp);
+            return $result;
+        } catch (\Exception $e) {
+            throw $e;
         }
-        return $result;
     }
 
     private static function retrieveCombinationChoicesWithoutIdAndAnswer($choices)
     {
-        $result = [];
-        foreach ($choices as $choice) {
-            $temp = [];
-            if (property_exists($choice, 'ids')) {
-                $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
-            } else {
-                if ($choice->id == -1) {
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
-                } elseif ($choice->id == -2) {
-                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+        try {
+            $result = [];
+            foreach ($choices as $choice) {
+                $temp = [];
+                if (property_exists($choice, 'ids')) {
+                    $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::MIX->value, CombinationChoiceTypeEnum::class);
                 } else {
-                    $temp = Choice::findOrFail($choice->id)->first(['content', 'attachment as attachment_url']);
+                    if ($choice->id == -1) {
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::ALL->value, CombinationChoiceTypeEnum::class);
+                    } elseif ($choice->id == -2) {
+                        $temp['content'] = EnumTraits::getNameByNumber(CombinationChoiceTypeEnum::NOTHING->value, CombinationChoiceTypeEnum::class);
+                    } else {
+                        $temp = Choice::findOrFail($choice->id)->first(['content', 'attachment as attachment_url']);
+                    }
                 }
+                array_push($result, $temp);
             }
-            array_push($result, $temp);
+            return $result;
+        } catch (\Exception $e) {
+            throw $e;
         }
-        return $result;
     }
 }

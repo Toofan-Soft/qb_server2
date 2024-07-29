@@ -2,9 +2,6 @@
 
 namespace App\Helpers;
 
-use Traversable;
-use App\Helpers\ResponseHelper;
-use PhpParser\Node\Stmt\Foreach_;
 
 class GetHelper
 {
@@ -37,110 +34,118 @@ class GetHelper
 
     public static function retrieveModels($model, $attributes = null, $conditionAttributes = [], $enumReplacements = null, $columnReplacements = null)
     {
-        $query = $model::query();
-        // $rows = null;
-        $rows = [];
-        if (empty($conditionAttributes)) {
-            if (empty($attributes)) {
-                $rows = $model::all();
+        try {
+            $query = $model::query();
+            // $rows = null;
+            $rows = [];
+            if (empty($conditionAttributes)) {
+                if (empty($attributes)) {
+                    $rows = $model::all();
+                } else {
+                    $rows = $model::all($attributes);
+                }
             } else {
-                $rows = $model::all($attributes);
-            }
-        } else {
-            if (empty($attributes)) {
+                if (empty($attributes)) {
 
-                $query = $query->where(function ($query) use ($conditionAttributes) {
-                    foreach ($conditionAttributes as $column => $value) {
-                        $query->where($column, '=', $value);
-                    }
-                });
-                $rows = $query->get();
+                    $query = $query->where(function ($query) use ($conditionAttributes) {
+                        foreach ($conditionAttributes as $column => $value) {
+                            $query->where($column, '=', $value);
+                        }
+                    });
+                    $rows = $query->get();
+                } else {
+
+                    $query = $query->where(function ($query) use ($conditionAttributes) {
+                        foreach ($conditionAttributes as $column => $value) {
+                            $query->where($column, '=', $value);
+                        }
+                    });
+
+                    $rows = $query->get($attributes);
+                }
+            }
+
+            // foreach ($rows as $row) {
+            //     if (isset($row->logo_url)) {
+            //         $row->logo_url = asset($row->logo_url);
+            //     } elseif (isset($row->image_url)) {
+            //         $row->image_url = asset($row->image_url);
+            //     } elseif (isset($row->attachmetn_url)) {
+            //         $row->attachmetn_url = asset($row->attachmetn_url);
+            //     }
+            // }
+
+            if ($enumReplacements) {
+                $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
+            }
+
+            if ($columnReplacements) {
+                $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
+            }
+
+            if (is_array($rows)) {
+                return $rows;
             } else {
-
-                $query = $query->where(function ($query) use ($conditionAttributes) {
-                    foreach ($conditionAttributes as $column => $value) {
-                        $query->where($column, '=', $value);
-                    }
-                });
-
-                $rows = $query->get($attributes);
+                return $rows->toArray();
             }
-        }
-
-        // foreach ($rows as $row) {
-        //     if (isset($row->logo_url)) {
-        //         $row->logo_url = asset($row->logo_url);
-        //     } elseif (isset($row->image_url)) {
-        //         $row->image_url = asset($row->image_url);
-        //     } elseif (isset($row->attachmetn_url)) {
-        //         $row->attachmetn_url = asset($row->attachmetn_url);
-        //     }
-        // }
-        
-        if ($enumReplacements) {
-            $rows = ProcessDataHelper::enumsConvertIdToName($rows, $enumReplacements);
-        }
-
-        if ($columnReplacements) {
-            $rows = ProcessDataHelper::columnConvertIdToName($rows, $columnReplacements);
-        }
-
-        if (is_array($rows)) {
-            return $rows;
-        } else {
-            return $rows->toArray();
+        } catch (\Exception $e) {
+            throw $e;
         }
     }
 
 
     public static function retrieveModel($model, $attributes = null, $conditionAttributes = [], $enumReplacements = null, $columnReplacements = null)
     {
-        $query = $model::query();
-        $row = null;
-        if (empty($conditionAttributes)) {
-            if (empty($attributes)) {
-                $row = $model::all();
+        try {
+            $query = $model::query();
+            $row = null;
+            if (empty($conditionAttributes)) {
+                if (empty($attributes)) {
+                    $row = $model::all();
+                } else {
+                    $row = $model::all($attributes);
+                }
             } else {
-                $row = $model::all($attributes);
+                if (empty($attributes)) {
+
+                    $query = $query->where(function ($query) use ($conditionAttributes) {
+                        foreach ($conditionAttributes as $column => $value) {
+                            $query->where($column, '=', $value);
+                        }
+                    });
+                    $row = $query->first();
+                } else {
+
+                    $query = $query->where(function ($query) use ($conditionAttributes) {
+                        foreach ($conditionAttributes as $column => $value) {
+                            $query->where($column, '=', $value);
+                        }
+                    });
+
+                    $row = $query->first($attributes);
+                }
             }
-        } else {
-            if (empty($attributes)) {
 
-                $query = $query->where(function ($query) use ($conditionAttributes) {
-                    foreach ($conditionAttributes as $column => $value) {
-                        $query->where($column, '=', $value);
-                    }
-                });
-                $row = $query->first();
-            } else {
+            // if (isset($row->logo_url)) {
+            //     $row->logo_url = asset($row->logo_url);
+            // } elseif (isset($row->image_url)) {
+            //     $row->image_url = asset($row->image_url);
+            // } elseif (isset($row->attachmetn_url)) {
+            //     $row->attachmetn_url = asset($row->attachmetn_url);
+            // }
 
-                $query = $query->where(function ($query) use ($conditionAttributes) {
-                    foreach ($conditionAttributes as $column => $value) {
-                        $query->where($column, '=', $value);
-                    }
-                });
-
-                $row = $query->first($attributes);
+            if ($enumReplacements) {
+                $row = ProcessDataHelper::enumsConvertIdToName($row, $enumReplacements);
             }
+
+            if ($columnReplacements) {
+                $row = ProcessDataHelper::columnConvertIdToName($row, $columnReplacements);
+            }
+
+            // return ResponseHelper::successWithData($row);
+            return $row;
+        } catch (\Exception $e) {
+            throw $e;
         }
-
-        // if (isset($row->logo_url)) {
-        //     $row->logo_url = asset($row->logo_url);
-        // } elseif (isset($row->image_url)) {
-        //     $row->image_url = asset($row->image_url);
-        // } elseif (isset($row->attachmetn_url)) {
-        //     $row->attachmetn_url = asset($row->attachmetn_url);
-        // }
-
-        if ($enumReplacements) {
-            $row = ProcessDataHelper::enumsConvertIdToName($row, $enumReplacements);
-        }
-
-        if ($columnReplacements) {
-            $row = ProcessDataHelper::columnConvertIdToName($row, $columnReplacements);
-        }
-
-        // return ResponseHelper::successWithData($row);
-        return $row;
     }
 }

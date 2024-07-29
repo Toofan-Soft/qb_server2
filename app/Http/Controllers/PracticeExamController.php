@@ -13,7 +13,6 @@ use App\Helpers\NullHelper;
 use App\Helpers\ParamHelper;
 use App\Models\PracticeExam;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
 use App\Enums\CoursePartsEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Helpers\DatetimeHelper;
@@ -21,16 +20,11 @@ use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
-use App\Helpers\OnlinExamHelper;
-use App\Enums\QuestionStatusEnum;
-use App\Helpers\EnumReplacement1;
-use App\Models\PracticeExamUsage;
 use App\Models\TrueFalseQuestion;
 use App\AlgorithmAPI\GenerateExam;
 use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Enums\ExamConductMethodEnum;
 use App\Helpers\QuestionUsageHelper;
 use App\Models\DepartmentCoursePart;
@@ -40,7 +34,6 @@ use App\Enums\PracticeExamStatusEnum;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
-use App\Enums\FormConfigurationMethodEnum;
 
 class PracticeExamController extends Controller
 {
@@ -51,6 +44,7 @@ class PracticeExamController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
+        DB::beginTransaction();
         try {
             $algorithmData = $this->getAlgorithmData($request);
             $examQuestions = (new GenerateExam())->execute($algorithmData);
@@ -58,7 +52,6 @@ class PracticeExamController extends Controller
             if (!is_null($examQuestions)) { // modify to use has function
 
                 $user = User::findOrFail(auth()->user()->id);
-                DB::beginTransaction();
                 // return $user;
                 $practiceExam = $user->practice_exams()->create([
                     'department_course_part_id' => $request->department_course_part_id,
@@ -96,6 +89,7 @@ class PracticeExamController extends Controller
                 return ResponseHelper::serverError();
             }
         } catch (\Exception $e) {
+            DB::rollBack();
             return ResponseHelper::serverError();
         }
     }
@@ -625,13 +619,13 @@ class PracticeExamController extends Controller
         ])) {
             return  ResponseHelper::clientError();
         }
+        DB::beginTransaction();
         try {
             $practiceExam = PracticeExam::findOrFail($request->id);
             if (intval($practiceExam->status) != PracticeExamStatusEnum::NEW->value) {
+                DB::rollBack();
                 return ResponseHelper::clientError();
             }
-
-            DB::beginTransaction();
             $practiceExam->update([
                 'status' => PracticeExamStatusEnum::ACTIVE->value
             ]);
@@ -658,8 +652,8 @@ class PracticeExamController extends Controller
         ])) {
             return  ResponseHelper::clientError();
         }
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
             $practiceExam = PracticeExam::findOrFail($request->id);
             if ((intval($practiceExam->status) === PracticeExamStatusEnum::ACTIVE->value) && (intval($practiceExam->status) != PracticeExamStatusEnum::SUSPENDED->value)) {
                 $practiceExam->update([
@@ -692,13 +686,14 @@ class PracticeExamController extends Controller
         ])) {
             return  ResponseHelper::clientError();
         }
+        DB::beginTransaction();
         try {
             $practiceExam = PracticeExam::findOrFail($request->id);
             if (intval($practiceExam->status) != PracticeExamStatusEnum::SUSPENDED->value) {
+                DB::rollBack();
                 return ResponseHelper::clientError();
             }
 
-            DB::beginTransaction();
             $practiceExam->update([
                 'status' => PracticeExamStatusEnum::ACTIVE->value
             ]);
@@ -723,8 +718,8 @@ class PracticeExamController extends Controller
         ])) {
             return  ResponseHelper::clientError();
         }
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
             $practiceExam = PracticeExam::findOrFail($request->id);
             if ((intval($practiceExam->status) === PracticeExamStatusEnum::ACTIVE->value) && (intval($practiceExam->status) != PracticeExamStatusEnum::COMPLETE->value)) {
                 $practiceExam->update([
@@ -751,19 +746,6 @@ class PracticeExamController extends Controller
         }
     }
 
-
-    /**
-     ***** job:
-     * this function using for retrieve data that will use in algorithm
-     ***** parameters:
-     * request: Request
-     *
-     ***** return:
-     * algorithmData = { estimated_time, difficulty_level, forms_count,
-     *      question_types_and_questions_count [id, count],
-     *      question [id, type_id, difficulty_level, answer_time, topic_id, last_selection, selection_times]
-     *  }
-     */
     private function getAlgorithmData($request)
     {
         try {
@@ -780,14 +762,6 @@ class PracticeExamController extends Controller
 
     private function getQuestionsChoicesCombinations($questionsIds)
     {
-        // يفضل ان يتم عملها مشترك ليتم استخداما في الاختبار الورقي والتجريبي
-        // تقوم هذه الدالة باختيار توزيعة الاختيارات للاسئلة من نوع اختيار من متعدد
-        /**
-         * steps of function
-         *   اختيار الاسئلة التي نوعها اختيار من متعدد
-         *   اختيار احد التوزيعات التي يمتلكها السؤال بشكل عشوائي
-         *   يتم اضافة رقم التوزيعة المختارة الي السؤال
-         */
         $formQuestions = [];
         try {
             foreach ($questionsIds as $questionId) {
@@ -864,24 +838,6 @@ class PracticeExamController extends Controller
 
     public function rules(Request $request): array
     {
-        /*
-- practice exam table
-	- title
-	- language
-	- duration
-	- difficulty_level
-	- conduct_method
-	- status
-	- department_course_part_id
-	- user_id
-- practice exam question
-	- combination_id
-	- answer
-	- answer_duration
-	- practice_exam_id
-	- question_id
-
-        */
         $rules = [
             // practice exam table
             'title' => 'nullable|string',

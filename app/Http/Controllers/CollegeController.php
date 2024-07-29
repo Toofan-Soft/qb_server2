@@ -2,32 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Pusher\Pusher;
-use App\Models\User;
-use App\Helpers\Param;
-use App\Enums\RoleEnum;
 use App\Models\College;
-use App\Models\UserRole;
-use App\Events\FireEvent;
-use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Helpers\NullHelper;
 use App\Helpers\ImageHelper;
-use App\Helpers\ParamHelper;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
-use App\Helpers\ModifyHelper;
-use App\Helpers\ResponeHelper;
 use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
-use App\Models\DepartmentCourse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
-use League\CommonMark\Node\Query\OrExpr;
-use Illuminate\Support\Facades\Validator;
 use App\Helpers\Roles\ByteArrayValidationRule;
 
 class CollegeController extends Controller

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Guest;
 use Ichtrojan\Otp\Otp;
@@ -10,14 +9,11 @@ use App\Models\Student;
 use App\Models\Employee;
 use App\Models\UserRole;
 use App\Enums\GenderEnum;
-use App\Events\FireEvent;
 use App\Enums\JobTypeEnum;
 use App\Enums\LanguageEnum;
 use App\Helpers\NullHelper;
-use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
 use Illuminate\Http\Request;
-use App\Helpers\DatetimeHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Enums\QualificationEnum;
@@ -25,16 +21,14 @@ use App\Enums\UserStatusEnum;
 use App\Helpers\EnumReplacement;
 use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\Roles\PasswordValidationRule;
-use App\Listeners\FireListener;
+use App\Helpers\UserHelper;
 use App\Notifications\EmaiVerificationNotification;
-use Symfony\Component\Console\Helper\ProcessHelper;
 use App\Notifications\ResetPasswordNotificationVerification;
 
 class UserController extends Controller
@@ -83,7 +77,7 @@ class UserController extends Controller
                 return ResponseHelper::clientError();
             }
             if (auth()->attempt($input)) {
-                Auth::logoutOtherDevices($request->password);// logout from other devices
+                Auth::logoutOtherDevices($request->password); // logout from other devices
                 $user = Auth::user();
 
                 if (($user->email_verified_at !== false) && ($user->status !== UserStatusEnum::INACTIVE->value)) {
@@ -115,16 +109,21 @@ class UserController extends Controller
 
     public function logout()
     {
-        Gate::authorize('logout', UserController::class);
-        $user = Auth::guard('api')->user();
-        if ($user) {
-            $token = $user->token();
-            $token->revoke();
-            return response()->json(['message' => 'Successfully logged out'], 200);
+        try {
+            Gate::authorize('logout', UserController::class);
+            $user = Auth::guard('api')->user();
+            if ($user) {
+                $token = $user->token();
+                $token->revoke();
+                return ResponseHelper::success();
+                // return response()->json(['message' => 'Successfully logged out'], 200);
+            }
+            return ResponseHelper::clientError();
+            // return response()->json(['message' => 'Unable to logout'], 400);
+
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
         }
-
-        return response()->json(['message' => 'Unable to logout'], 400);
-
         // try {
         //     Auth::logout();
         //     // if (Auth::check()) {
@@ -262,7 +261,7 @@ class UserController extends Controller
             ])) {
                 return  ResponseHelper::clientError();
             }
-            $generatedToken = self::generateAlphanumericToken(8);
+            $generatedToken = UserHelper::generateAlphanumericToken();
             // $user = auth()->user();
             $user = User::where('email', $request->email)->first();
             $user->notify(new EmaiVerificationNotification($generatedToken));
@@ -290,5 +289,6 @@ class UserController extends Controller
             return ResponseHelper::serverError();
         }
     }
-    
+
+
 }

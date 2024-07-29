@@ -9,7 +9,6 @@ use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use App\Helpers\Roles\ByteArrayValidationRule;
 
 class UniversityController extends Controller
@@ -22,11 +21,15 @@ class UniversityController extends Controller
             return  ResponseHelper::clientError();
         }
 
-        $updatedAttributes = $request->all();
         try {
+            if (Storage::disk('local')->exists('university.json')) {
+                return  ResponseHelper::clientError();
+                // can not be configure university data more than one time 
+            }
+            $updatedAttributes = $request->all();
             $filePath = ImageHelper::uploadImage($request->logo);
             $updatedAttributes['logo'] =  $filePath;
-            
+
             $jsonData = json_encode($updatedAttributes, JSON_UNESCAPED_SLASHES);
             Storage::disk('local')->put('university.json', $jsonData);
 
@@ -43,10 +46,15 @@ class UniversityController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
-        $updatedAttributes = $request->all();
         try {
-                $filePath = ImageHelper::uploadImage($request->logo);
-                $updatedAttributes['logo'] = $filePath;
+            if (!Storage::disk('local')->exists('university.json')) {
+                return  ResponseHelper::clientError();
+                // you must first configure university data
+            }
+
+            $updatedAttributes = $request->all();
+            $filePath = ImageHelper::uploadImage($request->logo);
+            $updatedAttributes['logo'] = $filePath;
             $jsonData = Storage::disk('local')->get('university.json');
             $universityData = json_decode($jsonData, true);
             foreach ($updatedAttributes as $key => $value) {

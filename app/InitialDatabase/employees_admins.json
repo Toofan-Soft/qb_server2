@@ -53,5 +53,16 @@
         "phone": 777400004,
         "email": "rafiqadmin@gmail.com",
         "password": "rafiqadmin1"
+    },
+    {
+        "arabic_name": "القاسمي مدير النظام",
+        "english_name": "al kasemi",
+        "job_type_id": 2,
+        "qualification_id": 4,
+        "specialization": "System Administrator",
+        "gender_id": 1,
+        "phone": 777400005,
+        "email": "alkasemi@gmail.com",
+        "password": "alkasemi1"
     }
 ]

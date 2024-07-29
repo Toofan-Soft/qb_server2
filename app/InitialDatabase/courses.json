@@ -1,76 +1,257 @@
 [
     {
-        "arabic_name": "اللغة العربية",
-        "english_name": "Arabic Language",
+        "comment": 1,
+        "arabic_name": "I اللغة العربية",
+        "english_name": "Arabic Language I",
         "course_parts": [
             {
+                "comment": 1,
                 "part_id": 0,
                 "description": "this description for course part, that show the content of the part"
             }
         ]
     },
     {
-        "arabic_name": "اللغة الانجليزية",
-        "english_name": "English Language",
+        "comment": 2,
+        "arabic_name": "II اللغة العربية",
+        "english_name": "Arabic Language II",
         "course_parts": [
             {
+                "comment": 2,
                 "part_id": 0,
                 "description": "this description for course part, that show the content of the part"
             }
         ]
     },
     {
+        "comment": 3,
+        "arabic_name": "I اللغة الانجليزية",
+        "english_name": "English Language I",
+        "course_parts": [
+            {
+                "comment": 3,
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "comment": 4,
+        "arabic_name": "II اللغة الانجليزية",
+        "english_name": "English Language II",
+        "course_parts": [
+            {
+                "comment": 4,
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "comment": 5,
         "arabic_name": "ثقافة اسلامية",
         "english_name": "Islamic Culture",
         "course_parts": [
             {
+                "comment": 5,
                 "part_id": 0,
                 "description": "this description for course part, that show the content of the part"
             }
         ]
     },
     {
+        "comment": 6,
         "arabic_name": "اساسيات البرمجة",
         "english_name": "Programming Fundamentals",
         "course_parts": [
             {
+                "comment": 6,
                 "part_id": 0,
                 "description": "this description for course part, that show the content of the part"
             },
             {
+                "comment": 7,
                 "part_id": 1,
                 "description": "this description for course part, that show the content of the part"
             }
         ]
     },
     {
-        "arabic_name": "الرياضيات",
-        "english_name": "Mathematics",
+        "comment": 7,
+        "arabic_name": "برمجة الكائنات الموجهة",
+        "english_name": "Object Oriented Programming OOP",
         "course_parts": [
             {
+                "comment": 8,
                 "part_id": 0,
                 "description": "this description for course part, that show the content of the part"
             },
             {
+                "comment": 9,
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "comment": 8,
+        "arabic_name": "I هياكل بيانات وخوارزميات",
+        "english_name": "Data Structure I",
+        "course_parts": [
+            {
+                "comment": 10,
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "comment": 11,
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "comment": 9,
+        "arabic_name": "II هياكل بيانات وخوارزميات",
+        "english_name": "Data Structure II",
+        "course_parts": [
+            {
+                "comment": 12,
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "comment": 13,
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "comment": 10,
+        "arabic_name": "I الرياضيات",
+        "english_name": "Mathematics I",
+        "course_parts": [
+            {
+                "comment": 14,
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "comment": 15,
                 "part_id": 2,
                 "description": "this description for course part, that show the content of the part"
             }
         ]
     },
     {
-        "arabic_name": "الفيزياء",
-        "english_name": "Physics",
+        "comment": 11,
+        "arabic_name": "II الرياضيات",
+        "english_name": "Mathematics II",
         "course_parts": [
             {
+                "comment": 16,
                 "part_id": 0,
                 "description": "this description for course part, that show the content of the part"
             },
             {
+                "comment": 17,
+                "part_id": 2,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "comment": 12,
+        "arabic_name": "III الرياضيات",
+        "english_name": "Mathematics III",
+        "course_parts": [
+            {
+                "comment": 18,
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "comment": 19,
+                "part_id": 2,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "comment": 13,
+        "arabic_name": "I الفيزياء",
+        "english_name": "Physics I",
+        "course_parts": [
+            {
+                "comment": 20,
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "comment": 21,
                 "part_id": 1,
                 "description": "this description for course part, that show the content of the part"
             },
             {
+                "comment": 22,
                 "part_id": 2,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "comment": 14,
+        "arabic_name": "II الفيزياء",
+        "english_name": "Physics II",
+        "course_parts": [
+            {
+                "comment": 23,
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "comment": 24,
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "comment": 25,
+                "part_id": 2,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "comment": 15,
+        "arabic_name": "I رسم هندسي",
+        "english_name": "English Drawing I",
+        "course_parts": [
+            {
+                "comment": 26,
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "comment": 27,
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "comment": 16,
+        "arabic_name": "II رسم هندسي",
+        "english_name": "English Drawing II",
+        "course_parts": [
+            {
+                "comment": 28,
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "comment": 29,
+                "part_id": 1,
                 "description": "this description for course part, that show the content of the part"
             }
         ]
@@ -92,6 +273,90 @@
     {
         "arabic_name": "شبكات عصبية",
         "english_name": "Neural Network",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "I شبكات",
+        "english_name": "Network I",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "II شبكات",
+        "english_name": "Network II",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "I ويب",
+        "english_name": "Web I",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "II ويب",
+        "english_name": "Web II",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "قواعد بيانات",
+        "english_name": "Database",
+        "course_parts": [
+            {
+                "part_id": 0,
+                "description": "this description for course part, that show the content of the part"
+            },
+            {
+                "part_id": 1,
+                "description": "this description for course part, that show the content of the part"
+            }
+        ]
+    },
+    {
+        "arabic_name": "نظم تشغيل",
+        "english_name": "Operating System",
         "course_parts": [
             {
                 "part_id": 0,

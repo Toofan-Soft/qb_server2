@@ -4,13 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Form;
 use App\Models\Student;
-use App\Models\Employee;
 use App\Models\Question;
 use App\Models\RealExam;
 use App\Enums\LevelsEnum;
-use App\Models\Department;
 use App\Models\OnlineExam;
-use App\Traits\EnumTraits;
 use App\Enums\ExamTypeEnum;
 use App\Enums\LanguageEnum;
 use App\Enums\SemesterEnum;
@@ -23,28 +20,21 @@ use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\DatetimeHelper;
 use App\Helpers\LanguageHelper;
-use App\Helpers\QuestionHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
-use App\Helpers\OnlinExamHelper;
-use App\Helpers\EnumReplacement1;
 use App\Models\StudentOnlineExam;
 use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Enums\OnlineExamStatusEnum;
 use App\Enums\ExamConductMethodEnum;
-use App\Helpers\QuestionUsageHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
-use App\Enums\ExamDifficultyLevelEnum;
-use Illuminate\Support\Facades\Storage;
 use App\Enums\OnlineExamTakingStatusEnum;
 use App\Helpers\OnlineExamListenerHelper;
-use App\Enums\FormConfigurationMethodEnum;
 use App\Enums\StudentOnlineExamStatusEnum;
 
 class StudentOnlineExamController extends Controller
@@ -383,8 +373,8 @@ class StudentOnlineExamController extends Controller
         ])) {
             return  ResponseHelper::clientError();
         }
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
             $student = Student::where('user_id', auth()->user()->id)->first();
             $studentOnlineExam = StudentOnlineExam::where('student_id', $student->id)
                 ->where('online_exam_id', $request->id)
@@ -616,9 +606,5 @@ class StudentOnlineExamController extends Controller
             throw $e;
         }
     }
-    /** for rules
-     * retrieveOnlineExams attributes {status id}
-     * saveOnlineExamQuestionAnswer attributes {exam id, question id, answer}
-     *
-     */
+   
 }

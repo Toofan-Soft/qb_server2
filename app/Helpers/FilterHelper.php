@@ -2,10 +2,6 @@
 
 namespace App\Helpers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\UploadedFile;
-
 class FilterHelper{
     public static function getfilterData($model, $attributes, $conditionAttribute){
         $data = null;

@@ -3,21 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use App\Models\College;
-use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Models\CoursePart;
 use App\Helpers\NullHelper;
-use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
-use App\Helpers\ModifyHelper;
 use App\Enums\CoursePartsEnum;
-use App\Enums\CourseStatusEnum;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
-use App\Helpers\EnumReplacement1;
 use App\Enums\CoursePartStatusEnum;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;

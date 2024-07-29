@@ -3,17 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
-use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
 use App\Helpers\ModifyHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
-use App\Http\Requests\CourseRequest;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Validator;
 
 class CourseController extends Controller
 {

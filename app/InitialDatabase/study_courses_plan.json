@@ -1,116 +1,298 @@
 [
     {
         "department_id": 6,
-        "department_courses": [
+        "levels": [
             {
-                "course_id": 1,
                 "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "semesters": [
                     {
-                        "course_part_id": 1,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 2,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 2,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 3,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 3,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 4,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 4,
-                        "score": 120,
-                        "lectures_count": 12,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 1,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 1,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 3,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 3,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 10,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 14,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 15,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 13,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 20,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 21,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 22,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 5,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 2,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 2,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 4,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 4,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 5,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 5,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 6,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 6,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 7,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 15,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 26,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 27,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 11,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 16,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 17,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 14,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 23,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 24,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 25,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             },
             {
-                "course_id": 5,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "level_id": 2,
+                "semesters": [
                     {
-                        "course_part_id": 6,
-                        "score": 170,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 7,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 8,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 9,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 8,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 10,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 11,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 12,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 18,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 19,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 7,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 6,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 8,
-                        "score": 140,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 9,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 10,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 9,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 12,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 13,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }
@@ -118,116 +300,298 @@
     },
     {
         "department_id": 7,
-        "department_courses": [
+        "levels": [
             {
-                "course_id": 1,
                 "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "semesters": [
                     {
-                        "course_part_id": 1,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 2,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 2,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 3,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 3,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 4,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 4,
-                        "score": 120,
-                        "lectures_count": 12,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 1,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 1,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 3,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 3,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 10,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 14,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 15,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 13,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 20,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 21,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 22,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 5,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 2,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 2,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 4,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 4,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 5,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 5,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 6,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 6,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 7,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 15,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 26,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 27,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 11,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 16,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 17,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 14,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 23,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 24,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 25,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             },
             {
-                "course_id": 5,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "level_id": 2,
+                "semesters": [
                     {
-                        "course_part_id": 6,
-                        "score": 170,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 7,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 8,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 9,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 8,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 10,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 11,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 12,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 18,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 19,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 7,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 6,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 8,
-                        "score": 140,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 9,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 10,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 9,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 12,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 13,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }
@@ -235,116 +599,298 @@
     },
     {
         "department_id": 8,
-        "department_courses": [
+        "levels": [
             {
-                "course_id": 1,
                 "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "semesters": [
                     {
-                        "course_part_id": 1,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 2,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 2,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 3,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 3,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 4,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 4,
-                        "score": 120,
-                        "lectures_count": 12,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 1,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 1,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 3,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 3,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 10,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 14,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 15,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 13,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 20,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 21,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 22,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 5,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 2,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 2,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 4,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 4,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 5,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 5,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 6,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 6,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 7,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 15,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 26,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 27,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 11,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 16,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 17,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 14,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 23,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 24,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 25,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             },
             {
-                "course_id": 5,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "level_id": 2,
+                "semesters": [
                     {
-                        "course_part_id": 6,
-                        "score": 170,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 7,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 8,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 9,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 8,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 10,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 11,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 12,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 18,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 19,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 7,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 6,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 8,
-                        "score": 140,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 9,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 10,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 9,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 12,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 13,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }
@@ -352,116 +898,298 @@
     },
     {
         "department_id": 9,
-        "department_courses": [
+        "levels": [
             {
-                "course_id": 1,
                 "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "semesters": [
                     {
-                        "course_part_id": 1,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 2,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 2,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 3,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 3,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 4,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 4,
-                        "score": 120,
-                        "lectures_count": 12,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 1,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 1,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 3,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 3,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 10,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 14,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 15,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 13,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 20,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 21,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 22,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 5,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 2,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 2,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 4,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 4,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 5,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 5,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 6,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 6,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 7,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 15,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 26,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 27,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 11,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 16,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 17,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 14,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 23,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 24,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 25,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             },
             {
-                "course_id": 5,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "level_id": 2,
+                "semesters": [
                     {
-                        "course_part_id": 6,
-                        "score": 170,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 7,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 8,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 9,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 8,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 10,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 11,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 12,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 18,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 19,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 7,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 6,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 8,
-                        "score": 140,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 9,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 10,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 9,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 12,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 13,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }
@@ -469,116 +1197,298 @@
     },
     {
         "department_id": 10,
-        "department_courses": [
+        "levels": [
             {
-                "course_id": 1,
                 "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "semesters": [
                     {
-                        "course_part_id": 1,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 2,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 2,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 3,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 3,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 4,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 4,
-                        "score": 120,
-                        "lectures_count": 12,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 1,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 1,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 3,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 3,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 10,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 14,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 15,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 13,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 20,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 21,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 22,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 5,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 2,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 2,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 4,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 4,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 5,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 5,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 6,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 6,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 7,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 15,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 26,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 27,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 11,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 16,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 17,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 14,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 23,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 24,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 25,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             },
             {
-                "course_id": 5,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "level_id": 2,
+                "semesters": [
                     {
-                        "course_part_id": 6,
-                        "score": 170,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 7,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 8,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 9,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 8,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 10,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 11,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 12,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 18,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 19,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 7,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 6,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 8,
-                        "score": 140,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 9,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 10,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 9,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 12,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 13,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }
@@ -586,467 +1496,298 @@
     },
     {
         "department_id": 11,
-        "department_courses": [
+        "levels": [
             {
-                "course_id": 1,
                 "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "semesters": [
                     {
-                        "course_part_id": 1,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 2,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 2,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 3,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 3,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 4,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 4,
-                        "score": 120,
-                        "lectures_count": 12,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 1,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 1,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 3,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 3,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 10,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 14,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 15,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 13,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 20,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 21,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 22,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 5,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 2,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 2,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 4,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 4,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 5,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 5,
+                                        "score": 100,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 6,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 6,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 7,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 15,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 26,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 27,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 11,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 16,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 17,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 14,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 23,
+                                        "score": 140,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 24,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 25,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             },
             {
-                "course_id": 5,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
+                "level_id": 2,
+                "semesters": [
                     {
-                        "course_part_id": 6,
-                        "score": 170,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
+                        "semester_id": 1,
+                        "department_courses": [
+                            {
+                                "course_id": 7,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 8,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 9,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 8,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 10,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 11,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            },
+                            {
+                                "course_id": 12,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 18,
+                                        "score": 170,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 10800,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 19,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     },
                     {
-                        "course_part_id": 7,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 6,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 8,
-                        "score": 140,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 9,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 10,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "department_id": 12,
-        "department_courses": [
-            {
-                "course_id": 1,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 1,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 2,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 2,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 3,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 3,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 4,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 4,
-                        "score": 120,
-                        "lectures_count": 12,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 5,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 5,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 6,
-                        "score": 170,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 7,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 6,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 8,
-                        "score": 140,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 9,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 10,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "department_id": 13,
-        "department_courses": [
-            {
-                "course_id": 1,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 1,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 2,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 2,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 3,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 3,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 4,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 4,
-                        "score": 120,
-                        "lectures_count": 12,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 5,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 5,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 6,
-                        "score": 170,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 7,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 6,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 8,
-                        "score": 140,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 9,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 10,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        "department_id": 14,
-        "department_courses": [
-            {
-                "course_id": 1,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 1,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 2,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 2,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 3,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 3,
-                        "score": 100,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 4,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 4,
-                        "score": 120,
-                        "lectures_count": 12,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 5,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 5,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 6,
-                        "score": 170,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 7,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    }
-                ]
-            },
-            {
-                "course_id": 6,
-                "level_id": 1,
-                "semester_id": 1,
-                "department_course_parts": [
-                    {
-                        "course_part_id": 8,
-                        "score": 140,
-                        "lectures_count": 12,
-                        "lecture_duration": 10800,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 9,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
-                    },
-                    {
-                        "course_part_id": 10,
-                        "score": 30,
-                        "lectures_count": 10,
-                        "lecture_duration": 7200,
-                        "note": "this description for this department course part"
+                        "semester_id": 2,
+                        "department_courses": [
+                            {
+                                "course_id": 9,
+                                "department_course_parts": [
+                                    {
+                                        "course_part_id": 12,
+                                        "score": 120,
+                                        "lectures_count": 12,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    },
+                                    {
+                                        "course_part_id": 13,
+                                        "score": 30,
+                                        "lectures_count": 10,
+                                        "lecture_duration": 7200,
+                                        "note": "this description for this department course part"
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             }

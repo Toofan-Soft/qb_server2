@@ -2,22 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\RoleEnum;
 use App\Enums\GenderEnum;
 use App\Enums\JobTypeEnum;
-use App\Models\CoursePart;
 use App\Traits\EnumTraits;
 use App\Enums\ExamTypeEnum;
-use App\Enums\FormNameEnum;
 use App\Enums\LanguageEnum;
 use App\Enums\SemesterEnum;
 use App\Enums\OwnerTypeEnum;
-use Illuminate\Http\Request;
-use App\Enums\ExamStatusEnum;
 use App\Enums\UserStatusEnum;
 use App\Enums\CoursePartsEnum;
 use App\Enums\LevelsCountEnum;
-use App\Enums\CourseStatusEnum;
 use App\Enums\QuestionTypeEnum;
 use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
@@ -40,129 +34,228 @@ class EnumsController extends Controller
 {
     public function retrieveCoursePartStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(CoursePartStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(CoursePartStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
     public function retrieveChapterStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(ChapterStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(ChapterStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveCourseParts()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(CoursePartsEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(CoursePartsEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveLanguages()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(LanguageEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(LanguageEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrieveDifficultyLevels()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(ExamDifficultyLevelEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(ExamDifficultyLevelEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveQuestionTypes()
     {
 
-        return ResponseHelper::successWithData(EnumTraits::getEnum(QuestionTypeEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(QuestionTypeEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveAccessibilityStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(AccessibilityStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(AccessibilityStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveQuestionStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(QuestionStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(QuestionStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveSemesters()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(SemesterEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(SemesterEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveLevelsCounts()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(LevelsCountEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(LevelsCountEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveJobTypes()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(JobTypeEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(JobTypeEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveQualifications()
     {
 
-        return ResponseHelper::successWithData(EnumTraits::getEnum(QualificationEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(QualificationEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveGenders()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(GenderEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(GenderEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
     public function  retrieveRegisterGenders()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(GenderEnum::class));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(GenderEnum::class));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveCourseStudentStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(CourseStudentStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(CourseStudentStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveOwnerTypes()
     {
-        $types = OwnerTypeEnum::getAvailableValues();
-        return ResponseHelper::successWithData($types);
 
-        // return ResponseHelper::successWithData(EnumTraits::getEnum(OwnerTypeEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            $types = OwnerTypeEnum::getAvailableValues();
+            ResponseHelper::successWithData($types);
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveUserStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(UserStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(UserStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveConductMethods()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(ExamConductMethodEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(ExamConductMethodEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveExamTypes()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(ExamTypeEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(ExamTypeEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveformConfigurationMethods()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(FormConfigurationMethodEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(FormConfigurationMethodEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveformNameMethods()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(FormNameMethodEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(FormNameMethodEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveOnlineExamStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(OnlineExamStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(OnlineExamStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function retrievePracticeExamStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(PracticeExamStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(PracticeExamStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveStudentOnlineExamStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(StudentOnlineExamStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(StudentOnlineExamStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 
     public function  retrieveOnlineExamTakingStatus()
     {
-        return ResponseHelper::successWithData(EnumTraits::getEnum(OnlineExamTakingStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        try {
+            return ResponseHelper::successWithData(EnumTraits::getEnum(OnlineExamTakingStatusEnum::class, LanguageHelper::getEnumLanguageName()));
+        } catch (\Exception $e) {
+            return ResponseHelper::serverError();
+        }
     }
 }

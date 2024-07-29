@@ -11,45 +11,57 @@ class ValidateHelper
 {
     public static function validateData(Request $request, $rules)
     {
-        $validator = Validator::make($request->all(), $rules);
-        if ($validator->fails()) {
-            return  $validator->errors()->first();
-            // return false;
+        try {
+            $validator = Validator::make($request->all(), $rules);
+            if ($validator->fails()) {
+                return  $validator->errors()->first();
+                // return false;
+            }
+            // else{
+            //     return true;
+            // }
+        } catch (\Exception $e) {
+            throw $e;
         }
-        // else{
-        //     return true;
-        // }
     }
 
     public static function validatePolicy($roles = []): bool
     {
-        $user = auth()->user();
+        try {
+            $user = auth()->user();
 
-        if (is_null($user)) {
-            return false;
-        }
-
-        $userRoleIds = UserRole::where('user_id', $user->id)
-            ->pluck('role_id')
-            ->toArray();
-
-        foreach ($roles as $role) {
-            if (in_array($role, $userRoleIds)) {
-                return true;
+            if (is_null($user)) {
+                return false;
             }
-        }
 
-        return false;
+            $userRoleIds = UserRole::where('user_id', $user->id)
+                ->pluck('role_id')
+                ->toArray();
+
+            foreach ($roles as $role) {
+                if (in_array($role, $userRoleIds)) {
+                    return true;
+                }
+            }
+
+            return false;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public static function validateUser(): bool
     {
-        $user = auth()->user();
+        try {
+            $user = auth()->user();
 
-        if (is_null($user)) {
-            return false;
+            if (is_null($user)) {
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            throw $e;
         }
-
-        return true;
     }
 }

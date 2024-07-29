@@ -122,13 +122,13 @@
                 "levels_count": 4
             },
             {
-                "arabic_name": "1الفيزياء",
-                "english_name": "Physics1",
+                "arabic_name": "الفيزياء",
+                "english_name": "Physics",
                 "levels_count": 4
             },
             {
-                "arabic_name": "1الرياضيات",
-                "english_name": "mathematics1",
+                "arabic_name": "الرياضيات",
+                "english_name": "mathematics",
                 "levels_count": 4
             },
             {
@@ -243,13 +243,13 @@
                 "levels_count": 4
             },
             {
-                "arabic_name": "2الفيزياء",
-                "english_name": "Physics2",
+                "arabic_name": "الفيزياء",
+                "english_name": "Physics",
                 "levels_count": 4
             },
             {
-                "arabic_name": "2الرياضيات",
-                "english_name": "mathematics2",
+                "arabic_name": "الرياضيات",
+                "english_name": "mathematics",
                 "levels_count": 4
             },
             {

@@ -6,22 +6,17 @@ use App\Models\User;
 use App\Models\Employee;
 use App\Enums\GenderEnum;
 use App\Enums\JobTypeEnum;
-use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Helpers\NullHelper;
 use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
-use App\Helpers\ModifyHelper;
 use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Enums\QualificationEnum;
 use App\Helpers\EnumReplacement;
-use App\Helpers\EnumReplacement1;
-use Illuminate\Http\JsonResponse;
 use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +34,7 @@ class EmployeeController extends Controller
             return  ResponseHelper::clientError();
         }
 
+        DB::beginTransaction();
         try {
             $employee =  Employee::create([
                 'arabic_name' =>  $request->arabic_name,
@@ -54,6 +50,7 @@ class EmployeeController extends Controller
             if ($request->email) {
                 if (!UserHelper::addUser($request->email, OwnerTypeEnum::EMPLOYEE->value, $employee->id)) {
                     //  return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');
+                    DB::rollBack();
                     return ResponseHelper::serverError();
                 }
 
@@ -61,8 +58,10 @@ class EmployeeController extends Controller
                 // $response = UserHelper::addUser($request->email, $ownerTypeId, $employee->id);
                 // return ResponseHelper::successWithToken($response);
             }
+            DB::commit();
             return ResponseHelper::success();
         } catch (\Exception $e) {
+            DB::rollBack();
             return ResponseHelper::serverError();
         }
     }

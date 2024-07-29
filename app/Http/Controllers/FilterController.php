@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Topic;
 use App\Models\Course;
 use App\Enums\RoleEnum;
 use App\Models\Chapter;
 use App\Models\College;
-use App\Models\Student;
 use App\Models\Employee;
 use App\Enums\LevelsEnum;
 use App\Enums\JobTypeEnum;
@@ -637,35 +635,6 @@ class FilterController extends Controller
             return ResponseHelper::serverError();
         }
     }
-
-    // public function retrieveAcademicYears()
-    // {
-    //     Gate::authorize('retrieveEditableCourse', FilterController::class);
-    // }
-
-    // public function retrieveDepartmentStudents(Request $request)
-    // {
-    //     if ($request->department_id) {
-    //         $department = Department::findOrFail($request->department_id);
-    //         //*test this , or use join instead */
-    //         $DepartmentStudents = $department->department_courses()->student_courses()->student()->get(['id', 'name']);
-    //         return response()->json(['data' => $DepartmentStudents], 200);
-    //     } else {
-    //         return response()->json(['error_message' => ' department_id is empty'], 401);
-    //     }
-    // }
-
-    // public function retrieveCourseStudents(Request $request)
-    // {
-    //     if ($request->department_course_id) {
-    //         $departmentCourse = DepartmentCourse::findOrFail($request->department_course_id);
-    //         //*test this , or use join instead */
-    //         $departmentCourse = $departmentCourse->student_courses()->student()->get(['id', 'name']);
-    //         return response()->json(['data' => $departmentCourse], 200);
-    //     } else {
-    //         return response()->json(['error_message' => ' department_course_id is empty'], 401);
-    //     }
-    // }
 
     public function retrieveNonOwnerEmployees(Request $request)
     {

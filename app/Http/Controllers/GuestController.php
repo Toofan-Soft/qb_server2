@@ -9,7 +9,6 @@ use App\Helpers\UserHelper;
 use App\Enums\OwnerTypeEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
-use App\Helpers\ModifyHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use Illuminate\Support\Facades\DB;
@@ -22,15 +21,6 @@ class GuestController extends Controller
 {
     public function addGuest(Request $request)
     {
-        // يجب ضمان ان عملية اضافة زائر وانشاء حساب له تتم مع بعض
-        // if (ValidateHelper::validateData($request, $this->rules($request))) {
-        //     return  ResponseHelper::clientError(401);
-        // }
-        // return ResponseHelper::successWithData(ValidateHelper::validateData($request, $this->rules($request)));
-        // return 5;
-
-         Gate::authorize('addGuest', GuestController::class);
-
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError();
         }
@@ -50,6 +40,7 @@ class GuestController extends Controller
             // return ResponseHelper::successWithData(UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password));
 
             if (!UserHelper::addUser($request->email, OwnerTypeEnum::GUEST->value, $guest->id, $request->password)) {
+                DB::rollBack();
                 return ResponseHelper::serverError();
                 // return ResponseHelper::serverError1("hellow");
                 // return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الموظف');

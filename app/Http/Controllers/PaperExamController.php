@@ -16,7 +16,6 @@ use App\Helpers\NullHelper;
 use App\Helpers\ParamHelper;
 use App\Models\FormQuestion;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
 use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
 use App\Enums\QuestionTypeEnum;
@@ -26,16 +25,13 @@ use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
-use App\Helpers\OnlinExamHelper;
 use App\Enums\FormNameMethodEnum;
-use App\Enums\QuestionStatusEnum;
 use App\Models\TrueFalseQuestion;
 use App\AlgorithmAPI\GenerateExam;
 use App\Enums\TrueFalseAnswerEnum;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\DepartmentCoursePart;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
@@ -53,7 +49,7 @@ class PaperExamController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
-
+        DB::beginTransaction();
         try {
             $formConfigurationMethodId = FormConfigurationMethodEnum::SIMILAR_FORMS->value;
             $formNameMethodId = FormNameMethodEnum::DECIMAL_NUMBERING->value;
@@ -63,6 +59,7 @@ class PaperExamController extends Controller
                     $formConfigurationMethodId = $request->form_configuration_method_id;
                     $formNameMethodId = $request->form_name_method_id;
                 } else {
+                    DB::rollBack();
                     return ResponseHelper::clientError();
                 }
             }
@@ -79,8 +76,6 @@ class PaperExamController extends Controller
                     ->where('academic_year', now()->format('Y'))
                     ->first();
 
-                DB::beginTransaction();
-
                 $realExam = $courseLecturer->real_exams()->create([
                     'type' => $request->type_id,
                     'datetime' => $request->datetime,
@@ -96,8 +91,7 @@ class PaperExamController extends Controller
 
                 $paperExam = PaperExam::create([
                     'id' => $realExam->id,
-                    'course_lecturer_name' => $request->lecturer_name ?? 'unknown',
-                    // 'course_lecturer_name' => $request->lecturer_name?? null,
+                    'course_lecturer_name' => $request->lecturer_name?? null
                 ]);
 
                 foreach ($request->questions_types as $question_type) {
@@ -138,6 +132,7 @@ class PaperExamController extends Controller
                 // error in the Algorithm model
             }
         } catch (\Exception $e) {
+            DB::rollBack();
             return ResponseHelper::serverError();
         }
     }
@@ -148,6 +143,7 @@ class PaperExamController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError();
         }
+        DB::beginTransaction();
         try {
             $params = ParamHelper::getParams(
                 $request,
@@ -158,11 +154,11 @@ class PaperExamController extends Controller
                     new Param('special_note', 'note')
                 ]
             );
-            DB::beginTransaction();
 
             $realExam = RealExam::findOrFail($request->id);
 
             if (isset($params['form_name_method']) && $realExam->forms_count === 1) {
+                DB::rollBack();
                 return ResponseHelper::clientError();
             }
 
@@ -510,41 +506,14 @@ class PaperExamController extends Controller
     public function exportPaperExamToPDF(Request $request)
     {
         // request {id, with_answer}
-        // Gate::authorize('exportPaperExamToPDF', PaperExamController::class);
 
-        // id, with mirror?, with answered mirror?
-        /* Data:
-        *   .
-        *   . university *
-        *   . college *
-        *   . department *
-        *   . level *
-        *   .
-        *   . course *
-        *   . course part *
-        *   . exam type *
-        *   . date *
-        *   . duration *
-        *
-        *   . lecturer *
-        *   . score *
-        *
-        *   . forms
-        *       . form name?
-        *       . questions
-        *           . content
-        *           . attachment?
-        *           . is true?
-        *           . choices?
-        *               . content
-        *               . attachment?
-        *               . is true?
-        *   .
-        * */
+        Gate::authorize('exportPaperExamToPDF', PaperExamController::class);
+
         // تبقى جزء فحص اذا كان يشتي مع اجابة او لا
         if (ValidateHelper::validateData($request, [
             'id' => 'required|integer',
-            'with_answer' => 'required|boolean'
+            // 'with_answer' => 'required|boolean'
+            'with_answer' => 'required'
         ])) {
             return  ResponseHelper::clientError();
         }
@@ -595,7 +564,7 @@ class PaperExamController extends Controller
 
             // form and form questions 
             // as [formName, questions[], .....] or [formsName[name,...], questoins[]]
-            $formsNames = ExamHelper::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count);
+            $formsNames = ExamHelper::getRealExamFormsNames(intval($realExam->form_name_method), $realExam->forms_count, LanguageEnum::symbolOf(intval($realExam->language)));
             $examForms = $realExam->forms()->get(['id']);
 
             if (intval($realExam->form_count) > 1) {
@@ -724,14 +693,6 @@ class PaperExamController extends Controller
 
     private function getQuestionsChoicesCombinations($questionsIds)
     {
-        // يفضل ان يتم عملها مشترك ليتم استخداما في الاختبار الورقي والتجريبي
-        // تقوم هذه الدالة باختيار توزيعة الاختيارات للاسئلة من نوع اختيار من متعدد
-        /**
-         * steps of function
-         *   اختيار الاسئلة التي نوعها اختيار من متعدد
-         *   اختيار احد التوزيعات التي يمتلكها السؤال بشكل عشوائي
-         *   يتم اضافة رقم التوزيعة المختارة الي السؤال
-         */
         $formQuestions = [];
         try {
             foreach ($questionsIds as $questionId) {
@@ -772,31 +733,6 @@ class PaperExamController extends Controller
 
     public function rules(Request $request): array
     {
-        /*
-
-- real exam data 
-	- language
-	- difficulty_level
-	- form_configuration_method
-	- forms_count
-	- form_name_method
-	- datetime
-	- duration
-	- type
-	- exam_type
-	- note => special_note
-	- course_lecturer_id
-- real_exam_question_types => questions_types
-	- question_type => type_id
-	- questions_count
-	- question_score
-- paper_exams
-	- course_lecturer_name => lecturer_name
-- topics_ids
-- another variables
-	- department_course_part_id
-		- 
-        */
 
         $rules = [
             // real exam table 

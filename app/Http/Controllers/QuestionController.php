@@ -3,14 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Topic;
-use App\Helpers\Param;
-use App\Models\Choice;
 use App\Models\Question;
 use App\Helpers\GetHelper;
 use App\Enums\LanguageEnum;
 use App\Helpers\NullHelper;
 use App\Helpers\ImageHelper;
-use App\Helpers\ParamHelper;
 use Illuminate\Http\Request;
 use App\Enums\ChoiceStatusEnum;
 use App\Enums\QuestionTypeEnum;
@@ -27,7 +24,6 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
-use App\Models\QuestionChoicesCombination;
 use App\Helpers\Roles\ByteArrayValidationRule;
 
 class QuestionController extends Controller
@@ -56,6 +52,7 @@ class QuestionController extends Controller
             if ($request->type_id === QuestionTypeEnum::TRUE_FALSE->value) {
                 if (NullHelper::is_null($request, ['is_true'])) {
                     // return ResponseHelper::clientError1("required 'is_true'!");
+                    DB::rollBack();
                     return ResponseHelper::clientError();
                 }
 
@@ -65,6 +62,7 @@ class QuestionController extends Controller
             } elseif ($request->type_id === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
                 if (NullHelper::is_null($request, ['choices'])) {
                     // return ResponseHelper::clientError1("required 'choices'!");
+                    DB::rollBack();
                     return ResponseHelper::clientError();
                 }
 
@@ -77,6 +75,7 @@ class QuestionController extends Controller
                 }
             } else {
                 // return ResponseHelper::clientError1("unknown 'type_id'!");
+                DB::rollBack();
                 return ResponseHelper::clientError();
             }
             DB::commit();
@@ -109,7 +108,10 @@ class QuestionController extends Controller
             // );
 
             $question = Question::findOrFail($request->id);
-
+            if(intval($question->status) === QuestionStatusEnum::ACCEPTED->value){
+                return ResponseHelper::clientError();
+                // can not modify accepted question 
+            }
             $question->update([
                 'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id) ?? $question->difficulty_level,
                 'accessibility_status' => $request->accessibility_status_id ?? $question->accessibility_status,
@@ -340,9 +342,9 @@ class QuestionController extends Controller
         ];
         try {
             $question = Question::findOrFail($request->id, $attributes);
-
             if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
                 $trueFalseQuestion = $question->true_false_question()->first(['answer']);
+                // $trueFalseQuestion =  $question->true_false_question()->get(['answer'])->first();
 
                 if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
                     $question['is_true'] = true;
@@ -506,6 +508,7 @@ class QuestionController extends Controller
         try {
             $question = Question::findOrFail($request->id);
             if(intval($question->status) != QuestionStatusEnum::REQUESTED->value){
+                DB::rollBack();
                 return  ResponseHelper::clientError();
             }
 
@@ -571,16 +574,15 @@ class QuestionController extends Controller
             'accessibility_status_id' => ['required', new Enum(AccessibilityStatusEnum::class)], // Assuming AccessibilityStatusEnum holds valid values
             'estimated_answer_time' => 'required|integer',
             'language_id' => ['required', new Enum(LanguageEnum::class)],
-            'is_true' => 'nullable|boolean',
+            // 'is_true' => 'nullable|boolean',
+            'is_true' => 'nullable',
             
             // choice rules 
-            // 'choices' => 'required|array|min:1',
-            // 'choices' => 'nullable|array',
-            // 'choices' => 'required|array',
             'choices' => 'nullable|array|min:4',
             'choices.*.attachment' => ['nullable', new ByteArrayValidationRule],
             'choices.*.content' => 'required|string',
-            'choices.*.is_true' => 'required|boolean',
+            // 'choices.*.is_true' => 'required|boolean',
+            'choices.*.is_true' => 'required',
 
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {

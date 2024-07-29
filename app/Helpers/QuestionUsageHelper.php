@@ -2,21 +2,11 @@
 
 namespace App\Helpers;
 
-use App\Models\Choice;
-use App\Models\Question;
 use App\Models\RealExam;
 use App\Models\PracticeExam;
 use App\Models\QuestionUsage;
 use App\Models\StudentAnswer;
-use App\Enums\ChoiceStatusEnum;
-use App\Enums\QuestionTypeEnum;
-use App\Models\StudentOnlineExam;
-use App\Models\TrueFalseQuestion;
-use App\Enums\TrueFalseAnswerEnum;
 use Illuminate\Support\Facades\DB;
-use App\Models\QuestionChoicesCombination;
-use App\AlgorithmAPI\GenerateQuestionChoicesCombination;
-use App\Models\FormQuestion;
 
 class QuestionUsageHelper
 {
@@ -28,8 +18,8 @@ class QuestionUsageHelper
      */
     public static function updateOnlineExamQuestionsUsageAndAnswer($examId)
     {
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
             $realExam = RealExam::findOrFail($examId);
             $forms =  $realExam->forms()->get();
             foreach ($forms as $form) {
@@ -81,15 +71,14 @@ class QuestionUsageHelper
                 'paper_exam_selection_times_count' => $questionUsage->first()->paper_exam_selection_times_count + 1
             ]);
         } catch (\Exception $e) {
-            // return $e->getMessage();
             throw $e;
         }
     }
 
     public static function updatePracticeExamQuestionsUsage(PracticeExam $practiceExam)
     {
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
             $practiceExamQuestions = $practiceExam->practice_exam_question()->get();
             foreach ($practiceExamQuestions as $practiceExamQuestion) {
                 $questionUsage = QuestionUsage::where('question_id', '=', $practiceExamQuestion->question_id);
@@ -109,8 +98,8 @@ class QuestionUsageHelper
     public static function updatePracticeExamQuestionsUsageAndAnswer(PracticeExam $practiceExam)
     {
         // التحقق من ان الاجابة لا تحتوي على نل، وهذا يعني ان الطالب جاوب السؤال، مش خلي السؤال فاضي
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
             $practiceExamQuestions = $practiceExam->practice_exam_question()->get();
             foreach ($practiceExamQuestions as $practiceExamQuestion) {
                 $answer = ExamHelper::checkQuestionAnswer(

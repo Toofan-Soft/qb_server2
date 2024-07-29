@@ -3,15 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Employee;
 use App\Enums\LevelsEnum;
-use App\Models\CoursePart;
-use App\Models\Department;
 use App\Enums\SemesterEnum;
 use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
-use App\Helpers\ModifyHelper;
 use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
 use App\Helpers\LanguageHelper;
@@ -23,7 +18,6 @@ use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\DepartmentCoursePart;
 use Illuminate\Support\Facades\Gate;
 
 class CourseLecturerController extends Controller

@@ -61,7 +61,7 @@ class InitialDatabaseController extends Controller
         // $this->courses();
 
         // step 2 add questions
-        // $this->questionsChoices(1, 'ar');
+        return $this->questionsChoices(1, 'ar');
         // $this->questionsTrueFalse(1, 'ar');
         // $this->questionsChoices(2, 'en');
         // $this->questionsTrueFalse(2, 'en');
@@ -324,7 +324,7 @@ class InitialDatabaseController extends Controller
                 'specialization' => $row['specialization'],
                 'image_url' => null,
             ]);
-            $this->addUser($row['email'], OwnerTypeEnum::EMPLOYEE->value, $emplyee->id, $row['password'],$roles);
+            $this->addUser($row['email'], OwnerTypeEnum::EMPLOYEE->value, $emplyee->id, $row['password'], $roles);
         }
         // DB::commit();
     }
@@ -377,9 +377,9 @@ class InitialDatabaseController extends Controller
                 $phone++;
                 $this->addUser($email, OwnerTypeEnum::STUDENT->value, $student->id, $password);
                 $departmentCourses = DepartmentCourse::where('department_id', $row['department_id'])
-                ->where('level', $row['level_id'])
-                ->where('semester', $row['semester_id'])
-                ->get();
+                    ->where('level', $row['level_id'])
+                    ->where('semester', $row['semester_id'])
+                    ->get();
 
                 foreach ($departmentCourses as $departmentCourse) {
                     $departmentCourse->course_students()->create([
@@ -389,7 +389,6 @@ class InitialDatabaseController extends Controller
                     ]);
                 }
             }
-
         }
         // DB::commit();
     }

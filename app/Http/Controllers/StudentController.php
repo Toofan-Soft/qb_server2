@@ -2,41 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use  App\Models\Student;
 use App\Enums\GenderEnum;
 use App\Enums\LevelsEnum;
-use App\Helpers\GetHelper;
 use App\Enums\SemesterEnum;
 use App\Helpers\NullHelper;
 use App\Helpers\UserHelper;
-use \Illuminate\Support\Str;
 use App\Enums\OwnerTypeEnum;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
-use App\Helpers\ModifyHelper;
-use App\Models\CourseStudent;
-use App\Enums\CoursePartsEnum;
-use App\Enums\StudentTypeEnum;
-use App\Enums\CourseStatusEnum;
-use App\Helpers\DatetimeHelper;
 use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
-use App\Enums\QualificationEnum;
-use App\Enums\StudentStatusEnum;
 use App\Helpers\EnumReplacement;
 use App\Models\DepartmentCourse;
-use App\Helpers\EnumReplacement1;
-use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\CourseStudentStatusEnum;
-use  Illuminate\Support\Facades\Validator;
 use App\Helpers\Roles\ByteArrayValidationRule;
 
 class StudentController extends Controller
@@ -67,6 +51,7 @@ class StudentController extends Controller
 
             if ($request->email) {
                 if (!UserHelper::addUser($request->email, OwnerTypeEnum::STUDENT->value, $student->id)) {
+                    DB::rollBack();
                     return ResponseHelper::serverError();
                     // return ResponseHelper::serverError('لم يتم اضافة حساب لهذا الطالب');
                 }
@@ -106,10 +91,11 @@ class StudentController extends Controller
                     $studnetDepartmentAndLevel = $this->getStudentDepartmentLevelSemesterIds($student->id);
 
                     if ($request->level_id < intval($studnetDepartmentAndLevel->level_id)) {
-
+                        DB::rollBack();
                         return ResponseHelper::clientError();
                         // return ResponseHelper::clientError('لا يمكنك تغيير مستوى الطالب الي مستوى ادنى من المستوى الحالي');
                     } elseif ($request->level_id < intval($studnetDepartmentAndLevel->semester_id)) {
+                        DB::rollBack();
                         return ResponseHelper::clientError();
                         // return ResponseHelper::clientError('لا يمكنك تغيير فصل الطالب الي فصل ادنى من الفصل الحالي');
                     } else {
@@ -134,6 +120,7 @@ class StudentController extends Controller
                         $this->addStudentCoures($student->id, $studnetDepartmentAndLevel->department_id, $request->level_id, $request->semester_id);
                     }
                 } else {
+                    DB::rollBack();
                     return ResponseHelper::clientError();
                     // semester id is required
                 }
@@ -250,44 +237,6 @@ class StudentController extends Controller
             return ResponseHelper::serverError();
         }
     }
-
-    // public function retrieveStudent1(Request $request)
-    // {
-    //     $student =  DB::table('students')
-    //         ->join('course_students', 'students.id', '=', 'course_students.student_id')
-    //         ->join('department_courses', 'course_students.department_course_id', '=', 'department_courses.id')
-    //         ->join('departments', 'department_courses.department_id', '=', 'departments.id')
-    //         ->join('colleges', 'departments.college_id', '=', 'colleges.id')
-    //         ->select(
-    //             'students.academic_id',
-    //             'students.arabic_name',
-    //             'students.english_name',
-    //             'students.gender as gender_name',
-    //             'students.user_id as email',
-    //             'students.image_url',
-    //             'students.birthdate',
-    //             'students.phone',
-    //             'departments.arabic_name as department_name',
-    //             'colleges.arabic_name as college_name'
-    //         )
-    //         ->where('students.id', '=', $request->id)
-    //         ->first();
-
-    //     $student->birthdate = DatetimeHelper::convertTimestampToMilliseconds($student->birthdate);
-
-    //     $enumReplacements = [
-    //         new EnumReplacement('gender_name', GenderEnum::class),
-    //         new EnumReplacement('level_name', LevelsEnum::class),
-    //     ];
-    //     $columnReplacements = [
-    //         new ColumnReplacement('email', 'email', User::class)
-    //     ];
-    //     $student->level_name = ($this->getStudentDepartmentAndLevel($request->id))->level_id;
-    //     $student = ProcessDataHelper::enumsConvertIdToName($student, $enumReplacements);
-    //     $student = ProcessDataHelper::columnConvertIdToName($student, $columnReplacements);
-
-    //     return ResponseHelper::successWithData($student);
-    // }
 
     public function retrieveEditableStudent(Request $request)
     {

@@ -2,11 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use DateTime;
-use DateTimeZone;
-use App\Models\Form;
-use App\Models\User;
-use App\Models\Topic;
 use App\Helpers\Param;
 use App\Models\Employee;
 use App\Models\Question;
@@ -22,7 +17,6 @@ use App\Helpers\ParamHelper;
 use Illuminate\Http\Request;
 use App\Enums\CoursePartsEnum;
 use App\Models\CourseLecturer;
-use Illuminate\Support\Carbon;
 use App\Enums\QuestionTypeEnum;
 use App\Enums\RealExamTypeEnum;
 use App\Helpers\DatetimeHelper;
@@ -31,7 +25,6 @@ use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
 use App\Enums\FormNameMethodEnum;
-use App\Enums\QuestionStatusEnum;
 use App\AlgorithmAPI\GenerateExam;
 use App\Helpers\ColumnReplacement;
 use App\Helpers\ProcessDataHelper;
@@ -43,9 +36,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
-use App\Enums\OnlineExamTakingStatusEnum;
 use App\Enums\FormConfigurationMethodEnum;
-use App\Helpers\Roles\PasswordValidationRule;
 
 class LecturerOnlineExamController extends Controller
 {
@@ -62,6 +53,7 @@ class LecturerOnlineExamController extends Controller
         ) {
             return ResponseHelper::clientError();
         }
+        DB::beginTransaction();
         try {
             $formConfigurationMethodId = FormConfigurationMethodEnum::SIMILAR_FORMS->value;
             $formNameMethodId = FormNameMethodEnum::DECIMAL_NUMBERING->value;
@@ -71,6 +63,7 @@ class LecturerOnlineExamController extends Controller
                     $formConfigurationMethodId = $request->form_configuration_method_id;
                     $formNameMethodId = $request->form_name_method_id;
                 } else {
+                    DB::rollBack();
                     return ResponseHelper::clientError();
                 }
             }
@@ -86,7 +79,6 @@ class LecturerOnlineExamController extends Controller
                     ->where('lecturer_id', $employee->id)
                     ->where('academic_year', now()->format('Y'))
                     ->first();
-                DB::beginTransaction();
                 $realExam = $courseLecturer->real_exams()->create([
                     'type' => $request->type_id,
                     'datetime' => $request->datetime,
@@ -164,6 +156,7 @@ class LecturerOnlineExamController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return ResponseHelper::clientError();
         }
+        DB::beginTransaction();
         try {
             $params = ParamHelper::getParams(
                 $request,
@@ -175,11 +168,10 @@ class LecturerOnlineExamController extends Controller
                 ]
             );
 
-            DB::beginTransaction();
-
             $realExam = RealExam::findOrFail($request->id);
 
             if (isset($params['form_name_method']) && $realExam->forms_count === 1) {
+                DB::rollBack();
                 return ResponseHelper::clientError();
             }
 
@@ -644,100 +636,10 @@ class LecturerOnlineExamController extends Controller
     private function getAlgorithmData($request)
     {
         try {
-            // $types = [];
-            // foreach ($request->questions_types as $type) {
-            //     $t = [
-            //         'id' => intval($type['type_id']),
-            //         'count' => intval($type['questions_count'])
-            //     ];
-
-            //     array_push($types, $t);
-            // }
-
-            // // دالة مشتركة للاختبار الالكتروني والورقي
-            // $algorithmData = [
-            //     'estimated_time' => intval($request->duration),
-            //     // 'difficulty_level' => floatval($request->difficulty_level_id),
-            //     'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id),
-            //     'forms_count' => ($request->form_configuration_method_id === FormConfigurationMethodEnum::DIFFERENT_FORMS->value) ? $request->forms_count : 1,
-            //     'question_types_and_questions_count' => $types
-            //     // 'question_types_and_questions_count' => [
-            //     //     // 'id' => $request->questions_types['type_id'],
-            //     //     // 'count' => $request->questions_types['questions_count']
-            //     //     'id' => $request->questions_types->type_id,
-            //     //     'count' => $request->questions_types->questions_count
-            //     // ],
-            // ];
-
-            // $questionTypesIds = [];
-            // foreach ($request->questions_types as $type) {
-            //     array_push($questionTypesIds, $type['type_id']);
-            // }
-
-            // $questionTypesIds = $request->questions_types['type_id']; // التحقق من ان نحصل على مصفوفه
             $accessabilityStatusIds = [
                 AccessibilityStatusEnum::REAL_EXAM->value,
                 AccessibilityStatusEnum::PRACTICE_AND_REAL_EXAM->value,
             ];
-            // $questions =  DB::table('questions')
-            //     ->join('question_usages', 'questions.id', '=', 'question_usages.question_id')
-            //     ->join('topics', 'questions.topic_id', '=', 'topics.id')
-            //     ->select(
-            //         'questions.id',
-            //         'questions.type as type_id',
-            //         'questions.difficulty_level',
-            //         'questions.estimated_answer_time as answer_time',
-            //         'question_usages.online_exam_last_selection_datetime',
-            //         'question_usages.practice_exam_last_selection_datetime',
-            //         'question_usages.paper_exam_last_selection_datetime',
-            //         'question_usages.online_exam_selection_times_count',
-            //         'question_usages.practice_exam_selection_times_count',
-            //         'question_usages.paper_exam_selection_times_count',
-            //         'questions.topic_id',
-            //         'topics.id as topic_id',
-            //     )
-            //     ->where('questions.status', '=', QuestionStatusEnum::ACCEPTED->value)
-            //     ->where('questions.language', '=', $request->language_id)
-            //     ->whereIn('questions.accessability_status', $accessabilityStatusIds)
-            //     ->whereIn('questions.type', $questionTypesIds)
-            //     ->whereIn('questions.topic_id', $request->topics_ids)
-            //     // ->whereIn('topics.id', $request->topics_ids)
-            //     // ->whereIn('topics.id', [3])
-            //     ->get()
-            //     ->toArray();
-
-            // foreach ($questions as $question) {
-            //     // يجب ان يتم تحديد اوزان هذه المتغيرات لضبط مقدار تاثير كل متغير على حل خوارزمية التوليد
-
-            //     $question->type_id = intval($question->type_id);
-            //     $question->difficulty_level = floatval($question->difficulty_level);
-
-            //     // $selections = [1, 2, 3, 4, 5];
-            //     // $randomIndex = array_rand($selections);
-            //     // $question['last_selection'] = $selections[$randomIndex];
-            //     $question->last_selection = 3;
-            //     // $question['last_selection'] = DatetimeHelper::convertSecondsToDays(
-            //     //     DatetimeHelper::getDifferenceInSeconds(now(), $question->online_exam_last_selection_datetime) +
-            //     //         DatetimeHelper::getDifferenceInSeconds(now(), $question->practice_exam_last_selection_datetime) +
-            //     //         DatetimeHelper::getDifferenceInSeconds(now(), $question->paper_exam_last_selection_datetime)
-            //     // ) / 3;
-
-            //     $question->selection_times = 2;
-            //     // $question['selection_times'] = (
-            //     //     $question->online_exam_selection_times_count +
-            //     //     $question->practice_exam_selection_times_count +
-            //     //     $question->paper_exam_selection_times_count
-            //     // ) / 3;
-            //     // حذف الاعمدة التي تم تحويلها الي عمودين فقط من الاسئلة
-            //     unset($question->online_exam_last_selection_datetime);
-            //     unset($question->practice_exam_last_selection_datetime);
-            //     unset($question->paper_exam_last_selection_datetime);
-            //     unset($question->online_exam_selection_times_count);
-            //     unset($question->practice_exam_selection_times_count);
-            //     unset($question->paper_exam_selection_times_count);
-            // }
-
-            // $algorithmData['questions'] = $questions;
             $algorithmData = ExamHelper::getAlgorithmData($request, $accessabilityStatusIds);
             return $algorithmData;
         } catch (\Exception $e) {
@@ -747,14 +649,6 @@ class LecturerOnlineExamController extends Controller
 
     private function getQuestionsChoicesCombinations($questionsIds)
     {
-        // يفضل ان يتم عملها مشترك ليتم استخداما في الاختبار الورقي والتجريبي
-        // تقوم هذه الدالة باختيار توزيعة الاختيارات للاسئلة من نوع اختيار من متعدد
-        /**
-         * steps of function
-         *   اختيار الاسئلة التي نوعها اختيار من متعدد
-         *   اختيار احد التوزيعات التي يمتلكها السؤال بشكل عشوائي
-         *   يتم اضافة رقم التوزيعة المختارة الي السؤال
-         */
         try {
             $formQuestions = [];
             foreach ($questionsIds as $questionId) {

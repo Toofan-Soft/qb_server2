@@ -4,17 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Traits\EnumTraits;
 use App\Helpers\NullHelper;
-use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
 use App\Models\CourseStudent;
 use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
-use App\Helpers\EnumReplacement;
 use App\Models\DepartmentCourse;
-use App\Helpers\EnumReplacement1;
-use App\Helpers\ProcessDataHelper;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
@@ -32,7 +27,6 @@ class CourseStudentController extends Controller
         }
         DB::beginTransaction();
         try {
-            return ResponseHelper::success();
             $departmenCourse = DepartmentCourse::findOrFail($request->department_course_id);
             if (count($request->students_ids) === 1) {
                 $departmenCourse->course_students()->create([

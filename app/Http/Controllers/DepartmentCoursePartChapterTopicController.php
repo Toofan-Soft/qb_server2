@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chapter;
-use App\Helpers\AddHelper;
 use App\Models\CoursePart;
 use Illuminate\Http\Request;
 use App\Helpers\ResponseHelper;
@@ -12,7 +11,6 @@ use App\Enums\ChapterStatusEnum;
 use Illuminate\Support\Facades\DB;
 use App\Models\DepartmentCoursePart;
 use Illuminate\Support\Facades\Gate;
-use App\Models\DepartmentCoursePartTopic;
 
 class DepartmentCoursePartChapterTopicController extends Controller
 {

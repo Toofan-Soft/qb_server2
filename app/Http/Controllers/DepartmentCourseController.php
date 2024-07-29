@@ -3,18 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use App\Models\College;
 use App\Enums\LevelsEnum;
-use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Models\CoursePart;
-use App\Models\Department;
 use App\Traits\EnumTraits;
 use App\Enums\SemesterEnum;
 use App\Helpers\NullHelper;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
-use App\Helpers\ModifyHelper;
 use App\Enums\CoursePartsEnum;
 use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;

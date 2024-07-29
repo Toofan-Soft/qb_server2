@@ -3,23 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\College;
-use App\Helpers\AddHelper;
 use App\Helpers\GetHelper;
 use App\Models\Department;
 use App\Helpers\NullHelper;
 use App\Helpers\ImageHelper;
 use Illuminate\Http\Request;
-use App\Helpers\DeleteHelper;
-use App\Helpers\ModifyHelper;
 use App\Enums\LevelsCountEnum;
 use App\Helpers\LanguageHelper;
 use App\Helpers\ResponseHelper;
 use App\Helpers\ValidateHelper;
 use App\Helpers\EnumReplacement;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
-use Illuminate\Support\Facades\Validator;
 use App\Helpers\Roles\ByteArrayValidationRule;
 
 class DepartmentController extends Controller
@@ -174,8 +169,8 @@ class DepartmentController extends Controller
     public function rules(Request $request): array
     {
         $rules = [
-            'arabic_name' => 'required|string|unique:departments,arabic_name|max:255',
-            'english_name' => 'required|string|unique:departments,english_name|max:255',
+            'arabic_name' => 'required|string|max:255',
+            'english_name' => 'required|string|max:255',
             'logo' =>  ['nullable', new ByteArrayValidationRule],
             'levels_count_id' =>  ['required', new Enum(LevelsCountEnum::class)],
             'description' => 'nullable|string',
