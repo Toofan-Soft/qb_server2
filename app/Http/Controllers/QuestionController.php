@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\AccessibilityStatusEnum;
 use App\Enums\ExamDifficultyLevelEnum;
+use App\Helpers\BooleanHelper;
 use App\Helpers\Roles\ByteArrayValidationRule;
 
 class QuestionController extends Controller
@@ -31,12 +32,13 @@ class QuestionController extends Controller
     public function addQuestion(Request $request)
     {
         Gate::authorize('addQuestion', QuestionController::class);
-        
+
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
         DB::beginTransaction();
         try {
+
             $question =  Question::create([
                 'topic_id' => $request->topic_id,
                 'type' => $request->type_id,
@@ -48,8 +50,7 @@ class QuestionController extends Controller
                 'title' => $request->title ?? null,
                 'attachment' => ImageHelper::uploadImage($request->attachment),
             ]);
-
-            if ($request->type_id === QuestionTypeEnum::TRUE_FALSE->value) {
+            if (intval($request->type_id) === QuestionTypeEnum::TRUE_FALSE->value) {
                 if (NullHelper::is_null($request, ['is_true'])) {
                     // return ResponseHelper::clientError1("required 'is_true'!");
                     DB::rollBack();
@@ -57,9 +58,9 @@ class QuestionController extends Controller
                 }
 
                 $question->true_false_question()->create([
-                    'answer' => ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
+                    'answer' => BooleanHelper::toBoolean($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
                 ]);
-            } elseif ($request->type_id === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
+            } elseif (intval($request->type_id) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
                 if (NullHelper::is_null($request, ['choices'])) {
                     // return ResponseHelper::clientError1("required 'choices'!");
                     DB::rollBack();
@@ -70,7 +71,7 @@ class QuestionController extends Controller
                     $question->choices()->create([
                         'content' => $choice['content'],
                         'attachment' => !NullHelper::is_null($choice, ['attachment']) ? ImageHelper::uploadImage($choice['attachment']) : null,
-                        'status' => $choice['is_true']
+                        'status' => BooleanHelper::toBoolean($choice['is_true']) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value
                     ]);
                 }
             } else {
@@ -93,99 +94,107 @@ class QuestionController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
-        try {
+        // try {
+        // $params = ParamHelper::getParams(
+        //     $request,
+        //     [
+        //         new Param('difficulty_level_id', 'difficulty_level'),
+        //         new Param('accessibility_status_id', 'accessibility_status'),
+        //         new Param('language_id', 'language'),
+        //         new Param('estimated_answer_time'),
+        //         new Param('content'),
+        //         new Param('attachment'),
+        //         new Param('title')
+        //     ]
+        // );
+
+        $question = Question::findOrFail($request->id);
+        if (intval($question->status) === QuestionStatusEnum::ACCEPTED->value) {
+            return ResponseHelper::clientError();
+            // can not modify accepted question 
+        }
+        $question->update([
+            'difficulty_level' => isset($request->difficulty_level_id) ? ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id) : $question->difficulty_level,
+            'accessibility_status' => $request->accessibility_status_id ?? $question->accessibility_status,
+            'language' => $request->language_id ?? $question->language,
+            'estimated_answer_time' => $request->estimated_answer_time ?? $question->estimated_answer_time,
+            'content' => $request->content ?? $question->content,
+            'title' => $request->title ?? $question->title,
+            'attachment' => ImageHelper::updateImage($request->attachment, $question->attachment),
+        ]);
+
+        if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
             // $params = ParamHelper::getParams(
             //     $request,
             //     [
-            //         new Param('difficulty_level_id', 'difficulty_level'),
-            //         new Param('accessibility_status_id', 'accessibility_status'),
-            //         new Param('language_id', 'language'),
-            //         new Param('estimated_answer_time'),
-            //         new Param('content'),
-            //         new Param('attachment'),
-            //         new Param('title')
+            //         new Param('is_true', 'answer')
             //     ]
             // );
 
-            $question = Question::findOrFail($request->id);
-            if(intval($question->status) === QuestionStatusEnum::ACCEPTED->value){
-                return ResponseHelper::clientError();
-                // can not modify accepted question 
+            if (!NullHelper::is_null($request, ['is_true'])) {
+                $question->true_false_question()->update([
+                    'answer' => BooleanHelper::toBoolean($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
+                ]);
             }
-            $question->update([
-                'difficulty_level' => ExamDifficultyLevelEnum::toFloat($request->difficulty_level_id) ?? $question->difficulty_level,
-                'accessibility_status' => $request->accessibility_status_id ?? $question->accessibility_status,
-                'language' => $request->language_id ?? $question->language,
-                'estimated_answer_time' => $request->estimated_answer_time ?? $question->estimated_answer_time,
-                'content' => $request->content ?? $question->content,
-                'title' => $request->title ?? $question->title,
-                'attachment' => ImageHelper::updateImage($request->attachment, $question->attachment),
-            ]);
+        } elseif (intval($question->type) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
+            // $params = ParamHelper::getParams(
+            //     $request,
+            //     [
+            //         new Param('choices', '')
+            //     ]
+            // );
 
-            if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
-                // $params = ParamHelper::getParams(
-                //     $request,
-                //     [
-                //         new Param('is_true', 'answer')
-                //     ]
-                // );
+            if (!NullHelper::is_null($request, ['choices'])) {
 
-                if (!NullHelper::is_null($request, ['is_true'])) {
-                    $question->true_false_question()->update([
-                        'answer' => ($request->is_true === true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
-                    ]);
-                }
-            } elseif (intval($question->type) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
-                // $params = ParamHelper::getParams(
-                //     $request,
-                //     [
-                //         new Param('choices', '')
-                //     ]
-                // );
-
-                if (!NullHelper::is_null($request, ['choices'])) {
-
-                    foreach ($request->choices as $choice) {
-                        if (!NullHelper::is_null($choice, ['id']) &&
-                            NullHelper::is_null($choice, ['content', 'is_true', 'attachment'])
-                        ) {
-                            // delete choice..
-                            $old_choice = $question->choices()->where('id', $choice->id)->first();
-
-                            $old_choice->delete();
-                        } elseif (!NullHelper::is_null($choice, ['id']) &&
-                            (
-                                !NullHelper::is_null($choice, ['content']) ||
-                                !NullHelper::is_null($choice, ['is_true']) ||
-                                !NullHelper::is_null($choice, ['attachment'])
-                            )
-                        ) {
-                            // modify choice..
-                            $old_choice = $question->choices()->where('id', $choice->id)->first();
-
-                            $question->choices()->update([
-                                'content' => $choice['content'] ?? $old_choice->content,
-                                'attachment' => !NullHelper::is_null($choice, ['attachment']) ? ImageHelper::updateImage($choice['attachment'], $old_choice->attachment) : $old_choice->attachment,
-                                'status' => $choice['is_true'] ?? $old_choice->is_true
-                            ]);
-                        } elseif (NullHelper::is_null($choice, ['id']) &&
-                            !NullHelper::is_null($choice, ['content', 'is_true'])
-                        ) {
-                            // add choice..
-                            $question->choice()->create([
-                                'content' => $choice['content'],
-                                'attachment' => !NullHelper::is_null($choice, ['attachment']) ? ImageHelper::uploadImage($choice['attachment']) : null,
-                                'status' => $choice['is_true']
-                            ]);
+                foreach ($request->choices as $choice) {
+                    if (
+                        !NullHelper::is_null($choice, ['id']) &&
+                        NullHelper::is_null($choice, ['content']) &&
+                        NullHelper::is_null($choice, ['is_true']) &&
+                        NullHelper::is_null($choice, ['attachment'])
+                    ) {
+                        // delete choice..
+                        $old_choice = $question->choices()->where('id', $choice['id'])->first();
+                        $old_choice->delete();
+                    } elseif (
+                        !NullHelper::is_null($choice, ['id']) &&
+                        (
+                            !NullHelper::is_null($choice, ['content']) ||
+                            !NullHelper::is_null($choice, ['is_true']) ||
+                            !NullHelper::is_null($choice, ['attachment'])
+                        )
+                    ) {
+                        // modify choice..
+                        $old_choice = $question->choices()->where('id', $choice['id'])->first();
+                        if (NullHelper::is_null($choice, ['is_true'])) {
+                            $status = $old_choice->status;
+                        } else {
+                            $status = BooleanHelper::toBoolean($choice['is_true']) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value;
                         }
+                        $old_choice->update([
+                            'content' => $choice['content'] ?? $old_choice->content,
+                            'attachment' => !NullHelper::is_null($choice, ['attachment']) ? ImageHelper::updateImage($choice['attachment'], $old_choice->attachment) : $old_choice->attachment,
+                            'status' => $status
+                        ]);
+                    } elseif (
+                        NullHelper::is_null($choice, ['id']) &&
+                        !NullHelper::is_null($choice, ['content', 'is_true'])
+                    ) {
+                        // add choice..
+                        $question->choices()->create([
+                            'content' => $choice['content'],
+                            'attachment' => !NullHelper::is_null($choice, ['attachment']) ? ImageHelper::uploadImage($choice['attachment']) : null,
+                            'status' => BooleanHelper::toBoolean($choice['is_true']) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value
+                        ]);
                     }
                 }
             }
-
-            return ResponseHelper::success();
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
         }
+
+        return ResponseHelper::success();
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function addQuestion1(Request $request)
@@ -274,13 +283,13 @@ class QuestionController extends Controller
         }
         try {
             $question = Question::findOrFail($request->id);
-            if((intval($question->status) === QuestionStatusEnum::REQUESTED->value) || 
-            (intval($question->status) === QuestionStatusEnum::ACCEPTED->value)
-            ){
-                return  ResponseHelper::clientError(); 
+            if ((intval($question->status) === QuestionStatusEnum::REQUESTED->value) ||
+                (intval($question->status) === QuestionStatusEnum::ACCEPTED->value)
+            ) {
+                return  ResponseHelper::clientError();
                 // can not delete requested or accepted question  
             }
-            
+
             $question->delete();
             return ResponseHelper::success();
         } catch (\Exception $e) {
@@ -378,7 +387,7 @@ class QuestionController extends Controller
                     'is_accepted' => null,
                     'is_requested' => true,
                 ];
-             } elseif (intval($question->status) === QuestionStatusEnum::ACCEPTED->value) {
+            } elseif (intval($question->status) === QuestionStatusEnum::ACCEPTED->value) {
                 $status  = [
                     'is_accepted' => true,
                     'is_requested' => true,
@@ -465,7 +474,7 @@ class QuestionController extends Controller
         }
         try {
             $question = Question::findOrFail($request->id);
-            if(intval($question->status) != QuestionStatusEnum::NEW->value){
+            if (intval($question->status) != QuestionStatusEnum::NEW->value) {
                 return  ResponseHelper::clientError();
             }
 
@@ -485,7 +494,7 @@ class QuestionController extends Controller
         }
         try {
             $question = Question::findOrFail($request->id);
-            if(intval($question->status) != QuestionStatusEnum::REQUESTED->value){
+            if (intval($question->status) != QuestionStatusEnum::REQUESTED->value) {
                 return  ResponseHelper::clientError();
             }
 
@@ -507,7 +516,7 @@ class QuestionController extends Controller
         DB::beginTransaction();
         try {
             $question = Question::findOrFail($request->id);
-            if(intval($question->status) != QuestionStatusEnum::REQUESTED->value){
+            if (intval($question->status) != QuestionStatusEnum::REQUESTED->value) {
                 DB::rollBack();
                 return  ResponseHelper::clientError();
             }
@@ -538,7 +547,7 @@ class QuestionController extends Controller
         }
         try {
             $question = Question::findOrFail($request->id);
-            if(intval($question->status) != QuestionStatusEnum::REQUESTED->value){
+            if (intval($question->status) != QuestionStatusEnum::REQUESTED->value) {
                 return  ResponseHelper::clientError();
             }
 
@@ -576,7 +585,7 @@ class QuestionController extends Controller
             'language_id' => ['required', new Enum(LanguageEnum::class)],
             // 'is_true' => 'nullable|boolean',
             'is_true' => 'nullable',
-            
+
             // choice rules 
             'choices' => 'nullable|array|min:4',
             'choices.*.attachment' => ['nullable', new ByteArrayValidationRule],

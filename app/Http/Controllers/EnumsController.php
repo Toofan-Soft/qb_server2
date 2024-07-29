@@ -172,7 +172,7 @@ class EnumsController extends Controller
 
         try {
             $types = OwnerTypeEnum::getAvailableValues();
-            ResponseHelper::successWithData($types);
+            return ResponseHelper::successWithData($types);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }

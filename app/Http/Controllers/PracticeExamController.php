@@ -14,6 +14,7 @@ use App\Helpers\ParamHelper;
 use App\Models\PracticeExam;
 use Illuminate\Http\Request;
 use App\Enums\CoursePartsEnum;
+use App\Helpers\BooleanHelper;
 use App\Enums\QuestionTypeEnum;
 use App\Helpers\DatetimeHelper;
 use App\Helpers\LanguageHelper;
@@ -583,7 +584,7 @@ class PracticeExamController extends Controller
                 if (!isset($request->is_true) || is_null($request->is_true)) {
                     return  ResponseHelper::clientError();
                 }
-                $answerId = ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
+                $answerId = BooleanHelper::toBoolean($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value;
             } elseif (intval($questionType->type) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
                 if (!isset($request->choice_id) || is_null($request->choice_id)) {
                     return  ResponseHelper::clientError();
