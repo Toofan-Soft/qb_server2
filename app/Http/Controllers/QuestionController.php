@@ -35,6 +35,7 @@ class QuestionController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
+
         DB::beginTransaction();
         try {
             $question =  Question::create([
@@ -49,7 +50,10 @@ class QuestionController extends Controller
                 'attachment' => ImageHelper::uploadImage($request->attachment),
             ]);
 
-            if ($request->type_id === QuestionTypeEnum::TRUE_FALSE->value) {
+            // return [intval($request->type_id), QuestionTypeEnum::MULTIPLE_CHOICE->value, intval($request->type_id) === QuestionTypeEnum::MULTIPLE_CHOICE->value];
+            // return [$request->type_id, $request->type_id === QuestionTypeEnum::TRUE_FALSE->value];
+
+            if (intval($request->type_id) === QuestionTypeEnum::TRUE_FALSE->value) {
                 if (NullHelper::is_null($request, ['is_true'])) {
                     // return ResponseHelper::clientError1("required 'is_true'!");
                     DB::rollBack();
@@ -59,7 +63,7 @@ class QuestionController extends Controller
                 $question->true_false_question()->create([
                     'answer' => ($request->is_true) ? TrueFalseAnswerEnum::TRUE->value : TrueFalseAnswerEnum::FALSE->value,
                 ]);
-            } elseif ($request->type_id === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
+            } elseif (intval($request->type_id) === QuestionTypeEnum::MULTIPLE_CHOICE->value) {
                 if (NullHelper::is_null($request, ['choices'])) {
                     // return ResponseHelper::clientError1("required 'choices'!");
                     DB::rollBack();
@@ -72,6 +76,7 @@ class QuestionController extends Controller
                         'attachment' => !NullHelper::is_null($choice, ['attachment']) ? ImageHelper::uploadImage($choice['attachment']) : null,
                         'status' => $choice['is_true']
                     ]);
+                    return [$choice['content'], $choice['is_true']];
                 }
             } else {
                 // return ResponseHelper::clientError1("unknown 'type_id'!");
@@ -575,14 +580,14 @@ class QuestionController extends Controller
             'estimated_answer_time' => 'required|integer',
             'language_id' => ['required', new Enum(LanguageEnum::class)],
             // 'is_true' => 'nullable|boolean',
-            'is_true' => 'nullable',
+            // 'is_true' => 'nullable',
             
             // choice rules 
-            'choices' => 'nullable|array|min:4',
-            'choices.*.attachment' => ['nullable', new ByteArrayValidationRule],
-            'choices.*.content' => 'required|string',
-            // 'choices.*.is_true' => 'required|boolean',
-            'choices.*.is_true' => 'required',
+            // 'choices' => 'nullable|array|min:4',
+            // 'choices.*.attachment' => ['nullable', new ByteArrayValidationRule],
+            // 'choices.*.content' => 'required|string',
+            // // 'choices.*.is_true' => 'required|boolean',
+            // 'choices.*.is_true' => 'required',
 
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
