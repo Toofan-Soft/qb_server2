@@ -146,21 +146,33 @@
         "choices": [
             {
                 "content": "my name is fadi",
-                "is_true": 1
+                "is_true": true
             },
             {
                 "content": "my name fadi",
-                "is_true": 0
+                "is_true": false
             },
             {
                 "content": "name is fadi",
-                "is_true": 0
+                "is_true": false
             },
             {
                 "content": "fadi",
-                "is_true": 1
+                "is_true": true
             }
         ]
+    },
+    {
+        "comment": "question/add",
+        "topic_id": 10,
+        "content": "Do you hate Israel?",
+        "title": "test",
+        "type_id": 0,
+        "difficulty_level_id": 2,
+        "accessibility_status_id": 1,
+        "estimated_answer_time": 30,
+        "language_id": 1,
+        "is_true": true
     },
     {
         "comment": "lecturer-online-exam/add",

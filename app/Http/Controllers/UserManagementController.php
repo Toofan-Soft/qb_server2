@@ -166,7 +166,7 @@ class UserManagementController extends Controller
         ])) {
             return  ResponseHelper::clientError();
         }
-        try {
+        // try {
             $userData = User::findOrFail(
                 $request->id,
                 ['id', 'email', 'status as status_name', 'owner_type as owner_type_name']
@@ -180,7 +180,7 @@ class UserManagementController extends Controller
                 $userRoles = RoleEnum::getOwnerRolesWithMandatory(intval($userData->owner_type_name));
             } elseif (intval($userData->owner_type_name) === OwnerTypeEnum::EMPLOYEE->value) {
                 $ownerData = $userData->employee()->get([LanguageHelper::getNameColumnName(null, 'name'), 'image_url', 'job_type']);
-                $userRoles = RoleEnum::getOwnerRolesWithMandatory(intval($userData->owner_type_name), intval($ownerData->job_type));
+                $userRoles = RoleEnum::getOwnerRolesWithMandatory(intval($userData->owner_type_name), intval($ownerData->first()->job_type));
                 unset($ownerData['job_type']);
             }
 
@@ -211,9 +211,9 @@ class UserManagementController extends Controller
             $userData = NullHelper::filter($userData);
 
             return ResponseHelper::successWithData($userData);
-        } catch (\Exception $e) {
-            return ResponseHelper::serverError();
-        }
+        // } catch (\Exception $e) {
+        //     return ResponseHelper::serverError();
+        // }
     }
 
     public function retrieveOwnerRoles(Request $request)
