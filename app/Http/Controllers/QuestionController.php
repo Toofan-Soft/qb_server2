@@ -435,7 +435,6 @@ class QuestionController extends Controller
 
             if (intval($question->type) === QuestionTypeEnum::TRUE_FALSE->value) {
                 $trueFalseQuestion = $question->true_false_question()->get(['answer'])->first();
-
                 if (intval($trueFalseQuestion->answer) === TrueFalseAnswerEnum::TRUE->value) {
                     $question['is_true'] = true;
                 } else {
@@ -450,12 +449,11 @@ class QuestionController extends Controller
                         $choice['is_true'] = false;
                     }
                 }
-                $question['choices'] = $choices;
+                $question['choices'] = $choices->toArray();
             }
 
             unset($question['type']);
             unset($question['id']);
-
             $question = NullHelper::filter($question);
 
             return ResponseHelper::successWithData($question);
