@@ -36,6 +36,7 @@ class QuestionController extends Controller
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }
+
         DB::beginTransaction();
         try {
 
@@ -73,6 +74,7 @@ class QuestionController extends Controller
                         'attachment' => !NullHelper::is_null($choice, ['attachment']) ? ImageHelper::uploadImage($choice['attachment']) : null,
                         'status' => BooleanHelper::toBoolean($choice['is_true']) ? ChoiceStatusEnum::CORRECT_ANSWER->value : ChoiceStatusEnum::INCORRECT_ANSWER->value
                     ]);
+                    return [$choice['content'], $choice['is_true']];
                 }
             } else {
                 // return ResponseHelper::clientError1("unknown 'type_id'!");
@@ -585,11 +587,11 @@ class QuestionController extends Controller
             'is_true' => 'nullable',
 
             // choice rules 
-            'choices' => 'nullable|array|min:4',
-            'choices.*.attachment' => ['nullable', new ByteArrayValidationRule],
-            'choices.*.content' => 'required|string',
-            // 'choices.*.is_true' => 'required|boolean',
-            'choices.*.is_true' => 'required',
+            // 'choices' => 'nullable|array|min:4',
+            // 'choices.*.attachment' => ['nullable', new ByteArrayValidationRule],
+            // 'choices.*.content' => 'required|string',
+            // // 'choices.*.is_true' => 'required|boolean',
+            // 'choices.*.is_true' => 'required',
 
         ];
         if ($request->method() === 'PUT' || $request->method() === 'PATCH') {
