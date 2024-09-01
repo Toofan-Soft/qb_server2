@@ -56,20 +56,19 @@
         "telegram": "https://t.me/taizUniversity"
     },
     {
-        "comment": "user management : add",
-        "email": "fadiadmin@gmail.com",
+        "comment": "user-management/add",
+        "email": "fadiadmin2@gmail.com",
         "owner_type_id": 2,
         "owner_id": 1,
         "roles_ids": [
             3,
             4,
             5,
-            6,
-            7
+            6
         ]
     },
     {
-        "comment": "user management : add",
+        "comment": "user-management/add",
         "email": "eeadadmin@gmail.com",
         "owner_type_id": 2,
         "owner_id": 2,
@@ -77,8 +76,7 @@
             3,
             4,
             5,
-            6,
-            7
+            6
         ]
     },
     {

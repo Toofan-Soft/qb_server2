@@ -274,32 +274,35 @@ class InitialDatabaseController extends Controller
         // DB::beginTransaction();
         foreach ($rows as $row) {
             $department = Department::findOrfail($row['department_id']);
-            foreach ($row['department_courses'] as $department_course) {
-                $departmentCourse = $department->department_courses()->create([
-                    // 'department_id' => $department_course['department_id'],
-                    'course_id' => $department_course['course_id'],
-                    'level' => $department_course['level_id'],
-                    'semester' => $department_course['semester_id'],
-
-                ]);
-                foreach ($department_course['department_course_parts'] as $department_course_part) {
-                    $departmentCoursePart = $departmentCourse->department_course_parts()->create([
-                        // 'department_course_id' => $department_course_part['department_course_id'],
-                        'course_part_id' => $department_course_part['course_part_id'],
-                        'score' => $department_course_part['score'],
-                        'lectures_count' => $department_course_part['lectures_count'],
-                        'lecture_duration' => $department_course_part['lecture_duration'],
-                        'note' => $department_course_part['note'],
-                    ]);
-                    $coursePart = CoursePart::findOrFail($department_course_part['course_part_id']);
-                    $chaptersIds = $coursePart->chapters()->pluck('id')->toArray();
-                    $chaptersIds = $coursePart->chapters()->pluck('id')->toArray();
-                    $topicsIds = Topic::whereIn('id', $chaptersIds)->pluck('id')->toArray();
-                    foreach ($topicsIds as $topicId) {
-                        DepartmentCoursePartTopic::create([
-                            'topic_id' => $topicId,
-                            'department_course_part_id' => $departmentCoursePart->id,
+            foreach ($row['levels'] as $level) {
+                foreach ($level['semesters'] as $semester) {
+                    foreach ($semester['department_courses'] as $department_course) {
+                        $departmentCourse = $department->department_courses()->create([
+                            // 'department_id' => $department_course['department_id'],
+                            'course_id' => $department_course['course_id'],
+                            'semester' => $semester['semester_id'],
+                            'level' => $level['level_id'],
+        
                         ]);
+                        foreach ($department_course['department_course_parts'] as $department_course_part) {
+                            $departmentCoursePart = $departmentCourse->department_course_parts()->create([
+                                // 'department_course_id' => $department_course_part['department_course_id'],
+                                'course_part_id' => $department_course_part['course_part_id'],
+                                'score' => $department_course_part['score'],
+                                'lectures_count' => $department_course_part['lectures_count'],
+                                'lecture_duration' => $department_course_part['lecture_duration'],
+                                'note' => $department_course_part['note'],
+                            ]);
+                            $coursePart = CoursePart::findOrFail($department_course_part['course_part_id']);
+                            $chaptersIds = $coursePart->chapters()->pluck('id')->toArray();
+                            $topicsIds = Topic::whereIn('id', $chaptersIds)->pluck('id')->toArray();
+                            foreach ($topicsIds as $topicId) {
+                                DepartmentCoursePartTopic::create([
+                                    'topic_id' => $topicId,
+                                    'department_course_part_id' => $departmentCoursePart->id,
+                                ]);
+                            }
+                        }
                     }
                 }
             }
@@ -362,12 +365,12 @@ class InitialDatabaseController extends Controller
         $phone = 777300001;
         $academicId = 1902001;
         foreach ($rows as $row) {
-            foreach ($row['students'] as $student) {
+            foreach ($row['students'] as $departmentStudent) {
                 $student = Student::create([
                     'academic_id' => $academicId++,
-                    'arabic_name' => $student['arabic_name'],
-                    'english_name' => $student['english_name'],
-                    'gender' => $student['gender_id'],
+                    'arabic_name' => $departmentStudent['arabic_name'],
+                    'english_name' => $departmentStudent['english_name'],
+                    'gender' => $departmentStudent['gender_id'],
                     'phone' => $phone,
                     'birthdate' => 12615,
                     'image_url' => null,
