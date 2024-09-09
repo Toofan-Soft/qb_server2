@@ -25,7 +25,7 @@ class UserManagementController extends Controller
     public function addUser(Request $request)
     {
         Gate::authorize('addUser', UserManagementController::class);
-
+        
         if (ValidateHelper::validateData($request, $this->rules($request))) {
             return  ResponseHelper::clientError();
         }

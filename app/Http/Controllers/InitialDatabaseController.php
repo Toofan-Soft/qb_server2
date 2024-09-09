@@ -60,13 +60,13 @@ class InitialDatabaseController extends Controller
         // $this->colleges();
         // $this->courses();
 
-        // step 2 add questions
-        return $this->questionsChoices(1, 'ar');
+        // step 2 add questions 
+        // $this->questionsChoices(1, 'ar');
+        // $this->questionsChoices(3, 'en');
         // $this->questionsTrueFalse(1, 'ar');
-        // $this->questionsChoices(2, 'en');
-        // $this->questionsTrueFalse(2, 'en');
+        // $this->questionsTrueFalse(3, 'en');
 
-        // step 3 accept questions
+        // step 3 accept questions // 2270 , 1690 
         // $this->acceptQuestions(100);
         // $this->acceptQuestions(200);
         // $this->acceptQuestions(300);
@@ -78,7 +78,10 @@ class InitialDatabaseController extends Controller
         // $this->acceptQuestions(1100);
         // $this->acceptQuestions(1200);
         // $this->acceptQuestions(1300);
-        // $this->acceptQuestions(1390);
+        // $this->acceptQuestions(1400);
+        // $this->acceptQuestions(1500);
+        // $this->acceptQuestions(1600);
+        // $this->acceptQuestions(1700);
 
         // step 4 add study plan, emplyees, students
         // $this->studyCoursesPlans();
@@ -295,7 +298,7 @@ class InitialDatabaseController extends Controller
                             ]);
                             $coursePart = CoursePart::findOrFail($department_course_part['course_part_id']);
                             $chaptersIds = $coursePart->chapters()->pluck('id')->toArray();
-                            $topicsIds = Topic::whereIn('id', $chaptersIds)->pluck('id')->toArray();
+                            $topicsIds = Topic::whereIn('chapter_id', $chaptersIds)->pluck('id')->toArray();
                             foreach ($topicsIds as $topicId) {
                                 DepartmentCoursePartTopic::create([
                                     'topic_id' => $topicId,

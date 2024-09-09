@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DepartmentCoursePart;
 use Illuminate\Support\Facades\Gate;
 
+use function PHPUnit\Framework\isNull;
+
 class DepartmentCoursePartChapterTopicController extends Controller
 {
     public function modifyDepartmentCoursePartTopics(Request $request)
@@ -30,9 +32,9 @@ class DepartmentCoursePartChapterTopicController extends Controller
             $departmentCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
             $departmentCoursePartTopics = $departmentCoursePart->department_course_part_topics()->pluck('topic_id')->toArray();
             foreach ($request->topics_ids as $topicId) {
-                if(in_array($topicId, $departmentCoursePartTopics)){
+                if (in_array($topicId, $departmentCoursePartTopics)) {
                     $departmentCoursePart->department_course_part_topics()->where('topic_id', '=', $topicId)->delete();
-                }else {
+                } else {
                     $departmentCoursePart->department_course_part_topics()->create([
                         'topic_id' => $topicId
                     ]);
@@ -103,36 +105,42 @@ class DepartmentCoursePartChapterTopicController extends Controller
             return  ResponseHelper::clientError();
         }
         try {
-            $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
-            $coursePart = CoursePart::findOrFail($departmenCoursePart->course_part_id);
-            $coursePartChapters = $coursePart->chapters()->where('status', ChapterStatusEnum::AVAILABLE->value)->get(['id', 'arabic_title', 'english_title']);
+        $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
+        $coursePart = CoursePart::findOrFail($departmenCoursePart->course_part_id);
+        $coursePartChapters = $coursePart->chapters()->where('status', ChapterStatusEnum::AVAILABLE->value)->get(['id', 'arabic_title', 'english_title']);
 
-            // coursePartChapters : [id, arabic_title, english_title]
+        // coursePartChapters : [id, arabic_title, english_title]
 
-            $departmenCoursePartChapters = DB::table('department_course_parts')
-                ->join('department_course_part_topics', 'department_course_parts.id', '=', 'department_course_part_topics.department_course_part_id')
-                ->join('topics', 'department_course_part_topics.topic_id', '=', 'topics.id')
-                ->join('chapters', 'topics.chapter_id', '=', 'chapters.id')
-                ->select('chapters.id', DB::raw('count(chapters.id) as count'))
-                ->where('department_course_parts.id', $departmenCoursePart->id)
-                ->where('chapters.status', ChapterStatusEnum::AVAILABLE->value)
-                ->groupBy('chapters.id')
-                ->get();
-            // departmenCoursePartChapters : [id, count]
+        $departmenCoursePartChapters = DB::table('department_course_part_topics')
+            ->join('topics', 'department_course_part_topics.topic_id', '=', 'topics.id')
+            ->join('chapters', 'topics.chapter_id', '=', 'chapters.id')
+            ->select('chapters.id', DB::raw('count(chapters.id) as count'))
+            ->where('department_course_part_topics.department_course_part_id', $request->department_course_part_id)
+            ->where('chapters.status', ChapterStatusEnum::AVAILABLE->value)
+            ->groupBy('chapters.id')
+            ->get();
+        // departmenCoursePartChapters : [id, count]
 
-            foreach ($coursePartChapters as $coursePartChapter) {
-                // $departmenCoursePartChapter = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first();
-                $isNon = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first()->count === 0;
-                $isFull = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first()->count === $coursePartChapter->topics()->count();
-                $isHalf = !$isNon && !$isFull;
+        foreach ($coursePartChapters as $coursePartChapter) {
+            $departmenCoursePartChapter = $departmenCoursePartChapters->where('id', $coursePartChapter->id)->first();
 
-                $coursePartChapter['selection_status'] = [
-                    'is_non' => $isNon,
-                    'is_full' => $isFull,
-                    'is_half' => $isHalf
-                ];
+            if (is_null($departmenCoursePartChapter)) {
+                $isNon = true;
+                $isFull = false;
+                $isHalf = false;
+            } else {
+                $isNon = false;
+                $isFull = $departmenCoursePartChapter->count === $coursePartChapter->topics()->count();
+                $isHalf = !$isFull;
             }
-            return ResponseHelper::successWithData($coursePartChapters);
+
+            $coursePartChapter['selection_status'] = [
+                'is_non' => $isNon,
+                'is_full' => $isFull,
+                'is_half' => $isHalf
+            ];
+        }
+        return ResponseHelper::successWithData($coursePartChapters);
         } catch (\Exception $e) {
             return ResponseHelper::serverError();
         }
