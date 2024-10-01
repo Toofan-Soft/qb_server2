@@ -156,7 +156,7 @@ class DepartmentCoursePartChapterTopicController extends Controller
             return  ResponseHelper::clientError();
         }
         try {
-            return ResponseHelper::success();
+            // return ResponseHelper::success();
             ////////////////////
             $departmenCoursePart = DepartmentCoursePart::findOrFail($request->department_course_part_id);
             $chapter = Chapter::findOrFail($request->chapter_id);
